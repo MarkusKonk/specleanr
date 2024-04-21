@@ -1,0 +1,1392 @@
+#___________________________
+
+#' @title Extract outliers for a one species
+#'
+#' @param x list of outlier outputs.
+#' @param sp species name or index in the list from datacleaner output. NULL for a single species
+#'
+#' @return data frame of outliers for each method
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' #out_df <- multi_detect()
+#'
+#' #df <- get_all(out)
+#'
+#' }
+#'
+#'
+ext_outliers <- function(x, sp = NULL){ #species name in quotes or number
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
+
+  if(isTRUE(x@mode) && is.null(sp)) stop('Provide the species name or index')
+
+  #extract outliers for a single species
+
+  nlen <- c()
+
+  methd <- c()
+
+  if(isFALSE(x@mode)){
+
+    dx <- x@result
+
+    checkNA <- sapply(dx, nrow)
+
+    metds <- dx[!sapply(checkNA,is.null)]
+
+    for (im in 1:length(metds)) {
+
+      nlen[im] <- nrow(metds[[im]])
+
+      methd[im] <- names(metds)[im]
+
+      mtdata <- data.frame( method=methd, outliers = nlen)
+    }
+    #for multiple species
+  }else{
+    dx <- x@result[[sp]]
+
+    checkNA <- sapply(dx, nrow)
+
+    metdata <- dx[!sapply(checkNA,is.null)]
+
+    for (im in 1:length(metdata) ) {
+
+      outm <- names(metdata)[im]
+
+      mdf <- metdata[[outm]]
+
+      nlen[im] <- nrow(mdf)
+
+      methd[im] <- outm
+
+      mtdata <- data.frame(method=methd, outliers = nlen)
+
+    }
+  }
+  return(mtdata)
+}
+#Many species
+
+#' @title Extract oultiers for multiple species
+#'
+#' @param x Species list
+#'
+#' @return data frame of outliers for multiple species
+#' @export
+#'
+#' @examples
+#'
+batch_extract <- function(x){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class is accpeted')
+
+  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
+
+  if(x@mode == FALSE) stop('Only used if the species are more than 1 during outlier detection and multiple set to TRUE.')
+
+  getall <- list()
+
+  for (ispp in 1:length(x@result)) {
+
+    spname <- names(x@result)[ispp]
+
+    getall[[ispp]] <- ext_outliers(x=x, sp = spname)
+
+    getall[[ispp]]$speciesname <- spname
+  }
+  getdf <- do.call(rbind, getall)
+
+  return(getdf)
+}
+#(\code{index_type = "reach"})
+
+#' @title Identifies absolute outliers and their proportions for a single species
+#'
+#' @param x List of dataframes for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param absolute To output absolute outliers for a species.
+#' @param props To output the proportional absoluteness for each outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#'
+#' @return vector or absolute outliers, best outlier detection method or data frame of absolute outliers and their
+#' proportions
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' #kkk
+#'
+#' }
+#'
+#'
+ocindex <- function(x, sp = NULL, var, threshold = 0.6, absolute=FALSE, props=FALSE, warn=TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Datacleaner class accpeted')
+
+  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  #For multiple species
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    species <- x@result[[sp]]
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    species <- x@result
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+
+  #first check for null values for methods that were not successful
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didnot execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  #check if any method returned no outliers but will be retained while computing absolute outliers.
+  len <- sapply(speciesNULL, nrow)
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <-  speciesNULL #replace the list with empty data with y
+
+  if(length(y)<2) stop('The methods with outliers are less than 2.')
+
+  lstvec <- list()
+
+  for (ciii in names(y)) {
+
+    lstvec[[ciii]] <- sort(y[[ciii]][[var]])
+  }
+
+  #create a vector of all outliers from all methods
+
+  all_outliers <- unique(do.call(c, lstvec))
+
+  absoluteoutlier_matrix <- matrix(NA, nrow = length(all_outliers), ncol = length(lstvec))
+
+  for (civ in seq_along(lstvec)) {
+
+    lsts <- lstvec[[civ]]
+
+    for (cv in seq_along(all_outliers)) {
+
+      numbs <- all_outliers[cv]
+
+      absoluteoutlier_matrix[cv, civ] <- ifelse(numbs%in%lsts, 1, 0)
+    }
+  }
+  #compute the outlier percentage presence across the methods
+  outlier_propn <- c()
+
+  outlier_value <- c()
+  #loop through the matrix with 1 for presence and 0 for absent in a particular method
+
+  for (cvi in 1:nrow(absoluteoutlier_matrix)) {
+
+    #instead of using only the methods with outliers, outliers are weighted across all methods
+
+    #therefore the denominator is length(x) where x is the count of methods considered
+    #print(length(absoluteoutlier_matrix[cvi,]))
+
+    outlier_propn[cvi] <- sum(absoluteoutlier_matrix[cvi,])/length(speciesNULL)
+
+    outlier_value[cvi] <- all_outliers[cvi] # identifies the real outlier value
+  }
+
+  ido <- which(outlier_propn>= threshold) #filter out only indices of absolute outliers at a certain threshold
+
+  absolute_outliers <- outlier_value[ido] #absolute outlier real values
+
+  absolute_propn <- outlier_propn[ido]
+
+  #Only continue with obtaining the best method if there are absolute outliers identified
+
+  if(length(absolute_outliers)>1 && threshold>=0.5){
+
+    #Repeat step 2 but with only absolute outliers selected using a user-based threshold
+
+    #the method obtained here will act as the standard since it considers all methods in a
+
+    #multidimensional aspect
+
+    absoluteinmethod_matrix <- matrix(NA, nrow = length(absolute_outliers), ncol = length(lstvec))
+
+    for (cvii in seq_along(lstvec)) {
+
+      lsts2 <- lstvec[[cvii]]
+
+      for (cviii in seq_along(absolute_outliers)) {
+
+        absoluteout <- absolute_outliers[cviii]
+
+        absoluteinmethod_matrix[cviii, cvii] <- ifelse(absoluteout%in%lsts2, 1, 0)
+
+      }
+    }
+    #Obtain absolute outlier for each method
+
+    maximumoutlier_method <- c() #maximum outlier
+
+    for (cvix in 1:ncol(absoluteinmethod_matrix)) maximumoutlier_method[cvix] <- sum(absoluteinmethod_matrix[, cvix])
+
+    #total outliers for each method
+
+    uniquetotalemethod <- c()
+
+    for (cvx in seq_along(lstvec))  uniquetotalemethod[cvx] <- length(unique(lstvec[[cvx]]))
+
+
+    proportion_absoluteness <- c() #proportion of absolute in each method: maximum/total
+
+    for (cvxi in seq_along(maximumoutlier_method)) {
+
+      maxout <- maximumoutlier_method[cvxi]
+
+      totalout <- uniquetotalemethod[cvxi]
+
+      proportion_absoluteness[cvxi] <- maxout/totalout
+
+    }
+    #Select best method with maximum absolute outliers
+    indx <- which(maximumoutlier_method==max(maximumoutlier_method) & proportion_absoluteness == max(proportion_absoluteness))
+
+    if(length(indx)>1){
+
+      indx <- indx[1] #choose any
+
+    }else if(length(indx)==0){
+      indx <- which(proportion_absoluteness == max(proportion_absoluteness))
+
+      if(length(indx)>1) indx <- indx[1]
+
+    }else{
+      'Silence'
+    }
+
+    getmethodnames <- names(lstvec)
+
+    bestmethod <- getmethodnames[indx]
+
+    if(absolute==TRUE){
+
+      if(props==FALSE){
+
+        return(absolute_outliers)
+
+      }else if(props==TRUE){
+
+        propdata <- cbind(absolute_outliers, absolute_propn)
+
+        return(as.data.frame(propdata))
+
+      }else{
+        stop('Choose either TRUE or FALSE to return abolute outlier or the percentage abolutness.')
+      }
+
+    }else if(absolute==FALSE){
+
+      return(bestmethod)
+
+    }else{
+      stop('Choose either TRUE or FALSE to return outliers or bestmethod. Defualt is FALSE')
+    }
+
+  }else if(length(absolute_outliers)>1 && threshold<0.5) {
+
+    if(isTRUE(warn))warning('The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.')
+
+    #Repeat step 2 but with only absolute outliers selected using a user-based threshold
+    #the method obtained here will act as the standard since it considers all methods in a
+    #multidimensional aspect.
+    absoluteinmethod_matrix <- matrix(NA, nrow = length(absolute_outliers), ncol = length(lstvec))
+
+    for (cvii in seq_along(lstvec)) {
+
+      lsts2 <- lstvec[[cvii]]
+
+      for (cviii in seq_along(absolute_outliers)) {
+
+        absoluteout <- absolute_outliers[cviii]
+
+        absoluteinmethod_matrix[cviii, cvii] <- ifelse(absoluteout%in%lsts2, 1, 0)
+
+      }
+    }
+    #Obtain absolute outlier for each method
+
+    maximumoutlier_method <- c() #maximum outlier
+
+    for (cvix in 1:ncol(absoluteinmethod_matrix)) maximumoutlier_method[cvix] <- sum(absoluteinmethod_matrix[, cvix])
+
+    #total outliers for each method
+
+    uniquetotalemethod <- c()
+
+    for (cvx in seq_along(lstvec))  uniquetotalemethod[cvx] <- length(unique(lstvec[[cvx]]))
+
+
+    proportion_absoluteness <- c() #proportion of absolute in each method: maximum/total
+
+    for (cvxi in seq_along(maximumoutlier_method)) {
+
+      maxout <- maximumoutlier_method[cvxi]
+
+      totalout <- uniquetotalemethod[cvxi]
+
+      proportion_absoluteness[cvxi] <- maxout/totalout
+
+    }
+    #Select best method with maximum absolute outliers
+    indx <- which(maximumoutlier_method==max(maximumoutlier_method) & proportion_absoluteness == max(proportion_absoluteness))
+
+    if(length(indx)>1){
+
+      indx <- indx[1] #choose any
+
+    }else if(length(indx)==0){
+      indx <- which(proportion_absoluteness == max(proportion_absoluteness))
+
+      if(length(indx)>1) indx <- indx[1]
+
+    }else{
+      'Silence'
+    }
+
+    getmethodnames <- names(lstvec)
+
+    bestmethod <- getmethodnames[indx]
+
+    if(absolute==TRUE){
+
+      if(props==FALSE){
+
+        return(absolute_outliers)
+
+      }else if(props==TRUE){
+
+        propdata <- cbind(absolute_outliers, absolute_propn)
+
+        return(as.data.frame(propdata))
+
+      }else{
+        stop('Choose either TRUE or FASLE to return abolute outlier or the percentage abolutness')
+      }
+
+    }else if(absolute==FALSE){
+
+      return(bestmethod)
+
+    }else{
+      stop('Choose either TRUE or FALSE to return outliers or bestmethod. Defualt is FALSE')
+    }
+
+  }else{
+
+    stop('No absolute outliers found with a threshold of ', threshold, '. Reduce and try again')
+
+  }
+}
+
+
+#' @title  Identifies absolute outliers for multiple species.
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param props To output the proportional absoluteness for each outlier
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return vector or absolute outliers, best outlier detection method or data frame of absolute outliers and their
+#' proportions
+#'
+#' @export
+#'
+#' @examples
+mult_abs <- function(x, var, threshold = 0.6, props=FALSE, warn=TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoluteoutliers <- c() #Absolute outliers count
+
+  species <- c()
+
+  if(isFALSE(props)){
+
+    for (di in 1:length(x@result)) {
+
+      absx <- tryCatch(
+        expr = {
+          abscount <- ocindex(x= x, sp = di, var = var, absolute = TRUE, threshold = threshold, props = props, warn=warn)
+        },
+        error= function(e){
+          if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.')
+          return(0)
+        })
+
+      if(length(absx) >1){
+        absoluteoutliers[di] <- length(abscount)
+
+      }else{
+        absoluteoutliers[di] <- 0
+      }
+      species[di]<- names(x@result)[di]
+    }
+
+    dx <- data.frame(species = species, absoutliers = absoluteoutliers)
+
+  }else if(isTRUE(props)){
+
+    splist <- list()
+
+    for (di in 1:length(x@result)) {
+
+      print(di)
+
+      absx <- tryCatch(
+        expr = {
+          absprops <- ocindex(x= x, sp = di, var = var, absolute = TRUE, threshold = threshold, props = props, warn=warn)
+        },
+        error= function(e){
+          if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.')
+          return(0)
+        })
+
+      if(length(absx) >1 ){
+        splist[[di]] <- absprops
+        splist[[di]]$threshold <- threshold
+        splist[[di]]$species <- names(x@result)[di]
+        splist[[di]]$numabs <- nrow(absprops)
+      }else{
+        splist[[di]] <- NULL
+      }
+    }
+    lext <- sapply(splist, length)
+
+    if(any(lext==0)) extfinal <- splist[lext !=0] else extfinal<- splist
+
+    dx <- do.call(rbind, extfinal)
+
+  }else{
+    stop('Choose either FALSE or TRUE for props to extract proportion or absolute outliers')
+  }
+  return(dx)
+}
+
+
+#' @title Identifies the best outlier detection method using Jaccard coefficient.
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for identifying outliers.
+#'
+#' @export
+#'
+#' @examples
+#'
+jaccard <- function(x, sp = NULL, var, threshold =0.6, warn=TRUE){
+
+  #check if there are absolute outliers
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didn't execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  matj <- matrix(NA, nrow = length(y), ncol = length(y))
+
+  for (cxii in seq_along(y)) {
+    m1 <- y[[cxii]][[var]]
+
+    for (cxiii in seq_along(y)) {
+
+      m2 <- y[[cxiii]][[var]]
+
+      intx <- intersect(m1, m2)
+
+      unx <- union(m1, m2)
+
+      matj[cxii, cxiii] <- (length(intx)/length(unx))*100
+
+    }
+  }
+  #choose best method with highest mean Jaccard index value
+  jdx <- c()
+
+  for (bi in 1:nrow(matj)) {
+
+    jadvalues <- matj[,bi]
+
+    jdx[bi] <- mean(jadvalues)
+  }
+  indxj <- which(jdx==max(jdx))
+
+  if(length(indxj)>1) indxj <- indxj[1]
+
+  bestmethodj <- names(y)[indxj]
+
+  return(bestmethodj)
+}
+
+#
+#  @title Overlap coefficient (Szymkiewicz–Simpson coefficient)
+#
+#' Identifies best outlier detection method using Overlap coefficient.
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for identifying outliers.
+#'
+#' @export
+#'
+#' @examples
+#'
+#'
+overlap <- function(x, sp = NULL, var, threshold, warn=TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didnot execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  matover <- matrix(NA, nrow = length(y), ncol = length(y))
+
+  for (cxiv in seq_along(y)) {
+
+    m3 <- y[[cxiv]][[var]]
+
+    for (cxv in seq_along(y)) {
+
+      m4 <- y[[cxv]][[var]]
+
+      intx1 <- intersect(m3, m4)
+
+      len1 <- length(unique(m3))
+
+      len2 <- length(unique(m4))
+
+      matover[cxiv, cxv] <- (length(intx1)/min(len1, len2))*100
+    }
+  }
+  jdo <- c()
+
+  for (bii in 1:nrow(matover)) {
+
+    ovalues <- matover[,bii]
+
+    jdo[bii] <- mean(ovalues)
+  }
+  indxo <- which(jdo==max(jdo))
+
+  if(length(indxo)>1) indxo <- indxo[1]
+
+  bestmethodo <- names(y)[indxo]
+
+  return(bestmethodo)
+}
+
+#' @title Cosine similarity index based on (Gautam & Kulkarni 2014; Joy & Renumol 2020)
+#
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for identifying outliers.
+#'
+#' @export
+#'
+#' @examples
+#'
+cosine <- function(x, sp = NULL, var, threshold, warn=TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didnot execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  matcos <- matrix(NA, nrow = length(y), ncol = length(y))
+
+  for (cxl in seq_along(y)) {
+
+    m10 <- y[[cxl]][[var]]
+
+    for (cxli in seq_along(y)) {
+
+      m11 <- y[[cxli]][[var]]
+
+      intx12 <- intersect(m10, m11)
+
+      len11 <- sqrt(length(unique(m10)))
+
+      len12 <- sqrt(length(unique(m11)))
+
+      matcos[cxl, cxli] <- (length(intx12)/(len11*len12))*100
+    }
+  }
+  jdcos <- c()
+
+  for (bix in 1:nrow(matcos)) {
+
+    cosv <- matcos[,bix]
+
+    jdcos[bix] <- mean(cosv)
+  }
+  indxcos <- which(jdcos==max(jdcos))
+
+  if(length(indxcos)>1) indxcos <- indxcos[1]
+
+  bestmethodcos <- names(y)[indxcos]
+
+  return(bestmethodcos)
+}
+
+#' @title Identifies best outlier detection method suing Sorensen Similarity Index.
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for identifying outliers.
+#'
+#' @export
+#'
+#' @examples
+#'
+sorensen <- function(x, sp = NULL, var, threshold, warn=FALSE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didnot execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  matsor <- matrix(NA, nrow = length(y), ncol = length(y))
+
+  for (cxvi in seq_along(y)) {
+
+    m5 <- y[[cxvi]][[var]]
+
+    for (cxvii in seq_along(y)) {
+
+      m6 <- y[[cxvii]][[var]]
+
+      intx2 <- intersect(m5, m6)
+
+      len5 <- length(unique(m5))
+
+      len6 <- length(unique(m6))
+
+      matsor[cxvi, cxvii] <- ((2*length(intx2))/sum(len5, len6))*100
+    }
+  }
+  jdsor <- c()
+
+  for (biii in 1:nrow(matsor)) {
+
+    sorval <- matsor[,biii]
+
+    jdsor[biii] <- mean(sorval)
+  }
+  indxs <- which(jdsor==max(jdsor))
+
+  if(length(indxs)>1) indxs <- indxs[1]
+
+  bestmethodsor <- names(y)[indxs]
+
+  return(bestmethodsor)
+}
+
+
+#Jaccard (or Tanimoto) Similarity Index
+
+#' @title Identifies best outlier detection method using Jaccard Tinamoto method.
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for identifying outliers.
+#'
+#' @examples
+#'
+#'
+jaccard_tan <- function(x, sp = NULL, var, threshold, warn=T){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didnot execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  matjtan <- matrix(NA, nrow = length(y), ncol = length(y))
+
+  for (cxviii in seq_along(y)) {
+    m7 <- y[[cxviii]][[var]]
+
+    for (cxvix in seq_along(y)) {
+
+      m8 <- y[[cxvix]][[var]]
+
+      intxtan <- intersect(m7, m8)
+
+      unxtan <- union(m7, m8)
+
+      matjtan[cxviii, cxvix] <- (length(intxtan)/(length(unxtan)-length(intxtan)))*100
+
+    }
+  }
+  #choose best method with highest mean Jaccard index value
+  jdxtan <- c()
+
+  for (biv in 1:nrow(matjtan)) {
+
+    jadvaltan <- matjtan[,biv]
+
+    jdxtan[biv] <- mean(jadvaltan)
+  }
+  indxjtan <- which(jdxtan==max(jdxtan))
+
+  if(length(indxjtan)>1) indxjtan <- indxjtan[1]
+
+  bestmethodjtan <- names(y)[indxjtan]
+
+  return(bestmethodjtan)
+}
+
+
+
+#Simple matching coefficient
+
+#' @title Identify best outlier detection method using simple matching coefficient.
+#'
+#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for identifying outliers.
+#' @export
+#'
+#' @examples
+#'
+#'
+smc <- function(x, sp=NULL, var, threshold, warn = TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn=warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didnot execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  lstvec_sm <- list()
+
+  for (cxx in names(y)) {
+
+    lstvec_sm[[cxx]] <- sort(y[[cxx]][[var]])
+  }
+
+  #Compute the values that are absent in methods in a pairwise format
+
+  #step 1. create a vector of all outliers from all methods
+  all_outliers_sm <- unique(do.call(c, lstvec_sm))
+
+  #step 2. Determine where each outlier is present or absent
+
+  matsim <-matrix(NA, nrow = length(all_outliers_sm), ncol = length(lstvec_sm))
+
+  for (cxxi in seq_along(lstvec_sm)) {
+
+    lsts_sim <- lstvec_sm[[cxxi]]
+
+    for (cxxii in seq_along(all_outliers_sm)) {
+
+      simpm <- all_outliers_sm[cxxii]
+
+      matsim[cxxii, cxxi] <- ifelse(simpm%in%lsts_sim, 1, 0)
+    }
+  }
+
+  #step 3. compute the second matrix but identifying where each method has absences 0 and convert it to 1 for easy counting
+  #use matrix columns not rows in step 2
+  matrix00 <- matrix(NA, nrow = ncol(matsim), ncol = ncol(matsim))#initiate matrix
+  matrix11 <- matrix(NA, nrow = ncol(matsim), ncol = ncol(matsim))#initiate matrix
+  matrix01 <- matrix(NA, nrow = ncol(matsim), ncol = ncol(matsim))#initiate matrix
+  matrix10 <- matrix(NA, nrow = ncol(matsim), ncol = ncol(matsim))#initiate matrix
+
+  m00values <- c() #absences
+  m11values <- c() #intersections
+  m01values <- c() #only in A
+  m10values <- c() #Only in B
+
+  for (cxxiii in 1:ncol(matsim)) {
+
+    rowss <- matsim[,cxxiii] #col1
+
+    for (cxxiv in 1:ncol(matsim)) {
+
+      colss <- matsim[,cxxiv] #vs col2
+
+      for (cxxv in seq_along(rowss)) {
+
+        outv <- rowss[cxxv] # each value in the outer column
+
+        inv <- colss[cxxv] # each value in the outer column
+
+        m00values[cxxv] <- ifelse(outv==0 && inv==0, 1, 0) #convert the absences to 1 for easy summation
+
+        m11values[cxxv] <- ifelse(outv==1 && inv==1, 1, 0)
+
+        m01values[cxxv] <- ifelse(outv==0 && inv==1, 1, 0)
+
+        m10values[cxxv] <- ifelse(outv==1 && inv==0, 1, 0)
+      }
+
+      matrix00[cxxiii, cxxiv] <- sum(m00values)
+      matrix11[cxxiii, cxxiv] <- sum(m11values)
+      matrix01[cxxiii, cxxiv] <- sum(m01values)
+      matrix10[cxxiii, cxxiv] <- sum(m10values)
+    }
+  }
+
+  #step 5. compute the simple matching
+
+  simfinal <- c()
+  smc_v <- c()
+
+  for (cxxiv in 1:ncol(matrix00)) {
+
+    absencecol <- matrix00[,cxxiv]
+
+    intscol <- matrix11[, cxxiv]
+
+    metcolin <- matrix01[, cxxiv]
+
+    metcolout <- matrix10[, cxxiv]
+
+
+    for (cxxv in seq_along(absencecol)) {
+
+      m00 <- absencecol[cxxv]
+      m11 <- intscol[cxxv]
+      m01 <- metcolin[cxxv]
+      m10 <- metcolout[cxxv]
+
+      smc_v[cxxv] <- (m00+m11)/(m00+m11+m01+m10)
+
+    }
+
+    simfinal[cxxiv] <- mean(smc_v)
+
+  }
+
+  indxsim <- which(simfinal==max(simfinal))
+
+  if(length(indxsim)>1) indxsim <- indxsim[1]
+
+  bestmethodsim <- names(y)[indxsim]
+
+  return(bestmethodsim)
+}
+
+#' Title
+#'
+#' @param x jjj
+#' @param sp jjj
+#' @param var jjj
+#' @param threshold jjj
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @returnjj
+#' @export
+#'
+#' @examples
+#'
+hamming <- function(x, sp=NULL, var, threshold, warn = TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn=warn)
+
+  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+
+    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+
+  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+
+  }else{
+    stop('If they are  multiple species, indicate a particular species name or index')
+  }
+
+  checkNA <- sapply(species, nrow)
+
+  #remove methods that didn't execute
+  speciesNULL <- species[!sapply(checkNA,is.null)]
+
+  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
+
+  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
+
+  lstvec_ham <- list()
+
+  for (l in names(y)) {
+
+    lstvec_ham[[l]] <- sort(y[[l]][[var]])
+  }
+
+  #Compute the values that are absent in methods in a pairwise format
+
+  #step 1. create a vector of all outliers from all methods
+  all_outliers_ham <- unique(do.call(c, lstvec_ham))
+
+  #step 2. Determine where each outlier is present or absent
+
+  matham <-matrix(NA, nrow = length(all_outliers_ham), ncol = length(lstvec_ham))
+
+  for (li in seq_along(lstvec_ham)) {
+
+    lsts_ham <- lstvec_ham[[li]]
+    for (lii in seq_along(all_outliers_ham)) {
+
+      hampm <- all_outliers_ham[lii]
+
+      matham[lii, li] <- ifelse(hampm%in%lsts_ham, 1, 0)
+    }
+  }
+
+  matcompare <- matrix(NA, nrow = ncol(matham), ncol = ncol(matham))
+
+  for (liii in 1:ncol(matham)) {
+
+    m1 <- matham[,liii]
+
+    for (liv in 1:ncol(matham)) {
+
+      m2 <- matham[,liv]
+
+      matcompare[liii, liv] <- Reduce(x=abs(m1-m2), f='+')/length(m1)
+
+    }
+
+  }
+
+  #best method has the lowest ham difference
+  hamfinal <- apply(matcompare, 2, mean)
+
+  indxham <- which(hamfinal==min(hamfinal))
+
+  if(length(indxham)>1) indxham <- indxham[1]
+
+  bestmethodham <- names(y)[indxham]
+
+  return(bestmethodham)
+}
+
+
+#' @title Identifies the best method for outlier detection for a single species.
+#'
+#' @param x List of dataframes for each methods used to identify outliers in mult_detect function.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param sp species name or index if multiple species are considered during outlier detection.
+#' @param threshold Maximum value to denote an absolute outlier.
+#' @param mode the mode is 'all' for all methods or custom for selected methods.
+#' @param methods indicate the methods to consider including jaccard, overlap,sorensen, ocindex, and smc.
+#' @param verbose if TRUE then messgaes and warnings will be produced. Default FALSE
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @return best method for identifying outliers.
+#' @export
+#'
+#' @examples
+#'
+#'
+bm <- function(x, var, sp = NULL, threshold=0.6, mode = 'all', methods=NULL, warn=T, verbose=TRUE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  match.arg(mode, choices = c('custom','all'))
+
+  allowedmethods <- c('jaccard', 'overlap','sorensen', 'hamming','ocindex', 'smc', 'cosine')
+
+  selectedmethod <- c()
+  methodsnames <- c()
+
+  if(mode=='all' && is.null(methods)){
+
+    for (cxxxv in 1:length(allowedmethods)) {
+
+      method_names <- allowedmethods[cxxxv]
+
+      if(method_names=='jaccard'){
+
+        simodel <- jaccard(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+      }else if(method_names == 'overlap'){
+
+        simodel <- overlap(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+      }else if(method_names == 'sorensen'){
+
+        simodel <- sorensen(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+      }else if(method_names == 'smc'){
+
+        simodel <- smc(x= x, sp =sp, var = var, threshold = threshold, warn = warn)
+
+      }else if(method_names == 'cosine'){
+
+        simodel <- cosine(x= x, sp =sp, var = var, threshold = threshold, warn = warn)
+
+      }else if(method_names == 'hamming'){
+
+        simodel <- hamming(x= x, sp =sp, var = var, threshold = threshold, warn = warn)
+
+      }else{
+
+        simodel <- ocindex(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+      }
+
+      selectedmethod[cxxxv] <- simodel
+      methodsnames[cxxxv] <- method_names
+    }
+  }else if(!is.null(methods) && mode=='custom'){
+
+    if(all(methods %in% allowedmethods)==FALSE){
+
+      stop('Accepted simialrity measures include jaccard, overlap, sorensen, cosine, and ocindex')
+
+    }else if(length(methods)<3){
+
+      stop('Choose atleast 2 methods among jaccard, overlap, hamming, sorensen, cosine, and ocindex')
+
+    }else{
+      met_comb <- unique(c('ocindex', methods))
+
+      for (cxxxv in 1:length(met_comb)) {
+
+        method_names <- met_comb[cxxxv]
+
+        if(method_names=='jaccard'){
+
+          simodel <- jaccard(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+        }else if(method_names == 'overlap'){
+
+          simodel <- overlap(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+        }else if(method_names == 'sorensen'){
+
+          simodel <- sorensen(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+        }else if(method_names == 'smc'){
+
+          simodel <- smc(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+
+        }else if(method_names == 'hamming'){
+
+          simodel <- hamming(x= x, sp =sp, var = var, threshold = threshold, warn = warn)
+
+        }else if(method_names == 'cosine'){
+
+          simodel <- cosine(x= x, sp =sp, var = var, threshold = threshold, warn = warn)
+
+        }else{
+
+          simodel <- ocindex(x= x, sp = sp, var = var, threshold = threshold, warn = warn)
+        }
+
+        selectedmethod[cxxxv] <- simodel
+        methodsnames[cxxxv] <- method_names
+      }
+    }
+
+  }else{
+    stop('Select method including jaccard, overlap, sorensen, hamming, ocindex, cosine, and smc')
+  }
+
+  mvotes <- as.data.frame(table(selectedmethod))
+
+  method_oci <- selectedmethod[which(methodsnames =='ocindex')]#standard method
+
+  freqm <- mvotes$Freq #Freq is created automatically
+
+  indxct <- which(freqm == max(freqm))
+
+  if(length(indxct)==1){
+
+    bstmethod <- as.character(mvotes$selectedmethod[indxct])
+
+    if(isTRUE(verbose)==TRUE) message('Criteria: Best method selected with majority votes of ', max(freqm), '.')
+
+  }else if(length(indxct)==2){
+
+    if(isTRUE(method_oci %in% as.vector(mvotes$selectedmethod[indxct]))){
+
+      bstmethod <- method_oci
+
+      message('Criteria: Method with maximum number of votes and similar to OCI')
+    }else{
+      maxvotemethod <- as.vector(mvotes$selectedmethod[which(freqm == max(freqm))])
+
+      bstmethod <- maxvotemethod[1]
+    }
+  }else{
+    bstmethod <- method_oci
+
+    message('Criteria: Similarity did not converge to common method and OCI method selected ')
+  }
+
+  return(bstmethod)
+}
+
+#' @title Identify best method for outlier removal for multiple species using majority votes.
+#'
+#' @param x Output from the outlier detection.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param threshold value to consider whether the outlier is an absolute outlier or not.
+#' @param mode Either all to consider all similarity measure to consider best method or custom
+#'  to indicate the similarity measures or interest. simple matching coefficient, jaccard, sorensen,
+#'  and overlap coefficient can be used.
+#' @param methods if mode is set to custom then methods should be indicated to be used to identify outliers
+#'  These include simple matching coefficient, jaccard, sorensen, and overlap coefficient can be used.
+#' @param verbose Produce messages on the process or not. Default \strong{FALSE}.
+#'
+#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#'
+#' @return best method for outlier detection for each species
+#' @export
+#'
+#' @examples
+#'
+#'
+mult_bm<- function(x, var, threshold, mode = 'all', methods =NULL, warn=TRUE, verbose=FALSE){
+
+  if(missing(x)) stop('List of species data with outliers is not provided')
+
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
+
+  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
+
+  if(threshold>1 | threshold<0) stop('threshold ranges from 0 to 1')
+
+  if(mode=='custom' && is.null(methods)){stop('Provide manually indicate the similarity measures.')}
+
+  metout <- c()
+
+  species <- c()
+  for (dii in seq_along(x@result)) {
+
+    spnames <- names(x@result)[dii]
+
+    bstout <- tryCatch(
+      expr = {
+        bst <- bm(x= x, sp = dii, var = var, threshold = threshold, mode = mode,
+                  methods = methods, warn = warn, verbose = verbose)
+      },
+      error= function(e){
+
+        if(isTRUE(verbose))message('No absolute outliers exist for ', names(x@result)[dii], '.')
+
+        return('None') #the return is used in the next stage to get the outputs
+      })
+
+    if(length(bstout)>=1){
+
+      metout[dii] <- bstout
+
+    }else{
+      metout[dii] <- 'None'
+    }
+    species[dii] <- spnames
+  }
+
+  return(data.frame(species = species, bestm = metout))
+}
+
