@@ -84,7 +84,6 @@ mode <- function(x, bin = NULL){
 }
 
 
-
 #' @title Check for suggested packages.
 #'
 #' @param listpkgs Packages to be included.
@@ -97,7 +96,7 @@ mode <- function(x, bin = NULL){
 #' @export
 #'
 suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
-                               reason='Opening R Shiny Application', quiet=FALSE){
+                               reason='open the R Shiny Application', quiet= TRUE){
 
   #check if suggested packages are installed and prompt the user to install them or not continue
 
@@ -105,36 +104,22 @@ suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dply
                 warn.conflicts=FALSE, quietly=TRUE)
 
   if(all(sgt)==TRUE){
-    if(isTRUE(quiet))message('All required messages are installed')
+    if(isFALSE(quiet))message('All required packages are installed')
   }else{
-    cat("Enter 1:  install needed packages \nEnter 0:  to abort\n")
-    opt<-readline(prompt ="Enter option: ")
-
-    if(opt=="1"){
-
-      fl <- sgt[which(sgt==FALSE)]
-
-      pk <- sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE)
-
-    }else if(opt=='0'){
-      fl <- sgt[which(sgt==FALSE)]
-
+    fl <- sgt[which(sgt==FALSE)]
       #trivial
       if(length(fl)==1) {
-        pkg ="package"
+        pkg ="Package"
         isare = 'is'
       }else {
-        pkg ="packages"
+        pkg ="Packages"
         isare = "are"
       }
+    if(isFALSE(quiet)) message(pkg, " ", paste(names(fl), collapse = ' ,'), " ", isare, " installed to ", reason, " .")
 
-      stop(reason, " cannot continue since the neccesary", " ", pkg, " ", paste(names(fl), collapse = ' ,'), " ", isare, " not installed.")
-    }else{
-      stop('Please input either 1 to continue or 0 to abort the function')
-    }
+    pk <- sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE, repos = "http://cran.us.r-project.org")
   }
 
 }
-
 
 

@@ -21,7 +21,7 @@
 #'
 clean_names <- function(sp){
 
-  ckp <- specleanr::suggested.packages(c('stringr'), reason='Strings')
+  suppressWarnings(specleanr::suggested.packages(c('stringr'), reason='Strings'))
 
   #convert all letters to lower
   tlw <- tolower(sp)
@@ -115,7 +115,7 @@ clean_date <- function(x){
 #'
 fishbase <- function(tables){
 
-  specleanr::suggested.packages(listpkgs =c('curl', 'rfishbase'), reason = 'FishBase data')
+  suppressMessages(suppressWarnings(specleanr::suggested.packages(listpkgs =c('curl', 'rfishbase'), reason = 'to access FishBase data')))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later to access FishBase.')
 

@@ -202,7 +202,7 @@ detect <- function(df,
     }else if(cii=='kmeans'){
 
       methodList[[cii]] = tcatch(xkmeans(data = df, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
-                                          method = kmpar$method, verbose=FALSE),
+                                          method = kmpar$method, verbose=verbose),
                                  fname = cii, verbose = verbose, spname = spname,
                                  warn=warn)
     }else if(cii=='kmedoid'){

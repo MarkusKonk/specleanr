@@ -6,18 +6,17 @@ data("jdsdata")
 data("efidata")
 species = 'Salmo Trutta FARIO'
 
-# test_that(desc = 'A dataframe is returned',
-#           code = {
-#
-#             df <- check_names(data = jdsdata,
-#                               colsp = 'speciesname',
-#                               verbose = F,
-#                               pct = 90,
-#                               merge = TRUE)
-#
-#             expect_s3_class(df, 'data.frame')
-#
-#           })
+test_that(desc = 'A dataframe is returned',
+          code = {
+            df <- check_names(data = jdsdata,
+                              colsp = 'speciesname',
+                              verbose = F,
+                              pct = 90,
+                              merge = TRUE)
+
+            expect_s3_class(df, 'data.frame')
+
+          })
 
 #check if a species cleaned name is returned
 
@@ -37,6 +36,7 @@ test_that(desc = 'Species not found in FishBase',
 
 test_that(desc = 'Expect number changes when merge is either FALSE or TRUE/contain speciescheck)',
           code = {
+            testthat::skip_on_cran()
             df2col <- check_names(data = efidata, colsp = 'scientificName', verbose = F)#merge false
 
             expect_equal(ncol(df2col), 2)

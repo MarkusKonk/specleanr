@@ -662,7 +662,7 @@ medianrule <- function(data, var, output, x=2.3){
 
 distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 
-  kndata <- specleanr:::kndata
+  kndata <- specleanr::kdat
 
   if(is(data, 'data.frame')){
     nd <- nrow(data)

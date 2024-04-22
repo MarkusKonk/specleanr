@@ -56,7 +56,7 @@
 #'
 
 pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
-                        multiple=TRUE, list=TRUE, merge=TRUE, verbose=T){
+                        multiple=TRUE, list=TRUE, merge=FALSE, verbose=T){
 
   if(missing(data)) stop('Data frame with species record missing')
 

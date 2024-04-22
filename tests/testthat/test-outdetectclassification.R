@@ -41,7 +41,7 @@ test_that(desc = 'List of species with outliers produced',
 
 #when the data is a data frame
 
-test_that(desc = 'Success when reference of precleaned data is a dataframea not list',
+test_that(desc = 'Success when reference of precleaned data is a dataframe not list',
           code = {
             refdata2 <- pred_extract(data = matchclean, raster = wcd,
                                      lat = 'decimalLatitude', lon = 'decimalLongitude',
@@ -49,10 +49,11 @@ test_that(desc = 'Success when reference of precleaned data is a dataframea not 
                                      colsp = 'speciescheck',
                                      list = FALSE,
                                      verbose = F,
-                                     minpts = 6)
+                                     minpts = 6,
+                                     merge = F)
 
             outlist2 <- multidetect(data = refdata2, var = 'bio6', output = 'outlier',
-                                    exclude = c('x','y'),
+                                    exclude = c('x','y', 'species'),
                                     multiple = TRUE,
                                     colsp = 'species',
                                     methods = c('mixediqr', "iqr",
@@ -70,7 +71,7 @@ test_that(desc = 'Not enough data provided and other methods may not work proper
 
             spdata <- refdata[['Anguilla anguilla']]
             expect_warning(multidetect(data = spdata, var = 'bio6', output = 'outlier',
-                                       exclude = c('x','y'),
+                                       exclude = c('x','y', 'species'),
                                        multiple = FALSE,
                                        methods = c('mixediqr', "iqr",
                                                    "kmeans", "mahal")))

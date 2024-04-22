@@ -79,7 +79,7 @@ getdata <- function(data, colsp = NULL, basin=NULL, mode='all',databases = NULL,
     stop('Data either list or dataframe not provided for download')
   }
 
-  suggested.packages(listpkgs=c("curl", "rvertnet", "rgbif", "rinat"), reason="Database")
+  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("curl", "rvertnet", "rgbif", "rinat"), reason="to access GBIF, VertNET, and iNaturalist databased")))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later')
 
