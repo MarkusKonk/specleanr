@@ -136,6 +136,8 @@ detect <- function(df,
 
   if(missing(df)) stop('Species data missing')
 
+  if(length((colnames(df)[colnames(df)==var]))<1) stop('Variable ', var, ' is  not found in the species data provided for species ', spname, ' .')
+
   if(is.null(optpar$sciname) && ('optimal'%in%methods)==TRUE){
 
     stop('Provide the scientific name for the species to execute the optimal method')
@@ -408,11 +410,6 @@ multidetect <- function(data,
 
   if(isFALSE(multiple) && is.null(colsp) ){
 
-    #check if var is the dataset
-    if(length((colnames(data)[colnames(data)==var]))<1){
-      stop('Varibale ', var, ' used is  not found in the ', deparse(substitute(data)), ' data provided')
-    }
-
     if(nrow(data)<ncol(data)){
 
       if(isTRUE(warn))warning('Number of rows are less than variables and some methods may not function properly.')
@@ -444,8 +441,6 @@ multidetect <- function(data,
     for (mdi in names(df)) {
 
       dfinal<- df[[mdi]]
-
-      if(length((colnames(dfinal)[colnames(dfinal)==var]))<1)stop('Varibale ', var, ' used is  not found in the data provided')
 
       d <-  detect(df = dfinal, var = var, output = output, colsp=colsp,
                     exclude = exclude,optpar = optpar,

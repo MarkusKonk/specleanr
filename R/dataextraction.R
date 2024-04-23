@@ -28,6 +28,10 @@ extract_clean<- function(data, outliers, sp=NULL, var, type = 'bestmethod',
 
   match.arg(type, choices = c('bestmethod', 'absolute'))
 
+  var0 <- outliers@varused
+
+  if(!var0==var)stop('Different variable `-', var,'-´ is provided for data cleaning which differs from `-', var0,'-´ used for outlier detection.')
+
   if(isTRUE(outliers@mode)==TRUE && is.null(sp)){
 
     stop('Provide a particular name or index')
