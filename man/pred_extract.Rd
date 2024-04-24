@@ -14,7 +14,7 @@ pred_extract(
   minpts = 10,
   multiple = TRUE,
   list = TRUE,
-  merge = TRUE,
+  merge = FALSE,
   verbose = T
 )
 }

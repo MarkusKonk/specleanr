@@ -6,7 +6,7 @@
 \usage{
 suggested.packages(
   listpkgs = c("shiny", "shinydashboard", "DT", "dplyr"),
-  reason = "Opening R Shiny Application",
+  reason = "open the R Shiny Application",
   quiet = TRUE
 )
 }
