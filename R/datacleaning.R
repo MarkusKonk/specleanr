@@ -323,9 +323,9 @@ check_names <- function(data, colsp = NULL, verbose=T, pct = 90, merge=F, sn=FAL
 
         }  else {
 
-          s111 <- spcd[which(spnames == sp_ex)]
+          s111 <- spcd[which(spnames == sp_ex & status=='synonym')]
 
-          s211 <- spcd[which(status=='accepted name')] #species codes for accepted names
+          s211 <- spcd[which(status %in% c('accepted name', 'provisionally accepted name'))]  #species codes for accepted names
 
           sx11 <- acceptednames_list[which((s211%in%s111)==TRUE)] #get species name or names that are accepted for a particular synonym
 
@@ -342,7 +342,7 @@ check_names <- function(data, colsp = NULL, verbose=T, pct = 90, merge=F, sn=FAL
 
           }else{
 
-            spp <- sx
+            spp <- sx11
 
             if(isTRUE(verbose)) message('The synoynm ', sp_ex, ' will be replaced with ',spp,'.')
 
