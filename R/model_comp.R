@@ -20,8 +20,8 @@
 #' @export
 #'
 #' @examples
-modelperform <- function(data, outliers, models = 'GLM', threshold =0.6, species, var, exclude, colsp,
-                         raster = worldclimfinal, mode = c('Reference', 'th60'), nboots= 10,
+modelperform <- function(data, outliers, models = 'GLM', threshold =0.6, species, var, exclude = NULL, colsp = NULL,
+                         raster = worldclimfinal, mode = c('Reference', 'threshold60'), nboots= 10,
                          testprop=0.2, coords =c('x', 'y'), prbackground=1, positive = 'P'){
 
   perfdf <- list()
@@ -89,3 +89,55 @@ modelperform <- function(data, outliers, models = 'GLM', threshold =0.6, species
   }
   return( modelist)
 }
+
+#' Title
+#'
+#' @param modeloutput
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+
+extract_performance <- function(modeloutput, type='test'){
+
+  match.arg(type, choices = c('train', 'test'))
+
+  perfdata <- list()
+  splist <- list()
+
+  for (nm in 1:length(modeloutput)) {
+
+    spname = names(modeloutput)[nm]
+
+    spd = modeloutput[[spname]]
+
+    for(ref in 1:length(spd)){
+
+      refnames <- names(spd)[ref]
+
+      modedata <- spd[[refnames]]
+
+      pdata  <- switch (type, test = modedata[[4]], train=modedata[[5]] )
+
+      perfdata[[ref]] <- do.call(rbind, pdata)
+
+      perfdata[[ref]]$species = spname
+
+      perfdata[[ref]]$scenario = refnames
+
+
+      runsdata <- do.call(rbind, perfdata)
+
+    }
+    splist[[nm]] <- runsdata
+
+    runfinal <- do.call(rbind, splist)
+
+  }
+  return(runfinal)
+}
+
+
+

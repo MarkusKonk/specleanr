@@ -63,6 +63,7 @@ threshol_depend <- function(obs, model, positive){
 #' @export
 #'
 #' @examples
+#'
 auc_value <- function(model, newdata, mode='RF'){
 
   aucd <- list()
