@@ -19,7 +19,7 @@ latitude/longitude or any column that the user doesn't want to consider.}
 \item{pdf}{Chisqure probability distribution used for flagging outliers \code{Leys et al. 2018}.}
 }
 \value{
-Either clean or oultiers data set
+Either clean or outliers dataset
 }
 \description{
 Flags outliers based on Mahalanobis distance matrix for all records.
@@ -27,27 +27,26 @@ Flags outliers based on Mahalanobis distance matrix for all records.
 \examples{
 
 \dontrun{
-#' library(terra)
+
+library(terra)
 
 #species data from online databases
 
-gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
 
-gbfinal <- merge_all(online = gbdata)
+gbfinal <- extract_online(online = gbdata)
 
 gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
 
 #preclean and extract
 
-danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
+danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
 
 danubebasin <- sf::st_read(danube)
 
 #Get environmental data
 
-#worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worldclimdata')
-
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
 
 precleaned <- precleaner(data = gbchecked,
                           raster= worldclim ,

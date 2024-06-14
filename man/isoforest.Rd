@@ -2,7 +2,7 @@
 % Please edit documentation in R/outliermethods.R
 \name{isoforest}
 \alias{isoforest}
-\title{Identify outliers using Isolation forest mode (..).}
+\title{Identify outliers using isolation forest model.}
 \usage{
 isoforest(data, size, cutoff = 0.5, output, exclude)
 }
@@ -10,7 +10,7 @@ isoforest(data, size, cutoff = 0.5, output, exclude)
 \item{data}{Dataframe of environmental variables extracted from where the species was recorded present or absent.}
 
 \item{size}{Proportion of data to be used in training isolation forest n´model. It ranges form 0.1 (fewer data  selected ) to 1 to all data used in
-traing isolation model.}
+training isolation model.}
 
 \item{cutoff}{Cut to select where the record was an outlier or not.}
 
@@ -23,5 +23,5 @@ latitude/longitude or any column that the user doesn't want to consider.}
 Dataframe with or with no outliers.
 }
 \description{
-Identify outliers using Isolation forest mode (..).
+Identify outliers using isolation forest model.
 }

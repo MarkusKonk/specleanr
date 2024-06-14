@@ -51,27 +51,25 @@ Detect outliers using predefined optimal ranges such as annual mean temperature 
 
 \dontrun{
 
-#' library(terra)
+library(terra)
 
 #species data from online databases
 
-gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
 
-gbfinal <- merge_all(online = gbdata)
+gbfinal <- extract_online(online = gbdata)
 
 gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
 
 #preclean and extract
 
-danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
+danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
 
 danubebasin <- sf::st_read(danube)
 
 #Get environmental data
 
-#worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
-
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
 
 precleaned <- precleaner(data = gbchecked,
                           raster= worldclim ,

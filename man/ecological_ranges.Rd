@@ -64,7 +64,7 @@ Check for outliers for multiple species using temperature ranges from FishBase.
 
 \dontrun{
 
-#' library(terra)
+library(terra)
 
 #species data from online databases
 
@@ -107,7 +107,7 @@ Check for outliers for multiple species using temperature ranges from FishBase.
 #finaldata <- precleaned \%>\% filter(species\%in\%optimal_df$Species)
 
 #outliers
-#multioultiers <- bulkopt(data = finaldata,
+#multioultiers <- ecological_ranges(data = finaldata,
                         #var = 'bio1',
                         #sp = 'species',#preclenaed data
                         #optimal = optimal_df,
@@ -116,7 +116,7 @@ Check for outliers for multiple species using temperature ranges from FishBase.
                         #species = 'Species', #optimal data
                         #output='outlier')
 
-#multiout_clean <- bulkopt(data = finaldata,
+#multiout_clean <- ecological_ranges(data = finaldata,
                         #var = 'bio1',
                         #sp = 'species',#preclenaed data
                         #optimal = optimal_df,

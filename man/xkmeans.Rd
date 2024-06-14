@@ -47,7 +47,7 @@ gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
 
 #preclean and extract
 
-danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='spcleanr')
+danube <- system.file('extdata/danube/basinfinal.shp',  package='specleanr')
 
 danubebasin <- sf::st_read(danube)
 
@@ -55,7 +55,7 @@ danubebasin <- sf::st_read(danube)
 
 #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
 
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='spcleanr'))
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
 
 precleaned <- pre_cleaner(data = gbchecked,
                           raster= worldclim ,
