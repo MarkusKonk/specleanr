@@ -1,0 +1,108 @@
+---
+title: "Detecting environmental outliers in environmental data for plants."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignettes for plants}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(specleanr)
+```
+
+## Change in the distribitíon of Salix alba, Fagus sylvatica, and Populus nigra due to climate change.
+
+The three different species were randomly selected. The species *Populus nigra* is tree species under the Salicaceae family, which has been assessed 
+has as data deficient by the nternational Union for Conservation of Nature. The tree species is native to Europe and predominantly in flood plain in 
+mixed forests (IUCN 2013). The *Fagus sylvatica* 
+
+
+
+
+```{r get species occurences}
+
+plantdf <- getdata(data = c( "Salix alba", "Populus nigra", "Fagus sylvatica"), 
+                    gbiflim = 700, inatlim = 100, isFish = FALSE,
+                     hasCoordinate = TRUE, 
+                   bbox = c(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500))
+
+extrdata <- extract_online(plantdf)
+
+```
+
+
+```{r environmental parameters from WORLDCLIM}
+
+#Get climatic variables from the package folder
+
+worldclim <- system.file('extdata/worldclim.tiff', package = 'specleanr')
+
+worldclim <- terra::rast(worldclim)
+
+```
+
+```{r}
+
+danube <- system.file('extdata/danube/basinfinal.shp', package = 'specleanr')
+
+danube_basin  <-     sf::st_read(danube, quiet=TRUE)
+
+
+plantcleaned <-  pred_extract(data= extrdata, 
+                             raster= worldclim, 
+                             lat = 'decimalLatitude',
+                             lon = 'decimalLongitude',
+                             colsp = 'species',  
+                             multiple = TRUE, 
+                             basin = danube_basin,
+                             list= TRUE, 
+                             minpts = 10, merge = FALSE)
+
+x1 <- plantcleaned[[1]]
+
+```
+
+
+```{r}
+
+plantoutliers <- multidetect(data = plantcleaned,
+                       multiple = TRUE,
+                       var = 'bio6',
+                       output = 'outlier',
+                       exclude = c('x','y'),
+                       methods = c('zscore', 'adjbox',
+                                   'iqr', 'semiqr','hampel','kmeans'),
+                       kmpar = list(k = 6, method='silhouette', mode='soft'),
+                       ifpar = list(cutoff = 0.5, size=0.7))
+```
+
+
+```{r extract outliers from clean dataset}
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

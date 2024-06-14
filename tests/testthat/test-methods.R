@@ -1,14 +1,13 @@
-
 data("jdsdata")
 data("efidata")
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package = "specleanr"))
 
 mdf <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
-                         lats = 'lat', lons = 'lon',
-                         country = 'JDS4_site_ID',
-                         species = c('scientificName', 'speciesname'),
-                         date=c('sampling_date','Date'))
+                      lats = 'lat', lons = 'lon',
+                      country = 'JDS4_site_ID',
+                      species = c('scientificName', 'speciesname'),
+                      date=c('sampling_date','Date'))
 
 mdfclean <- check_names(mdf, colsp = 'species', verbose = F, merge = T)
 
@@ -26,116 +25,66 @@ refdata <- pred_extract(data = mdfclean, raster = wcd,
                         minpts = 6,
                         merge = F)
 
-sp <- refdata[['Anguilla anguilla']]
+sp <- refdata[['Salmo trutta']]
+#Preferred temperature (Ref. 123201): 6.5 - 15.8, mean 10.1 °C #FishBase
 
-
-test_that('z-score tests',
+test_that('use minimum and maximum temperature to flag suspicious outlier',
           code = {
-            dx <- zscore(data = sp, var = 'bio6', output = 'outlier', type = 'mild', mode = 'soft')
+            dx <- ecological_ranges(data = sp, min = 6.5, max = 15.8, var = 'bio1', output ='outlier')
             expect_s3_class(dx, 'data.frame')
           })
 
-test_that('Adjusted boxplots tests',
+test_that('use only one parameter such as max temperature-(ecoparam and direction)',
           code = {
-            dx1 <- adjustboxplots(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx1, 'data.frame')
+            dx <- ecological_ranges(data = sp, ecoparam = 15.8, var = 'bio1', output ='outlier',
+                                    direction = 'greater')
+            expect_s3_class(dx, 'data.frame')
           })
 
-test_that('Interquartile range tests',
+#using parameter in a dataframe
+#1. dataset with optimal parameters//collated in literature
+optdata <- data.frame(species= c("Salmo trutta", "Abramis brama"),
+                      mintemp = c(2, 10),maxtemp = c(24, 24),
+                      meantemp = c(9, NA),
+                      direction = c('less', 'greater'))
+
+test_that(desc = "optimal ranges from literature for multiple species",
           code = {
-            dx2 <- interquartile(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx2, 'data.frame')
+            dx <- sdata3 <- ecological_ranges(data = sp, species = 'Salmo trutta',
+                                              var = 'bio1', output = "outlier",
+                                              optimumSettings = list(optdf = optdata,
+                                              maxcol = "maxtemp",
+                                              mincol ="mintemp",
+                                              optspcol = "species"))
+            expect_s3_class(dx, "data.frame")
           })
 
-test_that('Semi interquartile range tests',
+test_that(desc = "optimal ranges from literature for multiple species but only one",
           code = {
-            dx3 <- semiIQR(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx3, 'data.frame')
+            dx <- sdata3 <- ecological_ranges(data = sp, species = 'Salmo trutta',
+                                              var = 'bio1', output = "outlier",
+                                              optimumSettings = list(optdf = optdata,
+                                                                     ecoparam = "meantemp",
+                                                                     direction ="direction",
+                                                                     optspcol = "species"))
+            expect_s3_class(dx, "data.frame")
           })
 
-test_that('Hampel Filters tests',
+#If the taxa is fish and connected on internet, the user can access both the temperature and
+#geospatial ranges (latitude and longitudinal ranges)
+
+test_that(desc = "check for temperature or georanges",
           code = {
-            dx4 <- hampel(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx4, 'data.frame')
+            testthat::skip_if_offline()
+            #provide var or variable to check, annual temperature (bio1)
+            dx <- ecological_ranges(data = sp, species = 'Salmo trutta',
+                                    var = 'bio1', output = "outlier",
+                                    checkfishbase = TRUE, mode = 'temp')
+            expect_s3_class(dx, "data.frame")
+
+            #provide decimal longitude and latitude for georanges (x and y extracted at pred_extract)
+            dx2 <- ecological_ranges(data = sp, species = 'Salmo trutta',
+                                    lat = 'y', lon = 'x', output = "outlier",
+                                    checkfishbase = TRUE, mode = 'geo')
+            expect_s3_class(dx2, "data.frame")
           })
-
-test_that('Reverse Jack Knifing tests',
-          code = {
-            dx5 <- jknife(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx5, 'data.frame')
-          })
-
-test_that('Log boxplot tests',
-          code = {
-            dx6 <- logboxplot(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx6, 'data.frame')
-          })
-
-test_that('Mixed Interquartile range tests',
-          code = {
-            dx7 <- mixediqr(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx7, 'data.frame')
-          })
-
-test_that('Median Rule tests',
-          code = {
-            dx8 <- medianrule(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx8, 'data.frame')
-          })
-
-test_that('Median Rule tests',
-          code = {
-            dx8 <- medianrule(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx8, 'data.frame')
-          })
-
-test_that('Distribution boxplot tests',
-          code = {
-            dx9 <- distboxplot(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx9, 'data.frame')
-          })
-
-test_that('Sequential fences tests',
-          code = {
-            dx10 <- seqfences(data = sp, var = 'bio6', output = 'outlier')
-            expect_s3_class(dx10, 'data.frame')
-          })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

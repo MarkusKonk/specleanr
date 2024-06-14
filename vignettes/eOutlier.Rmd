@@ -21,12 +21,16 @@ library(sf)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(ggpmisc)
 library(terra)
 
 options(dplyr.summarise.inform=FALSE, scipen = 999)
 
 ```
+
+# Fish
+
+# Plants
+
 
 1. **Collate species and environmental data sets**
 
@@ -77,7 +81,7 @@ localdf <- match_datasets(datasets = list(jds=jdsdata, efi=efidata),
 
 localdf_check <- check_names(localdf, 
                              colsp = 'species',
-                             verbose = TRUE, 
+                             verbose = FALSE, 
                              pct = 90, 
                              merge = TRUE)
 
@@ -108,10 +112,10 @@ native_alien_danube_tem <- thermal_ranges(x=native_alien_danube, colsp = 'specie
 #Enrich more data for Cottus gobio,Lampetra planeri
 
 balondf_online <- getdata(data = c('Lampetra planeri', 'Gobio gobio','Cottus gobio'), 
-                                basin = danube_basin,
+                                bbox = danube_basin,
                                 gbiflim = 500, 
                                 inatlim = 500, 
-                                vertlim = 500)
+                                vertlim = 500, verbose = F)
 
 
 ```
@@ -141,7 +145,7 @@ matchalldf <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
 
 #Species names are re-cleaned since the species names from vertnet are changed.
 
-cleandata <- check_names(data = matchalldf, colsp = 'species', pct = 70, merge = TRUE)
+cleandata <- check_names(data = matchalldf, colsp = 'species', pct = 70, merge = TRUE, verbose = FALSE)
 
 
 #Filter out only the wanted in the sp_ecology output.
@@ -210,16 +214,15 @@ precleaned <-  pred_extract(data= finaldata,
 
 #For outliers, the output is set to outlier
 
-out_df <-  multidetect(data = precleaned,
-                        multiple = TRUE,
-                        var = 'bio6',
-                        output = 'outlier',
-                        exclude = c('x','y'),
-                        methods = c('zscore', 'adjbox', 'iqr', 'semiqr','hampel','kmeans', 'mahal',
-                                       'jknife', 'onesvm', 'iForest','lof'),
-                        kmpar = list(k = 6, method='silhouette'),
-                        ifpar = list(threshold = 0.5, size=0.7),
-                        optpar = list(df=  native_alien_danube , min='tempmin', max='tempmax',species='species'))
+# out_df <- multidetect(data = precleaned, 
+#                        multiple = TRUE,
+#                        var = 'bio6',
+#                        output = 'outlier', 
+#                        exclude = c('x','y'),
+#                        methods = c('zscore', 'adjbox',
+#                                    'iqr', 'semiqr','hampel','kmeans'),
+#                        kmpar =list(k = 6, method='silhouette', mode='soft'),
+#                        ifpar = list(cutoff = 0.5, size=0.7))
 ```
 
 6. **Data analysis and visualization**
@@ -227,33 +230,33 @@ out_df <-  multidetect(data = precleaned,
 ```{r datanalyis, warning=FALSE}
 #Extract total number of outliers for each species
 
-spdf_out_final <- batch_extract(out_df)
-
-#Obtain the reference records from precleaned data set
-
-outref <- data.frame(outref = sapply(precleaned , nrow)) |>
-  tibble::rownames_to_column('speciesname')
-
- #obtain absolute outliers
- spabs <- mult_abs(x=out_df, var = 'bio6', threshold = 0.3)
-
- #Merge files
- spdata <- spdf_out_final |>
-   merge(outref, by='speciesname') |>
-   merge(spabs |> rename(speciesname=species), by='speciesname') |>
-  mutate(stdoutliers= (outliers/outref)*100, pctabsolutnes=(absoutliers/outref)*100)
-
-#Visualization
-ggplot(data=spdata, aes(x=speciesname, stdoutliers, fill=method, shape=method))+
-geom_point()+
-   geom_point(aes(y=pctabsolutnes), color='red')+
-   theme_bw()+
-   coord_flip()+
-   theme(axis.text.y = element_text(size=9, hjust = 0))+
-   scale_shape_manual(values = c(1,2,17,15,5,6,7,8,9,19,11,18))+
-   geom_hline(yintercept = 10)+
-   geom_text(aes(label=outref, y=92), size=2)+
-   labs(x='Species', y='Percentage outlier contribution')
+# spdf_out_final <- batch_extract(out_df)
+# 
+# #Obtain the reference records from precleaned data set
+# 
+# outref <- data.frame(outref = sapply(precleaned , nrow)) |>
+#   tibble::rownames_to_column('speciesname')
+# 
+#  #obtain absolute outliers
+#  spabs <- mult_abs(x=out_df, var = 'bio6', threshold = 0.3)
+# 
+#  #Merge files
+#  spdata <- spdf_out_final |>
+#    merge(outref, by='speciesname') |>
+#    merge(spabs |> rename(speciesname=species), by='speciesname') |>
+#   mutate(stdoutliers= (outliers/outref)*100, pctabsolutnes=(absoutliers/outref)*100)
+# 
+# #Visualization
+# ggplot(data=spdata, aes(x=speciesname, stdoutliers, fill=method, shape=method))+
+# geom_point()+
+#    geom_point(aes(y=pctabsolutnes), color='red')+
+#    theme_bw()+
+#    coord_flip()+
+#    theme(axis.text.y = element_text(size=9, hjust = 0))+
+#    scale_shape_manual(values = c(1,2,17,15,5,6,7,8,9,19,11,18))+
+#    geom_hline(yintercept = 10)+
+#    geom_text(aes(label=outref, y=92), size=2)+
+#    labs(x='Species', y='Percentage outlier contribution')
 
 
 
@@ -271,45 +274,45 @@ geom_point()+
 
 #1. Relationship in absolute outliers vs the the percentage outlier absoluteness
 
-spabsprop <-  mult_abs(x=out_df, var = 'bio6', threshold = 0.3, props = TRUE)
-
-ggplot(data = spabsprop, aes(x=absolute_outliers, y=absolute_propn))+
-geom_point()+
-stat_poly_line() +
-facet_wrap(~species, scales = 'free_x')+
-theme_bw()+
-stat_poly_eq(use_label(c("eq", "R2")), size=2.5)+
-theme(text = element_text( size = 10))+
-ylim(0.4, 1)+
-labs(x='Min Temperature of Coldest Month', y='Absolute proportions')
-
-# #2. Majority votes
-# #For one species
-ociout <- ocindex(x=out_df, sp=1, var = 'bio6', 0.3)
- ociout
-sorout <- sorensen(x=out_df, sp=1, var = 'bio6', 0.3)
-sorout
-jacout <- jaccard(x=out_df, sp=1, var = 'bio6', 0.3)
-jacout
-overout <- overlap(x=out_df, sp=1, var = 'bio6', 0.3)
-overout
-smcout<- smc(x=out_df, sp=1, var = 'bio6', 0.3)
-smcout
-
-hamd<- hamming(x=out_df, sp=1, var = 'bio6', 0.3)
-hamd
- 
-bestm <- bm(x=out_df, sp =1, var = 'bio6', threshold = .3, verbose = F)
-bestm
+# spabsprop <-  mult_abs(x=out_df, var = 'bio6', threshold = 0.3, props = TRUE)
 # 
-#Important you have more than one species
-species_all <- mult_bm(x = out_df, var = 'bio6', threshold = .3, mode = 'all')
+# ggplot(data = spabsprop, aes(x=absolute_outliers, y=absolute_propn))+
+# geom_point()+
+# stat_poly_line() +
+# facet_wrap(~species, scales = 'free_x')+
+# theme_bw()+
+# stat_poly_eq(use_label(c("eq", "R2")), size=2.5)+
+# theme(text = element_text( size = 10))+
+# ylim(0.4, 1)+
+# labs(x='Min Temperature of Coldest Month', y='Absolute proportions')
+# 
+# # #2. Majority votes
+# # #For one species
+# ociout <- ocindex(x=out_df, sp=1, var = 'bio6', 0.3)
+#  ociout
+# sorout <- sorensen(x=out_df, sp=1, var = 'bio6', 0.3)
+# sorout
+# jacout <- jaccard(x=out_df, sp=1, var = 'bio6', 0.3)
+# jacout
+# overout <- overlap(x=out_df, sp=1, var = 'bio6', 0.3)
+# overout
+# smcout<- smc(x=out_df, sp=1, var = 'bio6', 0.3)
+# smcout
+# 
+# hamd<- hamming(x=out_df, sp=1, var = 'bio6', 0.3)
+# hamd
+#  
+# bestm <- bm(x=out_df, sp =1, var = 'bio6', threshold = .3, verbose = F)
+# bestm
+# # 
+# #Important you have more than one species
+# species_all <- mult_bm(x = out_df, var = 'bio6', threshold = .3, mode = 'all')
 
 ```
 8. Extract clean data for incorporation in models
 ```{r}
 
-dfclean <- extract_clean(data = precleaned, sp = 'Cottus gobio',
-                         outliers = out_df, var = 'bio6', threshold = 0.4, warn = F)
+# dfclean <- extract_clean(data = precleaned, sp = 'Cottus gobio',
+#                          outliers = out_df, var = 'bio6', threshold = 0.4, warn = F)
 
 ```
