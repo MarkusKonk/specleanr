@@ -5,7 +5,7 @@
 \title{Flags outliers or no outliers for multiple outlier methods.}
 \usage{
 detect(
-  df,
+  x,
   var,
   output,
   colsp,
@@ -21,32 +21,39 @@ detect(
   knnpar,
   zpar,
   methods,
-  verbose = FALSE,
-  spname = NULL,
-  warn = TRUE
+  verbose,
+  spname,
+  warn,
+  missingness,
+  debug
 )
 }
 \arguments{
-\item{df}{Dataframe with species occurrences}
+\item{x}{Dataframe with species occurrences}
 
 \item{var}{Environmental parameter considered in flagging suspicious outliers.}
 
-\item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers.}
+\item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}:
+to output a dataframe with outliers.}
 
 \item{colsp}{Column with species names.}
 
-\item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
+\item{exclude}{Exclude variables that should not be considered in the fitting the one
+class model, for example x and y columns or
 latitude/longitude or any column that the user doesn't want to consider.}
 
 \item{optpar}{Parameters for species optimal ranges like temperatures ranges \link[specleanr]{multidetect}.}
 
-\item{kmpar}{Parameters for kmeans clustering like method and number of clusters for tunning \link[specleanr]{multidetect}.}
+\item{kmpar}{Parameters for kmeans clustering like method and number of clusters for tuning \link[specleanr]{multidetect}.}
 
 \item{kmedoidpar}{Parameters for adjusting the distance metrics used in kmedoid method \link[specleanr]{multidetect}.}
 
-\item{ifpar}{Isolation forest parameter settings. Parmeters of the isolation model that are required include
-the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1} but Default \strong{0.5}. Also,
-the \strong{size} of data partitioning for training should be determined. For more details check \strong{(Liu et al. 2008)}}
+\item{ifpar}{Isolation forest parameter settings. Parmeters of the isolation
+ model that are required include
+the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1}
+ but Default \strong{0.5}. Also,
+the \strong{size} of data partitioning for training should be determined.
+For more details check \strong{(Liu et al. 2008)}}
 
 \item{lofpar}{Parameters for local outlier factor such as the distance matrix and mode of method implementation
 such as robust and soft modes \link[specleanr]{multidetect}.}
@@ -61,13 +68,20 @@ such as robust and soft modes \link[specleanr]{multidetect}.}
 
 \item{zpar}{Parameters for z-score such mode and x parameter \link[specleanr]{multidetect}.}
 
-\item{methods}{Outlier detection methods considered. Use \strong{\code{extractMethod}} to get outliers implemented in the package.}
+\item{methods}{Outlier detection methods considered. Use \strong{\code{extractMethod}}
+to get outliers implemented in the package.}
 
 \item{verbose}{whether to return messages or not. Default FALSE.}
 
 \item{spname}{species name being handled.}
 
 \item{warn}{whether to return warning or not. Default TRUE.}
+
+\item{missingness}{Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
+if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.}
+
+\item{debug}{show execution errors and therefore for multiple species the code will break if one of the
+methods fails to execute.}
 }
 \value{
 Dataframe with or with no outliers.
@@ -82,4 +96,7 @@ In 2008 Eighth IEEE International Conference on Data Mining. Available from
 https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
   \item Reference on different methods
 }
+}
+\seealso{
+\code{\link[specleanr]{multidetect}}
 }

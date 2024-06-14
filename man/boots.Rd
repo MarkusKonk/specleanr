@@ -2,13 +2,36 @@
 % Please edit documentation in R/boots.R
 \name{boots}
 \alias{boots}
-\title{Title}
+\title{Creating sub samples for modeling evaluation.}
 \usage{
-boots(data, nboots, setseed = 1101, testprob = 0.2)
+boots(data, nboots, setseed = 1234, testprob = 0.2)
 }
 \arguments{
-\item{testprob}{}
+\item{data}{Data to be subsampled and partitioned.}
+
+\item{nboots}{the number of iteration of subsampling to be conducted.}
+
+\item{setseed}{For reproducibility of the sub samples across platforms and users.}
+
+\item{testprob}{The probability to be used for partitioning data.}
+}
+\value{
+A list of both training and test datasets to be used in the sdmfit.
 }
 \description{
-Title
+Creating sub samples for modeling evaluation.
+}
+\examples{
+
+\dontrun{
+
+#data <-
+
+}
+}
+\seealso{
+[sdmfit()]
+}
+\author{
+Anthony Basooma, \email{anthony.basooma@boku.ac.at}
 }
