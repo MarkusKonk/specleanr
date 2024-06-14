@@ -1,32 +1,42 @@
-#' Title
+
+#' @title Creating sub samples for modeling evaluation.
 #'
-#' @param data
-#' @param nboots
-#' @param setseed
-#' @param testprob
+#' @param data Data to be subsampled and partitioned.
+#' @param nboots the number of iteration of subsampling to be conducted.
+#' @param setseed For reproducibility of the sub samples across platforms and users.
+#' @param testprob The probability to be used for partitioning data.
 #'
-#' @return
+#' @return A list of both training and test datasets to be used in the sdmfit.
+#'
+#' @seealso [sdmfit()]
+#'
 #' @export
 #'
 #' @examples
 #'
-boots <- function(data, nboots, setseed=1101, testprob=0.2){
+#' \dontrun{
+#'
+#' #data <-
+#'
+#' }
+#' @author Anthony Basooma, \email{anthony.basooma@@boku.ac.at}
+#'
+boots <- function(data, nboots, setseed=1234, testprob=0.2){
 
   set.seed(setseed)
 
-  df_train <- list()
+  sqlen <- seq(1, nboots, by=1)
 
-  df_test <- list()
-
-  #n is the number of bootstraps determined by the user
-
-  for (m_i in 1: nboots) {
+  sx <- sapply(sqlen, function(x){
 
     ind <- sample(x= 2, size= nrow(data), replace = TRUE, prob = c(1-testprob, testprob))
 
-    df_train[[m_i]] <- as.data.frame(data[ind==1,])
+    dftrain <- as.data.frame(data[ind==1,])
 
-    df_test[[m_i]] <- as.data.frame(data[ind==2,])
-  }
-  return(list(df_train, df_test))
+    dftest <- as.data.frame(data[ind==2,])
+
+    return(list(train = dftrain, test = dftest))
+
+  }, simplify = FALSE)
+
 }

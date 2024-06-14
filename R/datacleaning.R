@@ -398,7 +398,10 @@ check_names <- function(data, colsp = NULL, verbose=T, pct = 90, merge=F, sn=FAL
     speciescheck[iii] <- spp
     df_sp <- data.frame(species = species, speciescheck = speciescheck)
   }
-  if(is(data, 'data.frame') && isTRUE(merge)){
+  #data output functions
+  if(!is(data, 'data.frame') && isTRUE(merge)){
+    stop('the parameter merge is only if the data is a dataframe not list or vector')
+  }else if(is(data, 'data.frame') && isTRUE(merge)){
 
     #rename standard out df to include the user entered column name in the main dataset
     names(df_sp)[1] <- colsp

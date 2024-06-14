@@ -33,7 +33,8 @@ Suggests:
     tidyr,
     ggpmisc,
     tibble,
-    rredlist
+    rredlist,
+    taxize
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
@@ -48,6 +49,8 @@ Imports:
     robustbase,
     terra,
     usdm,
-    memoise
+    memoise,
+    ranger,
+    randomForest
 Depends: 
     R (>= 2.10)
