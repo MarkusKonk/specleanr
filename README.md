@@ -157,7 +157,7 @@ outlier removal. The following function can be used.
 
 ### Package installation
 
-\*\*Development version on GitHub:
+**Development version on GitHub:**
 
 ``` r
 # install.packages("remotes")
@@ -167,7 +167,7 @@ remotes::install_github("AnthonyBasooma/specleanr")
 \*\*CRAN version
 
 ``` r
-###cran not yet
+### install.packages("specleanr")
 ```
 
 ### Package citation

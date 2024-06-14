@@ -450,13 +450,9 @@ multidetect <- function(data,
                         verbose=FALSE, spname=NULL,warn=TRUE,
                         missingness = 0.1, debug = FALSE){
 
-  ##PLEASE INCLUDE KMEDOID; KMEDIAN
-  #==================================
-  #=============================
-  #=============================
   allowedmethods <- c('reference','adjbox', 'zscore','kmeans', 'iforest', 'distboxplot','optimal',
                       'mixediqr', 'seqfences', 'mahal', 'medianrule', 'iqr','hampel',
-                      'logboxplot', 'onesvm', 'jknife', 'semiqr', 'lof','glosh', 'knn')
+                      'logboxplot', 'onesvm', 'jknife', 'semiqr', 'lof','glosh', 'knn', "kmedoid")
 
   tfcheck <- methods%in%allowedmethods
 

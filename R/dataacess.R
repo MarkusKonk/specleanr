@@ -8,6 +8,7 @@
 #'
 #' @return download files for global basin
 #'
+#'
 .gbdownload <- function(x='globalbasins'){#this will go into the mfn function for memoise
 
   fp <- .abspath(dir = x, verbose = F)#saved and first operations

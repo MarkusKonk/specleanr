@@ -174,7 +174,8 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE, gbiflim = 1e6, 
     stop('Data either list or dataframe not provided for download.')
   }
 
-  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("taxize", "curl", "rvertnet", "rgbif", "rinat"), reason="to access GBIF, VertNET, and iNaturalist databased")))
+  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("taxize", "curl", "rvertnet", "rgbif", "rinat"),
+                                                       reason="to access GBIF, VertNET, and iNaturalist databased")))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
 

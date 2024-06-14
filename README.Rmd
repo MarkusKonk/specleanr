@@ -134,7 +134,7 @@ After environmental outlier removal, the user can examine the improvement in the
 
 ### Package installation
 
-**Development version on GitHub:
+**Development version on GitHub:**
 
 ``` r
 # install.packages("remotes")
@@ -144,7 +144,7 @@ remotes::install_github("AnthonyBasooma/specleanr")
 **CRAN version
 
 ```{r}
-###cran not yet
+### install.packages("specleanr")
 ```
 
 
