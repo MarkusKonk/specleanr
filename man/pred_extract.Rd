@@ -15,7 +15,8 @@ pred_extract(
   multiple = TRUE,
   list = TRUE,
   merge = FALSE,
-  verbose = T
+  verbose = TRUE,
+  warn = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ records that fall on land, sea, country or city centroids, and geographical outl
 \item{merge}{To add the other columns in the species data after data extraction. Default \strong{TRUE}}
 
 \item{verbose}{if TRUE message and warnings will be produced. Default TRUE}
+
+\item{warn}{logical, indicating to whelther to show implementation warning or not. Default \code{FALSE}.}
 }
 \value{
 precleaned cleaned data sets for single or multiple species

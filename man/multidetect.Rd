@@ -2,12 +2,12 @@
 % Please edit documentation in R/outlierdetection.R
 \name{multidetect}
 \alias{multidetect}
-\title{Outlier detection with multiple functions.}
+\title{Allows ensemble multiple outlier detection methods.}
 \usage{
 multidetect(
   data,
   var,
-  output,
+  output = "oultier",
   exclude,
   multiple,
   colsp = NULL,
@@ -25,56 +25,132 @@ multidetect(
   methods,
   verbose = FALSE,
   spname = NULL,
-  warn = TRUE
+  warn = TRUE,
+  missingness = 0.1,
+  debug = FALSE
 )
 }
 \arguments{
 \item{data}{Dataframe or list of data sets for multiple or single species after after of extraction of environment predictors.}
 
 \item{var}{A variable to check for outliers especially the one with directly affects species distribution such as
-maximum temperature of the coldest month for bioclimatic variables ((IUCN Standards and Petitions Committee, 2022)) or
-stream power index for hydromorphological parameters (Logez et al., 2012).}
+maximum temperature of the coldest month for bioclimatic variables \code{(IUCN Standards and Petitions Committee, 2022))} or
+stream power index for hydromorphological parameters \code{(Logez et al., 2012)}.}
 
-\item{output}{zzzzzz}
+\item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers.}
 
 \item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
 latitude/longitude or any column that the user doesn't want to consider.}
 
-\item{multiple}{zz}
+\item{multiple}{If the multiple species considered, then multiple set to TRUE: If FALSE then multiple should be set to FALSE.}
 
-\item{colsp}{zzz}
+\item{colsp}{A column with species columns if the data set for species is a dataframe not a list. see \link[specleanr]{pred_extract} for extracting environmental data.}
 
-\item{optpar}{Parameters for species optimal ranges like temperatures ranges \link[specleanr]{multidetect}.}
+\item{optpar}{Parameters for species optimal ranges like temperatures ranges.}
 
-\item{kmpar}{Parameters for kmeans clustering like method and number of clusters for tunning \link[specleanr]{multidetect}.}
+\item{kmpar}{Parameters for k-means clustering like method and number of clusters for tuning.}
 
-\item{kmedoidpar}{Parameters for adjusting the distance metrics used in kmedoid method \link[specleanr]{multidetect}.}
+\item{kmedoidpar}{Parameters for adjusting the distance metrics used in kmedoid method.}
 
 \item{ifpar}{Isolation forest parameter settings. Parameters of the isolation model that are required include
 the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1} but Default \strong{0.5}. Also,
 the \strong{size} of data partitioning for training should be determined. For more details check \strong{(Liu et al. 2008)}}
 
-\item{mahalpar}{Parameters for Malahanobis distance which includes varying the mode of output \link[specleanr]{multidetect}.}
+\item{mahalpar}{Parameters for Malahanobis distance which includes varying the mode of output.}
 
-\item{jkpar}{Parameters for reverse jack knifing mainly the mode used \link[specleanr]{multidetect}.}
+\item{jkpar}{Parameters for reverse jack knifing mainly the mode used.}
 
-\item{zpar}{Parameters for z-score such mode and x parameter \link[specleanr]{multidetect}.}
+\item{zpar}{Parameters for z-score such mode and x parameter.}
 
-\item{gloshpar}{Parameters for global local outlier score from hierarchies such as distance metric used \link[specleanr]{multidetect}.}
+\item{gloshpar}{Parameters for global local outlier score from hierarchies such as distance metric used..}
 
-\item{knnpar}{Parameters for varying the distance matrix such euclidean or Manhattan \link[specleanr]{multidetect}.}
+\item{knnpar}{Parameters for varying the distance matrix such as \code{Euclidean} or \code{Manhattan distance}.}
 
 \item{lofpar}{Parameters for local outlier factor such as the distance matrix and mode of method implementation
-such as robust and soft modes \link[specleanr]{multidetect}.}
+such as robust and soft modes..}
 
 \item{methods}{Outlier detection methods considered. Use \strong{\code{extractMethod}} to get outliers implemented in the package.}
 
 \item{verbose}{whether to return messages or not. Default FALSE.}
 
-\item{spname}{species name being handled}
+\item{spname}{species name being handled.}
 
 \item{warn}{whether to return warning or not. Default TRUE.}
+
+\item{missingness}{Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
+if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.}
+
+\item{debug}{show execution errors and therefore for multiple species the code will break if one of the
+methods fails to execute.}
+}
+\value{
+Outliers or clean dataset.
 }
 \description{
-Outlier detection with multiple functions.
+Allows ensemble multiple outlier detection methods.
+}
+\details{
+This function computes different outlier detection methods including univariate, multivariate and species
+     ecological ranges to enables seammless comaprision and similarities in the outliers detected by each
+     method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
+     and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.c
+}
+\examples{
+
+\dontrun{
+
+data(jdsdata)
+
+data(efidata)
+
+
+matchdata <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
+                    lats = 'lat',
+                    lons = 'lon',
+                    species = c('speciesname','scientificName'),
+                    country= c('JDS4_site_ID),
+                    dates=c('sampling_date', 'Date'))
+
+datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
+
+
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+
+
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+
+rdata <- pred_extract(data = datacheck,
+                          raster= worldclim ,
+                          lat = 'decimalLatitude',
+                          lon= 'decimalLongitude',
+                          colsp = 'speciescheck',
+                          basin = db,
+                          multiple = TRUE,
+                          minpts = 10,
+                          list=TRUE,
+                          merge=F)
+
+
+out_df <- multidetect(data = rdata, multiple = TRUE,
+                       var = 'bio6',
+                        output = 'outlier',
+                        exclude = c('x','y'),
+                        methods = c('zscore', 'adjbox',iqr', 'semiqr','hampel'),
+                        kmpar =list(k = 6, method='silhouette', mode='soft'),
+                        ifpar = list(cutoff = 0.5, size=0.7))
+
+
+}
+
+}
+\references{
+\enumerate{
+  \item IUCN Standards and Petitions Committee. (2022). THE IUCN RED LIST OF THREATENED SPECIESTM Guidelines for Using the IUCN Red List
+Categories and Criteria Prepared by the Standards and Petitions Committee of the IUCN Species Survival Commission.
+https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
+\item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422 In 2008 Eighth IEEE International Conference on Data Mining.
+Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
+}
+
+ \code{\link{extract_clean_data}}
 }

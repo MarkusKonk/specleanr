@@ -2,24 +2,34 @@
 % Please edit documentation in R/outlierdetection.R
 \name{tcatch}
 \alias{tcatch}
-\title{Title}
+\title{Catch errors during methods implementation.}
 \usage{
-tcatch(f, fname = NULL, spname = NULL, verbose = FALSE, warn = TRUE)
+tcatch(
+  func,
+  fname = NULL,
+  spname = NULL,
+  verbose = FALSE,
+  warn = FALSE,
+  debug = TRUE
+)
 }
 \arguments{
-\item{f}{Outlier detection function}
+\item{func}{Outlier detection function}
 
 \item{fname}{function name for messaging or warning identification.}
 
 \item{spname}{species name being handled}
 
-\item{verbose}{whether to return messages or not. Default FALSE.}
+\item{verbose}{whether to return messages or not. Default \code{FALSE}.}
 
 \item{warn}{whether to return warning or not. Default TRUE.}
+
+\item{debug}{show execution errors and therefore for multiple species the code will break if one of the
+methods fails to execute.}
 }
 \value{
 Handle errors
 }
 \description{
-Title
+Catch errors during methods implementation.
 }

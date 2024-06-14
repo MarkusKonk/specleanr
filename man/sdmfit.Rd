@@ -2,13 +2,32 @@
 % Please edit documentation in R/sdm.R
 \name{sdmfit}
 \alias{sdmfit}
-\title{Title}
+\title{Species distribution modelling}
 \usage{
-sdmfit(y, data, models, positive)
+sdmfit(y, data, models, cutoff = 0.5, mode = "all")
 }
 \arguments{
-\item{positive}{}
+\item{y}{The species variable with presence (1) and absences (0).}
+
+\item{data}{Species data list with both testing and training, probably
+from boots function.}
+
+\item{models}{The models to be used to examine the relationship between
+species occurrences and environmental parameters. Only Random forest
+and generalized linear
+models are accepted. \code{GLM} is used to set to Generalized Linear Models
+and \code{RF} for Random Forest. \code{RF1} variant is slower and is suggested
+if RF fails.}
+
+\item{cutoff}{Defines a threshold classify the model predictions/probabilities
+as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.}
+
+\item{mode}{Either to only consider threshold-dependent, threshold-independent
+or all evaluation metrics to determine model performance.}
+}
+\value{
+model runs, and evaluation metrics.
 }
 \description{
-Title
+Species distribution modelling
 }
