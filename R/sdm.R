@@ -1,116 +1,112 @@
-#' Title
+#' @title  Species distribution modelling
 #'
-#' @param y
-#' @param data
-#' @param models
-#' @param positive
+#' @param y The species variable with presence (1) and absences (0).
+#' @param data Species data list with both testing and training, probably
+#'      from boots function.
+#' @param models The models to be used to examine the relationship between
+#'      species occurrences and environmental parameters. Only Random forest
+#'      and generalized linear
+#'      models are accepted. \code{GLM} is used to set to Generalized Linear Models
+#'      and \code{RF} for Random Forest. \code{RF1} variant is slower and is suggested
+#'      if RF fails.
+#' @param cutoff Defines a threshold classify the model predictions/probabilities
+#'      as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.
+#' @param mode Either to only consider threshold-dependent, threshold-independent
+#'      or all evaluation metrics to determine model performance.
 #'
-#' @return
+#' @return model runs, and evaluation metrics.
+#'
+#' @importFrom ranger ranger
+#' @importFrom randomForest randomForest
+#' @importFrom stats glm as.formula
+#'
 #' @export
 #'
 #' @examples
-sdmfit <- function(y, data, models, positive){
+#'
 
-  #if(all(sapply(data, is.na))!=TRUE) data <- data[complete.cases(data)] else data
+sdmfit <- function(y, data, models, cutoff = 0.5, mode='all'){
 
   match.arg(models, choices = c('RF', 'GLM', 'RF1'))
 
-  modelist <- list()
+  resp <- y
 
-  predictlist_train <- list()
+  response <- deparse(substitute(resp))
 
-  predictlist_test <- list()
+  df <- data[[1]][[1]]
 
-  performance_train <- list()
-
-  performance_test <- list()
-
-  auctrain <- list()
-
-  for (m_ii in 1:length(data)) {
-
-    traindf <- data[[1]]
-
-    testdf <- data[[2]]
-
-    for (m_iii in 1:length(traindf)) {
-
-      traindffinal <- traindf[[m_iii]]
-
-      for (m_iv in 1:length(testdf)) {
-
-        testdfinal <- testdf[[m_iv]]
-
-        #========
-        response <- deparse(substitute(y))
+  if(!response %in%colnames(df)) stop('The response variable', resp, ' not found in the data.')
 
 
-        if(!response%in% colnames(traindffinal)) stop(response, ' not found in the training data')
+  if(is.null(attr(df, "presence"))) stop('Invalid data type used. Please use both response and boots function.')
 
-        eqn= as.formula(paste(response, paste('.', collapse = " + "),sep = " ~ "))
+  if(!response%in% colnames(df)) stop(response, ' not found in the training data')
 
-        rclass = unique(traindffinal[,response])
+  eqn= as.formula(paste(response, paste('.', collapse = " + "),sep = " ~ "))
 
-        if((length(rclass))<=1) stop('The classes must be atleast 2')
+  rclass = unique(df[,response])
 
-        if(models=='RF1'){
-          trainfit <- randomForest(eqn, importance = TRUE,ntree=500, proximity = TRUE, data = traindffinal)
+  if(length(rclass)<=1 || length(rclass)>2) stop('The classes must be 2')
 
-        }else if (models =='GLM'){
-          trainfit <- glm(eqn, data = traindffinal, family = 'binomial')
+  lx <- sapply(data, function(x){
 
-        }else if(models == 'RF'){
-          trainfit <- ranger(eqn, importance = 'permutation',scale.permutation.importance = TRUE,
-                             mtry = 3, data = traindffinal)
+    traindf <- x[[1]]
 
-        }else{
-          stop('No model selected.')
-        }
+    testdf <- x[[2]]
 
-        modelist[[m_iii]] <- trainfit
+    if(models=='RF1'){
+      trainfit <- randomForest(eqn, importance = TRUE,ntree=500, proximity = TRUE, data = traindf)
 
-        testpred <- predict(trainfit, testdfinal)
+    }else if (models =='GLM'){
+      trainfit <- suppressWarnings(glm(eqn, data = traindf, family = 'binomial'))
 
-        trainpred <- predict(trainfit, traindffinal)
+    }else if(models == 'RF'){
+      trainfit <- ranger(eqn, importance = 'permutation', scale.permutation.importance = TRUE,
+                         mtry = 3, probability = TRUE,  data = traindf)
 
-        predictlist_test[[m_iv]] <- testpred
-
-        predictlist_train[[m_iv]] <- trainpred
-
-        if(models=='RF1'){
-          performance_test[[m_iv]] <- threshol_depend(obs =  testdfinal$species,model = testpred, positive = positive)
-
-          performance_train[[m_iv]] <- threshol_depend(obs = traindffinal$species ,model = trainpred, positive = positive)
-
-          auctrain[[m_iv]] <- auc_value(model = trainfit, newdata = testdfinal, mode = models)
-
-        }else if(models=='RF'){
-          performance_test[[m_iv]] <- threshol_depend(obs =  testdfinal$species,model = testpred$predictions, positive = positive)
-
-          performance_train[[m_iv]] <- threshol_depend(obs = traindffinal$species ,model = trainpred$predictions, positive = positive)
-
-          auctrain[[m_iv]] <- auc_value(model = trainfit, newdata = testdfinal)
-
-        }else if(models=='GLM'){
-          #convert probabilities to classes
-          testclasses <- ifelse(testpred>=0.5, 'P', 'A')
-
-          performance_test[[m_iv]] <- threshol_depend(obs =  testdfinal$species,
-                                                      model = testclasses, positive = positive)
-          trainclasses <- ifelse(trainpred>=0.5, 'P', 'A')
-
-          performance_train[[m_iv]] <- threshol_depend(obs = traindffinal$species ,
-                                                       model = trainclasses, positive = positive)
-
-        }else{
-          stop('No model selected. Please choose either or GLM')
-        }
-
-
-      }
+    }else{
+      stop('No model selected.')
     }
-  }
-  return(list(modelist, predictlist_test, predictlist_train,
-              performance_test, performance_train, auctrain))
 
+    if(models=='RF1'){
+      testpred <- predict(trainfit, testdf, type='prob')
+
+      trainpred <- predict(trainfit, traindf, type='prob')
+
+      perftest <- evaluate(data =  testdf, predictions = testpred, model = models,
+                           response = response, cutoff = cutoff, mode = mode)
+
+      perftrain <- evaluate(data = traindf, predictions = trainpred, model = models,
+                            response = response, cutoff = cutoff, mode = mode)
+
+    }else if(models=='RF'){
+
+      testpred <- predict(trainfit, testdf, type='response')
+
+      trainpred <- predict(trainfit, traindf, type='response')
+
+      perftest <- evaluate(data =  testdf, predictions = testpred, response = response,
+                           model=models, cutoff = cutoff, mode = mode)
+
+      perftrain<- evaluate(data = traindf ,predictions = trainpred, response = response,
+                           model=models, cutoff = cutoff, mode = mode)
+
+    }else if(models=='GLM'){
+
+      testpred <- predict(trainfit, testdf)
+
+      trainpred <- predict(trainfit, traindf)
+
+      perftest <- evaluate(data = testdf, predictions = testpred, response = response,
+                           model = models, cutoff = cutoff, mode = mode)
+
+      perftrain <- evaluate(data = traindf, predictions = trainpred, response = response,
+                            model = models, cutoff = cutoff, mode = mode)
+
+    }else{
+      stop('No model selected. Please choose either or GLM')
+    }
+    return(list(modeloutput = trainfit, predtest = testpred, predtrain = trainpred,
+                perftest = perftest, perftrain = perftrain))#switch
+  }, simplify = FALSE)
 }

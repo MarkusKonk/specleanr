@@ -1,28 +1,48 @@
-#' Title
+#' @title Comparing the model performance before and after outlier removal.
 #'
-#' @param data
-#' @param outliers
-#' @param models
-#' @param threshold
-#' @param species
-#' @param var
-#' @param exclude
-#' @param colsp
-#' @param raster
-#' @param mode
-#' @param nboots
-#' @param testprop
-#' @param coords
-#' @param prbackground
-#' @param positive
+#' @param data Species data generated during pre-cleaning process. This data set is used as the reference data in accessing the outlier detection performance using both
+#'      threshold dependent and independent metrics. This data set must be same as when in detecting outliers to avoid mismatch.
+#' @param outliers The \code{datacleaner} class data set with all outliers obtained using the \code{multdetect} function. Please check \code{ocindex}
+#' @param type Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method.
+#' @param models The models to be used to examine the relationship between species occurrences and environmental parameters. Only Random forest and generalized linear
+#' models are accepted. \code{GLM} is used to set to Generalized Linear Models and \code{RF} for Random Forest. RF1 variant is slower and is suggested if RF fails.
+#' @param threshold value to consider whether the outlier is an absolute outlier or not.
+#' @param species A list of species names and they must be contained in the outlier data set and precleaned data.
+#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
+#' @param exclude Excluded the columns before checking for outliers. Automatic identification of these from the datacleaner is implemented.
+#' @param colsp The column with species names if the species occurrence is a data frame not list,
+#' @param raster The environmental where pseudo absences are extracted using \link[specleanr]{envextract}.
+#' @param scenario The different scenarios are implemented. Currently the reference data set and threshold, outlier cleaned data are allowed.
+#' @param nboots Creating sub samples for modeling evaluation.
+#' @param testprop The probability to be used for partitioning data.
+#' @param lat If the species occurrences don't have the geometry column or not spatial vector file, the latitude must be provided for data extraction form the raster layers.
+#' @param lon If the species occurrences don't have the geometry column or not spatial vector file, the longitude must be provided for data extraction form the raster layers.
+#' @param geom the coordinates column from the species occurrence data. It should be included from the data at the outlier detection step to avoid
+#' considering the cordinate din outlier removal.
+#' @param prbackground the proportion of pseudo absences compare to the species presences.
+#' @param geom Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.
+#' @param verbose Return messages or not. Default is F.
+#' @param warn Return warning or not. Default is F.
+#' @param pabs Percentage of outliers allowed to be extracted from the data. If \code{bestmethod} is used to extract outliers and the \code{pabs} is exceeded,
+#'      the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.
 #'
-#' @return
+#' @return A list of model instance and model performance metrics.
+#'
 #' @export
 #'
 #' @examples
-modelperform <- function(data, outliers, models = 'GLM', threshold =0.6, species, var, exclude = NULL, colsp = NULL,
-                         raster = worldclimfinal, mode = c('Reference', 'threshold60'), nboots= 10,
-                         testprop=0.2, coords =c('x', 'y'), prbackground=1, positive = 'P'){
+#'
+#' @seealso [sdmfit()]
+#' @seealso [multdetect()]
+#' @seealso [predextract()]
+#' @seealso [envextract()]
+#' @seealso [boots()]
+#'
+modelperform <- function(data, outliers, raster, models = 'GLM', threshold =0.6, var, type='bestmethod',
+                         exclude =NULL, colsp =NULL, species = NULL,
+                         scenario = c('Reference', 'threshold60'), nboots= 10,
+                         testprop=0.2, geom = NULL, lat = NULL, lon = NULL,
+                         prbackground=1, verbose=F, warn = F, pabs = 0.1){
 
   perfdf <- list()
   modelist <- list()
@@ -30,14 +50,13 @@ modelperform <- function(data, outliers, models = 'GLM', threshold =0.6, species
 
   for (spl in species) {
 
-    #spp <- species[spl]
+    for (p in 1:length(scenario)){
 
-    for (p in 1:length(mode)){
-
-      mdl = mode[p]
+      mdl = scenario[p]
 
       if(is(data, "data.frame")){
         data <- split(data, f = data[, colsp])
+
       }else{
         data
       }
@@ -46,56 +65,46 @@ modelperform <- function(data, outliers, models = 'GLM', threshold =0.6, species
         dfspx <- data[[spl]]
 
       }else if(mdl=='threshold60'){
+        #try and catch methods without absolute outliers that returns and error.
 
-        dfspx <- tryCatch(expr =  extract_clean(data = data, outliers = outliers, sp=spl, var = var,
-                                                threshold = threshold), error = function(e) e)
+        dfspx <- tryCatch(expr =  extract_clean_data(data = data, outliers = outliers, sp=spl, var = var,
+                                                warn = warn, colsp = colsp, type = type,
+                                                threshold = threshold, verbose = verbose, pabs = pabs ),
+                          error = function(e) e)
 
         if(inherits(dfspx, 'error')){
-          message('No absolute outliers at a threshold of ', threshold,', so data is similar to reference dataset.' )
-          next
-          print(nrow(dfspx))
-        }else{
-          dfspx
+          if(isTRUE(verbose)) message('No absolute outliers at a threshold of ', threshold,', so data is similar to reference dataset.' )
+          dfspx <- data[[spl]]
         }
 
       }else{
         stop('Mode not recorganised.')
       }
 
-      dfdata <- dfspx[,!colnames(dfspx) %in% exclude]
+      dataprep <- envextract(occurences = dfspx, raster = raster, lat = lat,
+                             lon = lon, geom = geom)
 
-      bgd = gen_background(occurences = dfdata, raster = raster, coords = coords,prop = prbackground )#prop of background data to presences
+      btdata <- boots(data = dataprep, nboots = nboots, testprob = testprop)
 
-      bdslt <- bgd[,c(1,2)]
-
-      bfinaldf<- terra::extract(x = worldclimfinal , y=bdslt, ID=FALSE)
-
-      bcordf <- usdm::vifcor(bfinaldf, th=0.7)
-
-      exdf<- usdm::exclude(bfinaldf, bcordf)
-
-      df_final <- cbind(exdf, species= bgd[,3])
-
-      df_final$species <- as.factor(df_final$species)
-
-      btdata <- boots(data = df_final, nboots = nboots, testprob = testprop)
-
-      modelout[[p]] <- sdmfit(y=species, data=btdata, positive = positive, models = models)
+      modelout[[p]] <- sdmfit(y=y, data=btdata, models = models)
 
       names(modelout)[p]  <- mdl
+
+      attr(modelout,'records')[p] <- nrow(dataprep)
+
     }
-    modelist[[spl]] = modelout#checkdata
+    modelist[[spl]] = modelout
 
   }
-  return( modelist)
+  return(modelist)
 }
 
-#' Title
+#' @title Extract the model performance
 #'
-#' @param modeloutput
-#' @param type
+#' @param modeloutput The model output object where data is extracted.
+#' @param type Either test or train data
 #'
-#' @return
+#' @return A data frame with performance metrics between reference and outlier cleaned dataset.
 #' @export
 #'
 #' @examples
@@ -106,6 +115,8 @@ extract_performance <- function(modeloutput, type='test'){
 
   perfdata <- list()
   splist <- list()
+  runlist<- list()
+  pdata <- list()
 
   for (nm in 1:length(modeloutput)) {
 
@@ -115,29 +126,39 @@ extract_performance <- function(modeloutput, type='test'){
 
     for(ref in 1:length(spd)){
 
+      rec<- attr(spd, 'records')[ref]
+
       refnames <- names(spd)[ref]
 
       modedata <- spd[[refnames]]
 
-      pdata  <- switch (type, test = modedata[[4]], train=modedata[[5]] )
+      for(r in 1:length(modedata)){
 
-      perfdata[[ref]] <- do.call(rbind, pdata)
+        rundata <- modedata[[r]]
 
-      perfdata[[ref]]$species = spname
+        pdata[[r]]  <- switch (type, test = rundata[[4]], train=rundata[[5]] )
 
-      perfdata[[ref]]$scenario = refnames
+        runlist <- do.call(rbind, pdata)
 
+        runlist$species = spname
 
-      runsdata <- do.call(rbind, perfdata)
+        runlist$scenario = refnames
+
+        runlist$records = rec
+
+      }
+
+      perfdata[[ref]] <- runlist
+
+      pfinal <- do.call(rbind, perfdata)
 
     }
-    splist[[nm]] <- runsdata
+    splist[[nm]] <- pfinal
 
     runfinal <- do.call(rbind, splist)
 
   }
   return(runfinal)
 }
-
 
 

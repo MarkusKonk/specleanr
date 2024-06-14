@@ -48,14 +48,13 @@
 #' and species, then they are not indicated while matching. Otherwise all column names with
 #' varying names for the 5 parameters should be indicated.
 #'
-#' @return Harmonized data set.
+#' @return Harmonized data set with standardized column names foe species names, latitude, longitude, country and dates.
 #'
 #' @export
 #'
 #' @examples
 #'
 #' \dontrun{
-#'
 #'
 #' data(jdsdata)
 #'

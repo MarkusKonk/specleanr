@@ -5,7 +5,7 @@
 #'
 #' @param data Dataframe to check for outliers
 #' @param var Environmental parameter considered in flagging suspicious outliers
-#' @param output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers
+#' @param output Either clean: for dataframe with no suspicious outliers or outlier: to return dataframe with only outliers
 #' @param a Constant for adjusted boxplots
 #' @param b Constant for adjusted boxplots
 #' @param coef Constant for adjusted boxplots
@@ -77,21 +77,33 @@ adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
   }
 }
 
-#
 #' @title Computes interquartile range to flag environmental outliers
 #'
 #' @param data Dataframe to check for outliers
-#' @param var Environmental parameter considered in flagging suspicious outliers
+#' @param var Variable considered in flagging suspicious outliers
 #' @param output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers.
 #' @param x A constant to create a fence or boundary to detect outliers.
+#'
+#' @details
+#' Interquartile range (IQR) uses quantiles that are resistant to outliers compared
+#'      to mean and standard deviation (Seo 2006). Records were considered as mild outliers
+#'      if they fell outside the lower and upper bounding fences
+#'      [Q1 (lower quantile) -1.5*IQR (Interquartile range); Q3 (upper quantile) +1.5*IQR]
+#'      respectively \code{(Rousseeuw & Hubert 2011)}.
+#'      Extreme outliers were also considered if they
+#'      fell outside \code{\[Q1-3*IQR, Q3+3*IQR\]} \code{(García-Roselló et al. 2014)}.
+#'      However, using the interquartile range assumes uniform lower and
+#'      upper bounding fences, which is not robust to highly skewed data
+#'      (Hubert & Vandervieren 2008).
+#'
 #'
 #' @importFrom stats quantile IQR
 #'
 #' @return Dataframe with or with no outliers.
+#'
 #' @export
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' data("efidata")
@@ -102,15 +114,19 @@ adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude',
+#'                           lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           basin = db,
 #'                           multiple = FALSE,
 #'                           minpts = 10)
 #'
 #'  iqrout <- interquartile(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
-#'
 #' }
+#' @references
+#'  Rousseeuw PJ, Hubert M. 2011. Robust statistics for outlier detection. Wiley Interdisciplinary Reviews
+#'  Data Mining and Knowledge Discovery 1:73–79. Wiley-Blackwell.
+#'
 #'
 interquartile <- function(data, var, output, x=1.5){
 
@@ -136,9 +152,19 @@ interquartile <- function(data, var, output, x=1.5){
 #' @param output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers
 #' @param x A constant to create a fence or boundary to detect outliers.
 #'
+#' @details
+#' SemiInterquantile Ranges introduced adjusts for whiskers on either
+#' side to flag suspicious outliers [Q1 – 3(Q2 (median) − Q1); Q3 + 3(Q3 − Q2)] \code{((Kimber 1990))}.
+#' However, SIQR introduced the same constant values for bounding fences
+#' for the lower and upper quartiles \code{(Rousseeuw & Hubert 2011)}, which leads to
+#' outlier swamping and masking.
+#'
+#'
 #'
 #' @return Dataframe with or with no outliers.
 #' @export
+#'
+#'
 #'
 #' @examples
 #'
@@ -162,9 +188,10 @@ interquartile <- function(data, var, output, x=1.5){
 #'
 #' }
 #'
+#' @references
+#' Kimber AC. 1990. Exploratory Data Analysis for Possibly Censored Data From Skewed Distributions.
+#' Page Source: Journal of the Royal Statistical Society. Series C (Applied Statistics).
 #'
-#'
-
 semiIQR <- function(data, var, output, x=3){
 
   var <- unlist(data[,var])
@@ -188,12 +215,18 @@ semiIQR <- function(data, var, output, x=3){
 #=
 #Hampel filters
 
-#' @title Flag suspicious outliers based on Hampel method (Pearson et al. 2016).
+#' @title Flag suspicious outliers based on the Hampel filter method..
 #'
 #' @param data Data frame to check for outliers
 #' @param var Environmental parameter considered in flagging suspicious outliers
 #' @param output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers
 #' @param x A constant to create a fence or boundary to detect outliers.
+#'
+#' @details
+#' The Hampel filter method is a robust decision-based filter that considers
+#' the median and MAD. Outliers lies beyond \deqn{[x-* λ*MAD; x+ λ*MAD]} and
+#' λ of 3 was considered (Pearson et al. 2016).
+#'
 #'
 #' @importFrom stats median mad
 #'
@@ -222,7 +255,8 @@ semiIQR <- function(data, var, output, x=3){
 #'
 #' }
 #'
-#' @references Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Hampel Filters.
+#' @references
+#' Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Hampel Filters.
 #' Pages 2546–2550 2015 23rd European Signal Processing Conference (EUSIPCO).
 #'
 #' @author Anthony Basooma (anthony.basooma@boku.ac.at)
@@ -267,17 +301,35 @@ hampel <- function(data, var=NULL, output, x=3){
 
 #Reverse jackknifing
 
-#' @title Ideintfies outliers using Reverse Jackknifing method based on Chapman et al., (2005).
+#' @title Identifies outliers using Reverse Jackknifing method based on Chapman et al., (2005).
 #'
-#' @param data Data frame to check for outliers
-#' @param var Environmental parameter considered in flagging suspicious outliers.
+#' @param data Dataframe to check for outliers
+#' @param var Variable considered in flagging suspicious outliers.
 #' @param output Either clean: for data frame with no suspicious outliers or outlier: to return data frame with only outliers
 #' @param mode Either robust, if a robust mode is used which uses median instead of mean and median absolute deviation from median
-#' or mad instead of standard deviation
+#' or mad instead of standard deviation.
+#'
+#' @details
+#' Reverse jackknifing was specifically developed to detect error climate profiles \code{(Chapman 1991, 1999)}.
+#' The method has been applied in detecting outliers in environmental data \code{(García-Roselló et al. 2014; Robertson et al. 2016)}
+#'  and incorporated in the DIVAS-GIS software \code{(Hijmans et al. 2001)}.
+#'
 #'
 #' @return Data frame with or with no outliers.
 #' @export
 #'
+#' @examples
+#'
+#' @references
+#' \enumerate{
+#'
+#'   \item Chapman AD. 1991. Quality control and validation of environmental resource data in
+#'   Data Quality and Standards. Pages 1–23. Canberra. Available from
+#'   https://www.researchgate.net/publication/332537824.
+#'   \item Chapman AD. 1999. Quality Control and Validation of Point-Sourced Environmental Resource Data. eds. .
+#'   Chelsea,. Pages 409–418 in Lowell K, Jaton A, editors. Spatial accuracy assessment:
+#'   Land information uncertainty in natural resources, 1st edition. MI: Ann Arbor Press., Chelsea.
+#' }
 #' @examples
 #'
 #' \dontrun{
@@ -378,12 +430,22 @@ jknife <- function(data, var, output, mode='soft'){
 
 #' @title Computes z-scores to flag environmental outliers.
 #'
-#' @param data Dataframe to check for outliers.
-#' @param var Environmental parameter considered in flagging suspicious outliers.
-#' @param output Either \strong{clean}: for data frame with no suspicious outliers or outlier: to retrun dataframe with only outliers.
+#' @param data Dataframe or vector to check for outliers.
+#' @param var Variable considered in flagging suspicious outliers.
+#' @param output Either \strong{clean}: for data frame with no suspicious outliers or outlier: to return dataframe with only outliers.
 #' @param type Either \strong{mild} if zscore cut off is 2.5 or \strong{extreme} if zscore is >3.
 #' @param mode Either robust, if a \strong{robust} mode is used which uses median instead of
 #' mean and median absolute deviation from median.
+#'
+#' @details
+#' The method uses mean as an estimator of location and standard deviation for scale
+#'     \code{(Rousseeuw & Hubert 2011)}, which both have zero breakdown point,
+#'     and their influence function is unbounded (robustness of an estimator to outliers)
+#'     \code{(Seo 2006; Rousseeuw & Hubert 2011)}. Because both parameters are not
+#'     robust to outliers, it leads to outlier masking and swamping
+#'     \code{(Rousseeuw & Hubert 2011)}. Records are flagged as outliers
+#'     if their Z-score exceeds 2.5 \code{(Rousseeuw & Hubert 2011)}.
+#'
 #'
 #' @return Data frame with or with no outliers.
 #'
@@ -444,7 +506,7 @@ zscore <- function(data, var, output ='outlier', type = 'mild', mode = 'soft'){
 #' @title Log boxplot based for outlier detection.
 #'
 #' @param data Dataframe or vector where to check outliers.
-#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
+#' @param var Variable to be used for outlier detection if \strong{data} is not in a vector format.
 #' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 #'     for outlier data frame or vectors.
 #' @param x The constant for creating lower and upper fences. Extreme is 3, but default is 1.5.
@@ -454,15 +516,15 @@ zscore <- function(data, var, output ='outlier', type = 'mild', mode = 'soft'){
 #' the interquartile range method to detect outlier but considering the sample sizes while indicating
 #' the fences (lower and upper fences).
 #'
-#' \deqn{ lowerfence = [Q1 -1.5*IQR[1+0.1log(n/10)]}
+#' \deqn{ lowerfence = [Q1 -1.5*IQR[1+0.1 * log(n/10)]}
 #'
-#' \deqn{upperfence = [Q3 +1.5*IQR[1+0.1log(n/10)]}
+#' \deqn{upperfence = [Q3 +1.5*IQR[1+0.1 *log(n/10)]}
 #'
 #'      Where; Q1 is the lower quantile and Q3 is the upper quantile. The method consider the sample
 #'      size in setting the fences, to address the weakness of the interquartile range method \emph{(Tukey, 1977)}.
 #'      However. similar to IQR method for flagging outlier, log boxplot modification is affected by
-#'      data skewness and which can be address using \code{seqfences}, \code{distboxplot},
-#'      \code{semiinterquatile}, and \code{mixediqr} .
+#'      data skewness and which can be address using \link[specleanr]{distboxplot}, \link[specleanr]{seqfences},\link[specleanr]{mixediqr} and
+#'      \link[specleanr]{semiIQR}.
 #'
 #' @return Dataframe with our without outliers depending on the output.
 #' \describe{
@@ -518,19 +580,18 @@ logboxplot <- function(data, var, output, x=1.5){
 }
 
 
-#Walker et al., 2018
-#' Title
+#' Mixed Interquartile range and semiInterquartile range \code{Walker et al., 2018}
 #'
-#' @param data kk
-#' @param var kk
-#' @param output jj
-#' @param x jj
+#' @param data Dataframe or vector where to check outliers.
+#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
+#' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+#'     for outlier data frame or vectors.
+#' @param x A constant for flagging outliers \code{Walker et al., 2018)}.
 #'
-#' @return kkk
+#' @return Either clean our outliers
 #' @export
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' data("efidata")
@@ -549,6 +610,11 @@ logboxplot <- function(data, var, output, x=1.5){
 #'
 #'  logout <- mixediqr(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #' }
+#'
+#' @author Anthony Basooma \email{anthony.basooma@@boku.ac.at}
+#'
+#' @references
+#' Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data. American Statistician 72:348–353. American Statistical Association.
 #'
 mixediqr <- function(data, var, output, x=3){
 
@@ -595,6 +661,8 @@ mixediqr <- function(data, var, output, x=3){
 #' @export
 #'
 #' @examples
+#'
+#' \dontrun{
 #'
 #' data("efidata")
 #'
@@ -740,7 +808,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #'
 #' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
 #'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet = TRUE)
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
@@ -845,11 +913,11 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
   }
 }
 
-#' @title Identify outliers using Isolation forest mode (..).
+#' @title Identify outliers using isolation forest model.
 #'
 #' @param data Dataframe of environmental variables extracted from where the species was recorded present or absent.
 #' @param size Proportion of data to be used in training isolation forest n´model. It ranges form 0.1 (fewer data  selected ) to 1 to all data used in
-#' traing isolation model.
+#' training isolation model.
 #' @param cutoff Cut to select where the record was an outlier or not.
 #' @param output Either clean: for a data set with no outliers or outlier: to output a dataframe with outliers. Default is 0.5.
 #' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
@@ -884,9 +952,7 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude){
 }
 
 
-#===========================================
-#One class support vector machine
-#=========================================
+
 
 #' @title Identify outliers using One Class Support Vector Machines
 #'
@@ -1057,6 +1123,8 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #' @export
 #'
 #' @examples
+#'
+#'
 xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'){
 
   match.arg(mode, choices = c('robust', 'soft'))
@@ -1149,15 +1217,21 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 #' @title Check for outliers for multiple species using temperature ranges from FishBase.
 #'
 #' @param data Dataframe to check for outliers.
-#' @param sp If dataframe is used, then sp is the column with species names.
-#' @param optimal Dataframe with standard species optimal ranges retrieved from FIshBase.
+#' @param species Species of interest.
 #' @param species Species column name for the standard database with optimal parameters.
 #' @param var Environmental parameter considered in flagging suspicious outliers
-#' @param min Minimum temperature column from the standard optimal dataframe.
-#' @param max Maximum temperature column from the standard optimal dataframe.
+#' @param minval Minimum temperature column from the standard optimal dataframe.
+#' @param maxval Maximum temperature column from the standard optimal dataframe.
+#' @param optimumSettings o
+#' @param lat o
+#' @param lon o
+#' @param ecoparam o
+#' @param direction o
+#' @param pct o
+#' @param checkfishbase o
+#' @param mode o
+#' @param warn o
 #' @param output output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers.
-#' @param sciname Only used if only one species is considered
-#' @param check.names Check names for the species and default is TRUE
 #'
 #' @return Dataframe with or with no outliers.
 #' @export
@@ -1166,326 +1240,266 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 #'
 #' \dontrun{
 #'
-#' #' library(terra)
+#' library(terra)
 #'
 #' #species data from online databases
 #'
-#' data(efidata)
-#' data(jdsdata)
+#' #data(efidata)
+#' #data(jdsdata)
 #'
-#' multispecies <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
-#'                     lats = 'lat',
-#'                     lons = 'lon',
-#'                     species = c('speciesname','scientificName')
+#' #multispecies <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
+#'                     #lats = 'lat',
+#'                    # lons = 'lon',
+#'                     #species = c('speciesname','scientificName')
 #'
-#' multspchecked <- check_names(data = multispecies, colsp='species', pct=90, merge=TRUE)
+#' #multspchecked <- check_names(data = multispecies, colsp='species', pct=90, merge=TRUE)
 #'
 #' #preclean and extract
 #'
-#' danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
+#' #danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
 #'
-#' danubebasin <- sf::st_read(danube, quiet=TRUE)
+#' #danubebasin <- sf::st_read(danube, quiet=TRUE)
 #'
 #' #Get environmental data
 #'
 #' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
 #'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
+#' #worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
 #'
-#' optimal_df <- ecoranges(multspchecked, colsp = 'speciescheck', range=c('n', 'a'),
+#' #optimal_df <- ecoranges(multspchecked, colsp = 'speciescheck', range=c('n', 'a'),
 #'                               basin = 'Danu')
 #'
-#' precleaned <- precleaner(data = gbchecked,
-#'                           raster= worldclim ,
-#'                           lat = 'decimalLatitude',
-#'                           lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           basin = danubebasin,
-#'                           multiple = FALSE,
-#'                           minpts = 10)
+#' #precleaned <- precleaner(data = gbchecked,
+#'                           #raster= worldclim ,
+#'                           #lat = 'decimalLatitude',
+#'                           #lon= 'decimalLongitude',
+#'                           #colsp = 'speciescheck',
+#'                           #basin = danubebasin,
+#'                           #multiple = FALSE,
+#'                           #minpts = 10)
 #'
 #' #only retain species with optimal ranges
 #'
-#' finaldata <- precleaned %>% filter(species%in%optimal_df$Species)
+#' #finaldata <- precleaned %>% filter(species%in%optimal_df$Species)
 #'
 #' #outliers
-#' multioultiers <- bulkopt(data = finaldata,
-#'                         var = 'bio1',
-#'                         sp = 'species',#preclenaed data
-#'                         optimal = optimal_df,
-#'                         min = 'TempMin',
-#'                         max = 'TempMax',
-#'                         species = 'Species', #optimal data
-#'                         output='outlier')
+#' #multioultiers <- ecological_ranges(data = finaldata,
+#'                         #var = 'bio1',
+#'                         #sp = 'species',#preclenaed data
+#'                         #optimal = optimal_df,
+#'                         #min = 'TempMin',
+#'                         #max = 'TempMax',
+#'                         #species = 'Species', #optimal data
+#'                         #output='outlier')
 #'
-#' multiout_clean <- bulkopt(data = finaldata,
-#'                         var = 'bio1',
-#'                         sp = 'species',#preclenaed data
-#'                         optimal = optimal_df,
-#'                         min = 'TempMin',
-#'                         max = 'TempMax',
-#'                         species = 'Species', #optimal data
-#'                         output='clean')
+#' #multiout_clean <- ecological_ranges(data = finaldata,
+#'                         #var = 'bio1',
+#'                         #sp = 'species',#preclenaed data
+#'                         #optimal = optimal_df,
+#'                         #min = 'TempMin',
+#'                         #max = 'TempMax',
+#'                         #species = 'Species', #optimal data
+#'                         #output='clean')
 #'
 #' }
 #'
-#'
-#'
-bulkopt <- function(data, sp=NULL, optimal, species, var, min, max,
-                    output, sciname= NULL, check.names=TRUE){
+ecological_ranges <- function(data, var = NULL, output= "outlier", species = NULL,
+                              optimumSettings = list(optdf =NULL, optspcol = NULL,
+                                                     mincol = NULL, maxcol = NULL,
+                                                     ecoparam = NULL, direction= NULL),
+                              minval=NULL, maxval=NULL, lat = NULL, lon = NULL,
+                              ecoparam=NULL, direction = NULL,
+                              pct= 80,
+                              checkfishbase = FALSE, mode='temp', warn=TRUE){
 
-  if(missing(data)) stop('Provide the species data')
+  match.arg(output, choices = c('clean', 'outlier'))
 
-  if(missing(optimal)) stop('Ecological optimal ranges from ecoranges function missing')
+  match.arg(mode, choices = c('geo', 'temp'))
 
-  #sp is the species column in species data
+  match.arg(direction, choices = c('equal','less','greater','le','ge'))
 
-  if(!is.null(sp) && length((colnames(data)[colnames(data)==sp]))<1){
+  if(is.null(data))stop("Environmental data for the species should be provided.")
 
-    stop(sp, ' variable is  not found in the ', deparse(substitute(data)), ' data provided')
+  if(!is.null(optimumSettings$optdf)){
 
-  }
-  #species is column in standard dataset
+    if(!is(optimumSettings$optdf, "data.frame")){
 
-  if(length((colnames(optimal)[colnames(optimal)==species]))<1){
+      stop("A dataframe is expected for species optimal ecological parameters.")
 
-    stop(species, ' variable is  not found in the ', deparse(substitute(optimal)))
+    } else{
 
-  }
+      if(is.null(optimumSettings$optspcol))stop('Provide column with species names in optimal data.')
 
-  if(length((colnames(optimal)[colnames(optimal)==min]))<1){
+      spname_opt <- unlist(optimumSettings$optdf[, optimumSettings$optspcol])
 
-    stop(min, ' is  not found in the ', deparse(substitute(optimal)))
+      #check if the species in the provided data has optimal ranges
 
-  }
-  if(length((colnames(optimal)[colnames(optimal)==max]))<1){
+      if((species%in%spname_opt)==TRUE){ #check if the species is in the dataframe for optimal parameters.
 
-    stop(max, ' is  not found in the ', deparse(substitute(optimal)))
+        spp <-  species
 
-  }
-  #sciname is species name when its only one data set
+      }else if((species%in%spname_opt)==FALSE){
 
-  match.arg(output, choices = c('clean','outliers'))
+        xdist <- adist(species, spname_opt)
 
-  spopt <-   unlist(optimal[,species])
-  mincol <-  unlist(optimal[,min])
-  maxcol <-  unlist(optimal[,max])
+        spsel <- spname_opt[which(xdist==min(xdist))]
 
-  datIn <- list(); datOut <- list()
+        if(length(spsel)>1) spfinal <- spsel[1] else spfinal <- spsel
 
-  if(is(data,'data.frame') && !is.null(sp)){
+        #use percentage similarity
+        pc = (100-(min(xdist)/nchar(spfinal))*100)
+        if(pc>pct) {
+          spp <- spfinal
+        }
+        else{
+          message(species, " does not have min,  max or optimal ranges and the original data will be outputted for clean data and NA for outliers.")
+          switch(output, clean= return(data) , outlier = return(NA))
+        }
+      }else{
+        message(species, " does not have min,  max or optimal ranges and the original data will be outputted and NA for outliers.")
+        switch(output, clean= return(data) , outlier = return(NA))
+      }
+    }
 
-    dflist <- split(data, f=data[,sp])
+    #when the multiple species and maximum(maxcol)/minimum(mincol) are provided
 
-    sppnames <- names(dflist)
+    if(is.null(optimumSettings$ecoparam)){
+      #get min and max values
 
-    for (isp in 1:length(sppnames)) {
+      if(!optimumSettings$maxcol%in%colnames(optimumSettings$optdf)) stop("Parameter names for species, `maxcol`, not in the optimal data.")
 
-      spd <- sppnames[isp]
+      if(!optimumSettings$mincol%in%colnames(optimumSettings$optdf)) stop("Parameter names for species, `mincol`, not in the optimal data.")
 
-      varc <- dflist[[spd]][,var]
+      parmin = optimumSettings$optdf[, optimumSettings$mincol]
 
-      if(spd %in% spopt){
+      parmax = optimumSettings$optdf[, optimumSettings$maxcol]
 
-        idx<- which(spopt == spd)
+      minv = parmin[which(optimumSettings$optdf[, optimumSettings$optspcol] ==spp)]
 
-        min <- mincol[idx]
+      maxv = parmax[which(optimumSettings$optdf[, optimumSettings$optspcol] ==spp)]
 
-        max <- maxcol[idx]
 
-        idx_in <- which(varc>min & varc<max)
+      dx = sprange(data = data, var = var, minval = minv, maxval = maxv)
+
+      switch(output, clean = return(data[dx,]), outlier = return(data[-dx,]))
+
+      #1. when the ecoparam is provided in the optimal dataset, for example if only mean temperature is provided then we can use
+
+      #2. algebra as greater, less, equal, less than (le), or greater than (ge) MUST BE INDICATED
+
+    }else if(!is.null(optimumSettings$ecoparam)){
+
+      #when only one parameter is provided e.g., mean temperature, spi etc
+
+      parv = optimumSettings$optdf[, optimumSettings$ecoparam]
+
+      dirv = optimumSettings$optdf[, optimumSettings$direction]
+
+      pvalue = parv[which(optimumSettings$optdf[, optimumSettings$optspcol] == spp)]
+
+      direction = dirv[which(optimumSettings$optdf[, optimumSettings$optspcol] == spp)]
+
+      dx = sprange(data = data, var = var, ecoparam = pvalue, direction = direction)
+
+      switch(output, clean = return(data[dx,]), outlier = return(data[-dx,]))
+    }else{
+      stop("Provide either min/max or ecological preference value such as mean temperate.")
+    }
+  }else if(isTRUE(checkfishbase)){
+
+    if(mode=="temp"){
+
+      ranges <- thermal_ranges(x = species)
+
+      if(nrow(ranges)>=1){
+        minv <- ranges$tempmin
+        maxv <- ranges$tempmax
+
+        dx = sprange(data = data, var = var, minval = minv, maxval = maxv)
 
       }else{
 
-        #Guess species due spelling errors in the input dataset
+        message("No temperature ranges for ", species ," from FishBase and orginal data will be output fro clean data.")
 
-        if(!is.null(check.names)){
+        switch(output, outlier= return(NA), clean = return(data))
 
-          simd <- adist(spd, spopt)
-
-          spdn <- spopt[(which(simd==min(simd)))]
-
-          if(length(spdn)>1){
-
-            message(spdn,' approximated from optimal ranges list for ', spdn)
-
-            spdn = spdn[1]
-
-          }else{
-
-            spdn
-
-            message(spdn,' approximated from optimal ranges list for ', spdn)
-          }
-          idx<- which(spopt == spdn)
-
-          min <- mincol[idx]
-
-          max <- maxcol[idx]
-
-          idx_in <- which(varc>min & varc< max)
-
-        }else{
-
-          message('No species ', spd, ' found in the optimal ranges')
-        }
       }
+    }else if(mode=="geo"){
 
-      datIn[[isp]] <- dflist[[isp]][idx_in,]
-      datOut[[isp]]<- dflist[[isp]][-idx_in,]
-    }
-  } else if (is(data, 'data.frame') && !is.null(sciname)){
+      geox <- geo_ranges(data = species, warn = warn )
 
-    #Data for one species if more than one provide the data must have a column for species names OR provide names lists species data sets
-    if(sciname %in%spopt){
+      if(any(is.na(geox))== FALSE){
 
-      varc <- unlist(data[,var])
+        dx = sprange(data = data, lat = lat, lon = lon, geo = geox)
+      }else{
+        message("No latitudinal/longitudinal ranges for the species from FishBase and orginal data will be output fro clean data.")
 
-      idx<- which(spopt == sciname)
-
-      min <- mincol[idx]
-
-      max <- maxcol[idx]
-
-      idx_in <- which(varc>min & varc<max)
+        switch(output, outlier= return(NA), clean = return(data))
+      }
 
     }else{
-      #Guess species due spelling errors in the input dataset
-      if(!is.null(check.names)){
-
-        simd <- adist(sciname, spopt)
-
-        spdn <- spopt[(which(simd==min(simd)))]
-
-        if(length(spdn)>1){
-          message(spdn,' approximated from optimal ranges list for ', spdn)
-          spdn = spdn[1]
-        }else{
-          spdn
-          message(spdn,' approximated from optimal ranges list for ', spdn)
-        }
-        varc <- unlist(data[,var])
-
-        idx<- which(spopt == spdn)
-
-        min <- mincol[idx]
-
-        max <- maxcol[idx]
-
-        idx_in <- which(varc>min & varc<max)
-
-      }else{
-
-        message('No species ', isp, ' found in the optimal ranges')
-      }
+      message('set either georanges or tempranges')
     }
 
-  }else if(is(data, 'list')){ #list of species named data sets
-
-    for (isp in names(data)) {
-
-      varc <- data[[isp]][,var]
-
-      if(isp %in%spopt){
-
-
-        idx<- which(spopt == isp)
-
-        min <- mincol[idx]
-
-        max <- maxcol[idx]
-
-        idx_in <- which(varc>min & varc<max)
-
-      }else{
-        #Guess species due spelling errors in the input dataset
-        if(!is.null(check.names)){
-
-          simd <- adist(isp, spopt)
-
-          spdn <- spopt[(which(simd==min(simd)))]
-
-          if(length(spdn)>1){
-            message(spdn,' approximated from optimal ranges list for ', spdn)
-            spdn = spdn[1]
-          }else{
-            spdn
-            message(spdn,' approximated from optimal ranges list for ', spdn)
-          }
-          idx<- which(spopt == spdn)
-
-          min <- mincol[idx]
-
-          max <- maxcol[idx]
-
-          idx_in <- which(varc>min & varc<max)
-
-        }else{
-
-          message('No species ', isp, ' found in the optimal ranges')
-        }
-      }
-
-      datIn[[isp]] <- data[[isp]][idx_in,]
-      datOut[[isp]]<- data[[isp]][-idx_in,]
-    }
 
   }else{
-    stop('Data input not a dataframe with a column for species or list of species datasets')
+    #if it is one species, and manual input of optimal parameters: min and max or ecoparam (when only one is provided.)
+
+    dx <- sprange(data = data, var = var, minval = minval, maxval = maxval,
+                  ecoparam = ecoparam , direction = direction)
   }
 
-  if(is(data, 'list')){
-    switch (output, clean=return(datIn), outlier=return(datOut))
-
-  }else if(is(data, 'data.frame') && !is.null(sciname)){
-
-    switch (output, clean=return(data[idx_in,]), outlier=return(data[-idx_in,]))
-  }else{
-    switch (output, clean=return(do.call(rbind, datIn)), outlier=return(do.call(rbind, datOut)))
-  }
+  switch(output, clean = return(data[dx,]), outlier = return(data[-dx,]))
 }
+
 
 
 #' @title Detect outliers using predefined optimal ranges such as annual mean temperature from WORLDCLIM
 #'
 #' @param data Dataframe of species records with environmental data
-#' @param var Environmental parameter considered in flagging suspicious outliers
-#' @param output Either clean: for a dataset with no outliers or outlier: to output a dataframe with outliers.
-#' @param min Minimum temperature column from the standard optimal dataframe.
-#' @param max Maximum temperature column from the standard optimal dataframe.
-#' @param ecolimit If used then a single value is used and tgether with direction can be used to flag set otpimal conditions.
-#' For example, if a mean of 10 is used, then ecolimit = 10 and direction can equal, less, greater or lesseqaul than
-#' the stipulated value.
-#' @param direction Indicates which direction takes for the ecolimit. For example, >ecolimit
+#' @param var Environmental parameter considered in flagging suspicious outliers. The parameter directly
+#'        influences the species distribution such as such as annual mean temperature,
+#'        minimum temperature of the coldest month, maximum temperature of the
+#'        warmest month, and spring precipitation (IUCN Standards and Petitions Committee 2022).
+#' @param minval Minimum temperature column from the standard optimal dataframe. This can be obtained
+#'      from literature or standard databases such as FishBase (www.fishbase.org),
+#'      the Freshwater Information platform (http://www.freshwaterplatform.eu/),
+#'      and the IUCN red list (https://www.iucnredlist.org/).
+#' @param maxval Maximum temperature column from the standard optimal dataframe.
+#' @param ecoparam If used then a single value is used and tgether with direction can be used to flag set otpimal conditions.
+#'      For example, if a mean of 10 is used, then ecoparam = 10 and direction can equal, less, greater or lesseqaul than
+#'      the stipulated value.
+#' @param direction Indicates which direction takes for the ecoparam. For example, less than ecoparam.
+#' @param lat,lon string columns with latitudes and longitudes.
+#' @param geo logical, to aid in switching between temperature parameter \code{temp} latitudinal/longitudinal ranges.
 #'
 #' @return Dataframe with or with no outliers.
+#'
 #' @export
 #'
 #' @examples
 #'
 #' \dontrun{
 #'
-#' #' library(terra)
+#' library(terra)
 #'
 #' #species data from online databases
 #'
-#' gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+#' gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
 #'
-#' gbfinal <- merge_all(online = gbdata)
+#' gbfinal <- extract_online(online = gbdata)
 #'
 #' gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
 #'
 #' #preclean and extract
 #'
-#' danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
+#' danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
 #'
 #' danubebasin <- sf::st_read(danube)
 #'
 #' #Get environmental data
 #'
-#' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
-#'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
 #'
 #' precleaned <- precleaner(data = gbchecked,
 #'                           raster= worldclim ,
@@ -1504,35 +1518,66 @@ bulkopt <- function(data, sp=NULL, optimal, species, var, min, max,
 #'
 #' }
 #'
-#'
-optimal <- function(data, var = NULL, output, min=NULL,
-                    max=NULL, ecolimit = NULL, direction = NULL){
+#' @references
+#' García-Roselló E, Guisande C, Heine J, Pelayo-Villamil P, Manjarrés-Hernández A, González Vilas L, González-Dacosta J, Vaamonde A, Granado-Lorencio C. 2014. Using modestr to download, import and clean species distribution records. Methods in Ecology and Evolution 5:708–713. British Ecological Society.
+#' IUCN Standards and Petitions Committee. 2022. THE IUCN RED LIST OF THREATENED SPECIESTM Guidelines for Using the IUCN Red List Categories and Criteria Prepared by the Standards and Petitions Committee of the IUCN Species Survival Commission. Available from https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
 
-  match.arg(output, choices = c('both', 'clean', 'outlier'))
 
-  match.arg(direction, choices = c('equal','less','greater','le','ge'))
+sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = NULL, lat =NULL, lon=NULL,
+                    direction = NULL, geo=NULL){
 
-  if(length(var)>1) stop('One variable should be considered', call. = FALSE)
-
-  var <- unlist(data[,var])
-
-  if(is.null(ecolimit)){
-
-    datIn  <-  which(var>=min & var <=max)
-
+  if(!is.null(geo)){
+    lat = unlist(data[, lat])
+    lon = unlist(data[, lon])
   }else{
-    datIn = switch(direction, equal=which(var==ecolimit),
-                   greater = which(var>ecolimit),
-                   less = which(var<ecolimit),
-                   ge = which(var>=ecolimit),
-                   le = which(var<=ecolimit))
+    if(is.null(var))stop("Provide the column for variable of concern in ´var´ parameter")
+    var = unlist(data[, var])
   }
-  switch(output, clean = return(data[datIn,]),
-         outlier = return(data[-datIn,]),
-         both    = return(list(data[datIn,], data[-datIn,])))
+  #converting the latitudinal ranges to a vector
+  geocodes <- c(geo)
+
+  #
+  if(is.null(ecoparam)){
+
+    if(is.null(geo)){
+
+      if(any(sapply(list(maxval, minval), is.null))==TRUE) stop("Can not proceeed without both maxval and minval ranges.'\n' If one is available, use ecoparam parameter and provide direction.")
+
+      datIn  <-  which(var<=maxval & var >=minval)
+
+
+    }else{
+      if(any(sapply(list(lat, lon), is.null))==TRUE) stop("Can not proceeed without both latitudes and longitudes columns.'\n' If one is available, use ecoparam parameter and provide direction.")
+
+      gcheck <- mapply(function(x, y){
+        tf <- c(y<=geocodes[1], y>=geocodes[2], x>=geocodes[3], x<=geocodes[4])
+
+        if(any(is.na(tf))){
+          datIn <- NA
+        } else if(all(tf==TRUE)){
+          datIn <-  x
+        } else{
+          datIn <- NA
+        }
+        return(datIn)
+      }, x=lon, y= lat)
+
+      datIn <- which(lon %in%gcheck[!is.na(gcheck)])
+    }
+  }else{
+    if(is.null(direction)) stop("For ecoparam indicate if the value is equal, less, or greater.")
+
+    datIn = switch(direction,
+                   equal=which(var==ecoparam),
+                   greater = which(var>ecoparam),
+                   less = which(var<ecoparam),
+                   ge = which(var>=ecoparam),
+                   le = which(var<=ecoparam))
+  }
+  return(datIn)
 }
 
-#Malahanobis
+
 #' @title Flags outliers based on Mahalanobis distance matrix for all records.
 #'
 #' @param data Dataframe to check for outliers
@@ -1540,39 +1585,39 @@ optimal <- function(data, var = NULL, output, min=NULL,
 #' latitude/longitude or any column that the user doesn't want to consider.
 #' @param output Either clean: for a data set with no outliers or outlier: to output a data frame with outliers.
 #' @param mode Either robust, if a robust mode is used which uses mcd() instead of mean. Default mode is soft.
+#' @param pdf Chisqure probability distribution used for flagging outliers \code{Leys et al. 2018}.
 #'
 #' @importFrom stats mahalanobis qchisq cov
 #' @importFrom usdm vifcor vifstep exclude
 #' @importFrom robust covRob
 #'
-#' @return Either clean or oultiers data set
+#' @return Either clean or outliers dataset
 #'
 #' @export
 #'
 #' @examples
 #'
 #' \dontrun{
-#' #' library(terra)
+#'
+#' library(terra)
 #'
 #' #species data from online databases
 #'
-#' gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+#' gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
 #'
-#' gbfinal <- merge_all(online = gbdata)
+#' gbfinal <- extract_online(online = gbdata)
 #'
 #' gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
 #'
 #' #preclean and extract
 #'
-#' danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
+#' danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
 #'
 #' danubebasin <- sf::st_read(danube)
 #'
 #' #Get environmental data
 #'
-#' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worldclimdata')
-#'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
 #'
 #' precleaned <- precleaner(data = gbchecked,
 #'                           raster= worldclim ,
@@ -1595,9 +1640,12 @@ optimal <- function(data, var = NULL, output, min=NULL,
 #'
 #'
 #' }
+#' @references
+#' Leys C, Klein O, Dominicy Y, Ley C. 2018. Detecting multivariate outliers:
+#' Use a robust variant of the Mahalanobis distance. Journal of Experimental
+#' Social Psychology 74:150–156. Academic Press Inc.
 #'
-#'
-mahal <- function(data, exclude, output, mode){
+mahal <- function(data, exclude, output, mode, pdf = 0.95){
 
   if(missing(data)) stop('Data not provided.')
 
@@ -1636,7 +1684,7 @@ mahal <- function(data, exclude, output, mode){
       mdist <- stats::mahalanobis(df2, center = centermatrix, cov = covmatrix)
     }
 
-    cutoff <- qchisq(p=0.95, df = ncol(df2))
+    cutoff <- qchisq(p=pdf, df = ncol(df2))
 
     datIn <- which(mdist<cutoff)
 
@@ -1682,7 +1730,7 @@ mahal <- function(data, exclude, output, mode){
 #'
 #' #preclean and extract
 #'
-#' danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='spcleanr')
+#' danube <- system.file('extdata/danube/basinfinal.shp',  package='specleanr')
 #'
 #' danubebasin <- sf::st_read(danube)
 #'
@@ -1690,7 +1738,7 @@ mahal <- function(data, exclude, output, mode){
 #'
 #' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
 #'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='spcleanr'))
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
 #'
 #' precleaned <- pre_cleaner(data = gbchecked,
 #'                           raster= worldclim ,
@@ -1749,11 +1797,21 @@ xkmeans <- function(data, k, exclude, output, mode, method=NULL, verbose=FALSE){
   }
   else if(method=='silhouette' && !is.null(method)){
 
-    if(nrow(df_scaled)<10) k = 3 else k = k # to avoid errors for few data.
+    #lower the k value for low samples but that can not looped through the different values
 
-    for (ik in 1:k) {
+     for (ik in 1:k) {
 
-      km <- stats::kmeans(df_scaled, centers = ik, iter.max = 100, nstart = 4)
+      #Check if an error is raised during the loop but when at low k values like 3, the iteration was successfully, choose a default automatically
+
+      kx <- tryCatch(expr = stats::kmeans(df_scaled, centers = ik, iter.max = 100, nstart = 4), error = function(e) e)
+
+      if(inherits(kx, 'error') && nrow(df_scaled)>=10) {
+
+        km = stats::kmeans(df_scaled, centers = 3, iter.max = 100, nstart = 4)
+
+      }else{
+        km = stats::kmeans(df_scaled, centers = ik, iter.max = 100, nstart = 4)
+      }
 
       sil <- cluster::silhouette(km$cluster, dist(df_scaled))
 
@@ -1808,7 +1866,7 @@ xkmeans <- function(data, k, exclude, output, mode, method=NULL, verbose=FALSE){
 #' @param data Input data for for checking outliers
 #' @param k Number of clusters
 #'
-#' @return clean data set after kmedian outlier cleaning.
+#' @return clean or outlier data set after outlier detection.
 #'
 #' @export
 #'
@@ -1879,18 +1937,20 @@ xkmedian <- function(data, k=3){
 
 #' Title
 #'
-#' @param data kk
-#' @param k kk
-#' @param metric kk
-#' @param output kk
-#' @param exclude kk
+#' @param data the environmental data where outliers are examined from.
+#' @param k the number of cluster centers to form cluster around it. Since kmedoid using the raw valaues from thr dataset, it is not insesetive to outliers.
+#' @param metric Different distance based matrics including the Euclidean and Mahattan are implemented.
+#' @param output Either clean or outliers dataset. Defualt \code{outlier} to output outliers dataset.
+#' @param exclude columns to remove in implementtimg kmedoid algorithms, for example, the cordinates. This becuase kmediod is a multivariate algorithm which use all the data.
 #' @param x a constant to detemrine outliers.
 #'
-#' @return
+#' @return clean or outlier data set after outlier detection
+#'
 #' @export
 #'
 #' @examples
-xkmedoid <- function(data, k = 2, metric = 'manhattan', output='clean', exclude, x=1.5){
+#'
+xkmedoid <- function(data, k = 2, metric = 'manhattan', output='outlier', exclude, x=1.5){
 
   if(missing(data)) stop('Data missing')
 

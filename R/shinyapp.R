@@ -11,7 +11,7 @@
 #' @examples
 #'
 
-Rgui <- function(dir = NULL){
+guimerger <- function(dir = NULL){
 
   if(is.null(dir)) warning('Provide working directory data is not in the current directory.')
 

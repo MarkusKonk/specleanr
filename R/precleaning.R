@@ -17,10 +17,11 @@
 #' @param list If TRUE the a list of multiple species data frames will be generated and FALSE for a dataframe of species data sets. Default TRUE
 #' @param basin object of class 'shapefile' If only a particular bain is considered.
 #' @param verbose if TRUE message and warnings will be produced. Default TRUE
+#' @param warn logical, indicating to whelther to show implementation warning or not. Default \code{FALSE}.
 #' @param merge To add the other columns in the species data after data extraction. Default \strong{TRUE}
 #'
-#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf
-#' @importFrom terra extract
+#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf st_bbox
+#' @importFrom terra extract ext
 #'
 #' @return precleaned cleaned data sets for single or multiple species
 #' @export
@@ -56,7 +57,7 @@
 #'
 
 pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
-                        multiple=TRUE, list=TRUE, merge=FALSE, verbose=T){
+                        multiple=TRUE, list=TRUE, merge=FALSE, verbose= TRUE, warn = FALSE){
 
   if(missing(data)) stop('Data frame with species record missing')
 
@@ -77,8 +78,31 @@ pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
 
   species_lon_df <- data[complete.cases(data[ , c(lat, lon, colsp)]), ]
 
+  #check if the species coordinates are within the bounding the bounding box of the raster layer
+
+  rasterbbox <- terra::ext(raster)
+
+  xmin1 <- unname(rasterbbox[1])
+  ymin1 <- unname(rasterbbox[2])
+  xmax2 <- unname(rasterbbox[3])
+  ymax2 <- unname(rasterbbox[4])
+
+  xmin11 <- min(unlist(species_lon_df[, lon]))
+  ymin11 <- min(unlist(species_lon_df[, lat]))
+  xmax12 <- max(unlist(species_lon_df[, lon]))
+  ymax12 <- max(unlist(species_lon_df[, lat]))
+
+  if(isTRUE(warn)) if(xmin11<xmin1)warning("The species points are outside the raster layers provided. Please check xmin.")
+
+  if(isTRUE(warn)) if(ymin11<ymin1)warning("The species points are outside the raster layers provided. Please check ymin.")
+
+  if(isTRUE(warn))  if(xmax12>xmax2)warning("The species points are outside the raster layers provided. Please check xmax.")
+
+  if(isTRUE(warn))  if(ymax12>ymax2)warning("The species points are outside the raster layers provided. Please check ymax.")
+
 
   spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = st_crs(4326))
+
 
   if(!is.null(basin)){
     basin_df <- sf::st_filter(spdata_new, basin)
