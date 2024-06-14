@@ -37,7 +37,7 @@ for scientific species names names, indicate the column name here.}
 \item{verbose}{Messages during data matching. Default \strong{FALSE}}
 }
 \value{
-Harmonized data set.
+Harmonized data set with standardized column names foe species names, latitude, longitude, country and dates.
 }
 \description{
 Data harmonizing for offline data based on Darwin Core terms .

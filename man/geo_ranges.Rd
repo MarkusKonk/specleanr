@@ -5,25 +5,20 @@
 \title{Checks for geographic ranges from FishBase}
 \usage{
 geo_ranges(
-  x,
+  data,
   colsp = NULL,
-  lat,
-  lon,
   verbose = F,
   pct = 90,
   sn = FALSE,
-  output = "clean",
-  warn = FALSE
+  warn = FALSE,
+  synonym = fishbase(tables = "synonym"),
+  ranges = fishbase(tables = "ranges")
 )
 }
 \arguments{
-\item{x}{Dataframe with species records to check for geographic ranges from FishBase.}
+\item{data}{species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.}
 
 \item{colsp}{Column with species names from the data set.}
-
-\item{lat}{Column with latitude names and decimal latitudes are accepted.}
-
-\item{lon}{Column with longitude names and decimal longitudes are accepted.}
 
 \item{verbose}{TRUE and messages will show. Default FALSE:}
 
@@ -31,9 +26,11 @@ geo_ranges(
 
 \item{sn}{TRUE and synonyms will be generated and not accepted ones. Default is FALSE, where species accepted names will be produced.}
 
-\item{output}{clean to return geographical ranges.}
-
 \item{warn}{FALSE, not to generate warnings and TRUE for warnings. Default is FALSE:}
+
+\item{synonym}{A standard database for species synonym names from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.}
+
+\item{ranges}{A standard database for ecological ranges from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.}
 }
 \value{
 Dataframe with geographical corrected ranges for species from FishBase.

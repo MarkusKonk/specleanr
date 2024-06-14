@@ -2,13 +2,18 @@
 % Please edit documentation in R/model_comp.R
 \name{extract_performance}
 \alias{extract_performance}
-\title{Title}
+\title{Extract the model performance}
 \usage{
 extract_performance(modeloutput, type = "test")
 }
 \arguments{
-\item{type}{}
+\item{modeloutput}{The model output object where data is extracted.}
+
+\item{type}{Either test or train data}
+}
+\value{
+A data frame with performance metrics between reference and outlier cleaned dataset.
 }
 \description{
-Title
+Extract the model performance
 }

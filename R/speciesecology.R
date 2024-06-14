@@ -89,8 +89,6 @@ fip_ranges <- function(data, colsp=NULL, basin, range, pct=90, verbose=F, sn=FAL
 }
 
 
-
-
 #' @title Collates minimum, maximum, and preferable temperatures from FishBase.
 #'
 #' @param x kk
@@ -297,6 +295,7 @@ endemicity <- function(basin, range){
 #'
 #' @return species IUCN category
 #' @export
+#'
 #'
 get_iucn <- function(x, key){
 
@@ -554,15 +553,14 @@ mdistr_ranges <- function(data, colsp, lat, lon, key, mode, verbose=T){
 
 #' @title Checks for geographic ranges from FishBase
 #'
-#' @param x Dataframe with species records to check for geographic ranges from FishBase.
+#' @param data species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.
 #' @param colsp Column with species names from the data set.
-#' @param lat Column with latitude names and decimal latitudes are accepted.
-#' @param lon Column with longitude names and decimal longitudes are accepted.
 #' @param verbose TRUE and messages will show. Default FALSE:
 #' @param pct The percentage similarity of species names during standardization from FishBase.
 #' @param sn TRUE and synonyms will be generated and not accepted ones. Default is FALSE, where species accepted names will be produced.
-#' @param output clean to return geographical ranges.
 #' @param warn FALSE, not to generate warnings and TRUE for warnings. Default is FALSE:
+#' @param ranges A standard database for ecological ranges from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.
+#' @param synonym A standard database for species synonym names from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.
 #'
 #' @return Dataframe with geographical corrected ranges for species from FishBase.
 #'
@@ -571,36 +569,38 @@ mdistr_ranges <- function(data, colsp, lat, lon, key, mode, verbose=T){
 #' @examples
 #'
 #'
-geo_ranges <- function(x, colsp =NULL, lat, lon, verbose=F, pct = 90, sn =FALSE, output='clean', warn=FALSE){
+geo_ranges <- function(data, colsp =NULL, verbose=F, pct = 90,sn =FALSE, warn=FALSE,
+                       synonym = fishbase(tables = 'synonym'),
+                       ranges = fishbase(tables = 'ranges')){
 
-  if(missing(x)) stop('Data is not provided', call. = FALSE)
+  if(missing(data)) stop('Data is not provided', call. = FALSE)
 
-  if(is(x, 'data.frame') && is.null(colsp)) {
+  if(is(data, 'data.frame') && is.null(colsp)) {
 
     stop('Species column names is not provided', call. = FALSE)
 
-  } else if(is(x, 'data.frame') && !is.null(colsp)){
+  } else if(is(data, 'data.frame') && !is.null(colsp)){
 
-    if(length((colnames(x)[colnames(x)==colsp]))<1){
+    if(length((colnames(data)[colnames(data)==colsp]))<1){
 
-      stop('Species column name ', colsp, ' is  not found in the ', deparse(substitute(x)), ' data provided')
+      stop('Species column name ', colsp, ' is  not found in the ', deparse(substitute(data)), ' data provided')
 
     } else{
 
-      spls <- as.list(unique(unlist(x[, colsp])))
+      spls <- as.list(unique(unlist(data[, colsp])))
 
       dsplist <- check_names(data = spls, verbose = verbose, pct = pct, sn = sn)#merge is false
     }
 
-  }else if(is(x, 'list')){
+  }else if(is(data, 'list')){
 
-    spls <- unlist(x)
+    spls <- unlist(data)
 
     dsplist <- check_names(data = spls, verbose = verbose, pct = pct, sn = sn)#merge is false
 
-  }else if(is(x, 'vector') || is(x, 'atomic')) {
+  }else if(is(data, 'vector') || is(data, 'atomic')) {
 
-    dsplist <- check_names(data = x, verbose = verbose, pct = pct, sn = sn)
+    dsplist <- check_names(data = data, verbose = verbose, pct = pct, sn = sn)
 
 
   }else{
@@ -611,322 +611,82 @@ geo_ranges <- function(x, colsp =NULL, lat, lon, verbose=F, pct = 90, sn =FALSE,
 
   if(is(dsplist, 'vector')){
 
-    unx <- dsplist
+    uqspeciesnames <- dsplist
   }else{
-    unx <- unique(unlist(dsplist$speciescheck))
+    uqspeciesnames <- unique(unlist(dsplist$speciescheck))
 
   }
-  v <- unx[!is.na(unx)]#remove NA species from the vector data
-
-  rc <- fishbase(tables = 'ranges')
-
-  sy <- fishbase(tables = 'synonym')
-
-  ld <- length(unx); lv <- length(v)
-
-  if(ld<lv) message(ld-lv, ' dropped because species names are not in FishBase')
-
-  minLatvalues <- c(); species <- c(); maxLatvalues<- c(); maxLonvalues <- c(); minLonvalues <- c()
-
-  for (ispg in seq_along(v)) {
-
-    sp1 <- v[ispg]
-
-    spc <- unlist(sy$synonym)%in%sp1
-
-    if(any(spc==TRUE)){
-
-      codesp <-  unlist(sy$SpecCode)[which( spc==TRUE)]
-
-      #latmin
-      latminv<- unlist(rc$Northernmost)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      latmindir<- unlist(rc$NorthSouthN)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      #lat max
-      latmaxv<- unlist(rc$Southermost)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      latmaxdir<- unlist(rc$NorthSouthS)[which(unlist(rc$SpecCode) %in% codesp)]
+  speciesfinal <- uqspeciesnames[!is.na(uqspeciesnames)]#remove NA species from the vector data
 
 
-      if(all(is.na(latminv))) {
-        if(isTRUE(verbose)==TRUE) message('No minimum latitude for ', sp1, '.')
-        minLat = NA
-        dirLat <- NA
-      }else{
-        minLatvs <- latminv[!is.na(latminv)]
+  ranges_db <- ranges#dataset for ranges
 
-        dirLatvs <- latmindir[!is.na(latmindir)]
+  syndata <- synonym
 
-        if(length(minLatvs)!=length(dirLatvs)) if(isTRUE(warn)==TRUE)warning('Some latitudes dont have direction which affects consversion')
+  ld <- length(uqspeciesnames); lv <- length(speciesfinal)
 
-        if(length(minLatvs)>1) {
+  if(ld<lv) if(isTRUE(warn))warning(ld-lv, ' dropped because species names are not in FishBase', call. = FALSE)
 
-          minLatp <- max(minLatvs)
+  cordinates <- c("Northernmost", "Southermost","Westernmost", "Easternmost")
 
-          dirLatp <- dirLatvs[which(minLatvs==minLatp)]
+  cord <- sapply(speciesfinal, function(y){
 
-          if(length(dirLatp)>1) latdirN <- dirLatp[1] else latdirN <- dirLatp
+    species  <- unlist(syndata$synonym)%in% y
 
-          if(latdirN=='N' || minLatp ==0) minLat = minLatp else minLat = as.numeric(minLatp)*-1
-        } else{
+    spcodes <-  unlist(syndata$SpecCode)[which( species==TRUE)]
 
-          minLatp = minLatvs
+    cord <- sapply(cordinates, function(x){
 
-          dirLatp = dirLatvs
+      coords <- x
 
-          if(dirLatp=='N' || minLatp==0) minLat = minLatp else minLat = as.numeric(minLatp)*-1
+      dir = switch(coords, Northernmost = "NorthSouthN",Southermost = "NorthSouthS",
+                   Westernmost ="WestEastW", Easternmost = "WestEastE" )
+
+      coordvalues<- unlist(ranges_db[,coords])[which(unlist(ranges_db$SpecCode) %in% spcodes)]
+
+      if(length(coordvalues)>=1){
+
+        cordvalues_no_na <- coordvalues[!is.na(coordvalues)]
+
+        if(coords == "Southermost" | coords== "Westernmost"){
+          cordvalues_final <- cordvalues_no_na[which.min(cordvalues_no_na)]
+        }else{
+          cordvalues_final <- cordvalues_no_na[which.max(cordvalues_no_na)]
         }
-      }
+        direction_values<- unlist(ranges_db[,dir])[which(unlist(ranges_db$SpecCode) %in% spcodes)]
 
-      #max latitude extraction
+        dir_final <- direction_values[!is.na(direction_values)][which.max(cordvalues_no_na)]
 
-      if(all(is.na(latmaxv))) {
-        if(isTRUE(verbose)==TRUE) message('No minimum latitude for ', sp1, '.')
-        maxLat = NA
-        dirLat <- NA
-      }else{
-        maxLatvs <- latmaxv[!is.na(latmaxv)]
+        if(length(cordvalues_final) <1 & length(dir_final)<1){
 
-        dirmaxLatvs <- latmaxdir[!is.na(latmaxdir)]
+          cordvalues_final = NA
 
-        if(length(maxLatvs)!=length(dirmaxLatvs)) if(isTRUE(warn)==TRUE) warning('Some latitudes dont have direction which affects consversion')
+        }else if(length(dir_final)<1){
 
-        if(length(maxLatvs)>1) {
+          if(isTRUE(warn)) warning("The cordinates directions for ", y, " are not provided and cordinate coversation maybe erroneous.", call. = FALSE)
 
-          maxLatp <- max(maxLatvs)
+          cordvalues_final
 
-          dirmaxLatp <- dirmaxLatvs[which(maxLatvs==maxLatp )]
+        }else if(cordvalues_final==0 & is.na(dir_final)){
 
-          if(length(dirmaxLatp)>1) latdirNmx <- dirmaxLatp[1] else latdirNmx <- dirmaxLatp
+          cordvalues_final
 
-          if(latdirNmx=='N' || maxLatp==0) maxLat = maxLatp  else maxLat = as.numeric(maxLatp)*-1
-        } else{
+        }else{
 
-          maxLatp = maxLatvs
-
-          dirmaxLatp = dirmaxLatvs
-
-          if(dirmaxLatp=='N' || maxLatp == 0) maxLat = maxLatp  else maxLat = as.numeric(maxLatp)*-1
+          if(dir_final =="S" | dir_final =="W" | dir_final =="s" | dir_final=='w') {
+            if(cordvalues_final>0) cd = cordvalues_final*-1 else cd = cordvalues_final #some are already -ve
+          } else{
+            cd = cordvalues_final
+          }
         }
-      }
-
-      lonminv<- unlist(rc$Westernmost)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      lonmindir<- unlist(rc$WestEastW)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      #extract minimum longitudes
-      if(all(is.na(lonminv))) {
-
-        if(isTRUE(verbose)==TRUE) message('No minimum longitude for ', sp1, '.')
-        minLon = NA
-        dirLon <- NA
-      }else{
-        minLonvs <- lonminv[!is.na(lonminv)]
-
-        dirLonvs <- lonmindir[!is.na(lonmindir)]
-
-        if(length(minLonvs)!=length(dirLonvs)) if(isTRUE(warn)==TRUE) warning('Some longitudes dont have direction which affects consversion')
-
-        if(length(minLonvs)>1) {
-
-          minLonp <- max(minLonvs)
-
-          dirLonp <- dirLonvs[which(minLonvs==minLonp)]
-
-          if(length(dirLonp)>1) londirN <- dirLonp[1] else londirN <- dirLonp
-
-          if(londirN=='E' || minLonp== 0) minLon = minLonp else minLon = as.numeric(minLonp)*-1
-        } else{
-
-          minLonp = minLonvs
-
-          dirLonp = dirLonvs
-
-          if(dirLonp=='E' || minLonp==0) minLon = minLonp else minLon = as.numeric(minLonp)*-1
-        }
-      }
-
-      # #max longitude extraction
-
-      lonmaxv<- unlist(rc$Easternmost)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      lonmaxdir<- unlist(rc$WestEastE)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      if(all(is.na(lonmaxv))) {
-
-        if(isTRUE(verbose)==TRUE) message('No minimum longitude for ', sp1, '.')
-
-        maxLon = NA
-        dirLon <- NA
-      }else{
-        maxLonvs <- lonmaxv[!is.na(lonmaxv)]
-        dirmaxLonvs <- lonmaxdir[!is.na(lonmaxdir)]
-
-        if(length(maxLonvs)!=length(dirmaxLonvs)) if(isTRUE(warn)==TRUE) warning('Some max longitudes dont have direction which affects consversion')
-
-        if(length(maxLonvs)>1) {
-
-          maxLonp <- max(maxLonvs)
-
-          dirmaxLonp <- dirmaxLonvs[which(maxLonvs==maxLonp )]
-
-          if(length(dirmaxLonp)>1) londirNmx <- dirmaxLonp[1] else londirNmx <- dirmaxLonp
-
-          if(londirNmx=='E' || maxLonp ==0) maxLon = maxLonp  else maxLon = as.numeric(maxLonp)*-1
-        } else{
-
-          maxLonp = maxLonvs
-
-          dirmaxLonp = dirmaxLonvs
-
-          if(dirmaxLonp=='E' || maxLonp == 0) maxLon = maxLonp  else maxLon = as.numeric(maxLonp)*-1
-        }
-      }
-
-    }else{
-      if(isTRUE(verbose)==TRUE) message('No minimum or maximum latitude or longitudes for ', sp1, '.')
-      minLat = NA
-      maxLat = NA
-      minLon = NA
-      maxLon = NA
-    }
-
-    minLatvalues[ispg] <- maxLat
-    maxLatvalues[ispg] <- minLat
-    minLonvalues[ispg] <- minLon
-    maxLonvalues[ispg] <- maxLon
-    species[ispg] <- sp1
-
-    dfgeo <- data.frame(species = species, minLat= minLatvalues, maxLat= maxLatvalues,
-                        minLon = minLonvalues, maxLon =maxLonvalues)
-  }
-
-  #clean records outside the ranges
-
-  dflist <- list();trackloss <- c()
-  #make sure the input data is a data frame to speed up the base filter function
-  data <- as.data.frame(x)
-
-  #check species names
-  data <- check_names(data = data, colsp = colsp, verbose = F, merge = T, sn = sn,pct = pct)
-
-  speciesx <- unique(unlist(data$speciescheck))# make it unique in case of synonyms
-
-  for(ispv in seq_along(speciesx)){
-
-    #cross check if the species exists in the dfgeo data set
-    spx <- speciesx[ispv]
-
-    if(spx %in% unlist(dfgeo$species)==TRUE){
-
-      #if true, use the species names to filter data
-
-      spdata <- data[data$speciescheck==spx,]
-
-      #check if the longitudes and longitudes are not beyond the lat/lon limits
-
-      latitudes <- unlist(spdata[, lat])
-
-      if(max(latitudes)>90 | min(latitudes)<(-90)) warning('Records are outside latitude range or different cordinate reference system not deicmal degreesfor ', spx, '.')
-
-
-      #Extract limit from the dfgeo data set generated above
-
-      minLatitude <- unlist(dfgeo$minLat)[which(dfgeo$species==spx)]
-      maxLatitude <- unlist(dfgeo$maxLat)[which(dfgeo$species==spx)]
-
-      if(all(is.na(c(minLatitude, maxLatitude)))) {
-
-        if(isTRUE(warn)==TRUE) warning('No latitudinal rnages for ', spx,'.')
-
-        dflon <- spdata
-
-      }else if(!is.na(minLatitude) && is.na(maxLatitude)){
-
-        indLat <- which(latitudes>minLatitude)
-
-        dflon <- switch(output, clean = spdata[indLat,], outlier= spdata[-indLat,])
-
-        track <- nrow(spdata)- nrow(dflon)
-
-        if(isTRUE(verbose)==TRUE) message(track, ' reocrds were discarded becuase they are outside the minimum latitude for ', spx, '.')
-
-      }else if(is.na(minLatitude) && !is.na(maxLatitude)){
-
-        indLat <- which(latitudes<maxLatitude)
-
-        dflon <- switch(output, clean = spdata[indLat,], outlier= spdata[-indLat,])
-
-        track <- nrow(spdata)-nrow(dflon)
-
-        if(isTRUE(verbose)==TRUE) message(track, ' reocrds were discarded becuase they are outside the maximum latitude for ', spx, '.')
-      }else{
-        indLat <- which(latitudes>minLatitude | latitudes<maxLatitude)
-
-        dflon <- switch(output, clean = spdata[indLat,], outlier= spdata[-indLat,])
-
-        track <- nrow(spdata)-nrow(dflon)
-
-        if(isTRUE(verbose)==TRUE) message(track, ' reocrds were discarded becuase they are outside the maximum and minimum latitude for ', spx, '.')
-
-      }
-      #check for longitude from latitude output
-
-      longitudes <- unlist(dflon[, lon])
-
-      if(max(longitudes)>180 | min(longitudes)<(-180)) warning('Records are outside longitude range or different cordinate reference system not deicmal degrees for ', spx, '.')
-
-      minLongitude <- unlist(dfgeo$minLon)[which(dfgeo$species==spx)]
-      maxLongitude <- unlist(dfgeo$maxLon)[which(dfgeo$species==spx)]
-
-      if(all(is.na(c(minLatitude, maxLatitude)))) {
-
-        if(isTRUE(warn)==TRUE) warning('No longitudinal ranges for ', spx, '.')
-
-        dfdata <- dflon
-
-      }else if(!is.na(minLongitude) && is.na(maxLongitude)){
-
-        indLon <- which(longitudes>minLongitude)
-
-        dfdata <- switch(output, clean = dflon[indLon,], outlier= dflon[-indLon,])
-
-        track <- nrow(dflon)-nrow(dfdata)
-
-        if(isTRUE(verbose)==TRUE) message(track, ' records were discarded becuase they are outside the minimum longitude for ', spx, '.')
-
-      }else if(is.na(minLongitude) && !is.na(maxLongitude)){
-
-        indLon <- which(longitudes<maxLongitude)
-
-        dfdata <- switch(output, clean = dflon[indLon,], outlier= dflon[-indLon,])
-
-        track <- nrow(dflon)-nrow(dfdata)
-
-        if(isTRUE(verbose)==TRUE) message(track, ' records were discarded becuase they are outside the maximum longitude for ', spx, '.')
 
       }else{
-        indLon <- which(longitudes>minLongitude | longitudes<maxLongitude)
 
-        dfdata <- switch(output, clean = dflon[indLon,], outlier= dflon[-indLon,])
-
-        track <- nrow(dflon)-nrow(dfdata)
-
-        if(isTRUE(verbose)==TRUE) message(track, ' records were discarded becuase they are outside the maximum longitude for ', spx, '.')
-
+        if(isTRUE(warn))warning("No latitidunal ranges found in FishBase and the original data will be outputed.", call. = FALSE)
       }
 
-    }else{
-      warning('Species name do not exist and the original data will be returned')
-      dfdata <- data[data$speciescheck==spx,]
-    }
-
-    dflist[[ispv]] <- dfdata
-    dflist[[ispv]]$trackloss[ispv] <- track
-    dfinal <- do.call(rbind, dflist)
-  }
-  return(dfinal)
+    }, simplify = TRUE)
+  }, simplify = TRUE)
+  return(unlist(cord))
 }
-
 

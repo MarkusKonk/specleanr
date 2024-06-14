@@ -2,29 +2,89 @@
 % Please edit documentation in R/model_comp.R
 \name{modelperform}
 \alias{modelperform}
-\title{Title}
+\title{Comparing the model performance before and after outlier removal.}
 \usage{
 modelperform(
   data,
   outliers,
+  raster,
   models = "GLM",
   threshold = 0.6,
-  species,
   var,
+  type = "bestmethod",
   exclude = NULL,
   colsp = NULL,
-  raster = worldclimfinal,
-  mode = c("Reference", "threshold60"),
+  species = NULL,
+  scenario = c("Reference", "threshold60"),
   nboots = 10,
   testprop = 0.2,
-  coords = c("x", "y"),
+  geom = NULL,
+  lat = NULL,
+  lon = NULL,
   prbackground = 1,
-  positive = "P"
+  verbose = F,
+  warn = F,
+  pabs = 0.1
 )
 }
 \arguments{
-\item{positive}{}
+\item{data}{Species data generated during pre-cleaning process. This data set is used as the reference data in accessing the outlier detection performance using both
+threshold dependent and independent metrics. This data set must be same as when in detecting outliers to avoid mismatch.}
+
+\item{outliers}{The \code{datacleaner} class data set with all outliers obtained using the \code{multdetect} function. Please check \code{ocindex}}
+
+\item{raster}{The environmental where pseudo absences are extracted using \link[specleanr]{envextract}.}
+
+\item{models}{The models to be used to examine the relationship between species occurrences and environmental parameters. Only Random forest and generalized linear
+models are accepted. \code{GLM} is used to set to Generalized Linear Models and \code{RF} for Random Forest. RF1 variant is slower and is suggested if RF fails.}
+
+\item{threshold}{value to consider whether the outlier is an absolute outlier or not.}
+
+\item{var}{variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.}
+
+\item{type}{Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method.}
+
+\item{exclude}{Excluded the columns before checking for outliers. Automatic identification of these from the datacleaner is implemented.}
+
+\item{colsp}{The column with species names if the species occurrence is a data frame not list,}
+
+\item{species}{A list of species names and they must be contained in the outlier data set and precleaned data.}
+
+\item{scenario}{The different scenarios are implemented. Currently the reference data set and threshold, outlier cleaned data are allowed.}
+
+\item{nboots}{Creating sub samples for modeling evaluation.}
+
+\item{testprop}{The probability to be used for partitioning data.}
+
+\item{geom}{Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.}
+
+\item{lat}{If the species occurrences don't have the geometry column or not spatial vector file, the latitude must be provided for data extraction form the raster layers.}
+
+\item{lon}{If the species occurrences don't have the geometry column or not spatial vector file, the longitude must be provided for data extraction form the raster layers.}
+
+\item{prbackground}{the proportion of pseudo absences compare to the species presences.}
+
+\item{verbose}{Return messages or not. Default is F.}
+
+\item{warn}{Return warning or not. Default is F.}
+
+\item{pabs}{Percentage of outliers allowed to be extracted from the data. If \code{bestmethod} is used to extract outliers and the \code{pabs} is exceeded,
+the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.}
+}
+\value{
+A list of model instance and model performance metrics.
 }
 \description{
-Title
+Comparing the model performance before and after outlier removal.
+}
+\seealso{
+[sdmfit()]
+
+[multdetect()]
+
+[predextract()]
+
+[envextract()]
+
+[boots()]
 }
