@@ -22,12 +22,11 @@ body {
 The package aims to improve the reliability and acceptability of
 biogeographical models, including species distribution models,
 ecological niche models, and bioclimatic envelope models, by detecting
-environmental outliers in the environmental predictors. In the package,
-we collate 21 outlier detection methods, which a user can collectively
-apply (ensemble outlier detection) and determine whether the species
-records are in a suitable environmental space. The package complements
-other packages that address geographical, taxonomic, and temporal
-checks.
+outliers in the environmental predictors. In the package, we collate
+**22 outlier detection methods**, which a user can collectively apply
+(ensemble outlier detection) and determine whether the species records
+are in a suitable environmental space. The package complements other
+packages that address geographical, taxonomic, and temporal checks.
 
 ### Process of identifying environmental outliers.
 
@@ -50,10 +49,10 @@ parameters such as stream order, flow accumulation, stream power index,
 and stream transportation index (Amatulli et al., 2022); and Copernicus
 for land use changes <https://www.copernicus.eu/en>.
 
-2.  **Extracting the environmental variables**.
+2.  **Extracting the environmental predictors**.
 
-In this step the environmental predictors are extracted from where the
-species was recorded or absent. The extracted dataset forms the species
+The environmental predictors are extracted from points where the species
+was recorded present or absent. The extracted dataset forms the species
 **reference dataset** for environmental outlier checks. In the package
 we included **`pred_extract()`** to extract the environmental
 predictors.
@@ -64,20 +63,19 @@ Multiple outlier detection methods are used; each method flags outliers
 in the same dataset. These outliers are then compared among methods to
 determine records, which are flagged by several methods called
 **absolute outliers** or **true outliers**. The total number of methods
-that a user can ensemble is user-based; however, at least 3 are expected
-to be set. The methods should be also at least from different
-categories. There are three main categories of outlier detection
-methods, namely **1) univariate methods**, **2) multivariate methods**,
-and **3) ecological ranges**. All the methods are set in
-**`multdetect()`** function and not individually to allow seamless
-comparison.
+that a user can ensemble is user-based; however, we expect the user to
+set at least **three** outlier detection methods. The methods should be
+also at least from different categories, which include **1) univariate
+methods**, **2) multivariate methods**, and **3) ecological ranges**.
+The must set all the methods using **`multdetect()`** function and not
+individual method functions to allow seamless comparison.
 
 **Univariate methods**
 
-These methods only consider one environmental predictor. It is advisable
-that an environmental predictor which directly affects the species
-should be used, for example, minimum temperature of the coldest month
-(IUCN 2012; Logez et al., 2012).
+These methods only detect outliers in one environmental predictor. It is
+strongly advisable that the user selects an environmental predictor
+which directly affects the species distribution, for example, minimum
+temperature of the coldest month (IUCN 2012; Logez et al., 2012).
 
 | Function           | Method implemented                     | Userword in **`multdetect()`** |
 |:-------------------|:---------------------------------------|-------------------------------:|
@@ -95,10 +93,9 @@ should be used, for example, minimum temperature of the coldest month
 
 **Multivariate methods**
 
-They consider multiple environmental predictors in detecting outliers in
-the environmental data. In the package, we ensure that the user can
-exclude particular columns, such as the coordinates (latitude and
-longitude), so they are not included in the computation.
+These methods detect outliers in multiple environmental predictors
+(multidimensional space). User should exclude unnecessary columns such
+as the coordinates such that they are not included in the computation.
 
 | Function      | Method used to fit and detect outliers       | Userword in **`multdetect()`** |
 |:--------------|:---------------------------------------------|-------------------------------:|
@@ -115,27 +112,30 @@ longitude), so they are not included in the computation.
 **Ecological ranges**
 
 The user collates the species optimal ecological ranges to identify the
-values outside the known optimal ranges. In the package, for a single
-species, the optimal ranges (mininmu, maximum, or mean values) are
-indicated manually, and the user sets the environmental variables to be
-used for flagging the outliers. A dataset with the minimum and maximum
-values is allowed for multiple species. If the taxa is fish, we include
-the **`thermal_range()`** and **`geo_range()`** functions, which a user
-can set to flag records exceeding the FishBase collated temperature and
-latitudinal/longitudinal ranges. The user word **optimal** is used in
-**`multdetect()`** function for seamless comparisons with other methods.
+species records outside the known optimal ranges. In the package, for a
+single species, the optimal ranges (minimum, maximum, or mean values)
+are provided manually, and the user is required to set the environmental
+predictor to be used for flagging the outliers. A dataset with the
+minimum and maximum values (optimal rnages) is allowed for multiple
+species. **Note** If the taxa is fish, we included the
+**`thermal_range()`** and **`geo_range()`** functions, which a user can
+set to flag records exceeding the FishBase collated temperature and
+latitudinal/longitudinal ranges. The user word **optimal** **`must`** be
+used in the **`multdetect()`** function for seamless comparisons with
+other methods.
 
 4.  **Extract species environmental without outliers**
 
 The **reference dataset** in **Step 2** and lists or outliers flagged by
 each method in **Step 3** are then used to retain the **clean dataset**.
-Under the hood, two approaches are implemented **1) absolute method**
+Under the hood, two approaches are implemented **1) absolute method**:
 where absolute outliers are removed at a particular threshold or **2)
-suitable method** where a method with highest proportion of absolute
-outliers and has highest similarity with other methods (in terms of the
-outliers flagged) can be used. The **threshold** parameter is a measure
-of proportion of the methods that have flagged the record as an outlier
-to the total number of methods used.
+suitable or best outlier detection method** where a method with highest
+proportion of absolute outliers and has highest similarity with other
+methods (in terms of the outliers flagged) can be used. The
+**threshold** parameter is a measure of proportion of the methods that
+have flagged the record as an outlier to the total number of methods
+used.
 
 - `extract_clean_data()` to extract clean data using the reference data
   and outliers for single species.
