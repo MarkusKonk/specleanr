@@ -11,15 +11,23 @@ function(input, output, session) {
   #providing the absolute path within the server
 
 
-  shiny::observe({
-    shiny::updateSelectInput(session = session, inputId = 'folder',
-                             choices = list.dirs(path = xdir, full.names = FALSE, recursive = TRUE))
-  })
+  shinyFiles::shinyDirChoose(input, 'folder', roots=c(wd='.'), filetypes=c('', 'txt', 'csv'))
 
   shiny::observe({
     shiny::updateSelectInput(session = session, inputId = 'files',
-                             choices = list.files(path = file.path(xdir, input$folder),pattern = 'csv$'))
+                             choices = list.files(pattern = 'csv$'))
   })
+
+
+  # shiny::observe({
+  #   shiny::updateSelectInput(session = session, inputId = 'folder',
+  #                            choices = list.dirs(path = xdir, full.names = FALSE, recursive = TRUE))
+  # })
+  #
+  # shiny::observe({
+  #   shiny::updateSelectInput(session = session, inputId = 'files',
+  #                            choices = list.files(path = file.path(xdir, input$folder),pattern = 'csv$'))
+  # })
 
   readdata <- shiny::eventReactive(input$loaddata,{
     read.csv(file = paste0(rf,'/', input$folder,'/', input$files))
