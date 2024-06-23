@@ -1,8 +1,3 @@
-
-#__________________________________________
-#Pre-cleaning of data (removing duplicates, NAs)
-#__________________________________________
-
 #Preliminary
 #' @title  Preliminary data cleaning including removing duplicates, records outside a particular basin, and NAs.
 #'
@@ -15,7 +10,7 @@
 #' @param minpts minimum number of records for the species after removing duplicates and those within a particular basin.
 #' @param multiple TRUE if species are more than one and FALSE for one species in the data.
 #' @param list If TRUE the a list of multiple species data frames will be generated and FALSE for a dataframe of species data sets. Default TRUE
-#' @param basin object of class 'shapefile' If only a particular bain is considered.
+#' @param bbox object of class 'shapefile' If only a particular basin is considered.
 #' @param verbose if TRUE message and warnings will be produced. Default TRUE
 #' @param warn logical, indicating to whelther to show implementation warning or not. Default \code{FALSE}.
 #' @param merge To add the other columns in the species data after data extraction. Default \strong{TRUE}
@@ -48,7 +43,7 @@
 #'                           lat ='decimalLatitude',
 #'                           lon = 'decimalLongitude',
 #'                           colsp = 'speciesname',
-#'                           basin = danubebasin,
+#'                           bbox = danubebasin,
 #'                           multiple = TRUE,
 #'                           list= TRUE, #list will be generated for all species
 #'                           minpts = 10, merge=T)
@@ -56,8 +51,8 @@
 #'
 #'
 
-pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
-                        multiple=TRUE, list=TRUE, merge=FALSE, verbose= TRUE, warn = FALSE){
+pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
+                         multiple=TRUE, list=TRUE, merge=FALSE, verbose= TRUE, warn = FALSE){
 
   if(missing(data)) stop('Data frame with species record missing')
 
@@ -80,7 +75,7 @@ pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
 
   #check if the species coordinates are within the bounding the bounding box of the raster layer
 
-  rasterbbox <- terra::ext(raster)
+  rasterbbox <- as.vector(terra::ext(raster))
 
   xmin1 <- unname(rasterbbox[1])
   ymin1 <- unname(rasterbbox[2])
@@ -92,20 +87,20 @@ pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
   xmax12 <- max(unlist(species_lon_df[, lon]))
   ymax12 <- max(unlist(species_lon_df[, lat]))
 
-  if(isTRUE(warn)) if(xmin11<xmin1)warning("The species points are outside the raster layers provided. Please check xmin.")
+  if(isTRUE(warn)) if(xmin11<xmin1)warning("Some species points are outside the raster layers provided. Please check xmin.", call. = FALSE)
 
-  if(isTRUE(warn)) if(ymin11<ymin1)warning("The species points are outside the raster layers provided. Please check ymin.")
+  if(isTRUE(warn)) if(ymin11<ymin1)warning("Some species points are outside the raster layers provided. Please check ymin.", call. = FALSE)
 
-  if(isTRUE(warn))  if(xmax12>xmax2)warning("The species points are outside the raster layers provided. Please check xmax.")
+  if(isTRUE(warn))  if(xmax12>xmax2)warning("Some species points are outside the raster layers provided. Please check xmax.", call. = FALSE)
 
-  if(isTRUE(warn))  if(ymax12>ymax2)warning("The species points are outside the raster layers provided. Please check ymax.")
+  if(isTRUE(warn))  if(ymax12>ymax2)warning("Some species points are outside the raster layers provided. Please check ymax.", call. = FALSE)
 
 
   spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = st_crs(4326))
 
 
-  if(!is.null(basin)){
-    basin_df <- sf::st_filter(spdata_new, basin)
+  if(!is.null(bbox)){
+    basin_df <- sf::st_filter(spdata_new, bbox)
   } else{
     basin_df <- spdata_new
   }
@@ -167,6 +162,7 @@ pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
 
         biodata <- do.call(rbind, rastdata)
 
+
       }else if (list==TRUE){
 
         rastdata[[ci]] <- as.data.frame(terra::extract(raster, spdfext , ID=FALSE,xy=TRUE))
@@ -181,6 +177,7 @@ pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
 
         biodata <- ldata
 
+
       }else{
 
         stop('set list either TRUE or FALSE to return either dataframe or lists of species data')
@@ -193,90 +190,4 @@ pred_extract <- function(data, raster, lat, lon, basin =NULL, colsp, minpts =10,
   return(biodata)
 }
 
-
-#' @title Determine the outliers at level during pre-cleaning
-#'
-#' @param data Data frame with species data.
-#' @param lat variable for latitude column name.
-#' @param lon variable for longitude column name.
-#' @param colsp variable with species names.
-#' @param basin variable to determine how many records discarded that are not in the basin.
-#'
-#' @return Records of discarded at every step of data checks.
-#'
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' library(sf)
-#'
-#' data(jdsdata)
-#'
-#' danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
-#'
-#' danubebasin <- st_read(danube)
-#'
-#' df <- check_outliers(data = efidata, lat ='decimalLatitude', lon = 'decimalLongitude',
-#'  basin = 'danube', colsp = 'scientificName')
-#'
-#' }
-#'
-#'
-check_outlier <- function(data, colsp, lat, lon, basin =NULL){
-
-  if(missing(data)) stop('Data frame with species record missing')
-
-  if(length((colnames(data)[colnames(data)==colsp]))<1){
-
-    stop('Species column name ', colsp, ' is  not found in the ', deparse(substitute(data)),
-         ' data provided')}
-
-  if(is(data, 'grouped_df')|| is(data, 'tbl') ||is(data, 'tbd_df')){
-    data <- as.data.frame(data)
-  }
-  species_na_rem <- data[!is.na(data[, colsp]),]
-
-  species_lat_df <- species_na_rem[!is.na(species_na_rem[, lat]),]
-
-  sp <- unique(unlist(species_lat_df[,colsp]))
-
-  mcord <- c()
-  basincord <- c()
-  dupd <- c()
-  spn <- c()
-  original <- c()
-
-  for (ci in seq_along(sp)) {
-
-    spdata <- species_lat_df[species_lon_df[, colsp]==sp[ci],]
-
-    original[ci] <- nrow(spdata)
-
-    spn[ci] <- sp[ci]
-
-    species_lon_df <- spdata[!is.na(spdata[, lon]),]
-
-    mcord[ci] <- nrow(spdata)-nrow(species_lon_df)
-
-    spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = st_crs(4326))
-
-    if(!is.null(basin)){
-      basin_df <- sf::st_filter(spdata_new, basin)
-    } else{
-      basin_df <- spdata_new
-    }
-
-    basincord[ci] <- nrow(species_lon_df)-nrow(basin_df)
-
-    dupdata <- as.data.frame(unique.data.frame(basin_df[,c('geometry',colsp)]))
-
-    dupd[ci] <- nrow(basin_df)- nrow(dupdata)
-
-    df <- data.frame(intial = original, missingcoordinates = mcord, basinrecords = basincord,
-                     duplicates = dupd, species = spn)
-  }
-
-  return(df)
-}
 

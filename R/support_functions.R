@@ -123,3 +123,43 @@ suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dply
 }
 
 
+
+#' @title Customised match function
+#'
+#' @param x The category with words to match
+#' @param choices The different options or choices in a particular category that are allowed.
+#' @param quiet Default \code{FALSE} not to return messages.
+#'
+#' @return choices
+#' @export
+#'
+match.argc <- function(x, choices, quiet=TRUE){
+
+  if(any(choices%in%x)==FALSE){
+    stop("The value for ", deparse(substitute(x)), " is not allowed. Choose from ", paste0(choices, collapse = ', '))
+  } else{
+    if(isFALSE(quiet))message("The ", deparse(substitute(x)), " is not among the allowed choices ", paste0(choices, collapse = ', '))
+  }
+}
+
+
+check.exclude <- function(x, exclude, quiet=TRUE){
+
+  xcnames <- colnames(x)
+
+  indcols <- exclude%in%xcnames
+
+  colsnotindf <- exclude[which(indcols==FALSE)]
+
+  if(length(colsnotindf)>=1){
+
+    stop("The column name/s: ", paste(colsnotindf, collapse = ', '), " to be excluded are/is not in the species-environment extracted data.")
+  }else{
+
+    if(isFALSE(quiet)) message("All indicated columns to be excluded are in the dataset.")
+  }
+
+}
+
+
+

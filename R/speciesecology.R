@@ -40,8 +40,8 @@
 #'
 #'
 #' @references Schmidt-Kloiber, A., Bremerich, V., De Wever, A. et al. The Freshwater Information Platform:
-#' a global online network providing data, tools and resources for science and policy support. Hydrobiologia 838, 1–11 (2019).
-#'https://doi.org/10.1007/s10750-019-03985-5
+#' a global online network providing data, tools and resources for science and policy support.
+#' Hydrobiologia 838, 1-11 (2019).
 #'
 #'
 
@@ -83,138 +83,9 @@ fip_ranges <- function(data, colsp=NULL, basin, range, pct=90, verbose=F, sn=FAL
   cat('Please cite this dataset as:
       Schmidt-Kloiber, A., Bremerich, V., De Wever, A. et al. The Freshwater Information Platform:
       a global online network providing data, tools and resources for science and policy support.
-      Hydrobiologia 838, 1–11 (2019).https://doi.org/10.1007/s10750-019-03985-5', '\n')
+      Hydrobiologia 838, 1-11', '\n')
 
   return(dfinal)
-}
-
-
-#' @title Collates minimum, maximum, and preferable temperatures from FishBase.
-#'
-#' @param x kk
-#' @param colsp kk
-#' @param verbose kk
-#' @param pct kk
-#' @param sn kk
-#'
-#' @return Data table for minimum, maximum and preferable species temperatures from FishBase.
-#' @export
-#'
-#' @examples
-#'
-thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE){
-
-  if(missing(x)) stop('Data is not provided', call. = FALSE)
-
-  if(is(x, 'data.frame') && is.null(colsp)) {
-
-    stop('Species column names is not provided', call. = FALSE)
-
-  } else if(is(x, 'data.frame') && !is.null(colsp)){
-
-    if(length((colnames(x)[colnames(x)==colsp]))<1){
-
-      stop('Species column name ', colsp, ' is  not found in the ', deparse(substitute(x)), ' data provided')
-
-    } else{
-
-      spls <- as.list(unique(unlist(x[, colsp])))
-
-      dsplist <- check_names(data = spls, verbose = verbose, pct = pct, sn = sn)#merge is false
-    }
-
-  }else if(is(x, 'list')){
-
-    spls <- unlist(x)
-
-    dsplist <- check_names(data = spls, verbose = verbose, pct = pct, sn = sn)#merge is false
-
-  }else if(is(x, 'vector') || is(x, 'atomic')) {
-
-    dsplist <- check_names(data = x, verbose = verbose, pct = pct, sn = sn)
-
-
-  }else{
-    stop('No data provided for species to check and merge')
-  }
-
-  #remove repeated species names
-
-  if(is(dsplist, 'vector')){
-
-    unx <- dsplist
-  }else{
-    unx <- unique(unlist(dsplist$speciescheck))
-
-  }
-  v <- unx[!is.na(unx)]#remove NA species from the vector data
-
-  rc <- fishbase(tables = 'ranges')
-
-  sy <- fishbase(tables = 'synonym')
-
-  ld <- length(unx); lv <- length(v)
-
-  if(ld<lv) message(ld-lv, ' dropped because species names are not in FishBase')
-
-  tempmi <- c(); tempma <- c(); temppref <- c(); species <- c()
-
-  for (ispt in seq_along(v)) {
-
-    sp1 <- v[ispt]
-
-    spc <- unlist(sy$synonym)%in%sp1
-
-    if(any(spc==TRUE)){
-
-      codesp <-  unlist(sy$SpecCode)[which( spc==TRUE)]
-
-      #get the species temperature ranges
-
-      tmnext <- unlist(rc$TempMin)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      tmaxext <- unlist(rc$TempMax)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      tprefext <- unlist(rc$TempPreferred)[which(unlist(rc$SpecCode) %in% codesp)]
-
-      #check if there is no ranges
-
-      if(all(is.na(tmnext))) {
-        if(isTRUE(verbose)==TRUE) message('No minimum temperature for ', sp1, '.')
-        tempminval = NA
-      }else{
-        tmpmnvalues <- tmnext[!is.na(tmnext)]
-
-        if(length(tmpmnvalues)>1) tempminval <- min(tmpmnvalues) else tempminval = tmpmnvalues
-      }
-
-      if(all(is.na(tmaxext))) {
-        if(isTRUE(verbose)==TRUE) message('No maximum temperature for ', sp1, '.')
-        tmaxval = NA
-      }else{
-        tmaxvalues <- tmaxext[!is.na(tmaxext)]
-        if(length(tmaxvalues)>1) tmaxval <- max(tmaxvalues) else tmaxval = tmaxvalues
-      }
-      if(all(is.na(tprefext))) {
-        if(isTRUE(verbose)==TRUE) message('No maximum temperature for ', sp1, '.')
-        tprefval = NA
-      }else{
-        tprefvalues <- tprefext[!is.na(tprefext)]
-        if(length(tprefvalues)>1) tprefval <- max(tprefvalues) else tprefval = tprefvalues
-      }
-    }else{
-      if(isTRUE(verbose)==TRUE) message('No minimum temperature for ', sp1, '.')
-      tprefval = NA
-    }
-
-    tempma[ispt] <- tmaxval
-    tempmi[ispt] <- tempminval
-    temppref[ispt] <- tprefval
-    species[ispt] <- sp1
-
-    dftemp <- data.frame(species = species, tempmin= tempmi, tempmax= tempma, tempref = temppref)
-  }
-  return(dftemp)
 }
 
 
@@ -251,7 +122,7 @@ endemicity <- function(basin, range){
   cat('Please cite this dataset as:
       Schmidt-Kloiber, A., Bremerich, V., De Wever, A. et al. The Freshwater Information Platform:
       a global online network providing data, tools and resources for science and policy support.
-      Hydrobiologia 838, 1–11 (2019).https://doi.org/10.1007/s10750-019-03985-5', '\n')
+      Hydrobiologia 838, 1-11 (2019)', '\n')
 
 
   return(dfselect)
@@ -553,7 +424,7 @@ mdistr_ranges <- function(data, colsp, lat, lon, key, mode, verbose=T){
 
 #' @title Checks for geographic ranges from FishBase
 #'
-#' @param data species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.
+#' @param data Dataframe or vector to retrieve  ranges from FishBase.
 #' @param colsp Column with species names from the data set.
 #' @param verbose TRUE and messages will show. Default FALSE:
 #' @param pct The percentage similarity of species names during standardization from FishBase.
@@ -611,11 +482,13 @@ geo_ranges <- function(data, colsp =NULL, verbose=F, pct = 90,sn =FALSE, warn=FA
 
   if(is(dsplist, 'vector')){
 
-    uqspeciesnames <- dsplist
+    uqspeciesnames <- unique(dsplist)
   }else{
     uqspeciesnames <- unique(unlist(dsplist$speciescheck))
 
   }
+  if(all(is.na(uqspeciesnames))==FALSE){
+
   speciesfinal <- uqspeciesnames[!is.na(uqspeciesnames)]#remove NA species from the vector data
 
 
@@ -687,6 +560,13 @@ geo_ranges <- function(data, colsp =NULL, verbose=F, pct = 90,sn =FALSE, warn=FA
 
     }, simplify = TRUE)
   }, simplify = TRUE)
+
+  }else{
+
+    warning("The species name is not found in FishBase. If the species  name is not a fish species, remove checkfishbase from optpar parameter.")
+    cord = NA
+  }
+
   return(unlist(cord))
 }
 

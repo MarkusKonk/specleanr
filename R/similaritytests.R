@@ -27,7 +27,7 @@
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf, output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
@@ -124,7 +124,7 @@ ext_outliers <- function(x, sp = NULL){ #species name in quotes or number
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf, output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
@@ -246,7 +246,7 @@ oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
     return(bestmethod)
 
   }else{
-    stop('Choose either TRUE or FALSE for ´ábsolute´ parameter to return outliers or bestmethod. Defualt is FALSE')
+    stop('Choose either TRUE or FALSE for absolute parameter to return outliers or bestmethod. Defualt is FALSE')
   }
 }
 
@@ -254,7 +254,6 @@ oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
 #'
 #' @param x List of dataframes for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -291,18 +290,18 @@ oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf, output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
 #'
-#' ociss <- ocindex(x = outliers, sp= 1, threshold = 0.2, absolute = TRUE, var = 'bio6')#
+#' ociss <- ocindex(x = outliers, sp= 1, threshold = 0.2, absolute = TRUE)#
 #' #No outliers detected in more than two methods
 #'
 #' }
 #'
 #'
-ocindex <- function(x, sp = NULL, var, threshold = NULL, absolute=FALSE, props=FALSE, warn=TRUE, autothreshold=FALSE){
+ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE, warn=TRUE, autothreshold=FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -310,11 +309,15 @@ ocindex <- function(x, sp = NULL, var, threshold = NULL, absolute=FALSE, props=F
 
   if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
 
-  if(is.null(threshold) && autothreshold == FALSE) stop("Either set the threshold value or change `autothreshold` parameter to TRUE.")
+  if(is.null(threshold) && autothreshold == FALSE) stop("Either set the threshold value or change autothreshold parameter to TRUE.")
 
   if(!is.null(threshold) && isTRUE(autothreshold)) stop("Either set threshold value (from 0 to 1) or autothreshold to TRUE but not both.")
 
   if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
+
+  #Get the variable used in outlier detection
+
+  var <- x@varused
 
   #For multiple species
 
@@ -455,7 +458,6 @@ ocindex <- function(x, sp = NULL, var, threshold = NULL, absolute=FALSE, props=F
 #' @title  Identifies absolute outliers for multiple species.
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -491,18 +493,18 @@ ocindex <- function(x, sp = NULL, var, threshold = NULL, absolute=FALSE, props=F
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf,output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
 #'
-#' totabs_counts <- mult_abs(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')
+#' totabs_counts <- mult_abs(x = outliers, sp= 1, threshold = 0.2)
 #' }
 #'
 #' @seealso [ocindex()]
 #'
 
-mult_abs <- function(x, var, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=FALSE){
+mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -527,10 +529,10 @@ mult_abs <- function(x, var, threshold = NULL, props=FALSE, warn=TRUE, autothres
       absx <- tryCatch(
         expr = {
           if(autothreshold == TRUE){
-            abscount <- ocindex(x= x, sp = di, var = var, absolute = TRUE, threshold = threshold, props = FALSE, warn=warn, autothreshold = TRUE)
+            abscount <- ocindex(x= x, sp = di, absolute = TRUE, threshold = threshold, props = FALSE, warn=warn, autothreshold = TRUE)
           }else{
 
-            abscount <- ocindex(x= x, sp = di, var = var, absolute = TRUE, threshold = threshold, props = FALSE, warn=warn, autothreshold = FALSE )
+            abscount <- ocindex(x= x, sp = di, absolute = TRUE, threshold = threshold, props = FALSE, warn=warn, autothreshold = FALSE )
 
           }
         },
@@ -559,7 +561,7 @@ mult_abs <- function(x, var, threshold = NULL, props=FALSE, warn=TRUE, autothres
       absx <- tryCatch(
         expr = {
 
-          absprops <- ocindex(x= x, sp = di, var = var, absolute = TRUE, threshold = threshold,
+          absprops <- ocindex(x= x, sp = di, absolute = TRUE, threshold = threshold,
                               props = props, warn=warn, autothreshold = autothreshold)
 
         },
@@ -589,11 +591,11 @@ mult_abs <- function(x, var, threshold = NULL, props=FALSE, warn=TRUE, autothres
   return(dx)
 }
 
-# mult <- ocindex(x=out_df, var = 'bio1', sp=1, warn = FALSE, absolute = TRUE,
+# mult <- ocindex(x=out_df, sp=1, warn = FALSE, absolute = TRUE,
 #                 autothreshold = FALSE, props = TRUE, threshold = 0.6)
 #
-# mult2 <- mult_abs(x=out_df, var = 'bio1', warn = FALSE, props = TRUE, autothreshold = TRUE)
-# mult <- mult_abs(x=out_df, var = 'bio1', warn = FALSE, props = TRUE, threshold = 0.60)
+# mult2 <- mult_abs(x=out_df, warn = FALSE, props = TRUE, autothreshold = TRUE)
+# mult <- mult_abs(x=out_df,  warn = FALSE, props = TRUE, threshold = 0.60)
 
 
 
@@ -603,7 +605,6 @@ mult_abs <- function(x, var, threshold = NULL, props=FALSE, warn=TRUE, autothres
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -637,18 +638,18 @@ mult_abs <- function(x, var, threshold = NULL, props=FALSE, warn=TRUE, autothres
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf, output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
 #'
-#' jaccardout <- jaccard(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' jaccardout <- jaccard(x = outliers, sp= 1, threshold = 0.2)#
 #'
 #'
 #' }
 #'
 #'
-jaccard <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothreshold=FALSE){
+jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -659,20 +660,23 @@ jaccard <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
 
-    absoutliers_list <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn,
+    absoutliers_list <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
     absoutliers <- absoutliers_list[[2]]
+
   }else{
-    absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+    absoutliers <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn)
   }
 
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+  var <- x@varused
 
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+  if(x@mode == TRUE && !is.null(sp)){
 
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+    if(length(absoutliers)>=1)  species <- x@result[[sp]] else stop('No outliers')
 
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+  }else if(x@mode == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>=1) species <- x@result else stop('No outliers')
 
   }else{
     stop('If they are  multiple species, indicate a particular species name or index')
@@ -688,6 +692,7 @@ jaccard <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
   if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
 
   matj <- matrix(NA, nrow = length(y), ncol = length(y))
+
 
   for (cxii in seq_along(y)) {
     m1 <- y[[cxii]][[var]]
@@ -729,7 +734,6 @@ jaccard <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -775,7 +779,7 @@ jaccard <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
 #'
 #'
 
-overlap <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothreshold = FALSE){
+overlap <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -784,20 +788,22 @@ overlap <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
   if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   if(isTRUE(autothreshold)){
-    absoutliers_list <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn,
+    absoutliers_list <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
     absoutliers <- absoutliers_list[[2]]
   }else{
-    absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+    absoutliers <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn)
   }
 
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+  var <- x@varused
 
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+  if(x@mode == TRUE && !is.null(sp)){
 
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+    if(length(absoutliers)>=1)  species <- x@result[[sp]] else stop('No outliers')
 
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+  }else if(x@mode == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>=1) species <- x@result else stop('No outliers')
 
   }else{
     stop('If they are  multiple species, indicate a particular species name or index')
@@ -853,7 +859,6 @@ overlap <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -898,7 +903,7 @@ overlap <- function(x, sp = NULL, var, threshold = NULL, warn=FALSE, autothresho
 #' }
 #'
 
-cosine <- function(x, sp = NULL, var, threshold = NULL, warn=TRUE, autothreshold = FALSE){
+cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -908,20 +913,21 @@ cosine <- function(x, sp = NULL, var, threshold = NULL, warn=TRUE, autothreshold
 
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
-    absoutliers_list <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn,
+    absoutliers_list <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
     absoutliers <- absoutliers_list[[2]]
   }else{
-    absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+    absoutliers <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn)
   }
+  var <- x@varused
 
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+  if(x@mode == TRUE && !is.null(sp)){
 
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+    if(length(absoutliers)>=1)  species <- x@result[[sp]] else stop('No outliers')
 
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+  }else if(x@mode == FALSE && is.null(sp)){
 
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+    if(length(absoutliers)>=1) species <- x@result else stop('No outliers')
 
   }else{
     stop('If they are  multiple species, indicate a particular species name or index')
@@ -975,7 +981,6 @@ cosine <- function(x, sp = NULL, var, threshold = NULL, warn=TRUE, autothreshold
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -1020,7 +1025,7 @@ cosine <- function(x, sp = NULL, var, threshold = NULL, warn=TRUE, autothreshold
 #' }
 #'
 
-sorensen <- function(x, sp = NULL, var, threshold=NULL, warn=FALSE, autothreshold = FALSE ){
+sorensen <- function(x, sp = NULL,  threshold=NULL, warn=FALSE, autothreshold = FALSE ){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -1029,20 +1034,21 @@ sorensen <- function(x, sp = NULL, var, threshold=NULL, warn=FALSE, autothreshol
   if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   if(isTRUE(autothreshold)){
-    absoutliers_list <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn,
+    absoutliers_list <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
     absoutliers <- absoutliers_list[[2]]
   }else{
-    absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+    absoutliers <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn)
   }
+  var <- x@varused
 
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+  if(x@mode == TRUE && !is.null(sp)){
 
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+    if(length(absoutliers)>=1)  species <- x@result[[sp]] else stop('No outliers')
 
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+  }else if(x@mode == FALSE && is.null(sp)){
 
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+    if(length(absoutliers)>=1) species <- x@result else stop('No outliers')
 
   }else{
     stop('If they are  multiple species, indicate a particular species name or index')
@@ -1093,76 +1099,6 @@ sorensen <- function(x, sp = NULL, var, threshold=NULL, warn=FALSE, autothreshol
   return(bestmethodsor)
 }
 
-#jd1 <- sorensen(out_df, sp =1, var = 'bio1', threshold = 0.2, warn = T)
-
-#Jaccard (or Tanimoto) Similarity Index
-
-jaccard_tan <- function(x, sp = NULL, var, threshold, warn=T){
-
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
-
-  absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
-
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
-
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
-
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
-
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
-
-  }else{
-    stop('If they are  multiple species, indicate a particular species name or index')
-  }
-
-  checkNA <- sapply(species, nrow)
-
-  #remove methods that didnot execute
-  speciesNULL <- species[!sapply(checkNA,is.null)]
-
-  len <- sapply(speciesNULL, nrow) #check if any method returned no outliers
-
-  if(any(len==0)) y <- speciesNULL[len !=0] else y <- speciesNULL #replace the list with empty data with y
-
-  matjtan <- matrix(NA, nrow = length(y), ncol = length(y))
-
-  for (cxviii in seq_along(y)) {
-    m7 <- y[[cxviii]][[var]]
-
-    for (cxvix in seq_along(y)) {
-
-      m8 <- y[[cxvix]][[var]]
-
-      intxtan <- intersect(m7, m8)
-
-      unxtan <- union(m7, m8)
-
-      matjtan[cxviii, cxvix] <- (length(intxtan)/(length(unxtan)-length(intxtan)))*100
-
-    }
-  }
-  #choose best method with highest mean Jaccard index value
-  jdxtan <- c()
-
-  for (biv in 1:nrow(matjtan)) {
-
-    jadvaltan <- matjtan[,biv]
-
-    jdxtan[biv] <- mean(jadvaltan)
-  }
-  indxjtan <- which(jdxtan==max(jdxtan))
-
-  if(length(indxjtan)>1) indxjtan <- indxjtan[1]
-
-  bestmethodjtan <- names(y)[indxjtan]
-
-  return(bestmethodjtan)
-}
-
 
 #Simple matching coefficient
 
@@ -1170,7 +1106,6 @@ jaccard_tan <- function(x, sp = NULL, var, threshold, warn=T){
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -1202,7 +1137,7 @@ jaccard_tan <- function(x, sp = NULL, var, threshold, warn=T){
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf,  output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
@@ -1214,7 +1149,7 @@ jaccard_tan <- function(x, sp = NULL, var, threshold, warn=T){
 #'
 
 
-smc <- function(x, sp=NULL, var, threshold = NULL, warn = TRUE, autothreshold = FALSE){
+smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -1224,20 +1159,23 @@ smc <- function(x, sp=NULL, var, threshold = NULL, warn = TRUE, autothreshold = 
 
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
-    absoutliers_list <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn,
+
+    absoutliers_list <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
     absoutliers <- absoutliers_list[[2]]
   }else{
-    absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+    absoutliers <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn)
   }
 
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+  var <- x@varused
 
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+  if(x@mode == TRUE && !is.null(sp)){
 
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+    if(length(absoutliers)>=1)  species <- x@result[[sp]] else stop('No outliers')
 
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+  }else if(x@mode == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>=1) species <- x@result else stop('No outliers')
 
   }else{
     stop('If they are  multiple species, indicate a particular species name or index')
@@ -1367,7 +1305,6 @@ smc <- function(x, sp=NULL, var, threshold = NULL, warn = TRUE, autothreshold = 
 #'
 #' @param x List of data frames for each methods used to identify outliers in mult_detect function.
 #' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
 #'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
@@ -1400,7 +1337,7 @@ smc <- function(x, sp=NULL, var, threshold = NULL, warn = TRUE, autothreshold = 
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf, output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
@@ -1410,7 +1347,7 @@ smc <- function(x, sp=NULL, var, threshold = NULL, warn = TRUE, autothreshold = 
 #' }
 #'
 
-hamming <- function(x, sp=NULL, var, threshold = NULL, warn = FALSE, autothreshold = FALSE){
+hamming <- function(x, sp=NULL, threshold = NULL, warn = FALSE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -1420,20 +1357,22 @@ hamming <- function(x, sp=NULL, var, threshold = NULL, warn = FALSE, autothresho
 
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
-    absoutliers_list <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn,
+    absoutliers_list <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
     absoutliers <- absoutliers_list[[2]]
   }else{
-    absoutliers <- ocindex(x= x, sp = sp, var = var, absolute = TRUE, threshold = threshold, warn = warn)
+    absoutliers <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn)
   }
 
-  if(isTRUE(x@mode) == TRUE && !is.null(sp)){
+  var <- x@varused
 
-    if(length(absoutliers)>1)  species <- x@result[[sp]] else stop('No outliers')
+  if(x@mode == TRUE && !is.null(sp)){
 
-  }else if(isTRUE(x@mode) == FALSE && is.null(sp)){
+    if(length(absoutliers)>=1)  species <- x@result[[sp]]
 
-    if(length(absoutliers)>1) species <- x@result else stop('No outliers')
+  }else if(x@mode == FALSE && is.null(sp)){
+
+    if(length(absoutliers)>=1) species <- x@result
 
   }else{
     stop('If they are  multiple species, indicate a particular species name or index')
@@ -1506,7 +1445,6 @@ hamming <- function(x, sp=NULL, var, threshold = NULL, warn = FALSE, autothresho
 #' @title Identifies the best method for outlier detection for a single species.
 #'
 #' @param x List of dataframes for each methods used to identify outliers in \strong{\code{multdetect}} function.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param sp species name or index if multiple species are considered during outlier detection.
 #' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 #'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
@@ -1515,8 +1453,6 @@ hamming <- function(x, sp=NULL, var, threshold = NULL, warn = FALSE, autothresho
 #'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
 #' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 #'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param mode the mode is \code{all} for all methods or custom for selected methods.
-#' @param similarity_tests indicate the methods to consider including \code{jaccard}, \code{overlap},\code{sorensen}, \code{ocindex}, and \code{smc}.
 #' @param verbose if \code{TRUE} then messages and warnings will be produced. Default \code{FALSE}.
 #' @param warn If \strong{\code{TRUE}}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{\code{TRUE}}.
 #'
@@ -1545,191 +1481,119 @@ hamming <- function(x, sp=NULL, var, threshold = NULL, warn = FALSE, autothresho
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+#' outliers <- multidetect(data = extdf,output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
 #'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
 #'                        kmpar =list(k=6, method='silhouette', mode='soft'))
 #'
-#' bmout <- bestmethod(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' bmout <- bestmethod(x = outliers, sp= 1, threshold = 0.2#
 #'
 #'
 #' }
 #'
 #'
 
-bestmethod <- function(x, var, sp = NULL, threshold= NULL, mode = 'all',
-                       similarity_tests=NULL, warn=FALSE, verbose=FALSE, autothreshold=FALSE){
+bestmethod <- function(x, sp = NULL, threshold= NULL, autothreshold=FALSE,
+                       warn=FALSE, verbose=FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
+  if(missing(x)) stop('List of species data with outliers is not provided.')
 
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepeted')
+  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepeted.')
 
   if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
 
   if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
-  match.arg(mode, choices = c('custom','all'))
+  simethods <- c('jaccard', 'overlap','sorensen', 'hamming','ocindex', 'smc', 'cosine')
 
-  allowedmethods <- c('jaccard', 'overlap','sorensen', 'hamming','ocindex', 'smc', 'cosine')
+  simoutput <- sapply(simethods, function(xi){
 
-  selectedmethod <- c()
-  methodsnames <- c()
+    if(xi=='jaccard'){
 
-  if(mode=='all' && is.null(similarity_tests)){
+      simodel <- jaccard(x= x, sp = sp,  threshold = threshold, warn = warn,
+                         autothreshold = autothreshold)
+    }else if(xi == 'overlap'){
 
-    for (cxxxv in 1:length(allowedmethods)) {
-
-      method_names <- allowedmethods[cxxxv]
-
-      if(method_names=='jaccard'){
-
-        simodel <- jaccard(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                           autothreshold = autothreshold)
-
-      }else if(method_names == 'overlap'){
-
-        simodel <- overlap(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                           autothreshold = autothreshold)
-
-      }else if(method_names == 'sorensen'){
-
-        simodel <- sorensen(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                            autothreshold = autothreshold)
-
-      }else if(method_names == 'smc'){
-
-        simodel <- smc(x= x, sp =sp, var = var, threshold = threshold, warn = warn,
-                       autothreshold = autothreshold)
-
-      }else if(method_names == 'cosine'){
-
-        simodel <- cosine(x= x, sp =sp, var = var, threshold = threshold, warn = warn,
-                          autothreshold = autothreshold)
-
-      }else if(method_names == 'hamming'){
-
-        simodel <- hamming(x= x, sp =sp, var = var, threshold = threshold, warn = warn,
-                           autothreshold = autothreshold)
-
-      }else{
-
-        simodel <- ocindex(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                           autothreshold = autothreshold)
-      }
-
-      selectedmethod[cxxxv] <- simodel
-      methodsnames[cxxxv] <- method_names
-    }
-  }else if(!is.null(similarity_tests) && mode=='custom'){
-
-    if(all(similarity_tests %in% allowedmethods)==FALSE){
-
-      stop('Accepted simialrity measures include jaccard, overlap, sorensen, cosine, and ocindex')
-
-    }else if(length(similarity_tests)<3){
-
-      stop('Choose atleast 2 methods among jaccard, overlap, hamming, sorensen, cosine, and ocindex')
-
-    }else{
-      met_comb <- unique(c('ocindex', similarity_tests))
-
-      for (cxxxv in 1:length(met_comb)) {
-
-        method_names <- met_comb[cxxxv]
-
-        if(method_names=='jaccard'){
-
-          simodel <- jaccard(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                             autothreshold = autothreshold)
-
-        }else if(method_names == 'overlap'){
-
-          simodel <- overlap(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                             autothreshold = autothreshold)
-
-        }else if(method_names == 'sorensen'){
-
-          simodel <- sorensen(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                              autothreshold = autothreshold)
-
-        }else if(method_names == 'smc'){
-
-          simodel <- smc(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
+      simodel <- overlap(x= x, sp = sp,  threshold = threshold, warn = warn,
                          autothreshold = autothreshold)
 
-        }else if(method_names == 'hamming'){
+    }else if(xi == 'sorensen'){
 
-          simodel <- hamming(x= x, sp =sp, var = var, threshold = threshold, warn = warn,
-                             autothreshold = autothreshold)
+      simodel <- sorensen(x= x, sp = sp, threshold = threshold, warn = warn,
+                          autothreshold = autothreshold)
 
-        }else if(method_names == 'cosine'){
+    }else if(xi == 'smc'){
 
-          simodel <- cosine(x= x, sp =sp, var = var, threshold = threshold, warn = warn,
-                            autothreshold = autothreshold)
+      simodel <- smc(x= x, sp =sp,  threshold = threshold, warn = warn,
+                     autothreshold = autothreshold)
 
-        }else{
+    }else if(xi == 'cosine'){
 
-          simodel <- ocindex(x= x, sp = sp, var = var, threshold = threshold, warn = warn,
-                             autothreshold = autothreshold)
-        }
+      simodel <- cosine(x= x, sp =sp, threshold = threshold, warn = warn,
+                        autothreshold = autothreshold)
 
-        selectedmethod[cxxxv] <- simodel
-        methodsnames[cxxxv] <- method_names
-      }
-    }
+    }else if(xi == 'hamming'){
 
-  }else{
-    stop('Select method including jaccard, overlap, sorensen, hamming, ocindex, cosine, and smc')
-  }
+      simodel <- hamming(x= x, sp =sp,  threshold = threshold, warn = warn,
+                         autothreshold = autothreshold)
 
-  mvotes <- as.data.frame(table(selectedmethod))
-
-  method_oci <- selectedmethod[which(methodsnames =='ocindex')]#standard method
-
-  freqm <- mvotes$Freq #Freq is created automatically
-
-  indxct <- which(freqm == max(freqm))
-
-  if(length(indxct)==1){
-
-    bstmethod <- as.character(mvotes$selectedmethod[indxct])
-
-    if(isTRUE(verbose)==TRUE) message('Criteria: Best method selected with majority votes of ', max(freqm), '.')
-
-  }else if(length(indxct)==2){
-
-    if(isTRUE(method_oci %in% as.vector(mvotes$selectedmethod[indxct]))){
-
-      bstmethod <- method_oci
-
-      if(isTRUE(verbose))message('Criteria: Method with maximum number of votes and similar to OCI')
     }else{
-      maxvotemethod <- as.vector(mvotes$selectedmethod[which(freqm == max(freqm))])
 
-      bstmethod <- maxvotemethod[1]
+      simodel <- ocindex(x= x, sp = sp, threshold = threshold, warn = warn,
+                         autothreshold = autothreshold)
+    }
+
+  })
+
+  freqm <- table(simoutput) == max(table(simoutput))
+
+  #select for the method with TRUE meaning maximum selection or frequency
+
+  bstmethod <- names(freqm[which(freqm==TRUE)])
+
+  if(length(bstmethod)==1){
+
+    bstfinal <- as.character(bstmethod)
+
+    if(isTRUE(verbose)) message('Criteria: Best method selected with majority votes of ', max(table(simoutput)), '.')
+
+  } else if(length(bstmethod)>1){
+
+    #obtain the method identified by ocindex to be used as a standard in case its among the maximum
+
+    ocimethodflag <- simoutput[which(names(simoutput)=="ocindex")]
+
+    #get methods with maximum votes
+
+    maxmethods <- freqm[which(freqm==TRUE)]
+
+    checkbest <- names(maxmethods)%in%ocimethodflag
+
+    if(any(checkbest)==TRUE) {
+
+      bstfinal = names(maxmethods)[which(checkbest==TRUE)]
+
+      if(isTRUE(verbose)) message('Criteria: Method with maximum number of votes and similar to OCI is selected.')
+
+    }else{
+      bstfinal = names(maxmethods)[1]
+
+      if(isTRUE(verbose)) message('Criteria: One of the method with maximum number of votes selected.')
     }
   }else{
-    bstmethod <- method_oci
-
-    if(isTRUE(verbose))message('Criteria: Similarity did not converge to common method and OCI method selected ')
+    stop("No method identified and possibly no absolute outliers identified.")
   }
 
-  return(bstmethod)
+  return(bstfinal)
 }
 
 
 #' @title Identify best method for outlier removal for multiple species using majority votes.
 #'
 #' @param x Output from the outlier detection.
-#' @param var variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.
 #' @param threshold value to consider whether the outlier is an absolute outlier or not.
 #' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 #'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param mode Either all to consider all similarity measure to consider best method or custom
-#'  to indicate the similarity measures or interest. simple matching coefficient, jaccard, sorensen,
-#'  and overlap coefficient can be used.
-#' @param similarity_tests if mode is set to custom then similarity_tests should be indicated to be used to identify outliers
-#'  These include simple matching coefficient, jaccard, sorensen, and overlap coefficient can be used.
 #' @param verbose Produce messages on the process or not. Default \strong{FALSE}.
 #'
 #' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
@@ -1766,8 +1630,7 @@ bestmethod <- function(x, var, sp = NULL, threshold= NULL, mode = 'all',
 #' }
 #'
 
-mult_bestmethod<- function(x, var, threshold = NULL, mode = 'all', similarity_tests =NULL, warn=FALSE,
-                           verbose=FALSE, autothreshold = FALSE){
+multibestmethod<- function(x, threshold = NULL, warn=FALSE, verbose=FALSE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -1775,9 +1638,9 @@ mult_bestmethod<- function(x, var, threshold = NULL, mode = 'all', similarity_te
 
   if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
 
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
+  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.', call. = FALSE)
 
-  if(mode=='custom' && is.null(similarity_tests)){stop('Provide manually indicate the similarity measures.')}
+  if(x@mode==FALSE) stop("Use bestmethod function to identify the best outlier detection method for a single species.")
 
   metout <- c()
 
@@ -1788,14 +1651,13 @@ mult_bestmethod<- function(x, var, threshold = NULL, mode = 'all', similarity_te
 
     bstout <- tryCatch(
       expr = {
-        bst <- bestmethod(x= x, sp = dii, var = var, threshold = threshold, mode = mode,
-                          similarity_tests = similarity_tests, warn = warn, autothreshold = autothreshold)
+        bst <- bestmethod(x= x, sp = dii, threshold = threshold, warn = warn, autothreshold = autothreshold)
       },
       error= function(e){
 
-        if(isTRUE(verbose))message('No absolute outliers exist for ', names(x@result)[dii], '.')
+          if(isTRUE(verbose))message('No absolute outliers exist for ', names(x@result)[dii], '.')
 
-        return('None')
+        return('No absolute outliers found.')
       })
 
     if(length(bst)>=1){
@@ -1811,37 +1673,3 @@ mult_bestmethod<- function(x, var, threshold = NULL, mode = 'all', similarity_te
 
   return(data.frame(species = species, bestm = metout))
 }
-
-# c1 <- mult_bestmethod(x= hdout_df2, var = 'spi', mode = 'all', warn = F, verbose = FALSE,
-#                       autothreshold = TRUE)
-#
-# zz <- bestmethod(x=out_df, sp="Acipenser ruthenus", var = 'bio1', mode = 'all',
-#                  autothreshold = TRUE)
-
-# c12 <- extract_clean(data = precleaned, sp= 60, outliers = out_df, var ='bio6',
-#                      type = 'bestmethod',
-#                      autothreshold = TRUE, mode='all', warn = T, verbose = FALSE)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

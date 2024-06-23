@@ -75,9 +75,9 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
 #' @param prop The proportion of pseudo absences to presences. Default of 1 is used. Therefore equal number of pseudo absences are generated commensurate to the species.
 #' @param missingness Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
 #'      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.
-#' @param mode Either \code{presenceonly} if the species dataset do not have label column for presence absence. Therefore, the \code{presenceonly} is used
-#'        when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{presenceabsence} option.
-#' @param positive if \code{presenceabsence} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
+#' @param binary Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
+#'        when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{TRUE} option.
+#' @param positive if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
 #'        models and computing the evaluation metrics.
 #' @param vifcutoff Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
 #' @param verbose To return execution messages or not. The Default is F or FALSE or 0.
@@ -104,16 +104,14 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
  ##@seealso [usdm::vifcor()]
 
 envextract <- function(occurences, raster, lat =NULL, lon = NULL, geom = FALSE,
-                       mode = 'presenceonly', labels=NULL, prop = 0.8, set.seed=1124, positive=NULL,
+                       binary = FALSE, labels=NULL, prop = 0.8, set.seed=1124, positive=NULL,
                        missingness = 0.1, exclude=NULL, verbose=TRUE, vifcutoff = 0.7){
 
-  match.arg(mode, choices = c('presenceonly', 'presenceabsence'))
-
-  if(missing(occurences)) stop('Provide species presence or presence/absence data')
+  if(missing(occurences)) stop('Provide species presence or presence/absence data', call. = FALSE)
 
   if(prop<0.1||prop>1)stop('Prop should be between 0.1 (10% generated) and 1 (equal to length of presence)')
 
-  if(mode=='presenceonly' && is.null(labels)){
+  if(binary== FALSE){
 
     if(!is(raster, 'SpatRaster')) stop('Only raster of SpatRater format is accepted.')
 
@@ -183,14 +181,11 @@ envextract <- function(occurences, raster, lat =NULL, lon = NULL, geom = FALSE,
     attr(spdata, 'presence') <- 'P'
     attr(spdata, 'absence') <- 'A'
 
-  }else if(mode =='presenceabsence' && !is.null(labels)){#no need to extract pseudo absence or backgorund data.
+  }else if(binary ==TRUE && !is.null(labels)){#no need to extract pseudo absence or background data.
 
-    if(is.null(labels)) {
-      stop('Provide the column with labels of presence  and absences')
+    if(all(labels %in% colnames(occurences))==FALSE) {
 
-    } else if(all(labels %in% colnames(occurences))==FALSE) {
-
-      stop('Presence/Absence column not found in species data', deparse(substitute(occurences)),'.')
+      stop('Presence/Absence column not found in species data ', deparse(substitute(occurences)),'.')
 
     }else if(!is(occurences, 'data.frame')){
       stop('Only dataset is accepted.')

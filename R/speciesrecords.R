@@ -34,7 +34,7 @@ check_taxa_names <- function(spp, verbose, accept =TRUE, ...){
 
       spfinal <- cleannames[1]
 
-      if(isTRUE(verbose))message("The species ", spfinal, " will be retained for ", spp, " provided by the user.")
+      if(isTRUE(verbose))message("The species name ", spfinal, " will be retained for ", spp, " provided.")
     }else{
 
       #check unique names in the match names

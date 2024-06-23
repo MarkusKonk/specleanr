@@ -1,6 +1,5 @@
 #' @title  Species distribution modelling
 #'
-#' @param y The species variable with presence (1) and absences (0).
 #' @param data Species data list with both testing and training, probably
 #'      from boots function.
 #' @param models The models to be used to examine the relationship between
@@ -11,7 +10,7 @@
 #'      if RF fails.
 #' @param cutoff Defines a threshold classify the model predictions/probabilities
 #'      as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.
-#' @param mode Either to only consider threshold-dependent, threshold-independent
+#' @param metrics Either to only consider threshold-dependent, threshold-independent
 #'      or all evaluation metrics to determine model performance.
 #'
 #' @return model runs, and evaluation metrics.
@@ -25,22 +24,22 @@
 #' @examples
 #'
 
-sdmfit <- function(y, data, models, cutoff = 0.5, mode='all'){
 
-  match.arg(models, choices = c('RF', 'GLM', 'RF1'))
+sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
-  resp <- y
+  match.argc(models, choices = c('RF', 'GLM', 'RF1'))
 
-  response <- deparse(substitute(resp))
+  #response <- deparse(substitute(y))
 
   df <- data[[1]][[1]]
 
-  if(!response %in%colnames(df)) stop('The response variable', resp, ' not found in the data.')
-
+  #if(!response %in%colnames(df)) stop('The response variable', y, ' not found in the data.')
 
   if(is.null(attr(df, "presence"))) stop('Invalid data type used. Please use both response and boots function.')
 
-  if(!response%in% colnames(df)) stop(response, ' not found in the training data')
+  #if(!response%in% colnames(df)) stop(response, ' not found in the training data')
+
+  response <- "y"
 
   eqn= as.formula(paste(response, paste('.', collapse = " + "),sep = " ~ "))
 
@@ -51,16 +50,22 @@ sdmfit <- function(y, data, models, cutoff = 0.5, mode='all'){
   lx <- sapply(data, function(x){
 
     traindf <- x[[1]]
+    traindf$y <- as.factor(traindf$y)
 
     testdf <- x[[2]]
+    testdf$y <- as.factor(testdf$y)
 
-    if(models=='RF1'){
+    if(("RF1"%in%models)==TRUE){
+
       trainfit <- randomForest(eqn, importance = TRUE,ntree=500, proximity = TRUE, data = traindf)
 
-    }else if (models =='GLM'){
+    }else if (("GLM"%in%models)==TRUE){
+
       trainfit <- suppressWarnings(glm(eqn, data = traindf, family = 'binomial'))
 
-    }else if(models == 'RF'){
+    }else if(("RF"%in%models)==TRUE){
+
+
       trainfit <- ranger(eqn, importance = 'permutation', scale.permutation.importance = TRUE,
                          mtry = 3, probability = TRUE,  data = traindf)
 
@@ -68,45 +73,49 @@ sdmfit <- function(y, data, models, cutoff = 0.5, mode='all'){
       stop('No model selected.')
     }
 
-    if(models=='RF1'){
+    if(("RF1"%in%models)==TRUE){
       testpred <- predict(trainfit, testdf, type='prob')
 
       trainpred <- predict(trainfit, traindf, type='prob')
 
       perftest <- evaluate(data =  testdf, predictions = testpred, model = models,
-                           response = response, cutoff = cutoff, mode = mode)
+                           response = response, cutoff = cutoff, metrics = metrics)
 
       perftrain <- evaluate(data = traindf, predictions = trainpred, model = models,
-                            response = response, cutoff = cutoff, mode = mode)
+                            response = response, cutoff = cutoff, metrics = metrics)
 
-    }else if(models=='RF'){
+    }else if(("RF"%in%models)==TRUE){
 
       testpred <- predict(trainfit, testdf, type='response')
 
       trainpred <- predict(trainfit, traindf, type='response')
 
       perftest <- evaluate(data =  testdf, predictions = testpred, response = response,
-                           model=models, cutoff = cutoff, mode = mode)
+                           model=models, cutoff = cutoff, metrics = metrics)
 
       perftrain<- evaluate(data = traindf ,predictions = trainpred, response = response,
-                           model=models, cutoff = cutoff, mode = mode)
+                           model=models, cutoff = cutoff, metrics = metrics)
 
-    }else if(models=='GLM'){
+    }else if(("GLM"%in%models)==TRUE){
 
       testpred <- predict(trainfit, testdf)
 
       trainpred <- predict(trainfit, traindf)
 
       perftest <- evaluate(data = testdf, predictions = testpred, response = response,
-                           model = models, cutoff = cutoff, mode = mode)
+                           model = models, cutoff = cutoff, metrics = metrics)
 
       perftrain <- evaluate(data = traindf, predictions = trainpred, response = response,
-                            model = models, cutoff = cutoff, mode = mode)
+                            model = models, cutoff = cutoff, metrics = metrics)
 
     }else{
       stop('No model selected. Please choose either or GLM')
     }
-    return(list(modeloutput = trainfit, predtest = testpred, predtrain = trainpred,
-                perftest = perftest, perftrain = perftrain))#switch
+    if(isTRUE(full)){
+      return(list(modeloutput = trainfit, predtest = testpred, predtrain = trainpred, perftest = perftest, perftrain = perftrain))
+    }else{
+      return(list(predtest = testpred, predtrain = trainpred, perftest = perftest, perftrain = perftrain))
+    }
+
   }, simplify = FALSE)
 }

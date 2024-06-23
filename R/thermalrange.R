@@ -54,6 +54,7 @@ thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE,
     dsplist <- check_names(data = x, verbose = verbose, pct = pct, sn = sn)
 
 
+
   }else{
     stop('No data provided for species to check and merge')
   }
@@ -62,11 +63,13 @@ thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE,
 
   if(is(dsplist, 'vector')){
 
-    unx <- dsplist
+    unx <- unique(dsplist)
   }else{
     unx <- unique(unlist(dsplist$speciescheck))
 
   }
+  if(all(is.na(unx))==FALSE){
+
   v <- unx[!is.na(unx)]#remove NA species from the vector data
 
   rc <- ranges
@@ -88,6 +91,7 @@ thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE,
     if(any(spc==TRUE)){
 
       codesp <-  unlist(sy$SpecCode)[which( spc==TRUE)]
+
 
       #get the species temperature ranges
 
@@ -134,5 +138,10 @@ thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE,
 
     dftemp <- data.frame(species = species, tempmin= tempmi, tempmax= tempma, tempref = temppref)
   }
+  }else{
+
+    warning("The species name is not found in FishBase. If the species  name is not a fish species, remove checkfishbase from optpar parameter.")
+  dftemp = data.frame(temp = NULL)
+    }
   return(dftemp)
 }
