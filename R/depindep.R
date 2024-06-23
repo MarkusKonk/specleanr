@@ -18,12 +18,13 @@
 #' @references
 #'\enumerate{
 #'  \item Allouche O, Tsoar A, Kadmon R. 2006. Assessing the accuracy of species distribution models: Prevalence,
-#'  kappa and the true skill statistic (TSS). Journal of Applied Ecology 43:1223–1232.
-#'  \item Erickson BJ, Kitamura F. 2021. Magician’s corner: 9. performance metrics for machine learning models.
-#'  Radiology: Artificial Intelligence 3:1–7.
+#'  kappa and the true skill statistic (TSS). Journal of Applied Ecology 43:1221-1232.
+#'  \item Erickson BJ, Kitamura F. 2021. Magician's corner: 9. performance metrics for machine learning models.
+#'  Radiology: Artificial Intelligence 3:1-7.
 #'  }
 #'
-#' @seealso \code{\link[specleanr]{sdmfit()}}
+#' @seealso \link[specleanr]{sdmfit}
+#'
 #'
 dep <- function(observed, predicted, P, A){
 
@@ -93,7 +94,8 @@ dep <- function(observed, predicted, P, A){
 #'
 #' @references
 #' \enumerate{
-#'   \item Hanley JamesA, McNeil Barbra J. 1982. The meaning and use of the Area under a Receiver Operating Characteristic (ROC) Curve. Radiology 143:29–36.
+#'   \item Hanley J. A, McNeil Barbra J. 1982. The meaning and use of the Area under
+#'   a Receiver Operating Characteristic (ROC) Curve. Radiology 143:29-36.
 #'   }
 #'
 indep <- function(probs, observed, P, A){
@@ -114,7 +116,7 @@ indep <- function(probs, observed, P, A){
 #' @param response The presence absence or presence only for presence-only models.
 #' @param model Parameter to set the model of choices. Only \code{GLM} and \code{RF} are allowed.
 #' @param cutoff Defines a threshold classify the model predictions/probabilities as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.
-#' @param mode Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.
+#' @param metrics Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.
 #'
 #' @return evaluation metrics values
 #'
@@ -122,9 +124,9 @@ indep <- function(probs, observed, P, A){
 #'
 #' @seealso [specleanr::boot()]
 
-evaluate <- function(data, predictions, response, model=NULL, cutoff, mode){
+evaluate <- function(data, predictions, response, model=NULL, cutoff, metrics){
 
-  match.arg(mode, choices = c('indep', 'dep', 'all'))
+  match.argc(metrics, choices = c('indep', 'dep', 'all'))
 
   observed <- unlist(data[, response]) #observed classes
 
@@ -151,11 +153,11 @@ evaluate <- function(data, predictions, response, model=NULL, cutoff, mode){
     stop('No model found')
   }
 
-  if(mode=='indep'){
+  if(metrics=='indep'){
 
     output <- indep(probs = probs, observed = observed, A =A, P = P)
 
-  }else if(mode=='dep'){
+  }else if(metrics=='dep'){
 
     output <- dep(observed = observed, predicted = predicted, A =A, P = P)
 

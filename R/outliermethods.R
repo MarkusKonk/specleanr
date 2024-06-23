@@ -38,9 +38,9 @@
 #' }
 #'
 #' @references Hubert M, Vandervieren E. 2008. An adjusted boxplot for skewed distributions.
-#' Computational Statistics and Data Analysis 52:5186–5201.
+#' Computational Statistics and Data Analysis 52:5186-5201.
 #'
-#' @author Anthony Basooma (anthony.basooma@boku.ac.at)
+#' @author Anthony Basooma (anthony.basooma@@boku.ac.at)
 #'
 adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
 
@@ -125,7 +125,7 @@ adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
 #' }
 #' @references
 #'  Rousseeuw PJ, Hubert M. 2011. Robust statistics for outlier detection. Wiley Interdisciplinary Reviews
-#'  Data Mining and Knowledge Discovery 1:73–79. Wiley-Blackwell.
+#'  Data Mining and Knowledge Discovery 1:73-79.
 #'
 #'
 interquartile <- function(data, var, output, x=1.5){
@@ -257,7 +257,7 @@ semiIQR <- function(data, var, output, x=3){
 #'
 #' @references
 #' Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Hampel Filters.
-#' Pages 2546–2550 2015 23rd European Signal Processing Conference (EUSIPCO).
+#' 2546-2550 2015 23rd European Signal Processing Conference (EUSIPCO).
 #'
 #' @author Anthony Basooma (anthony.basooma@boku.ac.at)
 #'
@@ -324,10 +324,10 @@ hampel <- function(data, var=NULL, output, x=3){
 #' \enumerate{
 #'
 #'   \item Chapman AD. 1991. Quality control and validation of environmental resource data in
-#'   Data Quality and Standards. Pages 1–23. Canberra. Available from
+#'   Data Quality and Standards. Pages 1-23. Canberra. Available from
 #'   https://www.researchgate.net/publication/332537824.
 #'   \item Chapman AD. 1999. Quality Control and Validation of Point-Sourced Environmental Resource Data. eds. .
-#'   Chelsea,. Pages 409–418 in Lowell K, Jaton A, editors. Spatial accuracy assessment:
+#'   Chelsea,. Pages 409-418 in Lowell K, Jaton A, editors. Spatial accuracy assessment:
 #'   Land information uncertainty in natural resources, 1st edition. MI: Ann Arbor Press., Chelsea.
 #' }
 #' @examples
@@ -355,9 +355,9 @@ hampel <- function(data, var=NULL, output, x=3){
 #'
 jknife <- function(data, var, output, mode='soft'){
 
-  match.arg(mode, choices = c('robust', 'soft'))
+  match.argc(mode, choices = c('robust', 'soft'))
 
-  match.arg(output, choices = c('outlier', 'clean'))
+  match.argc(output, choices = c('outlier', 'clean'))
 
 
   if(missing(data)) stop('Provide the enviromental data', call. = FALSE)
@@ -474,11 +474,11 @@ jknife <- function(data, var, output, mode='soft'){
 #'
 #' }
 #'
-zscore <- function(data, var, output ='outlier', type = 'mild', mode = 'soft'){
+zscore <- function(data, var, output, type = 'mild', mode = 'soft'){
 
-  match.arg(output, choices = c('clean','outlier'))
-  match.arg(type, choices = c('extreme','mild'))
-  match.arg(mode, choices = c('robust', 'soft'))
+  match.argc(output, choices = c('clean','outlier'))
+  match.argc(type, choices = c('extreme','mild'))
+  match.argc(mode, choices = c('robust', 'soft'))
 
   var <- unlist(data[,var])
 
@@ -535,7 +535,7 @@ zscore <- function(data, var, output ='outlier', type = 'mild', mode = 'soft'){
 #'
 #'
 #' @references Barbato G, Barini EM, Genta G, Levi R. 2011. Features and performance of
-#' some outlier detection methods. Journal of Applied Statistics 38:2133–2149
+#' some outlier detection methods. Journal of Applied Statistics 38:2133-2149
 #'
 #' @examples
 #'
@@ -560,7 +560,7 @@ zscore <- function(data, var, output ='outlier', type = 'mild', mode = 'soft'){
 #' }
 #'
 #'
-#' @author Anthony Basooma (anthony.basooma@boku.ac.at)
+#' @author Anthony Basooma (anthony.basooma@@boku.ac.at)
 #'
 logboxplot <- function(data, var, output, x=1.5){
 
@@ -614,7 +614,8 @@ logboxplot <- function(data, var, output, x=1.5){
 #' @author Anthony Basooma \email{anthony.basooma@@boku.ac.at}
 #'
 #' @references
-#' Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data. American Statistician 72:348–353. American Statistical Association.
+#' Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data.
+#'  American Statistician 72:348-353. American Statistical Association.
 #'
 mixediqr <- function(data, var, output, x=3){
 
@@ -825,9 +826,10 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #' \enumerate{
 #'
 #' \item Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
-#' Computational Statistics and Data Analysis 51:3800–3810.
+#' Computational Statistics and Data Analysis 51:3800-3810.
+#'
 #' \item Schwertman NC, Owens MA, Adnan R. 2004. A simple more general boxplot method for identifying outliers.
-#' Computational Statistics and Data Analysis 47:165–174.
+#' Computational Statistics and Data Analysis 47:165-174.
 #'
 #' }
 #'
@@ -934,13 +936,15 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
 #'
 #'
 #'
-isoforest <- function(data, size, cutoff =0.5, output, exclude){
+isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
+
+  match.argc(output, choices = c('clean', 'outlier'))
 
   if(cutoff<0 |cutoff>1)stop('cutoff should range from 0 to 1')
 
   if(size<0 | size>1)stop('size should range from 0 to 1')
 
-  df<- data[!colnames(data)%in%exclude]
+  if(!is.null(exclude))  df<- data[!colnames(data)%in%exclude] else df <- data
 
   isomodel <- isolation.forest(data= df, sample_size = size, ntrees = 100, 1)
 
@@ -973,14 +977,13 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude){
 #' @examples
 #'
 #'
-onesvm <- function(data, kernel='radial', tune=NULL, exclude, output,
+onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
                    tpar = list(gamma = 1^(-1:1), epislon =seq(0, 1, 0.1),
                                cost =2^2:4, nu = seq(0.05, 1, 0.1))){
 
-  match.arg(kernel, choices = c('radial', 'linear')) #radial set to defualt, works well for high dimensional data
+  match.argc(kernel, choices = c('radial', 'linear')) #radial set to defualt, works well for high dimensional data
 
-  df<- data[!colnames(data)%in%exclude]
-
+  if(!is.null(exclude))  df<- data[!colnames(data)%in%exclude] else df <- data
 
   if(is.null(tune)){
 
@@ -1075,9 +1078,10 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude, output,
 #'
 xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mode='soft'){
 
-  match.arg(mode, choices = c('robust', 'soft'))
+  match.argc(mode, choices = c('robust', 'soft'))
 
-  match.arg(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
+  match.argc(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
+
 
   if(!is.null(exclude)) df<- data[!colnames(data)%in%exclude] else df <- data
 
@@ -1127,9 +1131,9 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'
 xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'){
 
-  match.arg(mode, choices = c('robust', 'soft'))
+  match.argc(mode, choices = c('robust', 'soft'))
 
-  match.arg(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
+  match.argc(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
 
   if(!is.null(exclude)) df<- data[!colnames(data)%in%exclude] else df <- data
 
@@ -1179,11 +1183,12 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #' @export
 #'
 #' @examples
+#'
 xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='soft'){
 
-  match.arg(mode, choices = c('robust', 'soft'))
+  match.argc(mode, choices = c('robust', 'soft'))
 
-  match.arg(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
+  match.argc(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
 
   if(!is.null(exclude)) df<- data[!colnames(data)%in%exclude] else df <- data
 
@@ -1310,13 +1315,13 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
                               minval=NULL, maxval=NULL, lat = NULL, lon = NULL,
                               ecoparam=NULL, direction = NULL,
                               pct= 80,
-                              checkfishbase = FALSE, mode='temp', warn=TRUE){
+                              checkfishbase = FALSE, mode=NULL, warn=TRUE){
 
-  match.arg(output, choices = c('clean', 'outlier'))
+  match.argc(output, choices = c('clean', 'outlier'))
 
-  match.arg(mode, choices = c('geo', 'temp'))
+  if(!is.null(mode)) match.argc(mode, choices = c('geo', 'temp'))
 
-  match.arg(direction, choices = c('equal','less','greater','le','ge'))
+  if(!is.null(direction)) match.argc(direction, choices = c('equal','less','greater','le','ge'))
 
   if(is.null(data))stop("Environmental data for the species should be provided.")
 
@@ -1366,9 +1371,9 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
     if(is.null(optimumSettings$ecoparam)){
       #get min and max values
 
-      if(!optimumSettings$maxcol%in%colnames(optimumSettings$optdf)) stop("Parameter names for species, `maxcol`, not in the optimal data.")
+      if(!optimumSettings$maxcol%in%colnames(optimumSettings$optdf)) stop("Parameter names for species, maxcol, not in the optimal data.")
 
-      if(!optimumSettings$mincol%in%colnames(optimumSettings$optdf)) stop("Parameter names for species, `mincol`, not in the optimal data.")
+      if(!optimumSettings$mincol%in%colnames(optimumSettings$optdf)) stop("Parameter names for species, mincol, not in the optimal data.")
 
       parmin = optimumSettings$optdf[, optimumSettings$mincol]
 
@@ -1407,6 +1412,7 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
     }
   }else if(isTRUE(checkfishbase)){
 
+
     if(mode=="temp"){
 
       ranges <- thermal_ranges(x = species)
@@ -1419,7 +1425,7 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
 
       }else{
 
-        message("No temperature ranges for ", species ," from FishBase and orginal data will be output fro clean data.")
+        message("No temperature ranges for ", species ," from FishBase and orginal data will be output from clean data.")
 
         switch(output, outlier= return(NA), clean = return(data))
 
@@ -1432,7 +1438,7 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
 
         dx = sprange(data = data, lat = lat, lon = lon, geo = geox)
       }else{
-        message("No latitudinal/longitudinal ranges for the species from FishBase and orginal data will be output fro clean data.")
+        message("No latitudinal/longitudinal ranges for the species from FishBase and orginal data will be output from clean data.")
 
         switch(output, outlier= return(NA), clean = return(data))
       }
@@ -1519,8 +1525,16 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
 #' }
 #'
 #' @references
-#' García-Roselló E, Guisande C, Heine J, Pelayo-Villamil P, Manjarrés-Hernández A, González Vilas L, González-Dacosta J, Vaamonde A, Granado-Lorencio C. 2014. Using modestr to download, import and clean species distribution records. Methods in Ecology and Evolution 5:708–713. British Ecological Society.
-#' IUCN Standards and Petitions Committee. 2022. THE IUCN RED LIST OF THREATENED SPECIESTM Guidelines for Using the IUCN Red List Categories and Criteria Prepared by the Standards and Petitions Committee of the IUCN Species Survival Commission. Available from https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
+#' \enumerate{
+#' \item García-Roselló E, Guisande C, Heine J, Pelayo-Villamil P, Manjarrés-Hernández A,
+#' González Vilas L, González-Dacosta J, Vaamonde A, Granado-Lorencio C. 2014.
+#' Using modestr to download, import and clean species distribution records.
+#' Methods in Ecology and Evolution 5:708-713.
+#' \item IUCN Standards and Petitions Committee. 2022. THE IUCN RED LIST OF THREATENED SPECIESTM
+#' Guidelines for Using the IUCN Red List Categories and Criteria Prepared by the Standards
+#' and Petitions Committee of the IUCN Species Survival Commission.
+#' Available from https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
+#' }
 
 
 sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = NULL, lat =NULL, lon=NULL,
@@ -1530,7 +1544,7 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
     lat = unlist(data[, lat])
     lon = unlist(data[, lon])
   }else{
-    if(is.null(var))stop("Provide the column for variable of concern in ´var´ parameter")
+    if(is.null(var))stop("Provide the column for variable of concern in var parameter")
     var = unlist(data[, var])
   }
   #converting the latitudinal ranges to a vector
@@ -1541,13 +1555,13 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 
     if(is.null(geo)){
 
-      if(any(sapply(list(maxval, minval), is.null))==TRUE) stop("Can not proceeed without both maxval and minval ranges.'\n' If one is available, use ecoparam parameter and provide direction.")
+      if(any(sapply(list(maxval, minval), is.null))==TRUE) stop("Can not proceeed without both maxval and minval ranges. If one is available, use ecoparam parameter and provide direction.")
 
       datIn  <-  which(var<=maxval & var >=minval)
 
 
     }else{
-      if(any(sapply(list(lat, lon), is.null))==TRUE) stop("Can not proceeed without both latitudes and longitudes columns.'\n' If one is available, use ecoparam parameter and provide direction.")
+      if(any(sapply(list(lat, lon), is.null))==TRUE) stop("Can not proceeed without both latitudes and longitudes columns. If one is available, use ecoparam parameter and provide direction.")
 
       gcheck <- mapply(function(x, y){
         tf <- c(y<=geocodes[1], y>=geocodes[2], x>=geocodes[3], x<=geocodes[4])
@@ -1643,19 +1657,19 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #' @references
 #' Leys C, Klein O, Dominicy Y, Ley C. 2018. Detecting multivariate outliers:
 #' Use a robust variant of the Mahalanobis distance. Journal of Experimental
-#' Social Psychology 74:150–156. Academic Press Inc.
+#' Social Psychology 74:150-156.
 #'
-mahal <- function(data, exclude, output, mode, pdf = 0.95){
+mahal <- function(data, exclude = NULL, output, mode, pdf = 0.95){
 
   if(missing(data)) stop('Data not provided.')
 
-  match.arg(mode, choices = c('soft', 'robust'))
+  match.argc(mode, choices = c('soft', 'robust'))
 
-  match.arg(output, choices = c('clean', 'outlier'))
+  match.argc(output, choices = c('clean', 'outlier'))
 
   dfna <- data[complete.cases(data),]
 
-  df <- dfna[,!colnames(dfna) %in% exclude]
+  if(!is.null(exclude))  df <- dfna[,!colnames(dfna) %in% exclude] else dfna <- data
 
   #check for multicolinearity in the data
 
@@ -1761,13 +1775,15 @@ mahal <- function(data, exclude, output, mode, pdf = 0.95){
 #' }
 #'
 #'
-xkmeans <- function(data, k, exclude, output, mode, method=NULL, verbose=FALSE){
+xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", verbose=FALSE){
 
-  match.arg(method, choices = c('silhouette','elbow'))
+  match.argc(mode, choices = c('soft', 'robust'))
 
-  match.arg(mode, choices = c('soft', 'robust'))
+  match.argc(method, choices = c("silhouette", "elbow"))
 
-  df2 <- data[,!colnames(data) %in% exclude]
+  match.argc(output, choices = c("clean", "outlier"))
+
+  if(!is.null(exclude)) df2 <- data[,!colnames(data) %in% exclude] else df2 <- data
 
   df_scaled <- scale(df2)
   if(k<1 || k==1) stop('Increase k to atleast 2 to form clusters in the data.')
@@ -1950,19 +1966,19 @@ xkmedian <- function(data, k=3){
 #'
 #' @examples
 #'
-xkmedoid <- function(data, k = 2, metric = 'manhattan', output='outlier', exclude, x=1.5){
+xkmedoid <- function(data, k = 2, metric = 'manhattan', output, exclude = NULL, x=1.5){
 
   if(missing(data)) stop('Data missing')
 
   if(k==1) warning('All data willl put in one cluster with one medoid.')
 
-  match.arg(metric, choices = c('euclidean', 'manhattan'))
+  match.argc(metric, choices = c('euclidean', 'manhattan'))
 
-  match.arg(output, choices = c('clean', 'outlier'))
+  match.argc(output, choices = c('clean', 'outlier'))
 
   #run the partitioning around the medoid (pam function)
 
-  dfd <- scale(data[,!colnames(data) %in% exclude])
+  if(!is.null(exclude)) dfd <- scale(data[,!colnames(data) %in% exclude]) else dfd <- scale(data)
 
   p = switch(metric, euclidean = cluster::pam(x= dfd, k= k, metric = 'euclidean'),
              manhattan = cluster::pam(x= dfd, k= k, metric = 'manhattan'))

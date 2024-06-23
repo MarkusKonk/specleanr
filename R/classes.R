@@ -10,18 +10,16 @@ setClass(Class = 'dataonline',
 
 #Online df summary
 
-#' @title Method for viewing detials of the downloaded data.
-#'
-#' @param dataonline Data online class.
-#' @param object The data modelfor outlier detection
+#' @title Method for viewing details of the downloaded data.
+
+#' @docType methods
+#' @param object The data online model for displaying data.
 #'
 #' @importFrom methods show
 #'
 #' @export
 #'
-show <- methods::show
-setMethod(f='show', signature = 'dataonline',
-          definition = function(object){
+setMethod(f='show', signature = 'dataonline', definition = function(object){
             cat(" ======================================",'\n',
                 '      Data Online Summary','\n',
                 "======================================",'\n',
@@ -60,13 +58,11 @@ setClass(Class = 'datacleaner',
 
 #' @title set method for displaying output details after outlier detection.
 #'
-#' @param datacleaner Data cleaner class.
 #' @param object The data model for outlier detection.
 #'
 #'
 #' @export
 #'
-show <- methods::show
 setMethod(f='show', signature = 'datacleaner', definition = function(object){
 
   if(object@mode==FALSE){

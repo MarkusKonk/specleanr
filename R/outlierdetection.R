@@ -17,20 +17,20 @@ extractMethods <- function(){
 
     if(imethods=='univariate'){
 
-      univariate <- c('adjustboxplots', 'interquartile', 'hampel', 'rjknife', 'seqfences','mixediqr',
-                      'distboxplot','semiinterquartile',  'zscore', 'logboxplot')
+      univariate <- c('adjbox', 'iqr', 'hampel', 'jknife', 'seqfences','mixediqr',
+                      'distboxplot','semiIQR',  'zscore', 'logboxplot')
 
     }else if(imethods=='modelbased'){
 
-      modelb <- c('onesvm', 'isoforest')
+      modelb <- c('onesvm', 'iforest')
 
     }else if(imethods=='cluster'){
 
-        clb <- c('xkmeans','xkmedoids', 'xkmedian')
+        clb <- c('kmeans','kmedoids', 'kmedian')
 
     }else if(imethods=='densitybased'){
 
-        dbd <- c('xlof', 'xknn', 'xglosh')
+        dbd <- c('lof', 'knn', 'glosh')
 
     }else if(imethods=='opt'){
 
@@ -55,26 +55,26 @@ extractMethods <- function(){
 #' @param spname species name being handled
 #' @param verbose whether to return messages or not. Default \code{FALSE}.
 #' @param warn whether to return warning or not. Default TRUE.
-#' @param debug show execution errors and therefore for multiple species the code will break if one of the
+#' @param showErrors show execution errors and therefore for multiple species the code will break if one of the
 #'      methods fails to execute.
 #'
 #' @return Handle errors
 #'
-tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, debug = TRUE){
+tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, showErrors = TRUE){
 
-  if(debug==FALSE){
+  if(showErrors==FALSE){
 
     tout <- tryCatch(expr = func, error = function(e) e)
 
     if(inherits(tout, "error")){
 
-      if(isTRUE(warn))warning('The output for ', fname, ' returned an error, Please check data or parameters for species ', spname, '.')
+      if(isTRUE(warn)) warning('The output for ', fname, ' returned an error, Please check data or parameters for species ', spname, '.')
 
       return(NA)
 
     } else {
 
-      if(isTRUE(verbose))message('The fucntion ', fname, ' implemented successfully for species ', spname, '.')
+      if(isTRUE(verbose))message('The function ', fname, ' was implemented successfully for species ', spname, '.')
 
       return(tout)
     }
@@ -117,7 +117,7 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, deb
 #' @param spname species name being handled.
 #' @param missingness Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
 #'      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.
-#' @param debug show execution errors and therefore for multiple species the code will break if one of the
+#' @param showErrors show execution errors and therefore for multiple species the code will break if one of the
 #'      methods fails to execute.
 #'
 #' @return Dataframe with or with no outliers.
@@ -126,10 +126,10 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, deb
 #' @references
 #'
 #' \enumerate{
-#'   \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422
+#'   \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413-422
 #' In 2008 Eighth IEEE International Conference on Data Mining. Available from
 #' https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
-#'   \item Reference on different methods
+#'
 #' }
 #' @seealso  \code{\link[specleanr]{multidetect}}
 
@@ -153,7 +153,7 @@ detect <- function(x,
                    spname,
                    warn,
                    missingness,
-                   debug){
+                   showErrors){
 
   if(missing(x)) stop('Species data missing')
 
@@ -168,6 +168,8 @@ detect <- function(x,
   if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>missingness)]
 
   if(!is.null(exclude)) {
+
+    check.exclude(x=x, exclude = exclude)
 
     if(!is.null(optpar$mode)) x2data <- na.omit(xdata) else x2data <- na.omit(xdata[,!colnames(xdata) %in% exclude])
 
@@ -204,123 +206,123 @@ detect <- function(x,
                                             pct= optpar$par,
                                             checkfishbase = optpar$checkfishbase, mode=optpar$mode, warn=optpar$warn),
       fname = cii, verbose = verbose, spname = spname,
-      warn=warn, debug = debug)
+      warn=warn, showErrors = showErrors)
 
     }else if (cii=='adjbox'){
 
       methodList[[cii]]  <-  suppressMessages(tcatch(func =  adjustboxplots(data = df, var = var, output = output),
                                   fname = cii, verbose = verbose, spname = spname,
-                                  warn=warn, debug = debug))
+                                  warn=warn, showErrors = showErrors))
 
     }else if(cii=='zscore'){
 
       methodList[[cii]] <-  tcatch(func = zscore(data = df, var = var, output = output, mode = zpar$mode, type = zpar$type),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='iqr'){
 
       methodList[[cii]] <-  tcatch(func =  interquartile(data = df, var = var, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='semiqr'){
 
       methodList[[cii]] <-  tcatch(func =  semiIQR(data = df, var = var, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='hampel'){
 
       methodList[[cii]] <-  tcatch(func = hampel(data = df, var = var, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='jknife'){
 
       methodList[[cii]] <-  tcatch(func = jknife(data = df, var = var, output = output, mode = jkpar$mode),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='mahal'){
 
       methodList[[cii]] = tcatch(func = mahal(data = df, exclude = exclude, output = output, mode=mahalpar$mode),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='kmeans'){
 
       methodList[[cii]] <-  tcatch(func = xkmeans(data = df, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
                                           method = kmpar$method, verbose=verbose),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
     }else if(cii=='kmedoid'){
 
       methodList[[cii]] <-  tcatch(func = xkmedoid(data = df, k = kmedoidpar$k, metric = kmedoidpar$metric, output = output, exclude = exclude, x=1.5),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='iforest'){
 
       methodList[[cii]] <-  tcatch(func = isoforest(data = df, size = ifpar$size, output=output,
                                                     cutoff = ifpar$cutoff, exclude = exclude),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='onesvm'){
 
       methodList[[cii]] <-  tcatch(func = onesvm(data = df,  exclude = exclude, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='lof'){
 
       methodList[[cii]] <-  tcatch(func = xlof(data = df, output =output, minPts = lofpar$minPts,
                                        exclude = exclude, metric = lofpar$metric, mode=lofpar$mode),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='logboxplot'){
 
       methodList[[cii]] <-  tcatch(func = logboxplot(data = df,  var = var, output = output, x= 1.5),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='medianrule'){
 
       methodList[[cii]] <-  tcatch(func = logboxplot(data = df,  var = var, output = output, x= 2.3),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='distboxplot'){
 
       methodList[[cii]] <-  tcatch(func = distboxplot(data = df,  var = var, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='seqfences'){
 
       methodList[[cii]] <-  tcatch(func = seqfences(data = df,  var = var, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='mixediqr'){
 
       methodList[[cii]] <-  tcatch(func = mixediqr(data = df,  var = var, output = output),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='glosh'){
 
       methodList[[cii]] <-  tcatch(func = xglosh(data = df, k = gloshpar$k,  output = output, metric = gloshpar$metric, mode=gloshpar$mode, exclude = exclude),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else if(cii=='knn'){
 
       methodList[[cii]] <-  tcatch(func = xknn(data = df, output = output, metric = knnpar$metric, mode=knnpar$mode, exclude = exclude),
                                  fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, debug = debug)
+                                 warn=warn, showErrors = showErrors)
 
     }else{
       message('No outlier detection method selected.')
@@ -335,7 +337,7 @@ detect <- function(x,
 #' @param var A variable to check for outliers especially the one with directly affects species distribution such as
 #' maximum temperature of the coldest month for bioclimatic variables \code{(IUCN Standards and Petitions Committee, 2022))} or
 #' stream power index for hydromorphological parameters \code{(Logez et al., 2012)}.
-#' @param output Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers.
+#' @param output Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers. Default \code{outlier}.
 #' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
 #' latitude/longitude or any column that the user doesn't want to consider.
 #' @param ifpar Isolation forest parameter settings. Parameters of the isolation model that are required include
@@ -359,14 +361,14 @@ detect <- function(x,
 #'      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.
 #' @param verbose whether to return messages or not. Default FALSE.
 #' @param warn whether to return warning or not. Default TRUE.
-#' @param debug show execution errors and therefore for multiple species the code will break if one of the
+#' @param showErrors show execution errors and therefore for multiple species the code will break if one of the
 #'      methods fails to execute.
 #'
 #' @details
 #' This function computes different outlier detection methods including univariate, multivariate and species
 #'      ecological ranges to enables seammless comaprision and similarities in the outliers detected by each
 #'      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-#'      and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.c
+#'      and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.
 #'
 #' @return Outliers or clean dataset.
 #'
@@ -428,15 +430,17 @@ detect <- function(x,
 #' Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
 #' }
 #'
-#'  \code{\link{extract_clean_data}}
 
 multidetect <- function(data,
                         var,
-                        output = 'oultier',
-                        exclude,
+                        output,
+                        exclude = NULL,
                         multiple,
                         colsp = NULL,
-                        optpar = list(df=NULL, min=NULL, max=NULL, sp=NULL, colsp=NULL, sciname=NULL),
+                        optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction =NULL,
+                                      maxcol = NULL, mincol = NULL, maxval = NULL, minval = NULL,
+                                      checkfishbase =FALSE, mode='geo', lat = NULL, lon = NULL, pct = 80,
+                                      warn = FALSE),
                         kmpar =list(k=6, method='silhouette', mode='soft'),
                         kmedoidpar = list(k=2, metric='manhattan'),
                         ifpar = list(cutoff = 0.5, size=0.7),
@@ -448,47 +452,54 @@ multidetect <- function(data,
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
                         verbose=FALSE, spname=NULL,warn=TRUE,
-                        missingness = 0.1, debug = FALSE){
+                        missingness = 0.1, showErrors = FALSE){
+
+  match.argc(output, c("clean", "outlier"))
+
+  unxmethods <- unique(methods)
+
+  if(length(unxmethods)<length(methods)) dup_methods = unxmethods else dup_methods = methods
 
   allowedmethods <- c('reference','adjbox', 'zscore','kmeans', 'iforest', 'distboxplot','optimal',
                       'mixediqr', 'seqfences', 'mahal', 'medianrule', 'iqr','hampel',
                       'logboxplot', 'onesvm', 'jknife', 'semiqr', 'lof','glosh', 'knn', "kmedoid")
 
-  tfcheck <- methods%in%allowedmethods
+  tfcheck <- dup_methods%in%allowedmethods
 
   if(any(tfcheck==FALSE)){
 
-    notsupported <- methods[which(tfcheck==FALSE)]
+    notsupported <- dup_methods[which(tfcheck==FALSE)]
 
-    stop('The methods ', paste(notsupported, collapse = ','), ' are not accepted.')
+    stop('The methods -', paste(notsupported, collapse = ', '), '- are/is not accepted. Check extractMethods() for allowed methods.')
   }
   if(multiple ==FALSE & !is.null(colsp)) stop("For single species do not provide the colsp parameter.")
 
   #check for number of species
 
   if(isTRUE(multiple) && !is(data, 'list') && is.null(colsp)){
-    stop('For multiple species dataframe, set provide the column species in the colsp parameter.')
+    stop('For multiple species dataframe, provide the species column name in the colsp parameter.')
   }
 
-  #check if there enough data to run mahalanobis distance matrix
+
+  #check if there enough data to run Mahalanobis distance measure
 
   if(isFALSE(multiple) && is.null(colsp) ){
 
-    if(nrow(data)<ncol(data)){
+    if(!is(data, 'data.frame')) stop('For a single species only a dataframe is accepted.')
 
-      if(isTRUE(warn))warning('Number of rows are less than variables and some methods may not function properly.')
+    if(nrow(data)<ncol(data)) warning('Number of rows are less than variables and some methods may not function properly.')
 
-      outdata <-  detect(x = data, var = var, output = output,
-                          exclude = exclude,optpar = optpar,
-                          kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
-                          mahalpar = mahalpar, lofpar = lofpar, kmedoidpar = kmedoidpar,
-                          zpar = zpar, gloshpar = gloshpar,
-                          knnpar = knnpar,
-                          methods = methods,
-                         verbose = verbose,
-                         spname = spname,warn=warn,
-                         missingness = missingness, debug = debug)
-    }
+    outdata <-  detect(x = data, var = var, output = output,
+                       exclude = exclude,optpar = optpar,
+                       kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
+                       mahalpar = mahalpar, lofpar = lofpar, kmedoidpar = kmedoidpar,
+                       zpar = zpar, gloshpar = gloshpar,
+                       knnpar = knnpar,
+                       methods = dup_methods,
+                       verbose = verbose,
+                       spname = spname,warn=warn,
+                       missingness = missingness, showErrors = showErrors)
+
   }else {
 
     if(is(data, 'list')){
@@ -497,33 +508,38 @@ multidetect <- function(data,
 
     }else if(is(data, 'data.frame') ){
 
+      if(!any(colnames(data)%in%colsp)==TRUE) stop('The column name provided in colsp parameter is not in the species data.')
+
+      if(!is.null(exclude)) if((colsp%in%exclude)==TRUE) warning("Remove the column for species names in the exclude parameter.")
+
       df <- split(data, f= data[,colsp])
 
     }else{
-      stop('Data format not recognised')
+      stop('Data format not recognised, Only lists of datasets or dataframe are accepted.')
     }
     outdata <- list()
     for (mdi in names(df)) {
 
       dfinal<- df[[mdi]]
 
+
       d <-  detect(x = dfinal, var = var, output = output, colsp=colsp,
                    exclude = exclude,optpar = optpar,
                    kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
                    mahalpar = mahalpar, lofpar = lofpar, kmedoidpar = kmedoidpar,
                    zpar = zpar, gloshpar = gloshpar, knnpar = knnpar,
-                   methods = methods, verbose = verbose, spname = mdi,warn=warn,
-                   missingness = missingness, debug = debug)
+                   methods = dup_methods, verbose = verbose, spname = mdi,warn=warn,
+                   missingness = missingness, showErrors = showErrors)
       outdata[[mdi]] <- d
     }
   }
   if(is.null(exclude)){
     return(new('datacleaner', result = outdata, mode = multiple, varused = var,
-               out = output, methodsused = methods, dfname = deparse(substitute(data)),
+               out = output, methodsused = dup_methods, dfname = deparse(substitute(data)),
                excluded = NA))
   }else{
     return(new('datacleaner', result = outdata, mode = multiple, varused = var,
-               out = output, methodsused = methods, dfname = deparse(substitute(data)),
+               out = output, methodsused = dup_methods, dfname = deparse(substitute(data)),
                excluded = exclude))
   }
 }
