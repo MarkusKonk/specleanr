@@ -7,16 +7,23 @@ function(input, output, session) {
 
   country <- decimalLatitude <- decimalLongitude <- species <-  NULL
 
-  xdir <- getwd()
+  volumes = shinyFiles::getVolumes()
+
+  observe({
+    if(!is.null(input$folder)){
+      shinyFiles::shinyDirChoose(input, 'folder', roots=volumes)
+      #output$dir <- renderText(as.character(input$folder))
+    }
+  })
   #providing the absolute path within the server
 
 
-  shinyFiles::shinyDirChoose(input, 'folder', roots=c(wd='.'), filetypes=c('', 'txt', 'csv'))
-
-  shiny::observe({
-    shiny::updateSelectInput(session = session, inputId = 'files',
-                             choices = list.files(pattern = 'csv$'))
-  })
+  # shinyFiles::shinyDirChoose(input, 'folder', roots=c(wd='.'), filetypes=c('', 'txt', 'csv'))
+  #
+  # shiny::observe({
+  #   shiny::updateSelectInput(session = session, inputId = 'files',
+  #                            choices = list.files(pattern = 'csv$'))
+  # })
 
 
   # shiny::observe({

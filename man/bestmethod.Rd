@@ -6,20 +6,15 @@
 \usage{
 bestmethod(
   x,
-  var,
   sp = NULL,
   threshold = NULL,
-  mode = "all",
-  similarity_tests = NULL,
+  autothreshold = FALSE,
   warn = FALSE,
-  verbose = FALSE,
-  autothreshold = FALSE
+  verbose = FALSE
 )
 }
 \arguments{
 \item{x}{List of dataframes for each methods used to identify outliers in \strong{\code{multdetect}} function.}
-
-\item{var}{variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.}
 
 \item{sp}{species name or index if multiple species are considered during outlier detection.}
 
@@ -29,16 +24,12 @@ many records are classified, which may be due to individual method weakness or s
 Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
 Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.}
 
-\item{mode}{the mode is \code{all} for all methods or custom for selected methods.}
-
-\item{similarity_tests}{indicate the methods to consider including \code{jaccard}, \code{overlap},\code{sorensen}, \code{ocindex}, and \code{smc}.}
+\item{autothreshold}{Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
+are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.}
 
 \item{warn}{If \strong{\code{TRUE}}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{\code{TRUE}}.}
 
 \item{verbose}{if \code{TRUE} then messages and warnings will be produced. Default \code{FALSE}.}
-
-\item{autothreshold}{Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.}
 }
 \value{
 best method for identifying outliers.
@@ -67,12 +58,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+outliers <- multidetect(data = extdf,output='outlier',
                        exclude = c('x','y'), multiple = TRUE,
                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
                        kmpar =list(k=6, method='silhouette', mode='soft'))
 
-bmout <- bestmethod(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+bmout <- bestmethod(x = outliers, sp= 1, threshold = 0.2#
 
 
 }

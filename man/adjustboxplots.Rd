@@ -50,7 +50,7 @@ refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 
 }
 \references{
 Hubert M, Vandervieren E. 2008. An adjusted boxplot for skewed distributions.
-Computational Statistics and Data Analysis 52:5186–5201.
+Computational Statistics and Data Analysis 52:5186-5201.
 }
 \author{
 Anthony Basooma (anthony.basooma@boku.ac.at)

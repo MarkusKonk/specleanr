@@ -30,11 +30,11 @@ model evaluation metrics such as sensitivity, specificity or accuracy changes si
 \references{
 \enumerate{
  \item Allouche O, Tsoar A, Kadmon R. 2006. Assessing the accuracy of species distribution models: Prevalence,
- kappa and the true skill statistic (TSS). Journal of Applied Ecology 43:1223–1232.
- \item Erickson BJ, Kitamura F. 2021. Magician’s corner: 9. performance metrics for machine learning models.
- Radiology: Artificial Intelligence 3:1–7.
+ kappa and the true skill statistic (TSS). Journal of Applied Ecology 43:1221-1232.
+ \item Erickson BJ, Kitamura F. 2021. Magician's corner: 9. performance metrics for machine learning models.
+ Radiology: Artificial Intelligence 3:1-7.
  }
 }
 \seealso{
-\code{\link[specleanr]{sdmfit()}}
+\link[specleanr]{sdmfit}
 }

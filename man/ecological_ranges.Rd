@@ -19,7 +19,7 @@ ecological_ranges(
   direction = NULL,
   pct = 80,
   checkfishbase = FALSE,
-  mode = "temp",
+  mode = NULL,
   warn = TRUE
 )
 }

@@ -10,7 +10,7 @@ envextract(
   lat = NULL,
   lon = NULL,
   geom = FALSE,
-  mode = "presenceonly",
+  binary = FALSE,
   labels = NULL,
   prop = 0.8,
   set.seed = 1124,
@@ -30,8 +30,8 @@ envextract(
 
 \item{geom}{Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.}
 
-\item{mode}{Either \code{presenceonly} if the species dataset do not have label column for presence absence. Therefore, the \code{presenceonly} is used
-when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{presenceabsence} option.}
+\item{binary}{Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
+when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{TRUE} option.}
 
 \item{labels}{If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
 Character labels for example allowed, for example P for presences and A for absences recommended.}
@@ -40,7 +40,7 @@ Character labels for example allowed, for example P for presences and A for abse
 
 \item{set.seed}{to ensure reproduciblity the seed is set. Same psudoabsences will be produced during each run.}
 
-\item{positive}{if \code{presenceabsence} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
+\item{positive}{if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
 models and computing the evaluation metrics.}
 
 \item{missingness}{Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if

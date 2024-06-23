@@ -25,7 +25,7 @@ detect(
   spname,
   warn,
   missingness,
-  debug
+  showErrors
 )
 }
 \arguments{
@@ -80,7 +80,7 @@ to get outliers implemented in the package.}
 \item{missingness}{Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
 if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.}
 
-\item{debug}{show execution errors and therefore for multiple species the code will break if one of the
+\item{showErrors}{show execution errors and therefore for multiple species the code will break if one of the
 methods fails to execute.}
 }
 \value{
@@ -91,10 +91,10 @@ Flags outliers or no outliers for multiple outlier methods.
 }
 \references{
 \enumerate{
-  \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422
+  \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413-422
 In 2008 Eighth IEEE International Conference on Data Mining. Available from
 https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
-  \item Reference on different methods
+
 }
 }
 \seealso{
