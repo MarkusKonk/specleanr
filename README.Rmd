@@ -5,17 +5,17 @@ theme: flatly
 highlight: tango
 ---
 
-<style>
-body {
-    text-align: justify;
-    font-family: Calibri;
-    font-size: 17px;
-}
-.p {
- font-size:17px;
- font-family: Consolas;
-}
-</style>
+<!-- <style> -->
+<!-- body { -->
+<!--     text-align: justify; -->
+<!--     font-family: Calibri; -->
+<!--     font-size: 17px; -->
+<!-- } -->
+<!-- .p { -->
+<!--  font-size:17px; -->
+<!--  font-family: Consolas; -->
+<!-- } -->
+<!-- </style> -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -53,14 +53,14 @@ The environmental predictors are extracted from points where the species was rec
 
 3.  **Ensemble multiple methods for outlier detection**.
 
-Multiple outlier detection methods are used; each method flags outliers in the same dataset. These outliers are then compared among methods to determine records, which are flagged by several methods called **absolute outliers** or **true outliers**. The total number of methods that a user can ensemble is user-based; however, we expect the user to set at least **three** outlier detection methods. The methods should be also at least from different categories, which include **1) univariate methods**, **2) multivariate methods**, and **3) ecological ranges**. The must set all the methods using **`multdetect()`** function and not individual method functions to allow seamless comparison.
+Multiple outlier detection methods are used; each method flags outliers in the same dataset. These outliers are then compared among methods to determine records, which are flagged by several methods called **absolute outliers** or **true outliers**. The total number of methods that a user can ensemble is user-based; however, we expect the user to set at least **three** outlier detection methods. The methods should be also at least from different categories, which include **1) univariate methods**, **2) multivariate methods**, and **3) ecological ranges**. The must set all the methods using **`multidetect()`** function and not individual method functions to allow seamless comparison.
 
 **Univariate methods**
 
 These methods only detect outliers in one environmental predictor. It is strongly advisable that the user selects an environmental predictor which directly affects the species distribution, for example, minimum temperature of the coldest month (IUCN 2012; Logez et al., 2012).
 
 +-------------------------+------------------------------------------------+--------------------------------+
-| Function                | Method implemented                             | Userword in **`multdetect()`** |
+| Function                | Method implemented                             | Userword in **`multidetect()`** |
 +:========================+:===============================================+===============================:+
 |`zscore()`               |  Z-score                                       | zscore                         |
 +-------------------------+------------------------------------------------+--------------------------------+
@@ -89,7 +89,7 @@ These methods only detect outliers in one environmental predictor. It is strongl
 These methods detect outliers in multiple environmental predictors (multidimensional space). User should exclude unnecessary columns such as the coordinates such that they are not included in the computation.
 
 +-------------------------+------------------------------------------------+-------------------------------+
-| Function                | Method used to fit and detect outliers         |Userword in **`multdetect()`** |  
+| Function                | Method used to fit and detect outliers         |Userword in **`multidetect()`** |  
 +:========================+:===============================================+==============================:+
 |`isoforest()`            | Isolation forest                               |  iforest                      |
 +-------------------------+------------------------------------------------+-------------------------------+
@@ -112,8 +112,8 @@ These methods detect outliers in multiple environmental predictors (multidimensi
 
 **Ecological ranges**
 
-The user collates the species optimal ecological ranges to identify the species records outside the known optimal ranges. In the package, for a single species, the optimal ranges (minimum, maximum, or mean values) are provided manually, and the user is required to set the environmental predictor to be used for flagging the outliers. A dataset with the minimum and maximum values (optimal rnages) is allowed for multiple species. 
-**Note** If the taxa is fish, we included the **`thermal_range()`** and **`geo_range()`** functions, which a user can set to flag records exceeding the FishBase collated temperature and latitudinal/longitudinal ranges. The user word **optimal** **`must`** be used in the **`multdetect()`** function for seamless comparisons with other methods.
+The user collates the species optimal ecological ranges to identify the species records outside the known optimal ranges. In the package, for a single species, the optimal ranges (minimum, maximum, or mean values) are provided manually, and the user is required to set the environmental predictor to be used for flagging the outliers. A dataset with the minimum and maximum values (optimal ranges) is allowed for multiple species. 
+**Note** If the taxa is fish, we included the **`thermal_ranges()`** and **`geo_ranges()`** functions, which a user can set to flag records exceeding the FishBase collated temperature and latitudinal/longitudinal ranges. The user word **optimal** **`must`** be used in the **`multidetect()`** function for seamless comparisons with other methods.
 
 4.  **Extract species environmental without outliers**
 
@@ -126,8 +126,8 @@ The **reference dataset** in **Step 2** and lists or outliers flagged by each me
 
 After environmental outlier removal, the user can examine the improvement in the model performance before and after environmental outlier removal. The following function can be used.
 
-* `sdm_fit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
-* `model_comp` to compare model performance before and outlier removal using threshold-dependent and independent metrics such as Area Under the Curve, true skill statistics, specificity, sensitivity, kappa, and accuracy.
+* `sdmfit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
+* `modelcomparison` to compare model performance before and outlier removal using threshold-dependent and independent metrics such as Area Under the Curve, true skill statistics, specificity, sensitivity, kappa, and accuracy.
 * `extract_performance` to obtain the dataset with the performance values for both scenarios.
 
 

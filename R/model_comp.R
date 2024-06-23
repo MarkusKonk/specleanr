@@ -29,6 +29,7 @@
 #' @param warn Return warning or not. Default is \code{FALSE}.
 #' @param pabs Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 #'      the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.
+#' @param full Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
 #' @param ... other parameters can be used from \link[specleanr]{envextract} function.
 #'
 #' @return A list of model instance and model performance metrics.

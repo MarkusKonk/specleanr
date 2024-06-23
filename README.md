@@ -1,17 +1,17 @@
 specleanr package for outlier detection
 ================
 
-<style>
-body {
-    text-align: justify;
-    font-family: Calibri;
-    font-size: 17px;
-}
-.p {
- font-size:17px;
- font-family: Consolas;
-}
-</style>
+<!-- <style> -->
+<!-- body { -->
+<!--     text-align: justify; -->
+<!--     font-family: Calibri; -->
+<!--     font-size: 17px; -->
+<!-- } -->
+<!-- .p { -->
+<!--  font-size:17px; -->
+<!--  font-family: Consolas; -->
+<!-- } -->
+<!-- </style> -->
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ## specleanr
@@ -67,7 +67,7 @@ that a user can ensemble is user-based; however, we expect the user to
 set at least **three** outlier detection methods. The methods should be
 also at least from different categories, which include **1) univariate
 methods**, **2) multivariate methods**, and **3) ecological ranges**.
-The must set all the methods using **`multdetect()`** function and not
+The must set all the methods using **`multidetect()`** function and not
 individual method functions to allow seamless comparison.
 
 **Univariate methods**
@@ -77,19 +77,19 @@ strongly advisable that the user selects an environmental predictor
 which directly affects the species distribution, for example, minimum
 temperature of the coldest month (IUCN 2012; Logez et al., 2012).
 
-| Function           | Method implemented                     | Userword in **`multdetect()`** |
-|:-------------------|:---------------------------------------|-------------------------------:|
-| `zscore()`         | Z-score                                |                         zscore |
-| `semiIQR()`        | Semi interquartile range               |                         semiqr |
-| `adjustboxplots()` | Adjusted boxplot-robust boxplot method |                         adjbox |
-| `interquartile()`  | Interquartile range (IQR)              |                            iqr |
-| `medianrule()`     | Median rule method                     |                     medianrule |
-| `logboxplot()`     | Logarithmic boxplot                    |                     logboxplot |
-| `seqfences()`      | Sequential fences                      |                      seqfences |
-| `mixediqr()`       | Mixed semi and interquartile range     |                       mixediqr |
-| `distboxplot()`    | distribution-based boxplots            |                    distboxplot |
-| `rjknife()`        | Reverse jackknifing                    |                         jknife |
-| `hampel()`         | The Hampel filter method               |                         hampel |
+| Function           | Method implemented                     | Userword in **`multidetect()`** |     |
+|:-------------------|:---------------------------------------|--------------------------------:|-----|
+| `zscore()`         | Z-score                                |                          zscore |     |
+| `semiIQR()`        | Semi interquartile range               |                          semiqr |     |
+| `adjustboxplots()` | Adjusted boxplot-robust boxplot method |                          adjbox |     |
+| `interquartile()`  | Interquartile range (IQR)              |                             iqr |     |
+| `medianrule()`     | Median rule method                     |                      medianrule |     |
+| `logboxplot()`     | Logarithmic boxplot                    |                      logboxplot |     |
+| `seqfences()`      | Sequential fences                      |                       seqfences |     |
+| `mixediqr()`       | Mixed semi and interquartile range     |                        mixediqr |     |
+| `distboxplot()`    | distribution-based boxplots            |                     distboxplot |     |
+| `rjknife()`        | Reverse jackknifing                    |                          jknife |     |
+| `hampel()`         | The Hampel filter method               |                          hampel |     |
 
 **Multivariate methods**
 
@@ -97,17 +97,17 @@ These methods detect outliers in multiple environmental predictors
 (multidimensional space). User should exclude unnecessary columns such
 as the coordinates such that they are not included in the computation.
 
-| Function      | Method used to fit and detect outliers       | Userword in **`multdetect()`** |
-|:--------------|:---------------------------------------------|-------------------------------:|
-| `isoforest()` | Isolation forest                             |                        iforest |
-| `onesvm()`    | One-class support vector machine             |                        onvesvm |
-| `xglosh()`    | Global-Local Outlier Score from Hierarchies. |                          glosh |
-| `xknn()`      | k-nearest neighbor                           |                            knn |
-| `xlof()`      | Local outlier factor                         |                            lof |
-| `xkmeans()`   | k-means clustering                           |                         kmeans |
-| `xkmedoids()` | Partitioning around the kmedoids             |                        kmedoid |
-| `xkmedian()`  | k-medians clustering                         |                        kmedian |
-| `mahal()`     | Mahalanobis distances both robust and simple |                          mahal |
+| Function      | Method used to fit and detect outliers       | Userword in **`multidetect()`** |     |
+|:--------------|:---------------------------------------------|--------------------------------:|-----|
+| `isoforest()` | Isolation forest                             |                         iforest |     |
+| `onesvm()`    | One-class support vector machine             |                         onvesvm |     |
+| `xglosh()`    | Global-Local Outlier Score from Hierarchies. |                           glosh |     |
+| `xknn()`      | k-nearest neighbor                           |                             knn |     |
+| `xlof()`      | Local outlier factor                         |                             lof |     |
+| `xkmeans()`   | k-means clustering                           |                          kmeans |     |
+| `xkmedoids()` | Partitioning around the kmedoids             |                         kmedoid |     |
+| `xkmedian()`  | k-medians clustering                         |                         kmedian |     |
+| `mahal()`     | Mahalanobis distances both robust and simple |                           mahal |     |
 
 **Ecological ranges**
 
@@ -116,12 +116,12 @@ species records outside the known optimal ranges. In the package, for a
 single species, the optimal ranges (minimum, maximum, or mean values)
 are provided manually, and the user is required to set the environmental
 predictor to be used for flagging the outliers. A dataset with the
-minimum and maximum values (optimal rnages) is allowed for multiple
+minimum and maximum values (optimal ranges) is allowed for multiple
 species. **Note** If the taxa is fish, we included the
-**`thermal_range()`** and **`geo_range()`** functions, which a user can
-set to flag records exceeding the FishBase collated temperature and
+**`thermal_ranges()`** and **`geo_ranges()`** functions, which a user
+can set to flag records exceeding the FishBase collated temperature and
 latitudinal/longitudinal ranges. The user word **optimal** **`must`** be
-used in the **`multdetect()`** function for seamless comparisons with
+used in the **`multidetect()`** function for seamless comparisons with
 other methods.
 
 4.  **Extract species environmental without outliers**
@@ -147,11 +147,11 @@ After environmental outlier removal, the user can examine the
 improvement in the model performance before and after environmental
 outlier removal. The following function can be used.
 
-- `sdm_fit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
-- `model_comp` to compare model performance before and outlier removal
-  using threshold-dependent and independent metrics such as Area Under
-  the Curve, true skill statistics, specificity, sensitivity, kappa, and
-  accuracy.
+- `sdmfit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
+- `modelcomparison` to compare model performance before and outlier
+  removal using threshold-dependent and independent metrics such as Area
+  Under the Curve, true skill statistics, specificity, sensitivity,
+  kappa, and accuracy.
 - `extract_performance` to obtain the dataset with the performance
   values for both scenarios.
 

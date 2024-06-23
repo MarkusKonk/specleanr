@@ -12,6 +12,8 @@
 #'      as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.
 #' @param metrics Either to only consider threshold-dependent, threshold-independent
 #'      or all evaluation metrics to determine model performance.
+#' @param full Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
+#'
 #'
 #' @return model runs, and evaluation metrics.
 #'
