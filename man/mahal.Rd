@@ -4,7 +4,7 @@
 \alias{mahal}
 \title{Flags outliers based on Mahalanobis distance matrix for all records.}
 \usage{
-mahal(data, exclude, output, mode, pdf = 0.95)
+mahal(data, exclude = NULL, output, mode, pdf = 0.95)
 }
 \arguments{
 \item{data}{Dataframe to check for outliers}
@@ -73,5 +73,5 @@ mahal_clean <- mahal(data = precleaned,
 \references{
 Leys C, Klein O, Dominicy Y, Ley C. 2018. Detecting multivariate outliers:
 Use a robust variant of the Mahalanobis distance. Journal of Experimental
-Social Psychology 74:150–156. Academic Press Inc.
+Social Psychology 74:150-156.
 }

@@ -4,14 +4,7 @@
 \alias{xkmedoid}
 \title{Title}
 \usage{
-xkmedoid(
-  data,
-  k = 2,
-  metric = "manhattan",
-  output = "outlier",
-  exclude,
-  x = 1.5
-)
+xkmedoid(data, k = 2, metric = "manhattan", output, exclude = NULL, x = 1.5)
 }
 \arguments{
 \item{data}{the environmental data where outliers are examined from.}

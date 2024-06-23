@@ -50,9 +50,10 @@ refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 
 \enumerate{
 
 \item Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
-Computational Statistics and Data Analysis 51:3800–3810.
+Computational Statistics and Data Analysis 51:3800-3810.
+
 \item Schwertman NC, Owens MA, Adnan R. 2004. A simple more general boxplot method for identifying outliers.
-Computational Statistics and Data Analysis 47:165–174.
+Computational Statistics and Data Analysis 47:165-174.
 
 }
 }

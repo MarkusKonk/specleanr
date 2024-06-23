@@ -4,11 +4,9 @@
 \alias{sdmfit}
 \title{Species distribution modelling}
 \usage{
-sdmfit(y, data, models, cutoff = 0.5, mode = "all")
+sdmfit(data, models, cutoff = 0.5, mode = "all")
 }
 \arguments{
-\item{y}{The species variable with presence (1) and absences (0).}
-
 \item{data}{Species data list with both testing and training, probably
 from boots function.}
 

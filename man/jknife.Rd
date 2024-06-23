@@ -55,10 +55,10 @@ refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 
 \enumerate{
 
   \item Chapman AD. 1991. Quality control and validation of environmental resource data in
-  Data Quality and Standards. Pages 1–23. Canberra. Available from
+  Data Quality and Standards. Pages 1-23. Canberra. Available from
   https://www.researchgate.net/publication/332537824.
   \item Chapman AD. 1999. Quality Control and Validation of Point-Sourced Environmental Resource Data. eds. .
-  Chelsea,. Pages 409–418 in Lowell K, Jaton A, editors. Spatial accuracy assessment:
+  Chelsea,. Pages 409-418 in Lowell K, Jaton A, editors. Spatial accuracy assessment:
   Land information uncertainty in natural resources, 1st edition. MI: Ann Arbor Press., Chelsea.
 }
 }

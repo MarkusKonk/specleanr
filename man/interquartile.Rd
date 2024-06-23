@@ -56,5 +56,5 @@ refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude',
 }
 \references{
 Rousseeuw PJ, Hubert M. 2011. Robust statistics for outlier detection. Wiley Interdisciplinary Reviews
- Data Mining and Knowledge Discovery 1:73–79. Wiley-Blackwell.
+ Data Mining and Knowledge Discovery 1:73-79.
 }

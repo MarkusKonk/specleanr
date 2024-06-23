@@ -44,7 +44,8 @@ refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 
 
 }
 \references{
-Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data. American Statistician 72:348–353. American Statistical Association.
+Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data.
+ American Statistician 72:348-353. American Statistical Association.
 }
 \author{
 Anthony Basooma \email{anthony.basooma@boku.ac.at}

@@ -7,12 +7,13 @@
 multidetect(
   data,
   var,
-  output = "oultier",
-  exclude,
+  output,
+  exclude = NULL,
   multiple,
   colsp = NULL,
-  optpar = list(df = NULL, min = NULL, max = NULL, sp = NULL, colsp = NULL, sciname =
-    NULL),
+  optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction = NULL, maxcol
+    = NULL, mincol = NULL, maxval = NULL, minval = NULL, checkfishbase = FALSE, mode =
+    "geo", lat = NULL, lon = NULL, pct = 80, warn = FALSE),
   kmpar = list(k = 6, method = "silhouette", mode = "soft"),
   kmedoidpar = list(k = 2, metric = "manhattan"),
   ifpar = list(cutoff = 0.5, size = 0.7),
@@ -27,7 +28,7 @@ multidetect(
   spname = NULL,
   warn = TRUE,
   missingness = 0.1,
-  debug = FALSE
+  showErrors = FALSE
 )
 }
 \arguments{
@@ -37,7 +38,7 @@ multidetect(
 maximum temperature of the coldest month for bioclimatic variables \code{(IUCN Standards and Petitions Committee, 2022))} or
 stream power index for hydromorphological parameters \code{(Logez et al., 2012)}.}
 
-\item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers.}
+\item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers. Default \code{outlier}.}
 
 \item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
 latitude/longitude or any column that the user doesn't want to consider.}
@@ -80,7 +81,7 @@ such as robust and soft modes..}
 \item{missingness}{Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
 if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.}
 
-\item{debug}{show execution errors and therefore for multiple species the code will break if one of the
+\item{showErrors}{show execution errors and therefore for multiple species the code will break if one of the
 methods fails to execute.}
 }
 \value{
@@ -93,7 +94,7 @@ Allows ensemble multiple outlier detection methods.
 This function computes different outlier detection methods including univariate, multivariate and species
      ecological ranges to enables seammless comaprision and similarities in the outliers detected by each
      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-     and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.c
+     and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.
 }
 \examples{
 
@@ -151,6 +152,4 @@ https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
 \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422 In 2008 Eighth IEEE International Conference on Data Mining.
 Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
 }
-
- \code{\link{extract_clean_data}}
 }

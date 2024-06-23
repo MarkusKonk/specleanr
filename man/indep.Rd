@@ -27,6 +27,7 @@ In this package we incorporated the Area Under Receiver Operating Curve based on
 }
 \references{
 \enumerate{
-  \item Hanley JamesA, McNeil Barbra J. 1982. The meaning and use of the Area under a Receiver Operating Characteristic (ROC) Curve. Radiology 143:29–36.
+  \item Hanley J. A, McNeil Barbra J. 1982. The meaning and use of the Area under
+  a Receiver Operating Characteristic (ROC) Curve. Radiology 143:29-36.
   }
 }

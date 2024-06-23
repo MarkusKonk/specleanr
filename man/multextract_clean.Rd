@@ -5,35 +5,30 @@
 \title{Extract cleaned record for multiple species.}
 \usage{
 multextract_clean(
-  data,
+  refdata,
   outliers,
-  var,
-  type = "bestmethod",
+  mode = "best",
   colsp = NULL,
   threshold = NULL,
-  mode = "all",
   warn = FALSE,
   verbose = FALSE,
-  autothreshold = FALSE
+  autothreshold = FALSE,
+  pabs = pabs
 )
 }
 \arguments{
-\item{data}{Species data frame from precleaned analysis}
+\item{refdata}{Species data frame from precleaned analysis}
 
 \item{outliers}{Output from the outlier detection}
 
-\item{var}{variable considered in outlier detection.}
-
-\item{type}{Either absolute to use absolute outliers to filter data or suitable method to outliers from suitable method.}
+\item{mode}{Either all to consider all similarity measure to consider suitable method or custom.
+to indicate the similarity measures or interest. simple matching coefficient, jaccard, sorensen,
+and overlap coefficient can be used.
+Otherwise a data frame will be produced. Default FALSE.}
 
 \item{colsp}{Column with species names.}
 
 \item{threshold}{value to consider whether the outlier is an absolute outlier or not.}
-
-\item{mode}{Either all to consider all similarity measure to consider suitable method or custom
-to indicate the similarity measures or interest. simple matching coefficient, jaccard, sorensen,
-and overlap coefficient can be used.
-Otherwise a data frame will be produced. Default FALSE.}
 
 \item{warn}{If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 
@@ -41,6 +36,9 @@ Otherwise a data frame will be produced. Default FALSE.}
 
 \item{autothreshold}{Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.}
+
+\item{pabs}{Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
+the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.}
 }
 \value{
 Either a list or data frame of cleaned records for multiple species.

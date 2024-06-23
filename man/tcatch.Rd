@@ -10,7 +10,7 @@ tcatch(
   spname = NULL,
   verbose = FALSE,
   warn = FALSE,
-  debug = TRUE
+  showErrors = TRUE
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ tcatch(
 
 \item{warn}{whether to return warning or not. Default TRUE.}
 
-\item{debug}{show execution errors and therefore for multiple species the code will break if one of the
+\item{showErrors}{show execution errors and therefore for multiple species the code will break if one of the
 methods fails to execute.}
 }
 \value{

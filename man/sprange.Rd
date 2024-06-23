@@ -90,6 +90,14 @@ spoptimal_df <- optimal(data = precleaned, var = 'bio1', output='clean', min = 4
 
 }
 \references{
-García-Roselló E, Guisande C, Heine J, Pelayo-Villamil P, Manjarrés-Hernández A, González Vilas L, González-Dacosta J, Vaamonde A, Granado-Lorencio C. 2014. Using modestr to download, import and clean species distribution records. Methods in Ecology and Evolution 5:708–713. British Ecological Society.
-IUCN Standards and Petitions Committee. 2022. THE IUCN RED LIST OF THREATENED SPECIESTM Guidelines for Using the IUCN Red List Categories and Criteria Prepared by the Standards and Petitions Committee of the IUCN Species Survival Commission. Available from https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
+\enumerate{
+\item García-Roselló E, Guisande C, Heine J, Pelayo-Villamil P, Manjarrés-Hernández A,
+González Vilas L, González-Dacosta J, Vaamonde A, Granado-Lorencio C. 2014.
+Using modestr to download, import and clean species distribution records.
+Methods in Ecology and Evolution 5:708-713.
+\item IUCN Standards and Petitions Committee. 2022. THE IUCN RED LIST OF THREATENED SPECIESTM
+Guidelines for Using the IUCN Red List Categories and Criteria Prepared by the Standards
+and Petitions Committee of the IUCN Species Survival Commission.
+Available from https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
+}
 }

@@ -7,7 +7,6 @@
 ocindex(
   x,
   sp = NULL,
-  var,
   threshold = NULL,
   absolute = FALSE,
   props = FALSE,
@@ -19,8 +18,6 @@ ocindex(
 \item{x}{List of dataframes for each methods used to identify outliers in mult_detect function.}
 
 \item{sp}{species name or index if multiple species are considered during outlier detection.}
-
-\item{var}{variable used to identify outliers in the univariate outlier detection methods such as zcore, IQR, boxplots, and species optimal ranges.}
 
 \item{threshold}{Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
 as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
@@ -63,12 +60,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
+outliers <- multidetect(data = extdf, output='outlier',
                        exclude = c('x','y'), multiple = TRUE,
                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
                        kmpar =list(k=6, method='silhouette', mode='soft'))
 
-ociss <- ocindex(x = outliers, sp= 1, threshold = 0.2, absolute = TRUE, var = 'bio6')#
+ociss <- ocindex(x = outliers, sp= 1, threshold = 0.2, absolute = TRUE)#
 #No outliers detected in more than two methods
 
 }

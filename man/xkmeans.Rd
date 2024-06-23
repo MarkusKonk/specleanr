@@ -4,7 +4,15 @@
 \alias{xkmeans}
 \title{Flags outliers using kmeans clustering method}
 \usage{
-xkmeans(data, k, exclude, output, mode, method = NULL, verbose = FALSE)
+xkmeans(
+  data,
+  k,
+  exclude = NULL,
+  output,
+  mode,
+  method = "silhouette",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{Dataframe to check for outliers}
