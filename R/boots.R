@@ -1,12 +1,12 @@
 
-#' @title Creating sub samples for modeling evaluation.
+#' @title Creating sub-samples for modeling evaluation.
 #'
 #' @param data Data to be subsampled and partitioned.
-#' @param nboots the number of iteration of subsampling to be conducted.
-#' @param setseed For reproducibility of the sub samples across platforms and users.
+#' @param boosts the number of iterations of subsampling to be conducted.
+#' @param setseed For reproducibility of the sub-samples across platforms and users.
 #' @param testprob The probability to be used for partitioning data.
 #'
-#' @return A list of both training and test datasets to be used in the sdmfit.
+#' @return A list of training and test datasets for use in the sdmfit.
 #'
 #' @seealso [sdmfit()]
 #'
