@@ -8,7 +8,7 @@
 #'
 #' @return A list of training and test datasets for use in the sdmfit.
 #'
-#' @seealso [sdmfit()]
+#' @seealso \code{\link{sdmfit}}
 #'
 #' @export
 #'

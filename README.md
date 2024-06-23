@@ -13,11 +13,13 @@ specleanr package for outlier detection
 <!-- } -->
 <!-- </style> -->
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
+
+<!-- badges: end -->
 
 ## specleanr
-
-<!-- badges: start -->
-<!-- badges: end -->
 
 The package aims to improve the reliability and acceptability of
 biogeographical models, including species distribution models,

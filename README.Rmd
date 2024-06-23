@@ -1,8 +1,6 @@
 ---
 title: specleanr package for outlier detection
 output: github_document
-theme: flatly
-highlight: tango
 ---
 
 <!-- <style> -->
@@ -28,11 +26,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-## specleanr
-
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
+
 <!-- badges: end -->
+
+## specleanr
 
 The package aims to improve the reliability and acceptability of biogeographical models, including species distribution models, ecological niche models, and bioclimatic envelope models, by detecting outliers in the environmental predictors. In the package, we collate **22 outlier detection methods**, which a user can collectively apply (ensemble outlier detection) and determine whether the species records are in a suitable environmental space. The package complements other packages that address geographical, taxonomic, and temporal checks.
 
