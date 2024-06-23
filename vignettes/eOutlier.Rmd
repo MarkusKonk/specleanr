@@ -169,7 +169,7 @@ precleaned <-  pred_extract(data= finaldata,
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'speciescheck',
-                             basin = danube_basin,  
+                             bbox  = danube_basin,  
                              multiple = TRUE, 
                              list= TRUE, 
                              minpts = 10, merge = FALSE)

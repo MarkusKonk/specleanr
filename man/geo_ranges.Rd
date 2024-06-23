@@ -16,7 +16,7 @@ geo_ranges(
 )
 }
 \arguments{
-\item{data}{species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.}
+\item{data}{Dataframe or vector to retrieve  ranges from FishBase.}
 
 \item{colsp}{Column with species names from the data set.}
 

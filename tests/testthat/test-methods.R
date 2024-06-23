@@ -18,7 +18,7 @@ db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp', package = "specle
 
 refdata <- pred_extract(data = mdfclean, raster = wcd,
                         lat = 'decimalLatitude', lon = 'decimalLongitude',
-                        basin = db,
+                        bbox = db,
                         colsp = 'speciescheck',
                         list = TRUE,
                         verbose = F,

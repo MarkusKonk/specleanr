@@ -5,41 +5,30 @@
 \title{Extract final clean data using either absolute or best method generated outliers.}
 \usage{
 extract_clean_data(
-  data,
+  refdata,
   outliers,
   sp = NULL,
-  var,
-  type = "bestmethod",
+  mode = "best",
   colsp = NULL,
-  similarity_tests = NULL,
   threshold = NULL,
-  mode = "all",
   verbose = TRUE,
   warn = TRUE,
-  pabs = 0.1,
+  pabs = 10,
   autothreshold = FALSE
 )
 }
 \arguments{
-\item{data}{Species data frame from precleaned analsyis.}
+\item{refdata}{The reference data for the species used in outlier detection.}
 
-\item{outliers}{Output from the outlier detection}
+\item{outliers}{Output from the outlier detection process.}
 
 \item{sp}{species name. NULL if a single species is considered in outlier detection.}
 
-\item{var}{variable used to identify outliers in the univariate outlier detection methods and species optimal ranges.}
-
-\item{type}{Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method}
+\item{mode}{Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method}
 
 \item{colsp}{A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
 
-\item{similarity_tests}{indicate the similarity_tests to consider including jaccard, overlap,sorensen, ocindex, and smc.}
-
 \item{threshold}{value to consider whether the outlier is an absolute outlier or not.}
-
-\item{mode}{Either all to consider all similarity measure to consider best method or custom
-to indicate the similarity measures or interest. simple matching coefficient, jaccard, sorensen,
-and overlap coefficient can be used.}
 
 \item{verbose}{Produces messages or not. Default \strong{FALSE}.}
 
@@ -86,7 +75,7 @@ rdata <- predextract(data = datacheck,
                           lat = 'decimalLatitude',
                           lon= 'decimalLongitude',
                           colsp = 'speciescheck',
-                          basin = db,
+                          bbox = db,
                           multiple = TRUE,
                           minpts = 10,
                           list=TRUE,
@@ -104,10 +93,10 @@ out_df <- multidetect(data = rdata, multiple = TRUE,
  #extracting use the absolute method for one species
 
  extractclean_abs <- extract_clean_data(data = precleaned, outliers = out_df, sp = 1,
- var = 'bio6', type = 'absolute')
+ type = 'abs')
 
  bestmout <- extract_clean_data(data = rdata, outliers = out_df, sp = 1,
- var = 'bio6', type = 'bestmethod')
+  type = 'best')
 
 }
 

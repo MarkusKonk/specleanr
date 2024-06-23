@@ -14,14 +14,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, warning=FALSE}
 library(specleanr)
 ```
 
-## Change in the distribitíon of Salix alba, Fagus sylvatica, and Populus nigra due to climate change.
+**Change in the distribution of *Salix alba*, *Fagus sylvatica*, and *Populus nigra* due to climate change**.
 
 The three different species were randomly selected. The species *Populus nigra* is tree species under the Salicaceae family, which has been assessed 
-has as data deficient by the nternational Union for Conservation of Nature. The tree species is native to Europe and predominantly in flood plain in 
+has as data deficient by the International Union for Conservation of Nature. The tree species is native to Europe and predominantly in flood plain in 
 mixed forests (IUCN 2013). The *Fagus sylvatica* 
 
 
@@ -32,7 +32,8 @@ mixed forests (IUCN 2013). The *Fagus sylvatica*
 plantdf <- getdata(data = c( "Salix alba", "Populus nigra", "Fagus sylvatica"), 
                     gbiflim = 700, inatlim = 100, isFish = FALSE,
                      hasCoordinate = TRUE, 
-                   bbox = c(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500))
+                   bbox = c(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500),
+                   verbose = T, warn = T)
 
 extrdata <- extract_online(plantdf)
 
@@ -62,36 +63,97 @@ plantcleaned <-  pred_extract(data= extrdata,
                              lon = 'decimalLongitude',
                              colsp = 'species',  
                              multiple = TRUE, 
-                             basin = danube_basin,
+                             bbox = danube_basin,
+                             list= FALSE, 
+                             minpts = 10, merge = FALSE, verbose = TRUE, warn = T)
+
+xy <- plantcleaned %>% dplyr::filter(species=="Fagus sylvatica") #%>% dplyr::select(1:19)
+
+#xf= xkmeans(data = xy, k =10, exclude = c("x", "y"), output = 'outlier', mode = 'soft', method = "silhouette")
+
+plantlist <-  pred_extract(data= extrdata, 
+                             raster= worldclim, 
+                             lat = 'decimalLatitude',
+                             lon = 'decimalLongitude',
+                             colsp = 'species',  
+                             multiple = TRUE, 
+                             bbox = danube_basin,
                              list= TRUE, 
-                             minpts = 10, merge = FALSE)
-
-x1 <- plantcleaned[[1]]
-
+                             minpts = 10, merge = FALSE, verbose = TRUE, warn = T)
 ```
 
 
 ```{r}
 
-plantoutliers <- multidetect(data = plantcleaned,
+
+plantoutliers1 <- multidetect(data = plantcleaned,
                        multiple = TRUE,
-                       var = 'bio6',
+                       var = 'bio1',
+                       colsp = "species",
                        output = 'outlier',
-                       exclude = c('x','y'),
-                       methods = c('zscore', 'adjbox',
-                                   'iqr', 'semiqr','hampel','kmeans'),
-                       kmpar = list(k = 6, method='silhouette', mode='soft'),
-                       ifpar = list(cutoff = 0.5, size=0.7))
+                       exclude = c('x','y'), 
+                       methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),#,'iforest'
+                       showErrors  = TRUE, warn = F, verbose = F)
+
+
+p1<- multidetect(data = xy,
+                       multiple = FALSE,
+                       var = 'bio1',
+                       output = 'outlier',
+                       exclude = c('x','y'), 
+                       methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),#,'iforest'
+                       showErrors  = TRUE, warn = F, verbose = F)
 ```
 
 
 ```{r extract outliers from clean dataset}
 
+x1 <- bestmethod(x=p1, threshold = 0.6, warn = TRUE, verbose = FALSE)
 
+x2 <- bestmethod(x=plantoutliers1, threshold = 0.6, warn = TRUE, verbose = FALSE, sp="Fagus sylvatica")
+
+
+bst <- multibestmethod(x=plantoutliers1, autothreshold = TRUE, warn = TRUE, verbose = FALSE)
+
+```
+
+##Data extraction
+```{r}
+# 
+# c11 <- extract_clean_data(refdata = plantlist, outliers = plantoutliers1,
+#                                 mode = "best",  threshold = 0.6, sp = "Fagus sylvatica",#
+#                                 colsp = 'species', warn = T, verbose = T, pabs = 0.1)
+
+
+# c2 <- extract_clean_data(refdata = xy, outliers = p1, mode = "best", threshold = 0.6, warn = T,
+#                          verbose = TRUE, pabs = 0.1)
+
+c2 <- multextract_clean(refdata = plantcleaned, outliers = plantoutliers1, 
+                         mode = "abs", threshold = 1, warn = T, colsp = 'species',
+                         verbose = TRUE, pabs = 0.1)
 
 
 ```
 
+###Model comparison
+
+```{r}
+
+modecom <- modelcomparison(refdata = xy, outliers = plantoutliers1, raster = worldclim,
+                           lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',  
+                           thresholds = seq(0.2, 0.7, 0.1),
+                           colsp = 'species', species = c("Fagus sylvatica"), full = FALSE)
+
+#perf <- extract_performance(modecom)
+```
+
+
+```{r}
+library(ggplot2)
+
+ggplot(perf, aes(x=scenario, y=Specificity))+
+  geom_boxplot()
+```
 
 
 
