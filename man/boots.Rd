@@ -2,35 +2,42 @@
 % Please edit documentation in R/boots.R
 \name{boots}
 \alias{boots}
-\title{Creating sub samples for modeling evaluation.}
+\title{Creating sub-samples for modeling evaluation.}
 \usage{
 boots(data, nboots, setseed = 1234, testprob = 0.2)
 }
 \arguments{
-\item{data}{Data to be subsampled and partitioned.}
+\item{data}{Data to be sub sampled and partitioned.}
 
-\item{nboots}{the number of iteration of subsampling to be conducted.}
+\item{nboots}{the number of iterations of sub sampling to be conducted.}
 
-\item{setseed}{For reproducibility of the sub samples across platforms and users.}
+\item{setseed}{For reproducibility of the sub-samples across platforms and users.}
 
 \item{testprob}{The probability to be used for partitioning data.}
 }
 \value{
-A list of both training and test datasets to be used in the sdmfit.
+A list of training and test data sets for use in the sdmfit.
 }
 \description{
-Creating sub samples for modeling evaluation.
+Creating sub-samples for modeling evaluation.
 }
 \examples{
 
 \dontrun{
 
-#data <-
+data(jdsdata)
+
+#select species with enough records
+
+dataprep <- envextract(occurences = jdsdata, raster = worldclim,
+                      lat = "lat", lon = "lon", binary = FALSE, prop = 0.8)
+
+nboots <- boots(data = dataprep, nboots = 10, testprob = 0.3)
 
 }
 }
 \seealso{
-[sdmfit()]
+\code{\link{sdmfit}}
 }
 \author{
 Anthony Basooma, \email{anthony.basooma@boku.ac.at}

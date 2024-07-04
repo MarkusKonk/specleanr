@@ -5,6 +5,8 @@
 
   if(is.null(y)){
 
+    #supply column standard names
+
     cls <- sapply(sapply(x, colnames), intersect, std)
 
     ck <- sapply(cls, length)
@@ -64,7 +66,7 @@
 #'                            lats = 'lat',
 #'                            lons = 'lon',
 #'                            species = c('speciesname','scientificName'),
-#'                            country=c('JDS4_site_ID),
+#'                            country=c('JDS4_site_ID'),
 #'                            date=c('Date', 'sampling_date'))
 #'
 #' }
@@ -76,14 +78,13 @@
 #'
 #'
 match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, species = NULL,
-                     date=NULL, verbose=FALSE){
+                           date=NULL, verbose=FALSE){
 
-  if(missing(datasets)){
-    stop('list of datasets should be provided')
-  }
+  if(missing(datasets))  stop('A list of datasets should be provided')
+
   if(is(datasets, 'list')==FALSE)  stop('Only list of datasets is accepted')
 
-  #check if null columns have standard names across all data sets.
+  #check if null columns in the different parameters have standard names across all data sets.
 
   for (i in c('country', 'lats', 'lons', 'species')) {
 
@@ -106,6 +107,7 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
   }
   datalists <- list()
 
+  #standardize column names for main 4 columns (species, latitude, longitude, country, and dates columns)
   for (ii in seq_along(datasets)){
 
     datnames <- names(datasets)[ii]
@@ -190,7 +192,7 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
     datalists[[ii]] <- dataset
   }
 
-  #column names which are identical in data sets
+  #get column names which are identical in data sets
 
   colind <- Reduce(intersect, sapply(datalists, colnames))
 
