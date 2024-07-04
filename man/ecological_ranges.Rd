@@ -38,9 +38,7 @@ ecological_ranges(
 
 \item{maxval}{Maximum temperature column from the standard optimal dataframe.}
 
-\item{lat}{o}
-
-\item{lon}{o}
+\item{lat, lon}{o}
 
 \item{ecoparam}{o}
 

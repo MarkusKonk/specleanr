@@ -26,14 +26,14 @@ data("efidata")
 efidata
 }
 
+
+
+
 }
 \references{
 Logez M, Belliard J, Melcher A, Kremser H, Pletterbauer F, Schmutz S, Gorges G, Delaigue O, Pont D. 2012.
 Deliverable D5.1-3: BQEs sensitivity to global/climate change in European rivers: implications for reference conditions
 and pressure-impact-recovery chains.
-}
-\author{
-Anthony Basooma <anthony.basooma@boku.ac.at>
 }
 \keyword{European}
 \keyword{dataset}

@@ -4,7 +4,7 @@
 \alias{evaluate}
 \title{Model evaluation metrics}
 \usage{
-evaluate(data, predictions, response, model = NULL, cutoff, mode)
+evaluate(data, predictions, response, model = NULL, cutoff, metrics)
 }
 \arguments{
 \item{data}{Species environmental data generated during bootstrapping or subsampling.}
@@ -17,7 +17,7 @@ evaluate(data, predictions, response, model = NULL, cutoff, mode)
 
 \item{cutoff}{Defines a threshold classify the model predictions/probabilities as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.}
 
-\item{mode}{Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.}
+\item{metrics}{Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.}
 }
 \value{
 evaluation metrics values
@@ -26,5 +26,5 @@ evaluation metrics values
 Model evaluation metrics
 }
 \seealso{
-[specleanr::boot()]
+\code{\link{boot}}
 }
