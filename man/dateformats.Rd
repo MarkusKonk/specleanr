@@ -24,8 +24,7 @@ data("dateformats")
 dateformats
 }
 
-}
-\author{
-Anthony Basooma (anthony.basooma@boku.ac.at)
+
+
 }
 \keyword{datasets}

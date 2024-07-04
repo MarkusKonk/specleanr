@@ -8,7 +8,6 @@ detect(
   x,
   var,
   output,
-  colsp,
   exclude,
   optpar,
   kmpar,
@@ -35,8 +34,6 @@ detect(
 
 \item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}:
 to output a dataframe with outliers.}
-
-\item{colsp}{Column with species names.}
 
 \item{exclude}{Exclude variables that should not be considered in the fitting the one
 class model, for example x and y columns or
