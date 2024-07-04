@@ -15,7 +15,7 @@ multidetect(
     = NULL, mincol = NULL, maxval = NULL, minval = NULL, checkfishbase = FALSE, mode =
     "geo", lat = NULL, lon = NULL, pct = 80, warn = FALSE),
   kmpar = list(k = 6, method = "silhouette", mode = "soft"),
-  kmedoidpar = list(k = 2, metric = "manhattan"),
+  kmedoidpar = list(k = 2, metric = "manhattan", full = FALSE),
   ifpar = list(cutoff = 0.5, size = 0.7),
   mahalpar = list(mode = "soft"),
   jkpar = list(mode = "soft"),
@@ -94,7 +94,7 @@ Allows ensemble multiple outlier detection methods.
 This function computes different outlier detection methods including univariate, multivariate and species
      ecological ranges to enables seammless comaprision and similarities in the outliers detected by each
      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-     and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.
+     and thereafter the outliers can be extracted using the \link[specleanr]{clean_data_extract} function.
 }
 \examples{
 

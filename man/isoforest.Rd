@@ -25,3 +25,34 @@ Dataframe with or with no outliers.
 \description{
 Identify outliers using isolation forest model.
 }
+\examples{
+
+\dontrun{
+
+data("efidata")
+
+gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                       lat = 'decimalLatitude',
+                       lon= 'decimalLongitude',
+                       colsp = 'speciescheck',
+                      bbox = db,
+                       multiple = TRUE,
+                       minpts = 10)
+
+iosd <- isoforest(data = refdata[['Salmo trutta']], size = 0.7,  output='outlier',
+                  exclude = c("x", "y"))
+}
+
+}
+\references{
+\enumerate{
+\item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422 In 2008 Eighth IEEE International Conference on Data Mining.
+Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
+}
+}

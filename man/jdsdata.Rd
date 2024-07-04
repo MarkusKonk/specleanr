@@ -25,12 +25,12 @@ data("jdsdata")
 jdsdata
 }
 
+
+
+
 }
 \references{
 https://www.danubesurvey.org/jds4/about
-}
-\author{
-Anthony Basooma <anthony.basooma@boku.ac.at>
 }
 \keyword{datasets}
 \keyword{freshwater}

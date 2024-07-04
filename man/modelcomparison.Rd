@@ -9,12 +9,11 @@ modelcomparison(
   outliers,
   raster,
   models = "GLM",
+  metrics = "all",
+  thresholds = c(0.6, 0.7),
   autothreshold = FALSE,
   mode = "best",
-  exclude = NULL,
   colsp = NULL,
-  species = NULL,
-  thresholds = c(0.6, 0.7),
   nboots = 10,
   testprop = 0.2,
   geom = NULL,
@@ -24,7 +23,9 @@ modelcomparison(
   binary = FALSE,
   verbose = F,
   warn = F,
+  full = FALSE,
   pabs = 0.1,
+  minpts = 10,
   ...
 )
 }
@@ -32,7 +33,7 @@ modelcomparison(
 \item{refdata}{Species data generated during pre-cleaning process. This data set is used as the reference data in accessing the outlier detection performance using both
 threshold dependent and independent metrics. This data set must be same as when in detecting outliers to avoid mismatch.}
 
-\item{outliers}{The \code{datacleaner} class data set with all outliers obtained using the \code{multdetect} function. Please check \code{ocindex}}
+\item{outliers}{The \code{datacleaner} class data set with all outliers obtained using the \code{multdetect} function. Please check \code{ocindex}.}
 
 \item{raster}{The environmental where pseudo absences are extracted using \link[specleanr]{envextract}.}
 
@@ -40,18 +41,17 @@ threshold dependent and independent metrics. This data set must be same as when 
 models are accepted. \code{GLM} is used to set to Generalized Linear Models and \code{RF} for Random
 Forest. \code{RF1} variant is slower and is suggested if \code{RF} fails.}
 
-\item{autothreshold}{Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.}
-
-\item{mode}{Either \code{abs} to use absolute outliers to filter data or \code{best} for best method to outliers from best method.}
-
-\item{exclude}{Excluded the columns before checking for outliers. Automatic identification of these from the datacleaner is implemented.}
-
-\item{colsp}{The column with species names if the species occurrence is a data frame not list,}
-
-\item{species}{A list of species names and they must be contained in the outlier data set and precleaned data.}
+\item{metrics}{Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.}
 
 \item{thresholds}{The different scenarios are implemented. Currently the reference data set and threshold, outlier cleaned data are allowed.}
+
+\item{autothreshold}{Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
+       are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
+#param species A list of species names and they must be contained in the outlier data set and precleaned data.}
+
+\item{mode}{Either \code{abs} to use absolute outliers to filter data or \code{best} to use the best method to filter the data \code{\link{bestmethod}}.}
+
+\item{colsp}{The column with species names if the species occurrence is a data frame not list,}
 
 \item{nboots}{Creating sub samples for modeling evaluation.}
 
@@ -72,16 +72,83 @@ when the parameter \code{label} is NULL. If only species presences and absences 
 
 \item{warn}{Return warning or not. Default is \code{FALSE}.}
 
+\item{full}{Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.}
+
 \item{pabs}{Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.}
 
-\item{...}{other parameters can be used from \link[specleanr]{envextract} function.}
+\item{minpts}{Minimum number of records required to run the species distribution model.}
+
+\item{...}{other parameters can be used from \code{\link{envextract}} function.}
 }
 \value{
 A list of model instance and model performance metrics.
 }
 \description{
 Comparing the model performance before and after outlier removal.
+}
+\examples{
+
+\dontrun{
+ data(jdsdata)
+
+data(efidata)
+
+matchdata <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
+                           lats = 'lat', lons = 'lon',
+                           country = 'JDS4_site_ID',
+                           species = c('scientificName', 'speciesname'),
+                          date=c('sampling_date','Date'))
+
+datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE, verbose = FALSE)
+
+#select species with enough records
+
+datacheckf <- subset(datacheck, subset = speciescheck \%in\% c("Salmo trutta",
+"Gasterosteus aculeatus", "Squalius cephalus"))
+
+#basin to get the bounding box to delineate the area of concern
+
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+
+#worldclim data for to extract enviromental predictctors
+
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+
+#initial data extraction and preliminary analysis
+
+rdata <- pred_extract(data = datacheckf,
+                     raster= worldclim ,
+                     lat = 'decimalLatitude',
+                     lon= 'decimalLongitude',
+                     colsp = 'speciescheck',
+                    bbox  = db,
+                    multiple = TRUE,
+                     minpts = 10,
+                     list=TRUE,
+                     merge=F, verbose = F)
+
+
+#apply ensemble outlier detection. Note: (x and y in exclude parameter are
+#internally generally in pred_extract during environmental data extraction )
+
+outliers <- multidetect(data = rdata, multiple = TRUE,
+                       var = 'bio6',
+                       output = 'outlier',
+                       exclude = c('x','y'),
+                       methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
+
+
+modecom <- modelcomparison(refdata = rdata, outliers = outliers, raster = worldclim,
+                          lat = 'y', lon = 'x', models = c("GLM"),
+                          mode = 'best', testprop = 0.2, metrics = 'indep',
+                         thresholds = seq(0.2, 0.9, 0.1), full = FALSE)
+
+modelperfom <- get_performance(modecom)
+
+}
+
+
 }
 \seealso{
 \link[specleanr]{sdmfit}

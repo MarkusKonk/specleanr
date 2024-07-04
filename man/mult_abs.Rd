@@ -15,8 +15,8 @@ mult_abs(
 \arguments{
 \item{x}{List of data frames for each methods used to identify outliers in mult_detect function.}
 
-\item{threshold}{Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
+\item{threshold}{Maximum value to denote an absolute outlier. The threshold ranges from \code{"0"} which indicates a point has not been flagged by any outlier detection method
+as an \code{outlier} or \code{"1"}, when means the record is an absolute or true outlier since it has been identified by all methods. At both extremes, at low threshold values,
 many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
 Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
 Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.}

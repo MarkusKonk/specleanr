@@ -2,24 +2,25 @@
 % Please edit documentation in R/outliermethods.R
 \name{medianrule}
 \alias{medianrule}
-\title{Title}
+\title{Median rule method}
 \usage{
 medianrule(data, var, output, x = 2.3)
 }
 \arguments{
-\item{data}{hh}
+\item{data}{Dataframe or vector where to check outliers.}
 
-\item{var}{uu}
+\item{var}{Variable to be used for outlier detection if \strong{data} is not a vector file.}
 
-\item{output}{kk}
+\item{output}{Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+for outlier data frame or vectors.}
 
-\item{x}{kk}
+\item{x}{A constant for flagging outliers.}
 }
 \value{
-kk
+Either clean or outliers.
 }
 \description{
-Title
+Median rule method
 }
 \examples{
 
@@ -29,14 +30,16 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                          lat = 'decimalLatitude',
+                          lon= 'decimalLongitude',
                           colsp = 'speciescheck',
-                          basin = db,
-                          multiple = FALSE,
+                          bbox = db,
+                          multiple = TRUE,
                           minpts = 10)
 
  medout <- medianrule(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')

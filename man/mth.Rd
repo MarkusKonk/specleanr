@@ -24,15 +24,14 @@ data("mth")
 mth
 }
 
+
+
 }
 \references{
 Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
 Computational Statistics and Data Analysis 51:3800–3810.
 }
-\author{
-Anthony Basooma <anthony.basooma@boku.ac.at>
-}
-\keyword{Stanadard}
+\keyword{Standard}
 \keyword{a}
 \keyword{at}
 \keyword{compute}
