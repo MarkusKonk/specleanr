@@ -11,7 +11,7 @@ Description: specleanr is used detect or flag and remove environmental outliers 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/AnthonyBasooma/specleanr
+URL: https://github.com/AnthonyBasooma/specleanr, https://anthonybasooma.github.io/specleanr/
 BugReports: https://github.com/AnthonyBasooma/specleanr/issues
 RoxygenNote: 7.2.3
 Suggests: 
