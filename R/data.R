@@ -21,7 +21,7 @@
 #' dateformats
 #' }
 #'
-#' @author Anthony Basooma (anthony.basooma@boku.ac.at)
+#'
 #'
 "dateformats"
 
@@ -49,7 +49,7 @@
 #' ndata
 #' }
 #'
-#' @author Anthony Basooma <anthony.basooma@boku.ac.at>
+#'
 #'
 #'
 #' @references Schmidt-Kloiber, A., Bremerich, V., De Wever, A. et al. The Freshwater Information Platform:
@@ -83,7 +83,7 @@
 #' efidata
 #' }
 #'
-#' @author Anthony Basooma <anthony.basooma@boku.ac.at>
+#'
 #'
 #'
 #' @references Logez M, Belliard J, Melcher A, Kremser H, Pletterbauer F, Schmutz S, Gorges G, Delaigue O, Pont D. 2012.
@@ -118,7 +118,7 @@
 #' jdsdata
 #' }
 #'
-#' @author Anthony Basooma <anthony.basooma@boku.ac.at>
+#'
 #'
 #'
 #' @references https://www.danubesurvey.org/jds4/about
@@ -149,7 +149,7 @@
 #' kdat
 #' }
 #'
-#' @author Anthony Basooma <anthony.basooma@boku.ac.at>
+#'
 #'
 #'
 #' @references Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
@@ -168,7 +168,7 @@
 #'
 #' @usage data(mth)
 #'
-#' @keywords Stanadard dataset with constants used to compute outlier at a particular thresholds.
+#' @keywords Standard dataset with constants used to compute outlier at a particular thresholds.
 #'
 #' @format A \code{tibble} 7 rows and 9 columns.
 #'
@@ -181,13 +181,50 @@
 #' mth
 #' }
 #'
-#' @author Anthony Basooma <anthony.basooma@boku.ac.at>
 #'
 #'
 #' @references Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
 #' Computational Statistics and Data Analysis 51:3800–3810.
 #'
 "mth"
+
+
+#' @title Dataset with species NATURA2000 categories.
+#'
+#' @description A \code{tibble} The data consist of 388303 rows and 19 columns which represents the
+#'        different species on the list. The list was downloaded from the EEA website and manually
+#'        archived in the package for use. For more information and citation
+#'
+#' @docType data
+#'
+#' @details The data is extracted from \code{(https://www.eea.europa.eu/themes/biodiversity/natura-2000)}.
+#'
+#' @usage data(naturalist)
+#'
+#' @keywords Appendix for NATURA2000, NATURA2000, fish.
+#'
+#' @format A \code{tibble} 388303 rows and i9 columns.
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("naturalist")
+#' naturalist
+#' }
+#'
+#'
+#'
+#'
+#' @references https://www.eea.europa.eu/themes/biodiversity/natura-2000.
+#'
+"naturalist"
+
+
+
+
+
 
 
 

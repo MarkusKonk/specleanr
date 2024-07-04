@@ -103,11 +103,16 @@ indep <- function(probs, observed, P, A){
   absences <- probs[which(observed == A)]
   presence <- probs[which(observed == P)]
 
-  W<- unname(suppressWarnings(wilcox.test(presence, absences))$statistic)
+  #if(length(absences)<2) stop("Low occurences records to compute wilxcon test. Either increase sample size or set the parametr metrics = 'dep'. ", call. = FALSE)
 
-  output <- W/(length(presence)*length(absences))
+  W <-  tryCatch(expr = unname(suppressWarnings(wilcox.test(presence, absences))$statistic),
+                 error = function(e) e)
+
+  if(inherits(W, 'error')) output = NA else output <- W/(length(presence)*length(absences))
+
   return(output)
 }
+
 
 #' @title Model evaluation metrics
 #'
@@ -122,7 +127,7 @@ indep <- function(probs, observed, P, A){
 #'
 #' @export
 #'
-#' @seealso [specleanr::boot()]
+#' @seealso \code{\link{boot}}
 
 evaluate <- function(data, predictions, response, model=NULL, cutoff, metrics){
 
