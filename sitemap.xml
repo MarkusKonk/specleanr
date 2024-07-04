@@ -4,22 +4,22 @@
     <loc>https://anthonybasooma.github.io/specleanr/404.html</loc>
   </url>
   <url>
-    <loc>https://anthonybasooma.github.io/specleanr/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/articles/Plants.html</loc>
-  </url>
-  <url>
     <loc>https://anthonybasooma.github.io/specleanr/articles/eOutlier.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://anthonybasooma.github.io/specleanr/articles/Plants.html</loc>
+  </url>
+  <url>
     <loc>https://anthonybasooma.github.io/specleanr/authors.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/index.html</loc>
+  </url>
+  <url>
+    <loc>https://anthonybasooma.github.io/specleanr/LICENSE.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/adjustboxplots.html</loc>
@@ -130,16 +130,16 @@
     <loc>https://anthonybasooma.github.io/specleanr/reference/geo_ranges.html</loc>
   </url>
   <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/get_iucn.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/get_performance.html</loc>
-  </url>
-  <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/getdata.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/getdiff.html</loc>
+  </url>
+  <url>
+    <loc>https://anthonybasooma.github.io/specleanr/reference/get_iucn.html</loc>
+  </url>
+  <url>
+    <loc>https://anthonybasooma.github.io/specleanr/reference/get_performance.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/hamming.html</loc>
@@ -199,13 +199,13 @@
     <loc>https://anthonybasooma.github.io/specleanr/reference/mth.html</loc>
   </url>
   <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mult_abs.html</loc>
-  </url>
-  <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/multibestmethod.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/multidetect.html</loc>
+  </url>
+  <url>
+    <loc>https://anthonybasooma.github.io/specleanr/reference/mult_abs.html</loc>
   </url>
   <url>
     <loc>https://anthonybasooma.github.io/specleanr/reference/naturalist.html</loc>
