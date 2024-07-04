@@ -15,11 +15,31 @@ specleanr package for outlier detection
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
+[![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/AnthonyBasooma/specleanr)
+\[![Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/specleanr/total.svg)
+[![GitHub
+release](https://img.shields.io/github/release/AnthonyBasooma/specleanr.svg)](https://github.com/AnthonyBasooma/specleanr/releases)
 
 <!-- badges: end -->
 
 ## specleanr
+
+### Package installation
+
+**Development version on GitHub:**
+
+``` r
+# install.packages("remotes")
+remotes::install_github("AnthonyBasooma/specleanr")
+```
+
+\*\*CRAN version
+
+``` r
+### install.packages("specleanr")
+```
 
 The package aims to improve the reliability and acceptability of
 biogeographical models, including species distribution models,
@@ -79,19 +99,19 @@ strongly advisable that the user selects an environmental predictor
 which directly affects the species distribution, for example, minimum
 temperature of the coldest month (IUCN 2012; Logez et al., 2012).
 
-| Function           | Method implemented                     | Userword in **`multidetect()`** |     |
-|:-------------------|:---------------------------------------|--------------------------------:|-----|
-| `zscore()`         | Z-score                                |                          zscore |     |
-| `semiIQR()`        | Semi interquartile range               |                          semiqr |     |
-| `adjustboxplots()` | Adjusted boxplot-robust boxplot method |                          adjbox |     |
-| `interquartile()`  | Interquartile range (IQR)              |                             iqr |     |
-| `medianrule()`     | Median rule method                     |                      medianrule |     |
-| `logboxplot()`     | Logarithmic boxplot                    |                      logboxplot |     |
-| `seqfences()`      | Sequential fences                      |                       seqfences |     |
-| `mixediqr()`       | Mixed semi and interquartile range     |                        mixediqr |     |
-| `distboxplot()`    | distribution-based boxplots            |                     distboxplot |     |
-| `rjknife()`        | Reverse jackknifing                    |                          jknife |     |
-| `hampel()`         | The Hampel filter method               |                          hampel |     |
+| Function           | Method implemented                     | Userword in **`multidetect()`** |
+|:-------------------|:---------------------------------------|--------------------------------:|
+| `zscore()`         | Z-score                                |                          zscore |
+| `semiIQR()`        | Semi interquartile range               |                          semiqr |
+| `adjustboxplots()` | Adjusted boxplot-robust boxplot method |                          adjbox |
+| `interquartile()`  | Interquartile range (IQR)              |                             iqr |
+| `medianrule()`     | Median rule method                     |                      medianrule |
+| `logboxplot()`     | Logarithmic boxplot                    |                      logboxplot |
+| `seqfences()`      | Sequential fences                      |                       seqfences |
+| `mixediqr()`       | Mixed semi and interquartile range     |                        mixediqr |
+| `distboxplot()`    | distribution-based boxplots            |                     distboxplot |
+| `rjknife()`        | Reverse jackknifing                    |                          jknife |
+| `hampel()`         | The Hampel filter method               |                          hampel |
 
 **Multivariate methods**
 
@@ -99,17 +119,17 @@ These methods detect outliers in multiple environmental predictors
 (multidimensional space). User should exclude unnecessary columns such
 as the coordinates such that they are not included in the computation.
 
-| Function      | Method used to fit and detect outliers       | Userword in **`multidetect()`** |     |
-|:--------------|:---------------------------------------------|--------------------------------:|-----|
-| `isoforest()` | Isolation forest                             |                         iforest |     |
-| `onesvm()`    | One-class support vector machine             |                         onvesvm |     |
-| `xglosh()`    | Global-Local Outlier Score from Hierarchies. |                           glosh |     |
-| `xknn()`      | k-nearest neighbor                           |                             knn |     |
-| `xlof()`      | Local outlier factor                         |                             lof |     |
-| `xkmeans()`   | k-means clustering                           |                          kmeans |     |
-| `xkmedoids()` | Partitioning around the kmedoids             |                         kmedoid |     |
-| `xkmedian()`  | k-medians clustering                         |                         kmedian |     |
-| `mahal()`     | Mahalanobis distances both robust and simple |                           mahal |     |
+| Function      | Method used to fit and detect outliers       | Userword in **`multidetect()`** |
+|:--------------|:---------------------------------------------|--------------------------------:|
+| `isoforest()` | Isolation forest                             |                         iforest |
+| `onesvm()`    | One-class support vector machine             |                         onvesvm |
+| `xglosh()`    | Global-Local Outlier Score from Hierarchies. |                           glosh |
+| `xknn()`      | k-nearest neighbor                           |                             knn |
+| `xlof()`      | Local outlier factor                         |                             lof |
+| `xkmeans()`   | k-means clustering                           |                          kmeans |
+| `xkmedoids()` | Partitioning around the kmedoids             |                         kmedoid |
+| `xkmedian()`  | k-medians clustering                         |                         kmedian |
+| `mahal()`     | Mahalanobis distances both robust and simple |                           mahal |
 
 **Ecological ranges**
 
@@ -141,7 +161,6 @@ used.
 
 - `extract_clean_data()` to extract clean data using the reference data
   and outliers for single species.
-- `mult_extract_data()` to extract data for multiple species.
 
 5.  **Post-environmental outlier removal**
 
@@ -154,27 +173,12 @@ outlier removal. The following function can be used.
   removal using threshold-dependent and independent metrics such as Area
   Under the Curve, true skill statistics, specificity, sensitivity,
   kappa, and accuracy.
-- `extract_performance` to obtain the dataset with the performance
-  values for both scenarios.
-
-### Package installation
-
-**Development version on GitHub:**
-
-``` r
-# install.packages("remotes")
-remotes::install_github("AnthonyBasooma/specleanr")
-```
-
-\*\*CRAN version
-
-``` r
-### install.packages("specleanr")
-```
+- `get_performance` to obtain the dataset with the performance values
+  for both scenarios.
 
 ### Package citation
 
-Basooma et al.. Under review
+Under review
 
 ### References
 

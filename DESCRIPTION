@@ -1,14 +1,13 @@
 Package: specleanr
 Type: Package
-Title: Detecting Environmental Outliers in Biogeographical Modelling Workflows
+Title: Detecting Environmental Outliers in Biogeographical Modeling Workflows
 Version: 0.1.0
-Authors@R: c(person('Anthony', 'Basooma', email='anthony.basooma@boku.ac.at', role =c('aut', 'cre'), 
-    comment=c('0000-0002-8994-9989')))
-Maintainer: Anthony Basooma <anthony.basooma@boku.ac.at>
-Description: specleanr is used merge local datasets or retrive online species records from databses 
-    including the Global Biodiversity Information Facility, iNaturlist, and VertNET.The species names are checked with the 
-    standard databases including FishBase and World Register of Marine Species (WORMS). Also, environmetal data is retreived from online 
-    sources including WORLDCLIM, CHELSA, Hydrography90m.
+Authors@R: c(person('h', 'g', email='a@boku.ac.at', role =c('aut', 'cre'), 
+    comment=c('0')))
+Maintainer: A <an@b.ac.at>
+Description: specleanr is used detect or flag and remove environmental outliers in species distribution models across taxa 
+    and environmental predictors. Also, data retrieval and preprocessing, model fitting to enable performance comparisions
+    are allowed.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -30,7 +29,6 @@ Suggests:
     shinydashboard,
     testthat (>= 3.0.0),
     ggplot2,
-    tidyr,
     ggpmisc,
     tibble,
     rredlist,
