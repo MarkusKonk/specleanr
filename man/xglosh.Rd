@@ -2,23 +2,61 @@
 % Please edit documentation in R/outliermethods.R
 \name{xglosh}
 \alias{xglosh}
-\title{Title}
+\title{Global-Local Outlier Score from Hierarchies}
 \usage{
 xglosh(data, k, output, exclude = NULL, metric = "manhattan", mode = "soft")
 }
 \arguments{
-\item{data}{uuu}
+\item{data}{Data frame of species records with environmental data.}
 
-\item{k}{uuu}
+\item{k}{The size of the neighborhood \code{(Hahsler et al 2022)}.}
 
-\item{output}{uuu}
+\item{output}{Either clean: for data frame with no suspicious outliers or outlier: to return dataframe with only outliers.}
 
-\item{exclude}{uzz}
+\item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
+latitude/longitude or any column that the user doesn't want to consider.}
 
-\item{metric}{uuu}
+\item{metric}{The different metric distances to compute the distances among the environmental predictors. See \code{dist} function and
+how te different distances are applied. The different measures are allowed including
+\code{"euclidean", "maximum", "manhattan", "canberra", "binary"}.}
 
-\item{mode}{zzz}
+\item{mode}{This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
+median absolute deviation.}
+}
+\value{
+Dataframe with or with no outliers.
 }
 \description{
-Title
+Global-Local Outlier Score from Hierarchies
+}
+\examples{
+
+data("efidata")
+
+gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                       lat = 'decimalLatitude',
+                       lon= 'decimalLongitude',
+                       colsp = 'speciescheck',
+                       bbox = db,
+                       multiple = TRUE,
+                       minpts = 10)
+
+gloshout <- xglosh(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+                output='outlier', metric ='manhattan', k = 3,
+                 mode = "soft")
+}
+\references{
+\enumerate{
+\item Campello, Ricardo JGB, Davoud Moulavi, Arthur Zimek, and Joerg Sander.
+Hierarchical density estimates for data clustering, visualization, and outlier detection.
+ACM Transactions on Knowledge Discovery from Data (TKDD) 10, no. 1 (2015). doi:10.1145/2733381
+\item Hahsler M, Piekenbrock M (2022). dbscan: Density-Based Spatial Clustering of Applications with Noise (DBSCAN) and Related Algorithms. R
+package version 1.1-11, <https://CRAN.R-project.org/package=dbscan>
+}
 }

@@ -2,7 +2,7 @@
 title: "Detecting environmental outliers in environmental data for plants."
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignettes for plants}
+  %\VignetteIndexEntry{Detecting environmental outliers in environmental data for plants.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,31 +14,36 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, warning=FALSE}
+```{r setup, warning=FALSE, message=FALSE}
+
 library(specleanr)
+
 ```
 
-**Change in the distribution of *Salix alba*, *Fagus sylvatica*, and *Populus nigra* due to climate change**.
-
-The three different species were randomly selected. The species *Populus nigra* is tree species under the Salicaceae family, which has been assessed 
-has as data deficient by the International Union for Conservation of Nature. The tree species is native to Europe and predominantly in flood plain in 
-mixed forests (IUCN 2013). The *Fagus sylvatica* 
+###Detect environmental outliers for species occurrences in *Fagus sylvatica*, and *Populus nigra* records based on bioclimatic data**.
 
 
+To test the workflow on two plant species, namely the black poplar (*Populus nigra*) , which is a pioneer wind-pollinated deciduous tree from the Salicaceae family (de Rigo et al., 2016). The tree is distributed across Europe, Asia, and northern Africa (de Rigo et al., 2016; Harvey-Brown et al., 2017) and predominantly in flood plains in mixed forests (Harvey-Brown et al., 2017). The mature tree lives up to 300 to 400 years (de Rigo et al., 2016), and it has been assessed as data deficient according to IUCN RedList (Harvey-Brown et al., 2017). Secondly, we considered the European beech or common beech (*Fagus sylvatica*), which is also a deciduous hardy tree species that can tolerate various soil habitats but is not tolerant of waterlogged areas (Barstow et al., 2018). Although mature individuals have declined, the tree species IUCN RedList threat status is assessed as Least Concern (Barstow et al., 2018).
 
+1. **Data acquisition: a) species records**
+
+Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Global Biodiversity Information Facility-GBIF (https://www.gbif.org/). We use the **`getdata`** function, built around rvertnet, rgbif, and rinat packages. We limited the occurrence records from GBIF to 700 and Inaturalist to 100. To extract data from the dataonline class returned by **`getdata()`**, we used the **`extract_online`** function.
+**Note**: If the user has locally saved data, then after extracting the online data, the **`match_datasets`** function can be used to merge all the data sets. 
 
 ```{r get species occurences}
-
-plantdf <- getdata(data = c( "Salix alba", "Populus nigra", "Fagus sylvatica"), 
+plantdf <- getdata(data = c( "Populus nigra", "Fagus sylvatica"), 
                     gbiflim = 700, inatlim = 100, isFish = FALSE,
                      hasCoordinate = TRUE, 
                    bbox = c(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500),
-                   verbose = T, warn = T)
+                   verbose = FALSE, warn = FALSE)
+
 
 extrdata <- extract_online(plantdf)
 
 ```
+1. ** Data acquisition: b) Environmental data**
 
+We used WORLDCLIM data archived in the package to enable users to test the package functions seamlessly. For direct interaction with the WORDCLIM data, please visit (https://www.worldclim.org/) and the **`geodata`** package for download in user-customized workflows.
 
 ```{r environmental parameters from WORLDCLIM}
 
@@ -50,7 +55,11 @@ worldclim <- terra::rast(worldclim)
 
 ```
 
-```{r}
+2. **Preliminary analysis**
+
+The step involves removing missing coordinate values, setting the geographical range for the data collated in **1.a**, if the user did not set the bounding box during data download. After that, the environmental data predictors are extracted. The user can set either parameter **list = TRUE** to return a list of datasets for each species, if multiple species are considered, or **list = FALSE** to return a combined dataframe.
+
+```{r extract data and prelimianry analysis}
 
 danube <- system.file('extdata/danube/basinfinal.shp', package = 'specleanr')
 
@@ -64,105 +73,102 @@ plantcleaned <-  pred_extract(data= extrdata,
                              colsp = 'species',  
                              multiple = TRUE, 
                              bbox = danube_basin,
-                             list= FALSE, 
-                             minpts = 10, merge = FALSE, verbose = TRUE, warn = T)
+                             list= TRUE, 
+                             minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
 
-xy <- plantcleaned %>% dplyr::filter(species=="Fagus sylvatica") #%>% dplyr::select(1:19)
+sp1df <- subset(extrdata, species=="Populus nigra")
 
-#xf= xkmeans(data = xy, k =10, exclude = c("x", "y"), output = 'outlier', mode = 'soft', method = "silhouette")
-
-plantlist <-  pred_extract(data= extrdata, 
+p1cleaned <-  pred_extract(data= sp1df, 
                              raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'species',  
-                             multiple = TRUE, 
+                             multiple = FALSE, 
                              bbox = danube_basin,
                              list= TRUE, 
-                             minpts = 10, merge = FALSE, verbose = TRUE, warn = T)
+                             minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
+
 ```
 
+3. **Detecting outliers using multiple outlier detection methods**
 
-```{r}
+```{r oultlier detection}
 
-
-plantoutliers1 <- multidetect(data = plantcleaned,
+outliersdata <- multidetect(data = plantcleaned,
                        multiple = TRUE,
                        var = 'bio1',
-                       colsp = "species",
                        output = 'outlier',
                        exclude = c('x','y'), 
-                       methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),#,'iforest'
+                       methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),
                        showErrors  = TRUE, warn = F, verbose = F)
 
-
-p1<- multidetect(data = xy,
+out1df <- multidetect(data = p1cleaned,
                        multiple = FALSE,
                        var = 'bio1',
                        output = 'outlier',
                        exclude = c('x','y'), 
-                       methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),#,'iforest'
+                       methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),
                        showErrors  = TRUE, warn = F, verbose = F)
+
+plot(outliersdata, 1, raw=FALSE)
+
 ```
 
+```{r}
+
+mbest <- multibestmethod(x = outliersdata, autothreshold = TRUE)
+
+```
+
+
+
+4. **Extracting clean data set after outlier detection**
+
+The mode can be set to **mode = abs** to discard only absolute outliers or **mode = best** to use the best method.
 
 ```{r extract outliers from clean dataset}
 
-x1 <- bestmethod(x=p1, threshold = 0.6, warn = TRUE, verbose = FALSE)
-
-x2 <- bestmethod(x=plantoutliers1, threshold = 0.6, warn = TRUE, verbose = FALSE, sp="Fagus sylvatica")
-
-
-bst <- multibestmethod(x=plantoutliers1, autothreshold = TRUE, warn = TRUE, verbose = FALSE)
-
-```
-
-##Data extraction
-```{r}
-# 
-# c11 <- extract_clean_data(refdata = plantlist, outliers = plantoutliers1,
-#                                 mode = "best",  threshold = 0.6, sp = "Fagus sylvatica",#
-#                                 colsp = 'species', warn = T, verbose = T, pabs = 0.1)
+cleandf <- clean_data_extract(refdata = plantcleaned, outliers = outliersdata, 
+                         mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
 
 
-# c2 <- extract_clean_data(refdata = xy, outliers = p1, mode = "best", threshold = 0.6, warn = T,
-#                          verbose = TRUE, pabs = 0.1)
-
-c2 <- multextract_clean(refdata = plantcleaned, outliers = plantoutliers1, 
-                         mode = "abs", threshold = 1, warn = T, colsp = 'species',
-                         verbose = TRUE, pabs = 0.1)
+cleandf1 <- clean_data_extract(refdata = p1cleaned, outliers = out1df, 
+                         mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
 
 
 ```
 
-###Model comparison
+5. **Model comparison**
 
-```{r}
+```{r data cleaning scenarios}
 
-modecom <- modelcomparison(refdata = xy, outliers = plantoutliers1, raster = worldclim,
+modecom <- modelcomparison(refdata = plantcleaned, outliers = outliersdata, raster = worldclim,
+                           lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',
+                           thresholds = seq(0.2, 0.7, 0.1), full = FALSE)
+
+
+
+modecom3 <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = worldclim,
                            lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',  
-                           thresholds = seq(0.2, 0.7, 0.1),
-                           colsp = 'species', species = c("Fagus sylvatica"), full = FALSE)
+                           thresholds = seq(0.2, 0.7, 0.1), full = TRUE)
 
-#perf <- extract_performance(modecom)
 ```
 
+```{r extract performanc}
 
-```{r}
-library(ggplot2)
+tp3 <- get_performance(modeloutput = modecom3)
 
-ggplot(perf, aes(x=scenario, y=Specificity))+
-  geom_boxplot()
 ```
 
 
 
+### References 
 
+1. Harvey-Brown, Y., Barstow, M., Mark, J. & Rivers, M.C. 2017. Populus nigra. The IUCN Red List of Threatened Species 2017: e.T63530A68106816. https://dx.doi.org/10.2305/IUCN.UK.2017-3.RLTS.T63530A68106816.en. Accessed on 24 June 2024.
 
+2. de Rigo, D., Enescu, C.M., Houston Durrant, T. and Caudullo, G. 2016. Populus nigra in Europe: distribution, habitat, usage and threats. European Atlas of Forest Tree Species, Publications Office of the European Union, Luxembourg.
 
-
-
-
+3. Barstow, M. & Beech, E. 2018. Fagus sylvatica. The IUCN Red List of Threatened Species 2018: e.T62004722A62004725. https://dx.doi.org/10.2305/IUCN.UK.2018-1.RLTS.T62004722A62004725.en. Accessed on 24 June 2024.
 
 
 

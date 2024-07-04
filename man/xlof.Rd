@@ -2,7 +2,7 @@
 % Please edit documentation in R/outliermethods.R
 \name{xlof}
 \alias{xlof}
-\title{Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise}
+\title{Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise.}
 \usage{
 xlof(data, output, minPts, exclude = NULL, metric = "manhattan", mode = "soft")
 }
@@ -18,61 +18,37 @@ latitude/longitude or any column that the user doesn't want to consider.}
 
 \item{metric}{Distance-based measure to examine the distance between variables. Default \code{manhattan}.}
 
-\item{mode}{Either \code{soft} if mean is used or \code{robust} if mad is used. Defualt \code{soft}.}
+\item{mode}{Either \code{soft} if mean is used or \code{robust} if mad is used. Default \code{soft}.}
 }
 \value{
 Dataframe with or with no outliers.
 }
 \description{
-Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise
+Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise.
 }
 \examples{
 
 \dontrun{
 
-library(terra)
+data("efidata")
 
-#species data from online databases
+gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 
-gbfinal <- merge_all(online = gbdata)
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                       lat = 'decimalLatitude',
+                       lon= 'decimalLongitude',
+                       colsp = 'speciescheck',
+                      bbox = db,
+                       multiple = TRUE,
+                       minpts = 10)
 
-#preclean and extract
-
-danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
-
-danubebasin <- sf::st_read(danube)
-
-#Get environmental data
-
-#worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
-
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
-
-precleaned <- precleaner(data = gbchecked,
-                          raster= worldclim ,
-                          lat = 'decimalLatitude',
-                          lon= 'decimalLongitude',
-                          colsp = 'speciescheck',
-                          basin = danubebasin,
-                          multiple = FALSE,
-                          minpts = 10)
-
-#outliers
-lof_outliers <- xlof(data = precleaned,
-                         exclude = c('x','y'),
-                         output='outlier')
-
-#clean data
-lof_clean <- xlof(data = precleaned,
-                         exclude = c('x','y'),
-                         output='clean')
-
-
-
+lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+                output='outlier', metric ='manhattan',
+                minPts = 10, mode = "soft")
 }
 
 }

@@ -2,16 +2,17 @@
 % Please edit documentation in R/outliermethods.R
 \name{seqfences}
 \alias{seqfences}
-\title{Title}
+\title{Sequwntial fences method}
 \usage{
 seqfences(data, var, output, gamma = 0.95, mode = "eo")
 }
 \arguments{
-\item{data}{ll}
+\item{data}{Dataframe or vector where to check outliers.}
 
-\item{var}{lll}
+\item{var}{Variable to be used for outlier detection if \strong{data} is not a vector file.}
 
-\item{output}{lll}
+\item{output}{Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+for outlier data frame or vectors.}
 
 \item{gamma}{lll}
 
@@ -21,7 +22,11 @@ seqfences(data, var, output, gamma = 0.95, mode = "eo")
 Dataframe or vector with or without outliers
 }
 \description{
-Title
+Sequwntial fences method
+}
+\details{
+Sequential fences is a modification of the TUKEY boxplot, where the data is divided into groups each with its own
+fences \code{Schwertman & de Silva 2007}. The groups can range from 1, which flags mild outliers to 6 for extreme outliers ()
 }
 \examples{
 
@@ -31,14 +36,14 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet = TRUE)
 
 refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
                           colsp = 'speciescheck',
-                          basin = db,
-                          multiple = FALSE,
+                          bbox = db,
+                          multiple = TRUE,
                           minpts = 10)
 
  sqout <- seqfences(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -54,6 +59,9 @@ Computational Statistics and Data Analysis 51:3800-3810.
 
 \item Schwertman NC, Owens MA, Adnan R. 2004. A simple more general boxplot method for identifying outliers.
 Computational Statistics and Data Analysis 47:165-174.
+
+\item Dastjerdy B, Saeidi A, Heidarzadeh S. 2023.
+Review of Applicable Outlier Detection Methods to Treat Geomechanical Data. Geotechnics 3:375-396. MDPI AG.
 
 }
 }

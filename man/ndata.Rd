@@ -24,14 +24,14 @@ data("ndata")
 ndata
 }
 
+
+
+
 }
 \references{
 Schmidt-Kloiber, A., Bremerich, V., De Wever, A. et al. The Freshwater Information Platform:
 a global online network providing data, tools and resources for science and policy support. Hydrobiologia 838, 1–11 (2019).
  https://doi.org/10.1007/s10750-019-03985-5
-}
-\author{
-Anthony Basooma <anthony.basooma@boku.ac.at>
 }
 \keyword{datasets}
 \keyword{freshwater}

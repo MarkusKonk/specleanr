@@ -2,21 +2,53 @@
 % Please edit documentation in R/outliermethods.R
 \name{xknn}
 \alias{xknn}
-\title{Title}
+\title{k-nearest neighbors for outlier detection}
 \usage{
 xknn(data, output, exclude = NULL, metric = "manhattan", mode = "soft")
 }
 \arguments{
-\item{data}{zzz}
+\item{data}{Data frame of species records with environmental data.}
 
-\item{output}{zztt}
+\item{output}{Either clean: for data frame with no suspicious outliers or outlier: to return dataframe with only outliers.}
 
-\item{exclude}{zzuu}
+\item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
+latitude/longitude or any column that the user doesn't want to consider.}
 
-\item{metric}{ttt}
+\item{metric}{The different metric distances to compute the distances among the environmental predictors. See \code{dist} function and
+how te different distances are applied. The different measures are allowed including
+\code{"euclidean", "maximum", "manhattan", "canberra", "binary"}.}
 
-\item{mode}{uiii}
+\item{mode}{This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
+median absolute deviation.}
+}
+\value{
+Dataframe with or with no outliers.
 }
 \description{
-Title
+k-nearest neighbors for outlier detection
+}
+\examples{
+
+\dontrun{
+data("efidata")
+
+gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                       lat = 'decimalLatitude',
+                       lon= 'decimalLongitude',
+                       colsp = 'speciescheck',
+                      bbox = db,
+                       multiple = TRUE,
+                       minpts = 10)
+
+lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+                output='outlier', metric ='manhattan',
+                 mode = "soft")
+}
+
 }

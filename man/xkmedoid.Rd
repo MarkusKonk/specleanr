@@ -2,26 +2,47 @@
 % Please edit documentation in R/outliermethods.R
 \name{xkmedoid}
 \alias{xkmedoid}
-\title{Title}
+\title{kmediod method for outlier detection}
 \usage{
-xkmedoid(data, k = 2, metric = "manhattan", output, exclude = NULL, x = 1.5)
+xkmedoid(
+  data,
+  k = 2,
+  metric = "manhattan",
+  output,
+  exclude = NULL,
+  x = 1.5,
+  full = FALSE
+)
 }
 \arguments{
 \item{data}{the environmental data where outliers are examined from.}
 
-\item{k}{the number of cluster centers to form cluster around it. Since kmedoid using the raw valaues from thr dataset, it is not insesetive to outliers.}
+\item{k}{the number of cluster centers to form cluster around it. Since kmedoid using the raw values
+from the dataset, it is insensitive to outliers.}
 
-\item{metric}{Different distance based matrics including the Euclidean and Mahattan are implemented.}
+\item{metric}{Different distance based matrics including the Euclidean and Manhattan are implemented.}
 
-\item{output}{Either clean or outliers dataset. Defualt \code{outlier} to output outliers dataset.}
+\item{output}{Either clean or outliers dataset. Default \code{outlier} to output outliers dataset.}
 
-\item{exclude}{columns to remove in implementtimg kmedoid algorithms, for example, the cordinates. This becuase kmediod is a multivariate algorithm which use all the data.}
+\item{exclude}{columns to remove in implementing kmedoid algorithms, for example,
+the coordinates. This because K-medoid is a multivariate algorithm which use all the data.}
 
-\item{x}{a constant to detemrine outliers.}
+\item{x}{a constant to determine outliers.}
+
+\item{full}{For extracting dataset for a large dataset. See \code{\link{getdiff}}}
 }
 \value{
 clean or outlier data set after outlier detection
 }
 \description{
-Title
+kmediod method for outlier detection
+}
+\details{
+The outliers are determined by computing the absolute distance from the mediod (ADMP) for each point \code{Al-Zoubi 2009}.
+The AMDP is calculated after computing the distance measures for each point within the cluster using either
+Manhattan or Euclidean Distance method.
+After that, for each data point in a particular cluster, the ADMP is calculated, and the outlier threshold (T) for each
+cluster is calculated as the average of all ADMP values of the same cluster multiplied by
+\code{"constant, x= 1.5"} \code{Singh & Kumar 2013}. If the ADMP for a particular point is greater than T values,
+then its an outlier  \code{Singh & Kumar 2013}.
 }

@@ -1,8 +1,8 @@
 ---
-title: "Environmental outlier detection in biogeographical models."
+title: "Environmental outlier detection in fish species records."
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Environmental outlier detection in biogeographical models.}
+  %\VignetteIndexEntry{Environmental outlier detection in fish species records.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,40 +10,29 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>"#, error = TRUE
 )
 ```
 
 ```{r libraries, echo=TRUE, warning=FALSE, message=FALSE}
 
 library(specleanr)
-library(sf)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(terra)
-
-options(dplyr.summarise.inform=FALSE, scipen = 999)
 
 ```
+**This workflow** 
 
-# Fish
-
-# Plants
-
-
-1. **Collate species and environmental data sets**
+1. **Collate species and environmental datasets**
 
 ```{r datasoruces, warning=FALSE}
 
-#Get basin shapefile #Hydrography90m already collated
+#1a. Get basin shapefile to delineate the study region: optional
 
 danube <- system.file('extdata/danube/basinfinal.shp', package = 'specleanr')
 
-danube_basin  <-     st_read(danube, quiet=TRUE)
+danube_basin  <-     sf::st_read(danube, quiet=TRUE)
 
 #==========================
-#Step 1. Obtain Local data sources (Optional if not available)
+#Step 1b. Obtain Local data sources (Optional if not available)
 #=========================
 
 data(efidata) #Data extract from EFIPLUS data
@@ -51,25 +40,23 @@ data(efidata) #Data extract from EFIPLUS data
 data(jdsdata) #Data extract from JDS4 data 
 
 #==========
-#Step 2. Download environmental data
+#Step 1c. Download environmental data
 
 worldclim <- system.file('extdata/worldclim.tiff', package = 'specleanr')
-worldclim <- rast(worldclim)
+worldclim <- terra::rast(worldclim)
 
 ```
 
 
 2. **Harmonizing data and collating species ecological parameters and nomenclature**
-
-
-```{r datahandling}
 #Step 3. Merge local data files 
 #Will also enable to generate the species list of interest
 #The efiplus latitude and longitude are in the standard format names (deimalLatitude and decimalLongitude), so they will not be changed.
 
+```{r datahandling}
+
 localdf <- match_datasets(datasets = list(jds=jdsdata, efi=efidata),
-                    lats = 'lat', 
-                    lons = 'lon', 
+                    lats = 'lat', lons = 'lon', 
                     species = c('speciesname','scientificName'),
                     country = c('JDS4_site_ID'),
                     date = c('sampling_date', 'Date'))
@@ -79,28 +66,8 @@ localdf <- match_datasets(datasets = list(jds=jdsdata, efi=efidata),
 #Keep merge = TRUE to stick a cleaned species names column
 #NAs species will be automatically dropped
 
-localdf_check <- check_names(localdf, 
-                             colsp = 'species',
-                             verbose = FALSE, 
-                             pct = 90, 
+localdf_check <- check_names(localdf, colsp = 'species',verbose = FALSE, pct = 90, 
                              merge = TRUE)
-
-
-#==================
-#Step 5. Filter species based on basin in the Freshwater Information Platform (optional)
-#All basins in FIP can be used to filter out the species of interest 
-#Retain species with all temperature ranges FishBase or all
-
-native_alien_danube <- fip_ranges(data = localdf, 
-                                 colsp = 'species',
-                                 range = c('n','a'), 
-                                 verbose = T, 
-                                 basin = 'Danu')
-
-#get species from Danube but with temperature ranges
-
-native_alien_danube_tem <- thermal_ranges(x=native_alien_danube, colsp = 'speciescheck')
-
 
 #==============
 
@@ -108,15 +75,11 @@ native_alien_danube_tem <- thermal_ranges(x=native_alien_danube, colsp = 'specie
 #Note: Using the cleaned species column species
 #If local data sources are NULL or optional, this will be mandatory and vice versa
 
-
-#Enrich more data for Cottus gobio,Lampetra planeri
-
-balondf_online <- getdata(data = c('Lampetra planeri', 'Gobio gobio','Cottus gobio'), 
+lagoco_online <- getdata(data = c('Lampetra planeri', 'Gobio gobio','Cottus gobio'), 
                                 bbox = danube_basin,
-                                gbiflim = 500, 
-                                inatlim = 500, 
-                                vertlim = 500, verbose = F)
-
+                                gbiflim = 10, 
+                                inatlim = 10, 
+                                vertlim = 10, verbose = F)
 
 ```
 
@@ -131,9 +94,9 @@ balondf_online <- getdata(data = c('Lampetra planeri', 'Gobio gobio','Cottus gob
 #2. The offline lists must be be named
 #======
 
-onlinedf <- extract_online(online = balondf_online)
+onlinedf <- extract_online(online = lagoco_online)
 
-#match all datasets
+#match all data sets
 
 matchalldf <- match_datasets(datasets = list(efi= efidata, jds = jdsdata, 
                                         onlinedata = onlinedf),
@@ -145,14 +108,7 @@ matchalldf <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
 
 #Species names are re-cleaned since the species names from vertnet are changed.
 
-cleandata <- check_names(data = matchalldf, colsp = 'species', pct = 70, merge = TRUE, verbose = FALSE)
-
-
-#Filter out only the wanted in the sp_ecology output.
-
-finaldata <- cleandata[cleandata$speciescheck%in% native_alien_danube_tem$species,]
-
-
+cleandata <- check_names(data = matchalldf, colsp = 'species', pct = 70, merge = TRUE)
 
 ```
 
@@ -164,7 +120,7 @@ finaldata <- cleandata[cleandata$speciescheck%in% native_alien_danube_tem$specie
 
 #Generate lists of species data
 
-precleaned <-  pred_extract(data= finaldata, 
+precleaned <-  pred_extract(data= cleandata, 
                              raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
@@ -174,145 +130,66 @@ precleaned <-  pred_extract(data= finaldata,
                              list= TRUE, 
                              minpts = 10, merge = FALSE)
 
+salmo1 <- cleandata[cleandata[,'speciescheck'] == "Salmo trutta", ]
 
-
-#Only species output since others had fewer records and were not considered. 
-#However, for outlier detection procedure select multiple.
+precleaned1 <-  pred_extract(data= salmo1, 
+                             raster= worldclim, 
+                             lat = 'decimalLatitude',
+                             lon = 'decimalLongitude',
+                             colsp = 'speciescheck',
+                             bbox  = danube_basin,  
+                             multiple = FALSE, 
+                             list= TRUE, 
+                             minpts = 10, merge = FALSE)
 
 ```
 
-5. **Outlier detection in environmental data**
--------------------------------------
- **Detect outliers: Important notes**
--------------------------------------
-* Parameters explained 
-  + *methods* : Methods allowed include optimal, zscore, adjbox, iqr, semiqr, hampel, kmeans, mahalsoft, jknife, onesvm, iForest,lof
-  + *Multiple*: **TRUE** for many species
-  + *output*  : **clean or outlier** for no outliers or outliers
-  + *var*     : Variable to detect outliers from, mandatory for univariate methods
-  + *exclude* : Remove columns not used in outlier analysis like species and cordinate columns. 
 
-**Important for multivariate or model based methods**
-  
-* Method based function important to set
-1. kmeans 
-   + *k*  : parameter for k values to be used for optimization. Atleast should greater than 3
-   + *kmethod*: silhouette' for optimizing the k values, __elbow and silhouette__ allowed
-
-2. Isolation forest
-   + *threshold*: for identifying outliers. Default is __0.5  >are outliers__ 
-   + *size*: size of the training data
-
-3. Optimal method
-   + *df* : optimal dataset from sp_ecology
-   + *min*: variable for minimum temperature or any parameter used 
-   + *max*: variable for maximum temperature or any parameter used
-   + *species*: variable for species names in optimal data obtained using __ecoranges__
 
 
 ```{r outlierdetection, echo=TRUE, message=FALSE, warning=FALSE}
 
 #For outliers, the output is set to outlier
 
-# out_df <- multidetect(data = precleaned, 
-#                        multiple = TRUE,
-#                        var = 'bio6',
-#                        output = 'outlier', 
-#                        exclude = c('x','y'),
-#                        methods = c('zscore', 'adjbox',
-#                                    'iqr', 'semiqr','hampel','kmeans'),
-#                        kmpar =list(k = 6, method='silhouette', mode='soft'),
-#                        ifpar = list(cutoff = 0.5, size=0.7))
+out_df <- multidetect(data = precleaned,
+                      multiple = TRUE,
+                      var = 'bio6',
+                      output = 'outlier',
+                     exclude = c('x','y'),
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans'))
+#single species
+out_df1 <- multidetect(data = precleaned1,
+                      multiple = FALSE,
+                      var = 'bio6',
+                      output = 'outlier',
+                      exclude = c('x','y'),
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans'))
+
 ```
+
 
 6. **Data analysis and visualization**
 
-```{r datanalyis, warning=FALSE}
-#Extract total number of outliers for each species
+```{r visualisation, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
 
-# spdf_out_final <- batch_extract(out_df)
-# 
-# #Obtain the reference records from precleaned data set
-# 
-# outref <- data.frame(outref = sapply(precleaned , nrow)) |>
-#   tibble::rownames_to_column('speciesname')
-# 
-#  #obtain absolute outliers
-#  spabs <- mult_abs(x=out_df, var = 'bio6', threshold = 0.3)
-# 
-#  #Merge files
-#  spdata <- spdf_out_final |>
-#    merge(outref, by='speciesname') |>
-#    merge(spabs |> rename(speciesname=species), by='speciesname') |>
-#   mutate(stdoutliers= (outliers/outref)*100, pctabsolutnes=(absoutliers/outref)*100)
-# 
-# #Visualization
-# ggplot(data=spdata, aes(x=speciesname, stdoutliers, fill=method, shape=method))+
-# geom_point()+
-#    geom_point(aes(y=pctabsolutnes), color='red')+
-#    theme_bw()+
-#    coord_flip()+
-#    theme(axis.text.y = element_text(size=9, hjust = 0))+
-#    scale_shape_manual(values = c(1,2,17,15,5,6,7,8,9,19,11,18))+
-#    geom_hline(yintercept = 10)+
-#    geom_text(aes(label=outref, y=92), size=2)+
-#    labs(x='Species', y='Percentage outlier contribution')
-
-
+plot(out_df, y=8, raw=TRUE)
 
 ```
 
-7. **Method selection**
+```{r extract clean dataset}
 
-    *Majority votes*
-    
-    To select the best method for outlier detection which is mostly selected by similarity measures, namely Jaccard, Sorensen, 
-    Simple Matcing Coefficient and Overlaping cofficient.
-    
-    
-```{r majorityvotes, warning=FALSE}
+cleanfishdata <- clean_data_extract(refdata = precleaned, outliers = out_df, threshold = 0.6)
 
-#1. Relationship in absolute outliers vs the the percentage outlier absoluteness
-
-# spabsprop <-  mult_abs(x=out_df, var = 'bio6', threshold = 0.3, props = TRUE)
-# 
-# ggplot(data = spabsprop, aes(x=absolute_outliers, y=absolute_propn))+
-# geom_point()+
-# stat_poly_line() +
-# facet_wrap(~species, scales = 'free_x')+
-# theme_bw()+
-# stat_poly_eq(use_label(c("eq", "R2")), size=2.5)+
-# theme(text = element_text( size = 10))+
-# ylim(0.4, 1)+
-# labs(x='Min Temperature of Coldest Month', y='Absolute proportions')
-# 
-# # #2. Majority votes
-# # #For one species
-# ociout <- ocindex(x=out_df, sp=1, var = 'bio6', 0.3)
-#  ociout
-# sorout <- sorensen(x=out_df, sp=1, var = 'bio6', 0.3)
-# sorout
-# jacout <- jaccard(x=out_df, sp=1, var = 'bio6', 0.3)
-# jacout
-# overout <- overlap(x=out_df, sp=1, var = 'bio6', 0.3)
-# overout
-# smcout<- smc(x=out_df, sp=1, var = 'bio6', 0.3)
-# smcout
-# 
-# hamd<- hamming(x=out_df, sp=1, var = 'bio6', 0.3)
-# hamd
-#  
-# bestm <- bm(x=out_df, sp =1, var = 'bio6', threshold = .3, verbose = F)
-# bestm
-# # 
-# #Important you have more than one species
-# species_all <- mult_bm(x = out_df, var = 'bio6', threshold = .3, mode = 'all')
+cleanfishdata1 <- clean_data_extract(refdata = precleaned1, outliers = out_df1, threshold = 0.6)
 
 ```
-8. Extract clean data for incorporation in models
-```{r}
 
-# dfclean <- extract_clean(data = precleaned, sp = 'Cottus gobio',
-#                          outliers = out_df, var = 'bio6', threshold = 0.4, warn = F)
+```{r model comparison}
+
+modelcompare <- modelcomparison(refdata = precleaned1, outliers = out_df1, raster = worldclim, 
+                                lat = 'y', lon = 'x', full = FALSE, metrics = 'dep')
+
+mp <- get_performance(modeloutput = modelcompare)
 
 ```
+

@@ -4,7 +4,7 @@
 \alias{sdmfit}
 \title{Species distribution modelling}
 \usage{
-sdmfit(data, models, cutoff = 0.5, mode = "all")
+sdmfit(data, models, cutoff = 0.5, metrics = "all", full = FALSE)
 }
 \arguments{
 \item{data}{Species data list with both testing and training, probably
@@ -20,12 +20,35 @@ if RF fails.}
 \item{cutoff}{Defines a threshold classify the model predictions/probabilities
 as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.}
 
-\item{mode}{Either to only consider threshold-dependent, threshold-independent
+\item{metrics}{Either to only consider threshold-dependent, threshold-independent
 or all evaluation metrics to determine model performance.}
+
+\item{full}{Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.}
 }
 \value{
 model runs, and evaluation metrics.
 }
 \description{
 Species distribution modelling
+}
+\examples{
+
+\dontrun{
+
+
+data(efidata)
+
+ datacheckf <- subset(efidata,  subset = scientificName \%in\%c("Squalius cephalus"))
+
+
+#select species with enough records
+
+dataprep <- envextract(occurences = datacheckf, raster = worldclim,
+                      lat = "decimalLatitude", lon = "decimalLongitude", binary = FALSE, prop = 0.8)
+
+nb <- boots(data = dataprep, nboots = 10, testprob = 0.3)
+
+sdmd <- sdmfit(data = nb, models = 'RF')
+}
+
 }

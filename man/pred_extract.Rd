@@ -15,7 +15,7 @@ pred_extract(
   multiple = TRUE,
   list = TRUE,
   merge = FALSE,
-  verbose = TRUE,
+  verbose = FALSE,
   warn = FALSE
 )
 }
@@ -29,7 +29,10 @@ records that fall on land, sea, country or city centroids, and geographical outl
 
 \item{lon}{variable for longitude column name.}
 
-\item{bbox}{object of class 'shapefile' If only a particular basin is considered.}
+\item{bbox}{Object of class 'shapefile' If only a particular basin is considered. Bounding box vector points can also be provided
+in the form \code{"c(xmin, ymin, xmax, ymax)"}. \code{xmin} is the minimum longitude,
+\code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude and
+\code{xmax} is the minimum latitude.}
 
 \item{colsp}{variable already in the data.}
 
@@ -43,7 +46,7 @@ records that fall on land, sea, country or city centroids, and geographical outl
 
 \item{verbose}{if TRUE message and warnings will be produced. Default TRUE}
 
-\item{warn}{logical, indicating to whelther to show implementation warning or not. Default \code{FALSE}.}
+\item{warn}{logical, indicating to whether to show implementation warning or not. Default \code{FALSE}.}
 }
 \value{
 precleaned cleaned data sets for single or multiple species
@@ -55,8 +58,6 @@ Preliminary data cleaning including removing duplicates, records outside a parti
 
 \dontrun{
 
-require(terra)
-require(sf)
 
 data(jdsdata)
 
@@ -66,7 +67,7 @@ danubebasin <- sf::st_read(danube, quiet=TRUE)
 
 #Get environmental data
 
-worldclim <- rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 referencedata <- pred_extract(data = jdsdata,
                           raster= worldclim ,
