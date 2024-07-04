@@ -10,12 +10,15 @@
 #' @param minpts minimum number of records for the species after removing duplicates and those within a particular basin.
 #' @param multiple TRUE if species are more than one and FALSE for one species in the data.
 #' @param list If TRUE the a list of multiple species data frames will be generated and FALSE for a dataframe of species data sets. Default TRUE
-#' @param bbox object of class 'shapefile' If only a particular basin is considered.
+#' @param bbox Object of class 'shapefile' If only a particular basin is considered. Bounding box vector points can also be provided
+#'      in the form \code{"c(xmin, ymin, xmax, ymax)"}. \code{xmin} is the minimum longitude,
+#'      \code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude and
+#'      \code{xmax} is the minimum latitude.
 #' @param verbose if TRUE message and warnings will be produced. Default TRUE
-#' @param warn logical, indicating to whelther to show implementation warning or not. Default \code{FALSE}.
+#' @param warn logical, indicating to whether to show implementation warning or not. Default \code{FALSE}.
 #' @param merge To add the other columns in the species data after data extraction. Default \strong{TRUE}
 #'
-#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf st_bbox
+#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf st_bbox st_set_crs st_as_sfc
 #' @importFrom terra extract ext
 #'
 #' @return precleaned cleaned data sets for single or multiple species
@@ -25,8 +28,6 @@
 #'
 #' \dontrun{
 #'
-#' require(terra)
-#' require(sf)
 #'
 #' data(jdsdata)
 #'
@@ -36,7 +37,7 @@
 #'
 #' #Get environmental data
 #'
-#' worldclim <- rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' referencedata <- pred_extract(data = jdsdata,
 #'                           raster= worldclim ,
@@ -52,7 +53,7 @@
 #'
 
 pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
-                         multiple=TRUE, list=TRUE, merge=FALSE, verbose= TRUE, warn = FALSE){
+                         multiple=TRUE, list=TRUE, merge=FALSE, verbose= FALSE, warn = FALSE){
 
   if(missing(data)) stop('Data frame with species record missing')
 
@@ -65,13 +66,11 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
   #To ungroup data if tidyverse function were applied on it.
 
-  if(is(data, 'grouped_df')|| is(data, 'tbl') ||is(data, 'tbd_df')){
-    data <- as.data.frame(data)
-  }
+  if(is(data, 'grouped_df')|| is(data, 'tbl') ||is(data, 'tbd_df')) dfnew <- as.data.frame(data) else dfnew <- data
 
-  #species_lon_df <- na.omit(data)
+  #check and removing missing coordinates
 
-  species_lon_df <- data[complete.cases(data[ , c(lat, lon, colsp)]), ]
+  species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
 
   #check if the species coordinates are within the bounding the bounding box of the raster layer
 
@@ -100,7 +99,21 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
 
   if(!is.null(bbox)){
-    basin_df <- sf::st_filter(spdata_new, bbox)
+
+    if(inherits(bbox, "sf")) {
+
+      basin_df <- sf::st_filter(spdata_new, bbox)
+
+    }else if(inherits(bbox, 'numeric') && length(bbox) == 4){
+
+        class(bbox) <- "bbox"
+
+        bb <- st_as_sfc(bbox) |> sf::st_set_crs(st_crs(spdata_new))
+
+        basin_df <- sf::st_filter(spdata_new, bb)
+    }else{
+      stop("The bounding box provided is wrong.")
+    }
   } else{
     basin_df <- spdata_new
   }

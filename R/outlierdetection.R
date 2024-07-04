@@ -101,7 +101,6 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
 #'     For more details check \strong{(Liu et al. 2008)}
 #' @param methods Outlier detection methods considered. Use \strong{\code{extractMethod}}
 #'      to get outliers implemented in the package.
-#' @param colsp Column with species names.
 #' @param optpar Parameters for species optimal ranges like temperatures ranges \link[specleanr]{multidetect}.
 #' @param kmpar Parameters for kmeans clustering like method and number of clusters for tuning \link[specleanr]{multidetect}.
 #' @param kmedoidpar Parameters for adjusting the distance metrics used in kmedoid method \link[specleanr]{multidetect}.
@@ -136,7 +135,6 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
 detect <- function(x,
                     var,
                     output,
-                    colsp,
                     exclude,
                     optpar,
                     kmpar,
@@ -258,7 +256,8 @@ detect <- function(x,
                                  warn=warn, showErrors = showErrors)
     }else if(cii=='kmedoid'){
 
-      methodList[[cii]] <-  tcatch(func = xkmedoid(data = df, k = kmedoidpar$k, metric = kmedoidpar$metric, output = output, exclude = exclude, x=1.5),
+      methodList[[cii]] <-  tcatch(func = xkmedoid(data = df, k = kmedoidpar$k, metric = kmedoidpar$metric,
+                                                   output = output, exclude = exclude, x=1.5, full = kmedoidpar$full),
                                  fname = cii, verbose = verbose, spname = spname,
                                  warn=warn, showErrors = showErrors)
 
@@ -368,7 +367,7 @@ detect <- function(x,
 #' This function computes different outlier detection methods including univariate, multivariate and species
 #'      ecological ranges to enables seammless comaprision and similarities in the outliers detected by each
 #'      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-#'      and thereafter the outliers can be extracted using the \link[specleanr]{extract_clean_data} function.
+#'      and thereafter the outliers can be extracted using the \link[specleanr]{clean_data_extract} function.
 #'
 #' @return Outliers or clean dataset.
 #'
@@ -442,7 +441,7 @@ multidetect <- function(data,
                                       checkfishbase =FALSE, mode='geo', lat = NULL, lon = NULL, pct = 80,
                                       warn = FALSE),
                         kmpar =list(k=6, method='silhouette', mode='soft'),
-                        kmedoidpar = list(k=2, metric='manhattan'),
+                        kmedoidpar = list(k=2, metric='manhattan', full = FALSE),
                         ifpar = list(cutoff = 0.5, size=0.7),
                         mahalpar = list(mode='soft'),
                         jkpar = list(mode='soft'),
@@ -523,7 +522,7 @@ multidetect <- function(data,
       dfinal<- df[[mdi]]
 
 
-      d <-  detect(x = dfinal, var = var, output = output, colsp=colsp,
+      d <-  detect(x = dfinal, var = var, output = output,
                    exclude = exclude,optpar = optpar,
                    kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
                    mahalpar = mahalpar, lofpar = lofpar, kmedoidpar = kmedoidpar,

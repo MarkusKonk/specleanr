@@ -25,13 +25,29 @@
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
+#'
+#' data(efidata)
+#'
+#'  datacheckf <- subset(efidata,  subset = scientificName %in%c("Squalius cephalus"))
+#'
+#'
+#' #select species with enough records
+#'
+#' dataprep <- envextract(occurences = datacheckf, raster = worldclim,
+#'                       lat = "decimalLatitude", lon = "decimalLongitude", binary = FALSE, prop = 0.8)
+#'
+#' nb <- boots(data = dataprep, nboots = 10, testprob = 0.3)
+#'
+#' sdmd <- sdmfit(data = nb, models = 'RF')
+#' }
+#'
 
 
 sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
   match.argc(models, choices = c('RF', 'GLM', 'RF1'))
-
-  #response <- deparse(substitute(y))
 
   df <- data[[1]][[1]]
 
@@ -39,9 +55,7 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
   if(is.null(attr(df, "presence"))) stop('Invalid data type used. Please use both response and boots function.')
 
-  #if(!response%in% colnames(df)) stop(response, ' not found in the training data')
-
-  response <- "y"
+  response <- "y" #already genrated in exextract
 
   eqn= as.formula(paste(response, paste('.', collapse = " + "),sep = " ~ "))
 
@@ -49,7 +63,7 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
   if(length(rclass)<=1 || length(rclass)>2) stop('The classes must be 2')
 
-  lx <- sapply(data, function(x){
+  sapply(data, function(x){
 
     traindf <- x[[1]]
     traindf$y <- as.factor(traindf$y)
@@ -80,11 +94,11 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
       trainpred <- predict(trainfit, traindf, type='prob')
 
-      perftest <- evaluate(data =  testdf, predictions = testpred, model = models,
-                           response = response, cutoff = cutoff, metrics = metrics)
+      perftest <- suppressWarnings(evaluate(data =  testdf, predictions = testpred, model = models,
+                           response = response, cutoff = cutoff, metrics = metrics))
 
-      perftrain <- evaluate(data = traindf, predictions = trainpred, model = models,
-                            response = response, cutoff = cutoff, metrics = metrics)
+      perftrain <- suppressWarnings(evaluate(data = traindf, predictions = trainpred, model = models,
+                            response = response, cutoff = cutoff, metrics = metrics))
 
     }else if(("RF"%in%models)==TRUE){
 
@@ -92,11 +106,11 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
       trainpred <- predict(trainfit, traindf, type='response')
 
-      perftest <- evaluate(data =  testdf, predictions = testpred, response = response,
-                           model=models, cutoff = cutoff, metrics = metrics)
+      perftest <- suppressWarnings(evaluate(data =  testdf, predictions = testpred, response = response,
+                           model=models, cutoff = cutoff, metrics = metrics))
 
-      perftrain<- evaluate(data = traindf ,predictions = trainpred, response = response,
-                           model=models, cutoff = cutoff, metrics = metrics)
+      perftrain<- suppressWarnings(evaluate(data = traindf ,predictions = trainpred, response = response,
+                           model=models, cutoff = cutoff, metrics = metrics))
 
     }else if(("GLM"%in%models)==TRUE){
 
@@ -104,11 +118,11 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
       trainpred <- predict(trainfit, traindf)
 
-      perftest <- evaluate(data = testdf, predictions = testpred, response = response,
-                           model = models, cutoff = cutoff, metrics = metrics)
+      perftest <- suppressWarnings(evaluate(data = testdf, predictions = testpred, response = response,
+                           model = models, cutoff = cutoff, metrics = metrics))
 
-      perftrain <- evaluate(data = traindf, predictions = trainpred, response = response,
-                            model = models, cutoff = cutoff, metrics = metrics)
+      perftrain <- suppressWarnings(evaluate(data = traindf, predictions = trainpred, response = response,
+                            model = models, cutoff = cutoff, metrics = metrics))
 
     }else{
       stop('No model selected. Please choose either or GLM')
@@ -116,7 +130,7 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
     if(isTRUE(full)){
       return(list(modeloutput = trainfit, predtest = testpred, predtrain = trainpred, perftest = perftest, perftrain = perftrain))
     }else{
-      return(list(predtest = testpred, predtrain = trainpred, perftest = perftest, perftrain = perftrain))
+      return(list(perftest = perftest, perftrain = perftrain))
     }
 
   }, simplify = FALSE)

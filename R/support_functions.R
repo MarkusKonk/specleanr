@@ -66,7 +66,7 @@
   return(outdata)
 }
 
-mode <- function(x, bin = NULL){
+mode <- function(x){
 
   if(inherits(x, 'character')){
     xm <- table(x)
@@ -93,6 +93,7 @@ mode <- function(x, bin = NULL){
 #' @importFrom utils install.packages
 #'
 #' @return Packages
+#'
 #' @export
 #'
 suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
@@ -117,7 +118,7 @@ suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dply
       }
     if(isFALSE(quiet)) message(pkg, " ", paste(names(fl), collapse = ' ,'), " ", isare, " installed to ", reason, " .")
 
-    pk <- sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE, repos = "http://cran.us.r-project.org")
+    sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE, repos = "http://cran.us.r-project.org")
   }
 
 }
@@ -161,5 +162,55 @@ check.exclude <- function(x, exclude, quiet=TRUE){
 
 }
 
+#' @title get dataframe from the large dataframe.
+#'
+#' @param x Small dataset
+#' @param y Large dataset for intersection
+#' @param full Whether the whole column names are checked or not. Default \code{FALSE} where only the first column is considered.
+#'      if FALSE; then the returned columns may be few or more if the considered column has less or more similar
+#'      rows across the two data sets.
+#'
+#' @return Data to extracted from large dataset.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' x = data.frame(id=c(1,2,3,4,5),  name=c('a','b','c', 'd','e'))
+#'
+#' y=data.frame(id=c(1,2,3,4,7,6,5), tens=c(10,29,37,46,58, 34, 44),
+#'                  name=c('a','b','c','d','e', 'f','g'))
+#'
+#' }
+getdiff <- function(x, y, full=FALSE){
+
+  c1 <- colnames(x); c2 <- colnames(y)
+
+  if(all(c1 %in% c2)==FALSE) stop("All column names are different.")
+
+  if(identical(x, y))stop("x and y names are identical.")
+
+  if(full==FALSE){
+
+    #use one column name same across the two datasets
+    getcol <- c1[which(c1%in%c2==TRUE)][1]
+
+    out <- y[which(y[,getcol] %in% x[,getcol]),]
 
 
+  }else{
+
+    getcol <- c1[which(c1%in%c2==TRUE)]
+
+    #loop through all same data sets names and extract same rows across the two data sets.
+
+    xx <- sapply(getcol, function(cl){ y[which(y[,cl] %in% x[,cl]),] }, simplify = FALSE)
+
+    rws <- sapply(xx, nrow)
+
+    out <- xx[[which(rws==min(rws))]]
+  }
+  return(out)
+}

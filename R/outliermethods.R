@@ -23,14 +23,14 @@
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  adout <- adjustboxplots(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -110,15 +110,15 @@ adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude',
 #'                           lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  iqrout <- interquartile(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -159,12 +159,8 @@ interquartile <- function(data, var, output, x=1.5){
 #' for the lower and upper quartiles \code{(Rousseeuw & Hubert 2011)}, which leads to
 #' outlier swamping and masking.
 #'
-#'
-#'
 #' @return Dataframe with or with no outliers.
 #' @export
-#'
-#'
 #'
 #' @examples
 #'
@@ -174,14 +170,14 @@ interquartile <- function(data, var, output, x=1.5){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  semiout <- semiIQR(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -241,14 +237,14 @@ semiIQR <- function(data, var, output, x=3){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  hampout <- hampel(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -259,7 +255,7 @@ semiIQR <- function(data, var, output, x=3){
 #' Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Hampel Filters.
 #' 2546-2550 2015 23rd European Signal Processing Conference (EUSIPCO).
 #'
-#' @author Anthony Basooma (anthony.basooma@boku.ac.at)
+#' @author Anthony Basooma (anthony.basooma@@boku.ac.at)
 #'
 #'
 hampel <- function(data, var=NULL, output, x=3){
@@ -320,7 +316,30 @@ hampel <- function(data, var=NULL, output, x=3){
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
+#' data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                         lat = 'decimalLatitude',
+#'                         lon= 'decimalLongitude',
+#'                         colsp = 'speciescheck',
+#'                         bbox = db,
+#'                        multiple = TRUE,
+#'                         minpts = 10)
+#'
+#' jkout <- jknife(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
+#'
+#' }
+#'
 #' @references
+#'
 #' \enumerate{
 #'
 #'   \item Chapman AD. 1991. Quality control and validation of environmental resource data in
@@ -329,27 +348,6 @@ hampel <- function(data, var=NULL, output, x=3){
 #'   \item Chapman AD. 1999. Quality Control and Validation of Point-Sourced Environmental Resource Data. eds. .
 #'   Chelsea,. Pages 409-418 in Lowell K, Jaton A, editors. Spatial accuracy assessment:
 #'   Land information uncertainty in natural resources, 1st edition. MI: Ann Arbor Press., Chelsea.
-#' }
-#' @examples
-#'
-#' \dontrun{
-#'
-#' data("efidata")
-#'
-#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
-#'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
-#'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
-#'
-#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
-#'                           minpts = 10)
-#'
-#'  jkout <- jknife(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
-#'
 #' }
 #'
 #'
@@ -460,14 +458,14 @@ jknife <- function(data, var, output, mode='soft'){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  zout <- zscore(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -545,14 +543,14 @@ zscore <- function(data, var, output, type = 'mild', mode = 'soft'){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  logout <- logboxplot(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -598,14 +596,14 @@ logboxplot <- function(data, var, output, x=1.5){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  logout <- mixediqr(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -651,14 +649,15 @@ mixediqr <- function(data, var, output, x=3){
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
 
-#' Title
+#' @title Median rule method
 #'
-#' @param data hh
-#' @param var uu
-#' @param output kk
-#' @param x kk
+#' @param data Dataframe or vector where to check outliers.
+#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
+#' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+#'     for outlier data frame or vectors.
+#' @param x A constant for flagging outliers.
 #'
-#' @return kk
+#' @return Either clean or outliers.
 #' @export
 #'
 #' @examples
@@ -669,14 +668,16 @@ mixediqr <- function(data, var, output, x=3){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                           lat = 'decimalLatitude',
+#'                           lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  medout <- medianrule(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -698,32 +699,34 @@ medianrule <- function(data, var, output, x=2.3){
 }
 
 
-#' Title
+#' @title Distribution boxplot
 #'
-#' @param data hh
-#' @param var hh
-#' @param output hh
-#' @param p1 hh
-#' @param p2 hhh
+#' @param data Dataframe or vector where to check outliers.
+#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
+#' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+#'     for outlier data frame or vectors.
+#' @param p1,p2 Different pvalues for outlier detection \code{Schwertman et al. 2004)}.
 #'
-#' @return h hh
+#' @return Either clean or outliers.
 #'
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#'
+#' \dontrun{
+#'
 #' data("efidata")
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  bxout <- distboxplot(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -784,14 +787,21 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
   }
 }
 
-#(Schwertman et al. 2007)
-#' Title
+
+#' @title Sequwntial fences method
 #'
-#' @param data ll
-#' @param var lll
-#' @param output lll
+#' @param data Dataframe or vector where to check outliers.
+#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
+#' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+#'     for outlier data frame or vectors.
 #' @param gamma lll
 #' @param mode lll
+#'
+#'
+#' @details
+#' Sequential fences is a modification of the TUKEY boxplot, where the data is divided into groups each with its own
+#' fences \code{Schwertman & de Silva 2007}. The groups can range from 1, which flags mild outliers to 6 for extreme outliers ()
+#'
 #'
 #' @return Dataframe or vector with or without outliers
 #'
@@ -807,14 +817,14 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'))
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet = TRUE)
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = FALSE,
+#'                           bbox = db,
+#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  sqout <- seqfences(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -831,24 +841,36 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #' \item Schwertman NC, Owens MA, Adnan R. 2004. A simple more general boxplot method for identifying outliers.
 #' Computational Statistics and Data Analysis 47:165-174.
 #'
+#' \item Dastjerdy B, Saeidi A, Heidarzadeh S. 2023.
+#' Review of Applicable Outlier Detection Methods to Treat Geomechanical Data. Geotechnics 3:375-396. MDPI AG.
+#'
 #' }
 #'
 
 seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
 
-  if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)) stop('Only 0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995 are allowed values for gamma.')
+  if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
+    stop('Only 0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995 are allowed values for gamma.')
+  }
 
-  kndata <- specleanr::kdat
+  #standard table 1 from (Schwertman NC, de Silva R. 2007)
 
-  mth <- specleanr::mth
+  kndata <- read.csv(file = 'functions/kndata.csv')
+
+  #standard table 2 from (Schwertman NC, de Silva R. 2007)
+  mth <- read.csv(file = 'functions/mth.csv')
+
+
 
   if(is(data, 'data.frame')){
     nd <- nrow(data)
-
+    if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
     var <- unlist(data[,var])
+
   } else if(is(data, 'vector') || is(data, 'atomic')){
     nd <- length(data)
 
+    if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
 
     var <- data
   } else{
@@ -872,6 +894,7 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
   #get confidence coefficients
   df <- as.integer(7.6809524 + .5294156*nd - .00237*nd^2)
 
+
   confs <- c('m1', 'm2', 'm3', 'm4', 'm5', 'm6')
 
   lf <- c(); uf <- c(); tv <- c()
@@ -881,6 +904,7 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
     mc <- mth[,m][which(mth$p== gamma)]
 
     tv <- qt(mc/length(var), df, lower.tail = F)
+
     lf[si] <- unname(quantile(var, 0.5)) - (tv/kn)*IQR(var)
     uf[si] <- unname(quantile(var, 0.5)) + (tv/kn)*IQR(var)
   }
@@ -934,7 +958,33 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
 #'
 #' @examples
 #'
+#' \dontrun{
 #'
+#' data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                       bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
+#'
+#' iosd <- isoforest(data = refdata[['Salmo trutta']], size = 0.7,  output='outlier',
+#'                   exclude = c("x", "y"))
+#'}
+#'
+#' @references
+#' \enumerate{
+#' \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422 In 2008 Eighth IEEE International Conference on Data Mining.
+#' Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
+#' }
 #'
 isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
 
@@ -976,6 +1026,26 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
+#' data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                       bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
+#'
+#' nedata <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),  output='outlier')
+#'}
 #'
 onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
                    tpar = list(gamma = 1^(-1:1), epislon =seq(0, 1, 0.1),
@@ -1010,7 +1080,7 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
 }
 
 
-#' @title Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise
+#' @title Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise.
 #'
 #' @param data Data frame of species records with environmental data
 #' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
@@ -1018,7 +1088,7 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
 #' @param output Either clean: for data frame with no suspicious outliers or outlier: to return dataframe with only outliers.
 #' @param minPts Minimum neighbors around the records.
 #' @param metric Distance-based measure to examine the distance between variables. Default \code{manhattan}.
-#' @param mode Either \code{soft} if mean is used or \code{robust} if mad is used. Defualt \code{soft}.
+#' @param mode Either \code{soft} if mean is used or \code{robust} if mad is used. Default \code{soft}.
 #'
 #'
 #' @importFrom dbscan lof kNN glosh
@@ -1031,49 +1101,25 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
 #'
 #' \dontrun{
 #'
-#' library(terra)
+#' data("efidata")
 #'
-#' #species data from online databases
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
-#' gbfinal <- merge_all(online = gbdata)
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                       bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
 #'
-#' #preclean and extract
-#'
-#' danube <- system.file('extdata/danube/basinfinal.shp', quiet=TRUE, package='specleanr')
-#'
-#' danubebasin <- sf::st_read(danube)
-#'
-#' #Get environmental data
-#'
-#' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
-#'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
-#'
-#' precleaned <- precleaner(data = gbchecked,
-#'                           raster= worldclim ,
-#'                           lat = 'decimalLatitude',
-#'                           lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           basin = danubebasin,
-#'                           multiple = FALSE,
-#'                           minpts = 10)
-#'
-#' #outliers
-#' lof_outliers <- xlof(data = precleaned,
-#'                          exclude = c('x','y'),
-#'                          output='outlier')
-#'
-#' #clean data
-#' lof_clean <- xlof(data = precleaned,
-#'                          exclude = c('x','y'),
-#'                          output='clean')
-#'
-#'
-#'
+#' lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+#'                 output='outlier', metric ='manhattan',
+#'                 minPts = 10, mode = "soft")
 #' }
 #'
 xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mode='soft'){
@@ -1115,19 +1161,45 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 }
 
 
-#' Title
+#' @title k-nearest neighbors for outlier detection
 #'
-#' @param data zzz
-#' @param output zztt
-#' @param exclude zzuu
-#' @param metric ttt
-#' @param mode uiii
+#' @param data Data frame of species records with environmental data.
+#' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
+#'      latitude/longitude or any column that the user doesn't want to consider.
+#' @param output Either clean: for data frame with no suspicious outliers or outlier: to return dataframe with only outliers.
+#' @param metric The different metric distances to compute the distances among the environmental predictors. See \code{dist} function and
+#'        how te different distances are applied. The different measures are allowed including
+#'        \code{"euclidean", "maximum", "manhattan", "canberra", "binary"}.
+#' @param mode This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
+#'      median absolute deviation.
 #'
-#' @return
+#' @return Dataframe with or with no outliers.
+#'
 #' @export
 #'
 #' @examples
 #'
+#' \dontrun{
+#'data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                       bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
+#'
+#' lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+#'                 output='outlier', metric ='manhattan',
+#'                  mode = "soft")
+#'}
 #'
 xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'){
 
@@ -1170,19 +1242,53 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 }
 
 
-#' Title
+#' @title Global-Local Outlier Score from Hierarchies
 #'
-#' @param data uuu
-#' @param k uuu
-#' @param output uuu
-#' @param exclude uzz
-#' @param metric uuu
-#' @param mode zzz
+#' @param data Data frame of species records with environmental data.
+#' @param k The size of the neighborhood \code{(Hahsler et al 2022)}.
+#' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
+#'      latitude/longitude or any column that the user doesn't want to consider.
+#' @param output Either clean: for data frame with no suspicious outliers or outlier: to return dataframe with only outliers.
+#' @param metric The different metric distances to compute the distances among the environmental predictors. See \code{dist} function and
+#'        how te different distances are applied. The different measures are allowed including
+#'        \code{"euclidean", "maximum", "manhattan", "canberra", "binary"}.
+#' @param mode This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
+#'      median absolute deviation.
 #'
-#' @return
+#' @return Dataframe with or with no outliers.
+#'
 #' @export
 #'
 #' @examples
+#'
+#' data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                        bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
+#'
+#' gloshout <- xglosh(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+#'                 output='outlier', metric ='manhattan', k = 3,
+#'                  mode = "soft")
+#
+#' @references
+#' \enumerate{
+#' \item Campello, Ricardo JGB, Davoud Moulavi, Arthur Zimek, and Joerg Sander.
+#' Hierarchical density estimates for data clustering, visualization, and outlier detection.
+#' ACM Transactions on Knowledge Discovery from Data (TKDD) 10, no. 1 (2015). doi:10.1145/2733381
+#' \item Hahsler M, Piekenbrock M (2022). dbscan: Density-Based Spatial Clustering of Applications with Noise (DBSCAN) and Related Algorithms. R
+#' package version 1.1-11, <https://CRAN.R-project.org/package=dbscan>
+#' }
 #'
 xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='soft'){
 
@@ -1194,7 +1300,7 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 
   dx <- dist(x=df, method = metric)
 
-  gscores <-dbscan::glosh(dx, k = k)
+  gscores <- dbscan::glosh(dx, k = k)
 
   gmscores <- mean(gscores)
 
@@ -1217,8 +1323,6 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
   switch (output, clean= return(data[datIn,]), outlier= return(data[-datIn,]))
 }
 
-
-
 #' @title Check for outliers for multiple species using temperature ranges from FishBase.
 #'
 #' @param data Dataframe to check for outliers.
@@ -1228,8 +1332,7 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 #' @param minval Minimum temperature column from the standard optimal dataframe.
 #' @param maxval Maximum temperature column from the standard optimal dataframe.
 #' @param optimumSettings o
-#' @param lat o
-#' @param lon o
+#' @param lat,lon o
 #' @param ecoparam o
 #' @param direction o
 #' @param pct o
@@ -1888,28 +1991,61 @@ xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", 
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
+#' data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                       bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
+#'
+#' kmedianout <- kmedian(data = refdata, k = 3)
+#'
+#' }
+#'
 xkmedian <- function(data, k=3){
 
   set.seed(123)
 
   #select random starting rows
   set.seed(123)
+
   rstart <- sample(x=nrow(data), size = k)
+
   dfx <- data[rstart,]
+
   cl <- matrix(NA, nrow = nrow(data), ncol = nrow(dfx))
+
   for (i in 1:nrow(data)) {
+
     dr <- as.vector(t(data)[, i])
+
     for (ii in 1:nrow(dfx)) {
+
       cc <- as.vector(t(dfx[ii,]))
+
       cl[i,ii] <- sqrt(Reduce(abs(dr-cc)^2, f='+'))
     }
   }
   #get cluster labels
   label <- apply(cl, 1, which.min)
+
   #recalculate the centroids
   crcal <- list()
   for (iii in seq_along(unique(label))) {
+
     clust <- data[which(label==iii),]
+
     crcal[[iii]] <- apply(clust, 2, median)
   }
   #recompute distances
@@ -1917,8 +2053,11 @@ xkmedian <- function(data, k=3){
 
   for (iv in 1:nrow(data)) {
     dr2 <- as.vector(t(data)[, iv])
+
     for (v in seq_along(crcal)) {
+
       c2 <- as.vector(t(crcal[[v]]))
+
       cshf[iv,v] <- sqrt(Reduce(abs(dr2-c2)^2, f='+'))
     }
   }
@@ -1929,7 +2068,9 @@ xkmedian <- function(data, k=3){
     #get the centroids
     crcal2 <- list()
     for (vi in seq_along(unique(label2))) {
+
       clust2 <- data[which(label2==vi),]
+
       crcal2[[vi]] <- apply(clust2, 2, median)
     }
 
@@ -1937,9 +2078,13 @@ xkmedian <- function(data, k=3){
     cshf2 <- matrix(NA, nrow = nrow(data), ncol = length(crcal2))
 
     for (vii in 1:nrow(data)) {
+
       dr3 <- as.vector(t(data)[, vii])
+
       for (viii in seq_along(crcal2)) {
+
         c3 <- as.vector(t(crcal2[[viii]]))
+
         cshf2[vii,viii] <- sqrt(Reduce(abs(dr3-c3)^2, f='+'))
       }
     }
@@ -1951,22 +2096,35 @@ xkmedian <- function(data, k=3){
   return(list(label, label2, label3))
 }
 
-#' Title
+#' @title kmediod method for outlier detection
 #'
 #' @param data the environmental data where outliers are examined from.
-#' @param k the number of cluster centers to form cluster around it. Since kmedoid using the raw valaues from thr dataset, it is not insesetive to outliers.
-#' @param metric Different distance based matrics including the Euclidean and Mahattan are implemented.
-#' @param output Either clean or outliers dataset. Defualt \code{outlier} to output outliers dataset.
-#' @param exclude columns to remove in implementtimg kmedoid algorithms, for example, the cordinates. This becuase kmediod is a multivariate algorithm which use all the data.
-#' @param x a constant to detemrine outliers.
+#' @param k the number of cluster centers to form cluster around it. Since kmedoid using the raw values
+#' from the dataset, it is insensitive to outliers.
+#' @param metric Different distance based matrics including the Euclidean and Manhattan are implemented.
+#' @param output Either clean or outliers dataset. Default \code{outlier} to output outliers dataset.
+#' @param exclude columns to remove in implementing kmedoid algorithms, for example,
+#' the coordinates. This because K-medoid is a multivariate algorithm which use all the data.
+#' @param x a constant to determine outliers.
+#' @param full For extracting dataset for a large dataset. See \code{\link{getdiff}}
+#'
+#' @details
+#' The outliers are determined by computing the absolute distance from the mediod (ADMP) for each point \code{Al-Zoubi 2009}.
+#' The AMDP is calculated after computing the distance measures for each point within the cluster using either
+#' Manhattan or Euclidean Distance method.
+#' After that, for each data point in a particular cluster, the ADMP is calculated, and the outlier threshold (T) for each
+#' cluster is calculated as the average of all ADMP values of the same cluster multiplied by
+#' \code{"constant, x= 1.5"} \code{Singh & Kumar 2013}. If the ADMP for a particular point is greater than T values,
+#' then its an outlier  \code{Singh & Kumar 2013}.
+#'
+#'
 #'
 #' @return clean or outlier data set after outlier detection
 #'
 #' @export
 #'
-#' @examples
 #'
-xkmedoid <- function(data, k = 2, metric = 'manhattan', output, exclude = NULL, x=1.5){
+xkmedoid <- function(data, k = 2, metric = 'manhattan', output, exclude = NULL, x=1.5, full=FALSE){
 
   if(missing(data)) stop('Data missing')
 
@@ -1976,43 +2134,61 @@ xkmedoid <- function(data, k = 2, metric = 'manhattan', output, exclude = NULL, 
 
   match.argc(output, choices = c('clean', 'outlier'))
 
-  #run the partitioning around the medoid (pam function)
+
+  #exclude columns not needed in the computation and scale the data
 
   if(!is.null(exclude)) dfd <- scale(data[,!colnames(data) %in% exclude]) else dfd <- scale(data)
 
+  #compute kmediods/partitioning around the medoids using different distance measures
+  #run the partitioning around the medoid (pam function)
+
   p = switch(metric, euclidean = cluster::pam(x= dfd, k= k, metric = 'euclidean'),
              manhattan = cluster::pam(x= dfd, k= k, metric = 'manhattan'))
-
   admp <- c()
   fd <- list()
+  datIn <- list()
+  clusters <- p$clustering
+  for(i in seq_along(clusters)){
 
-  for(i in seq_along(unique(p$clustering))){
+    clust <- clusters[i]
 
-    df <- dfd[which(p$clustering==i),]
+    df <- as.data.frame(dfd[,which(clusters==i)])
+
+    medoid <- as.vector(t(p$medoids)[, i]) #medoid value
 
     for (ii in 1:nrow(df) ) {
 
-      rd <- as.vector(t(df)[, ii])
+      rawdata <- as.vector(t(df)[, ii])#scale data per cluster
 
-      md <- as.vector(t(p$medoids)[, i])
+      #Compute the absolute distance from the medoid (AMDP) Al-Zoubi 2009; Singh & Kumar 2013
 
       if(metric=='euclidean'){
-        admp[ii] <- sqrt(Reduce(abs(rd-md)^2, f='+')) #compute the absolute distance between medoids
+        admp[ii] <- sqrt(Reduce(abs(rawdata-medoid)^2, f='+')) #compute the absolute distance between medoids
       }else{
-        admp[ii] <- Reduce(abs(rd-md), f='+') #compute the absolute distance between medoids
+        admp[ii] <- Reduce(abs(rawdata-medoid), f='+') #compute the absolute distance between medoids
       }
 
     }
-
+    #outliers are greater the AMDP
     tr <- mean(admp)*x #compute threshold for determining outliers
-
+    print(admp)
     datIn <- which(admp<tr) #identify outliers
 
-    fd[[i]] <- switch(output, clean= df[datIn,], outlier=df[-datIn,])
+    #extract the clean clusters
 
-    out <- do.call(rbind, fd)
+    cleancl = as.data.frame(df)
+
+    #get data out from the original dataframe (data)
+
+    dfext <- getdiff(x= cleancl, y=data, full = full)
+
+
+    fd[[i]] <- i#switch(output, clean = dfext[datIn,], outlier=dfext[-datIn,])
+
+
+    #out <- do.call(rbind, fd)
   }
-  return(out)
+  return(fd)
 }
 
 

@@ -80,12 +80,19 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
 #' @param positive if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
 #'        models and computing the evaluation metrics.
 #' @param vifcutoff Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
-#' @param verbose To return execution messages or not. The Default is F or FALSE or 0.
 #' @param set.seed to ensure reproduciblity the seed is set. Same psudoabsences will be produced during each run.
 #' @param exclude Remove non numeric variables from the data.
+#' @param verbose Either \code{TRUE} to return messages or \code{FALSE} for no implementation messages. Default \code{FALSE}
 #'
-#' @importFrom sf st_crs
+#' @importFrom sf st_crs st_drop_geometry
 #' @importFrom terra crs
+#'
+#' @details
+#' In this package, this fucntion was developed to aid in preparing the data for developing species distribution models in \code{\link{sdmfit}}. If only species occurrences
+#' or absences are available, the function generates pseudo absences required in species distribution modeling. If the data is \code{binary} with both \strong{presences and absences},
+#'  the user has to set which label denotes the presence of species using the \code{positive} parameter. The user should indicate the column where the labels are found.
+#'   To account for multicolinearity among the environmental predictors, we used the \code{vifcor} function from usdm to drop highly correlated environmental
+#'   predictors. Therefore, user can adjust the \code{vifcutoff} to range from \code{0 to 1}.
 #'
 #' @return  Labeled presence absence data.
 #'
@@ -94,6 +101,34 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
+#' data(efidata)
+#'
+#' #select species with enough records
+#' #1. Presence data: the final dataset has both presence and pseudo absences
+#'  dfprep <- envextract(occurences = efidata, raster = worldclim,
+#'                         lat = "decimalLatitude", lon = "decimalLongitude",
+#'                         binary = FALSE, prop = 0.8)
+#'
+#' #2. Prensence absence
+#'
+#' efidata$pa <- rep(c("A", "P"), c(nrow(efidata)/2, nrow(efidata)/2))
+#'
+#' dfprep <- envextract(occurences = efidata, raster = worldclim, lat = "decimalLatitude",
+#'                     lon = "decimalLongitude", binary = TRUE,
+#'                     positive = "P", labels = "pa", vifcutoff = 0.9)
+#'
+#'  #3. With sf geometry column
+#'
+#'  efisfdata <- sf::st_as_sf(efidata, coords = c("decimalLongitude",
+#'  "decimalLatitude"), crs= sf::st_crs(4326))
+#'
+#'  dfprep_geom <- envextract(occurences = efisfdata, raster = worldclim,
+#'                           geom = 'geometry', binary = TRUE,
+#'                           positive = "P", labels = "pa", vifcutoff = 0.9)
+#' }
+#'
 #' @references
 #'
 #' \enumerate{
@@ -101,125 +136,116 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
 #'   Where is positional uncertainty a problem for species distribution modelling?. Ecography, 37(2), 191-203.
 #' }
 #'
- ##@seealso [usdm::vifcor()]
 
 envextract <- function(occurences, raster, lat =NULL, lon = NULL, geom = FALSE,
                        binary = FALSE, labels=NULL, prop = 0.8, set.seed=1124, positive=NULL,
-                       missingness = 0.1, exclude=NULL, verbose=TRUE, vifcutoff = 0.7){
+                       missingness = 0.1, exclude=NULL, vifcutoff = 0.9, verbose= FALSE){
 
   if(missing(occurences)) stop('Provide species presence or presence/absence data', call. = FALSE)
 
   if(prop<0.1||prop>1)stop('Prop should be between 0.1 (10% generated) and 1 (equal to length of presence)')
 
+  if(!is(occurences, 'data.frame'))stop('Only dataset is accepted.')
+
+  if(!is(raster, 'SpatRaster')) stop('Only raster of SpatRater format is accepted.')
+
+
+
+  #check if the coords parameter has valid columns
+
+  if(inherits(occurences, 'sf') == TRUE){
+
+    if(isFALSE(geom)) stop('The species occurences are in sf format, set the `geom = "geometry"')
+
+    if(all('geometry' %in% colnames(occurences))==FALSE) stop('The geom parameter must be found in the species occurence data.')
+
+    if(unlist(strsplit(sf::st_crs(occurences)$input, ":"))[2]!= crs(raster, parse=FALSE, describe = TRUE)[1,3]) stop('Both species and environmental data are in a different cordinate reference system.')
+
+  }else{
+
+    if(is.null(lat) || is.null(lon)) stop('For no sf format, the latitude and longitude should be provided.')
+
+    if(all(max(occurences[,lat])>90|| min(occurences[,lat])<(-90))==TRUE) stop('Latitude should range from 90  to -90')
+
+    if(all(max(occurences[,lon])>180|| min(occurences[,lon])<(-180))==TRUE) stop('Longitude should range from 180 to -180')
+  }
+
   if(binary== FALSE){
 
-    if(!is(raster, 'SpatRaster')) stop('Only raster of SpatRater format is accepted.')
+    if(inherits(occurences, 'sf') == TRUE) presencedata <- occurences[,'geometry'] else presencedata <- occurences[,c(lon, lat)]
 
-    #check if the coords parameter has valid columns
+    presencedata$pa <- 'P'
 
-    if(inherits(occurences, 'sf')){
-
-      if(isFALSE(geom)){
-
-        stop('The species occurences are in sf format, set the `geom = "geometry"')
-
-      }else if(all('geometry' %in% colnames(occurences))==FALSE) {
-
-        stop('The coords parameter must be foun itn the species occurence data.')
-
-      }else if(st_crs(occurences)[[1]]!= crs(raster, parse=FALSE, describe = TRUE)[1,1]){
-
-        stop('Both species and environmental data are in a different cordinate reference system.')
-      }else{
-        px <- occurences[,'geometry']
-      }
-    }else if(!inherits(occurences, 'sf') && is(occurences, 'data.frame')){
-
-      if(is.null(lat) || is.null(lon)){
-        stop('For no sf format, the latitude and longitude should be provided.')
-
-      } else if(all(max(occurences[,lat])>90|| min(occurences[,lat])<(-90))==TRUE){
-
-        stop('Latitude should range from 90  to -90')
-
-      } else if(all(max(occurences[,lon])>180|| min(occurences[,lon])<(-180))==TRUE){
-        stop('Longitude should range from 180 to -180')
-      }else{
-        px <- occurences[,c(lon, lat)]
-      }
-
-    }else{
-      stop('Only sf or data.frame are accepted for species occurences data.')
-    }
-
-    px$pa <- 'P'
-
-    ppn <- nrow(px)*prop
+    ppn <- nrow(presencedata)*prop
 
     set.seed(set.seed)
 
     genback <- terra::spatSample(x= raster[[1]], as.df=TRUE, xy=TRUE, size =  ppn,
                                  na.rm = TRUE)[,c(1,2)]
 
-    if(!inherits(occurences, 'sf')) ax = genback else ax <- genback |> sf::st_as_sf(coords =c('x', 'y'), crs=st_crs(4326))
+    if(!inherits(occurences, 'sf')) absencedata = genback else absencedata <- genback |> sf::st_as_sf(coords =c('x', 'y'), crs=st_crs(4326))
 
-    ax$pa <- 'A'
+    absencedata$pa <- 'A'
 
     #merge both the presence and absence data
-    spmerge <- rbind(px, ax)
 
+    colnames(absencedata) <- colnames(presencedata)
+
+    spmerge <- rbind(presencedata, absencedata)
 
     #select out the first x and y columns from data extract
-    selcordinates <- spmerge[,c(1,2)]
+    if(!inherits(occurences, 'sf')){
 
-    labels <- as.factor(spmerge[,3])
+      cordinates <- spmerge[,c(1,2)]
 
-    spdata <- exdata(raster = raster, coords =selcordinates,
+      labels <- as.factor(spmerge[,3])
+
+    } else{
+
+      cordinates <- spmerge[,2]
+
+      labels <- as.factor(spmerge$pa)
+    }
+
+    spdata <- exdata(raster = raster, coords = cordinates,
                      labels = labels, missingness = missingness, exclude = exclude,
                      vifcutoff = vifcutoff, verbose= verbose)
 
     attr(spdata, 'presence') <- 'P'
     attr(spdata, 'absence') <- 'A'
 
-  }else if(binary ==TRUE && !is.null(labels)){#no need to extract pseudo absence or background data.
+  }else if(binary ==TRUE){#no need to extract pseudo absence or background data.
 
-    if(all(labels %in% colnames(occurences))==FALSE) {
+    if(is.null(labels)) stop("If a species records has presences/absence labels, please provide the column in the labels parameter. Otherwise set binary to FALSE if only presences are available.")
 
-      stop('Presence/Absence column not found in species data ', deparse(substitute(occurences)),'.')
+    if(all(labels %in% colnames(occurences))==FALSE) stop('Presence/Absence column not found in species data ', deparse(substitute(occurences)),'.')
 
-    }else if(!is(occurences, 'data.frame')){
-      stop('Only dataset is accepted.')
-    }else if(length(unique(occurences[,labels]))>2){
+    if(length(unique(occurences[,labels]))>2) stop('Only two labels of presences (P or  or Yes) and absences (A or 0 or No) are accepted.')
 
-      stop('Only two labels of presences (P or  or Yes) and absences (A or 0 or No) are accepted.')
+    if(is(occurences[,labels], 'numeric')) stop('Please convert the labels to categories or factor of 1 OR 0s, P or A, or Yes and Nos')
 
-    }else if(is(occurences[,labels], 'numeric')){
+    if(is.null(positive))stop('Provide the positive label (or presence label).')
 
-      stop('Please convert the labels to categories or factor of 1 OR 0s, P or A, or Yes and Nos')
-    }else{
+    if(inherits(occurences, 'sf') == FALSE) labels  <- occurences[,labels] else labels <- (occurences |> sf::st_drop_geometry())[, labels]
 
-      cordinates <- occurences[, c(lon, lat)]
+    labs <-  unique(labels)
 
-      labels <- occurences[, labels]
+    if(all(positive%in%labs)==FALSE) stop('positive label indicated not in the columnn for presence absence.')
 
-      if(is.null(positive))stop('Provide the positve label (or presence label).')
-      labs <- unique(labels)
 
-      if(all(positive%in%labs)==FALSE) stop('positive label indicated not in the columnn for presence absence.')
+    if(inherits(occurences, 'sf') == FALSE) cordinates <- occurences[, c(lon, lat)] else cordinates <- occurences[,'geometry']
 
-      #extract environment data using cordinate
+    #extract environment data using cordinate
 
-      spdata <- exdata(raster = raster, coords = cordinates,
-                       labels = labels, missingness =missingness, exclude = exclude,
-                       vifcutoff = vifcutoff, verbose= verbose)
+    spdata <- exdata(raster = raster, coords = cordinates,
+                     labels = labels, missingness =missingness, exclude = exclude,
+                     vifcutoff = vifcutoff, verbose= verbose)
 
-      attr(spdata, 'presence') <- positive
+    attr(spdata, 'presence') <- positive
 
-      attr(spdata, 'absence') <- labs[which(labs!=positive)]
-    }
-
+    attr(spdata, 'absence') <- labs[which(labs!=positive)]
   }else{
-    stop('No mode of species occurences manipulation has been selected.')
+    stop('Set binary to TRUE if the species records have both presence and absence labels or FALSE for presence only data.')
   }
   return(spdata)
 }
