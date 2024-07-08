@@ -453,7 +453,7 @@ detect <- function(x,
 #'   \item IUCN Standards and Petitions Committee. (2022). THE IUCN RED LIST OF THREATENED SPECIESTM Guidelines for Using the IUCN Red List
 #' Categories and Criteria Prepared by the Standards and Petitions Committee of the IUCN Species Survival Commission.
 #' https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
-#' \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413–422 In 2008 Eighth IEEE International Conference on Data Mining.
+#' \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413-422 In 2008 Eighth IEEE International Conference on Data Mining.
 #' Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
 #' }
 #'

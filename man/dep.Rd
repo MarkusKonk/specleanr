@@ -36,5 +36,5 @@ model evaluation metrics such as sensitivity, specificity or accuracy changes si
  }
 }
 \seealso{
-\link[specleanr]{sdmfit}
+\code{\link{sdmfit}}
 }

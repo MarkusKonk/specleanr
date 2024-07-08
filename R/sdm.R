@@ -1,21 +1,19 @@
 #' @title  Species distribution modelling
 #'
-#' @param data Species data list with both testing and training, probably
-#'      from boots function.
-#' @param models The models to be used to examine the relationship between
-#'      species occurrences and environmental parameters. Only Random forest
-#'      and generalized linear
-#'      models are accepted. \code{GLM} is used to set to Generalized Linear Models
-#'      and \code{RF} for Random Forest. \code{RF1} variant is slower and is suggested
-#'      if RF fails.
-#' @param cutoff Defines a threshold classify the model predictions/probabilities
-#'      as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.
-#' @param metrics Either to only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
+#' @param data A list species data with both testing and training, probably from boots function.
+#' @param models A character of the acceptable models to be used to examine the
+#'      relationship between species occurrences and environmental parameters. Only
+#'      Random forest and generalized linear models are accepted. \code{GLM} is
+#'      used to set to Generalized Linear Models and \code{RF} for Random Forest.
+#'      \code{RF1} variant is slower and is suggested if RF fails.
+#' @param cutoff A numeric value that defines a threshold classify the model predictions/probabilities
+#'      as presence or absent. Default is \code{0.5}. The maximum is \code{1} and lowest is \code{0}.
+#' @param metrics A character to allow consider either only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
 #'      or \code{all} evaluation metrics to determine model performance.
-#' @param full Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
+#' @param full A character of either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
 #'
 #'
-#' @return model runs, and evaluation metrics.
+#' @return Lists of model runs, and performance evaluation metrics of both training and testing; and also threshold-dependeent and independent metrics..
 #'
 #' @importFrom ranger ranger
 #' @importFrom randomForest randomForest
@@ -46,17 +44,21 @@
 #'
 
 
-sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
+sdmfit <- function(data, models = "GLM", cutoff = 0.5, metrics='all', full=FALSE){
 
   match.argc(models, choices = c('RF', 'GLM', 'RF1'))
 
   df <- data[[1]][[1]]
 
+  if((cutoff%%1==0)==TRUE || cutoff>=1) stop("The cutoff probability to indicate presence of a species should be a decimal not integer.")
+
+  if(cutoff<0.5)warning("Low probabilities are set for presence of a species.")
+
   #if(!response %in%colnames(df)) stop('The response variable', y, ' not found in the data.')
 
   if(is.null(attr(df, "presence"))) stop('Invalid data type used. Please use both response and boots function.')
 
-  response <- "y" #already genrated in exextract
+  response <- "y" #already generated in envextract
 
   #create a model equation to enable dynamic acceptance of parameters
   eqn= as.formula(paste(response, paste('.', collapse = " + "),sep = " ~ "))
@@ -82,6 +84,7 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
     }else if (("GLM"%in%models)==TRUE){
 
       trainfit <- suppressWarnings(glm(eqn, data = traindf, family = 'binomial'))
+
       #another random forest implementation using ranger function: speed is higher
     }else if(("RF"%in%models)==TRUE){
 
@@ -132,9 +135,12 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
     }
     #saving the model outputs...this is later used in the modelcomparison function.
     if(isTRUE(full)){
+
       return(list(modeloutput = trainfit, predtest = testpred, predtrain = trainpred, perftest = perftest, perftrain = perftrain))
-    }else{
-      return(list(perftest = perftest, perftrain = perftrain))
+
+      }else{
+
+        return(list(perftest = perftest, perftrain = perftrain))
     }
 
   }, simplify = FALSE)

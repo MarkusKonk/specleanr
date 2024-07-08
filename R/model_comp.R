@@ -1,36 +1,62 @@
 #' @title Comparing the model performance before and after outlier removal.
 #'
-#' @param refdata Species data generated during pre-cleaning process. This data set is used as the reference data in accessing the outlier detection performance using both
-#'      threshold dependent and independent metrics. This data set must be same as when in detecting outliers to avoid mismatch.
-#' @param outliers The \code{datacleaner} class data set with all outliers obtained using the \code{multdetect} function. Please check \code{ocindex}.
-#' @param mode Either \code{abs} to use absolute outliers to filter data or \code{best} to use the best method to filter the data \code{\link{bestmethod}}.
-#' @param models The models to be used to examine the relationship between species occurrences and environmental parameters. Only Random forest and generalized linear
-#'      models are accepted. \code{GLM} is used to set to Generalized Linear Models and \code{RF} for Random
-#'      Forest. \code{RF1} variant is slower and is suggested if \code{RF} fails.
-#' @param metrics Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.
-#' @param binary Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
-#'        when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{TRUE} option.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' #param species A list of species names and they must be contained in the outlier data set and precleaned data.
-#' @param colsp The column with species names if the species occurrence is a data frame not list,
-#' @param raster The environmental where pseudo absences are extracted using \link[specleanr]{envextract}.
-#' @param thresholds The different scenarios are implemented. Currently the reference data set and threshold, outlier cleaned data are allowed.
+#' @param refdata A list or dataframe of species data generated during
+#'   pre-cleaning process. This data set is used as the reference data in
+#'   accessing the outlier detection performance using both threshold dependent
+#'   and independent metrics. This data set must be same as when in detecting
+#'   outliers to avoid mismatch.
+#' @param outliers The \code{datacleaner} class data set with all outliers
+#'   obtained using the \code{multdetect} function. Please check \code{ocindex}.
+#' @param mode A character of either \code{abs} to use absolute outliers to
+#'   filter data or \code{best} to use the best method to filter the data
+#'   \code{\link{bestmethod}}.
+#' @param models The models to be used to examine the relationship between
+#'   species occurrences and environmental parameters. Only Random forest and
+#'   generalized linear models are accepted. \code{GLM} is used to set to
+#'   Generalized Linear Models and \code{RF} for Random Forest. \code{RF1}
+#'   variant is slower and is suggested if \code{RF} fails.
+#' @param metrics Either to only consider threshold-dependent,
+#'   threshold-independent or all evaluation metrics to determine model
+#'   performance.
+#' @param binary logical of \code{FALSE} if the species dataset do not have
+#'   label column for presence absence. Therefore, the \code{FALSE} is used when
+#'   the parameter \code{label} is NULL. If only species presences and absences
+#'   are indicated, the user should select \code{TRUE} option.
+#' @param autothreshold logical which identifies the threshold with mean number
+#'   of absolute outliers.The search is limited within 0.51 to 1 since
+#'   thresholds less than are deemed inappropriate for identifying absolute
+#'   outliers. The autothreshold is used when \code{threshold} is set to
+#'   \code{NULL}.
+#' @param colsp The column with species names if the species occurrence is a
+#'   data frame not list,
+#' @param raster The environmental where pseudo absences are extracted using
+#'   \link[specleanr]{envextract}.
+#' @param thresholds The different scenarios are implemented. Currently the
+#'   reference data set and threshold, outlier cleaned data are allowed.
 #' @param nboots Creating sub samples for modeling evaluation.
 #' @param testprop The probability to be used for partitioning data.
-#' @param lat If the species occurrences don't have the geometry column or not spatial vector file, the latitude must be provided for data extraction form the raster layers.
-#' @param lon If the species occurrences don't have the geometry column or not spatial vector file, the longitude must be provided for data extraction form the raster layers.
-#' @param geom the coordinates column from the species occurrence data. It should be included from the data at the outlier detection step to avoid
-#' considering the cordinate din outlier removal.
-#' @param prbackground the proportion of pseudo absences compare to the species presences.
-#' @param geom Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.
+#' @param lat,lon character if the species occurrences don't have the geometry
+#'   column or not spatial vector file, the latitude and longitude must be
+#'   provided for data extraction from the raster layers.
+#' @param prbackground numeric value indicating the proportion of pseudo
+#'      absences compare to the species presences. Used in \code{spatSample} function.
+#'      Ranges from at least 0.1 to 1
+#' @param geom character which is used in data extraction when the species
+#'   occurrences is of \code{sf} class and have geometry column instead of latitude
+#'   and longitude.
 #' @param verbose Return messages or not. Default is \code{FALSE}.
 #' @param warn Return warning or not. Default is \code{FALSE}.
-#' @param pabs Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
-#'      the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.
-#' @param full Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
-#' @param minpts Minimum number of records required to run the species distribution model.
-#' @param ... other parameters can be used from \code{\link{envextract}} function.
+#' @param pabs Percentage of outliers allowed to be extracted from the data. If
+#'   \code{best} is used to extract outliers and the \code{pabs} is exceeded,
+#'   the absolute outliers are removed instead. This because some records  in
+#'   the best methods are repeated and they will likely to remove true values as
+#'   outliers.
+#' @param full logical of either full model output for \code{TRUE} or \code{FALSE} for only
+#'   performance metrics output.
+#' @param minpts numeric value indicating the minimum number of records required to run the species
+#'   distribution model. Default is \code{10}.
+#' @param ... other parameters can be used from \code{\link{envextract}}
+#'   function.
 #'
 #' @return A list of model instance and model performance metrics.
 #'
@@ -107,8 +133,10 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
                          prbackground=1, binary=FALSE, verbose = F, warn = F, full = FALSE,
                          pabs = 0.1, minpts=10,...){
 
-  modelist <- list()
-  modelout <- list()
+
+  if(all(1>thresholds)==FALSE)stop("The threshold values should ranges from at least 0.1 to 1")
+
+  match.argc(mode, choices = c('best', 'abs'))
 
   #if multiple species are considered
   if(outliers@mode==TRUE){
@@ -126,6 +154,9 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
     #single species considered in outlier detection.
     df <- list(refdata)
   }
+
+  modelist <- list()
+  modelout <- list()
 
   for (mp in seq_along(df)) {
 

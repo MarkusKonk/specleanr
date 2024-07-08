@@ -7,13 +7,13 @@
 boots(data, nboots, setseed = 1234, testprob = 0.2)
 }
 \arguments{
-\item{data}{Data to be sub sampled and partitioned.}
+\item{data}{A dataframe to be sub sampled and partitioned.}
 
-\item{nboots}{the number of iterations of sub sampling to be conducted.}
+\item{nboots}{An integer indicating the number of iterations of sub sampling to be conducted.}
 
-\item{setseed}{For reproducibility of the sub-samples across platforms and users.}
+\item{setseed}{An integer to allow reproducibility of the sub-samples across platforms and users.}
 
-\item{testprob}{The probability to be used for partitioning data.}
+\item{testprob}{A decimal ranging from at least 0.1 to 1. The probability to be used for partitioning data.}
 }
 \value{
 A list of training and test data sets for use in the sdmfit.
@@ -28,6 +28,8 @@ Creating sub-samples for modeling evaluation.
 data(jdsdata)
 
 #select species with enough records
+
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 dataprep <- envextract(occurences = jdsdata, raster = worldclim,
                       lat = "lat", lon = "lon", binary = FALSE, prop = 0.8)

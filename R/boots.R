@@ -1,10 +1,10 @@
 
 #' @title Creating sub-samples for modeling evaluation.
 #'
-#' @param data Data to be sub sampled and partitioned.
-#' @param nboots the number of iterations of sub sampling to be conducted.
-#' @param setseed For reproducibility of the sub-samples across platforms and users.
-#' @param testprob The probability to be used for partitioning data.
+#' @param data A dataframe to be sub sampled and partitioned.
+#' @param nboots An integer indicating the number of iterations of sub sampling to be conducted.
+#' @param setseed An integer to allow reproducibility of the sub-samples across platforms and users.
+#' @param testprob A decimal ranging from at least 0.1 to 1. The probability to be used for partitioning data.
 #'
 #' @return A list of training and test data sets for use in the sdmfit.
 #'
@@ -33,8 +33,15 @@
 boots <- function(data, nboots, setseed=1234, testprob=0.2){
 
   set.seed(setseed)
+  if(!is(data, 'data.frame'))stop("Only dataframes can be partitioned in boot function.")
+
+  if(isFALSE(nboots%%1==0)) stop("nboots must be an interger.")
+
+  if(testprob>0.5) warning("The proportion of test data is greater than the training data.")
 
   sqlen <- seq(1, nboots, by=1)
+
+  if(nrow(data)<2)stop("Data points are too few to be partitioned.")
 
   sapply(sqlen, function(x){
 

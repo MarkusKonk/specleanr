@@ -73,16 +73,18 @@ basinranges <- function(occurrences, species, lat, lon, verbose=TRUE, discard=TR
 
   xdf <- as.data.frame(occurrences)
 
+  if(all(c(lat, lon)%in%colnames(occurrences))==FALSE) stop("Both latitude and longitude must be in the data.")
+
   #convert the species data to sf format to be compatible with the global basin data downloaded from Tesedesco at al., 2017
   xdf_sf <- xdf |> sf::st_as_sf(coords=c(lon, lat), crs = st_crs(4326L))
 
-  match.arg(output, choices = c('records', 'basin'))
+  match.argc(output, choices = c('records', 'basin'))
 
   #the basin files are cached to avoid continued data download in the next user session
 
   gb_df <- .mem_files(fn=.gbdownload, path = 'globalbasins') #path where information will be cached
 
-  #join data sets but after making the shapefiles valid ti properly intersect species data.
+  #join data sets but after making the shape files valid ti properly intersect species data.
 
   df_join <- xdf_sf |> sf::st_join(sf::st_make_valid(gb_df), join = st_intersects, left = TRUE)
 
