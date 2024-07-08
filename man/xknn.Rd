@@ -46,7 +46,7 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        multiple = TRUE,
                        minpts = 10)
 
-lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+lofout <- xknn(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
                 output='outlier', metric ='manhattan',
                  mode = "soft")
 }

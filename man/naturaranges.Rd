@@ -48,7 +48,7 @@ The function is aimed at identifying records that located in the NATURA2000 prot
 
 data(efidata)
 
-spnat <- naturaranges(x= efidata, species = 'scientificName',
+spnat <- naturaranges(data= efidata, species = 'scientificName',
                       lon = 'decimalLongitude', lat='decimalLatitude',
                       verbose = T, batch = TRUE)
 
