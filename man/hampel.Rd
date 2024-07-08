@@ -53,6 +53,3 @@ refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 
 Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Hampel Filters.
 2546-2550 2015 23rd European Signal Processing Conference (EUSIPCO).
 }
-\author{
-#
-}
