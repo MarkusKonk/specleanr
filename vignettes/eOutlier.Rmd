@@ -19,9 +19,11 @@ knitr::opts_chunk$set(
 library(specleanr)
 
 ```
-**This workflow** 
+**Environemtal outlier check for fish species from the Dnaube River Basin** 
 
 1. **Collate species and environmental datasets**
+
+The species records were obtained from the archived datasets extracted from the Joint Danube Survey (https://www.danubesurvey.org/jds4/) and EFIPLUS (Logez et al., 2012). The Basin layer that was used to get the bounding box of the Danube Basin was obtained from Hydrography90m (https://hydrography.org/hydrography90m/hydrography90m_layers). 
 
 ```{r datasoruces, warning=FALSE}
 
@@ -51,7 +53,7 @@ worldclim <- terra::rast(worldclim)
 2. **Harmonizing data and collating species ecological parameters and nomenclature**
 #Step 3. Merge local data files 
 #Will also enable to generate the species list of interest
-#The efiplus latitude and longitude are in the standard format names (deimalLatitude and decimalLongitude), so they will not be changed.
+#The efiplus latitude and longitude are in the standard format names (deimalLatitude and decimalLongitude), so they will not be changed. During binding of the two datasets, the column names are harmonised based on the Darwin Core format (Wieczorek et al., 2012).  
 
 ```{r datahandling}
 
@@ -192,4 +194,7 @@ modelcompare <- modelcomparison(refdata = precleaned1, outliers = out_df1, raste
 mp <- get_performance(modeloutput = modelcompare)
 
 ```
+
+***References**
+1. Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T., & Vieglais, D. (2012). Darwin core: An evolving community-developed biodiversity data standard. PLoS ONE, 7(1). https://doi.org/10.1371/journal.pone.0029715
 

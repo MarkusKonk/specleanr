@@ -1,8 +1,8 @@
 ---
-title: "Detecting environmental outliers in environmental data for plants."
+title: "Detecting environmental outliers in species distribution models for plants."
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Detecting environmental outliers in environmental data for plants.}
+  %\VignetteIndexEntry{Detecting environmental outliers in species distribution models for plants.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,15 +20,15 @@ library(specleanr)
 
 ```
 
-###Detect environmental outliers for species occurrences in *Fagus sylvatica*, and *Populus nigra* records based on bioclimatic data**.
+***Detect environmental outliers for species occurrences in *Fagus sylvatica*, and *Populus nigra* records based on bioclimatic data**.
 
 
 To test the workflow on two plant species, namely the black poplar (*Populus nigra*) , which is a pioneer wind-pollinated deciduous tree from the Salicaceae family (de Rigo et al., 2016). The tree is distributed across Europe, Asia, and northern Africa (de Rigo et al., 2016; Harvey-Brown et al., 2017) and predominantly in flood plains in mixed forests (Harvey-Brown et al., 2017). The mature tree lives up to 300 to 400 years (de Rigo et al., 2016), and it has been assessed as data deficient according to IUCN RedList (Harvey-Brown et al., 2017). Secondly, we considered the European beech or common beech (*Fagus sylvatica*), which is also a deciduous hardy tree species that can tolerate various soil habitats but is not tolerant of waterlogged areas (Barstow et al., 2018). Although mature individuals have declined, the tree species IUCN RedList threat status is assessed as Least Concern (Barstow et al., 2018).
 
 1. **Data acquisition: a) species records**
 
-Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Global Biodiversity Information Facility-GBIF (https://www.gbif.org/). We use the **`getdata`** function, built around rvertnet, rgbif, and rinat packages. We limited the occurrence records from GBIF to 700 and Inaturalist to 100. To extract data from the dataonline class returned by **`getdata()`**, we used the **`extract_online`** function.
-**Note**: If the user has locally saved data, then after extracting the online data, the **`match_datasets`** function can be used to merge all the data sets. 
+Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Global Biodiversity Information Facility-GBIF (https://www.gbif.org/). We use the **`getdata()`** function, built around rvertnet, rgbif, and rinat packages. We limited the occurrence records from GBIF to 700 and Inaturalist to 100. To extract data from the dataonline class returned by **`getdata()`**, we used the **`extract_online()`** function.
+**Note**: If the user has locally saved data, then after extracting the online data, the **`match_datasets()`** function can be used to merge all the data sets. 
 
 ```{r get species occurences}
 plantdf <- getdata(data = c( "Populus nigra", "Fagus sylvatica"), 
@@ -110,7 +110,7 @@ out1df <- multidetect(data = p1cleaned,
                        methods = c('adjbox', "hampel", 'zscore', 'lof', 'jknife'),
                        showErrors  = TRUE, warn = F, verbose = F)
 
-plot(outliersdata, 1, raw=FALSE)
+ggoutliers(outliersdata, 1, raw=FALSE)
 
 ```
 
@@ -156,9 +156,16 @@ modecom3 <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = wor
 
 ```{r extract performanc}
 
-tp3 <- get_performance(modeloutput = modecom3)
+onespp <- get_performance(modeloutput = modecom3)
+
+multspp <- get_performance(modeloutput = modecom)
+#ggperformance <- 
 
 ```
+
+
+
+
 
 
 
