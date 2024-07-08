@@ -108,7 +108,58 @@ the absolute outliers are removed instead. This because some records  in the bes
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">jdsdata</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">efidata</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">matchdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="match_datasets.html">match_datasets</a></span><span class="op">(</span>datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>jds <span class="op">=</span> <span class="va">jdsdata</span>, efi <span class="op">=</span> <span class="va">efidata</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                            lats <span class="op">=</span> <span class="st">'lat'</span>,</span></span>
+<span class="r-in"><span>                            lons <span class="op">=</span> <span class="st">'lon'</span>,</span></span>
+<span class="r-in"><span>                            species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'speciesname'</span>,<span class="st">'scientificName'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                            country<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'JDS4_site_ID'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                            date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'sampling_date'</span>, <span class="st">'Date'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">datacheck</span> <span class="op">&lt;-</span> <span class="fu"><a href="check_names.html">check_names</a></span><span class="op">(</span><span class="va">matchdata</span>, colsp<span class="op">=</span> <span class="st">'species'</span>, pct <span class="op">=</span> <span class="fl">90</span>, merge <span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">rdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="pred_extract.html">pred_extract</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">datacheck</span>,</span></span>
+<span class="r-in"><span>                      raster<span class="op">=</span> <span class="va">worldclim</span> ,</span></span>
+<span class="r-in"><span>                      lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span></span>
+<span class="r-in"><span>                      lon<span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span></span>
+<span class="r-in"><span>                      colsp <span class="op">=</span> <span class="st">'speciescheck'</span>,</span></span>
+<span class="r-in"><span>                      bbox <span class="op">=</span> <span class="va">db</span>,</span></span>
+<span class="r-in"><span>                      multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                      minpts <span class="op">=</span> <span class="fl">10</span>,</span></span>
+<span class="r-in"><span>                      list<span class="op">=</span><span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                      merge<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">out_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">rdata</span>, multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span></span>
+<span class="r-in"><span>                      output <span class="op">=</span> <span class="st">'outlier'</span>,</span></span>
+<span class="r-in"><span>                      exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                      methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zscore'</span>, <span class="st">'adjbox'</span>,<span class="st">'iqr'</span>, <span class="st">'semiqr'</span>,<span class="st">'hampel'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#extracting use the absolute method for one species</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">extractabs</span> <span class="op">&lt;-</span> <span class="fu">clean_data_extract</span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">rdata</span>, outliers <span class="op">=</span> <span class="va">out_df</span>,</span></span>
+<span class="r-in"><span>                                 mode <span class="op">=</span> <span class="st">'abs'</span>, threshold <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
+<span class="r-in"><span>                                 autothreshold <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">bestmout_bm</span> <span class="op">&lt;-</span> <span class="fu">clean_data_extract</span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">rdata</span>, outliers <span class="op">=</span> <span class="va">out_df</span>,</span></span>
+<span class="r-in"><span>                                  mode <span class="op">=</span> <span class="st">'best'</span>, threshold <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
+<span class="r-in"><span>                                 autothreshold <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

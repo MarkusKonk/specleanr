@@ -205,9 +205,8 @@ method.</p>
 <span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
+<span></span>
 <span></span>
 <span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
@@ -215,7 +214,7 @@ method.</p>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Model comparison</strong></li>
 </ol>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">multsppmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
 <span>                           lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GLM"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">'abs'</span>,</span>
@@ -227,18 +226,18 @@ method.</p>
 <span>                           lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GLM"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">'abs'</span>,  </span>
 <span>                           thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span><span class="op">)</span>, full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Extract model performance</strong></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">onespp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modeloutput <span class="op">=</span> <span class="va">onesppmodel</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">multspp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modeloutput <span class="op">=</span> <span class="va">multsppmodel</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Plotting to visualize comparisons</strong></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#one species </span></span>
 <span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span>modelout <span class="op">=</span> <span class="va">onesppmodel</span>, cutoff <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Plants_files/figure-html/visualisation-1.png" width="576" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span>modelout <span class="op">=</span> <span class="va">multsppmodel</span>, cutoff <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

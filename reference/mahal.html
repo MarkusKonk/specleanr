@@ -43,7 +43,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mahal</span><span class="op">(</span><span class="va">data</span>, exclude <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">output</span>, <span class="va">mode</span>, pdf <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mahal</span><span class="op">(</span><span class="va">data</span>, exclude <span class="op">=</span> <span class="cn">NULL</span>, output <span class="op">=</span> <span class="st">"outlier"</span>, mode <span class="op">=</span> <span class="st">"soft"</span>, pdf <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -120,11 +120,6 @@ Social Psychology 74:150-156.</p>
 <span class="r-in"><span><span class="va">mahal_outliers</span> <span class="op">&lt;-</span> <span class="fu">mahal</span><span class="op">(</span>data <span class="op">=</span> <span class="va">precleaned</span>,</span></span>
 <span class="r-in"><span>                         exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                         output<span class="op">=</span><span class="st">'outlier'</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#clean data</span></span></span>
-<span class="r-in"><span><span class="va">mahal_clean</span> <span class="op">&lt;-</span> <span class="fu">mahal</span><span class="op">(</span>data <span class="op">=</span> <span class="va">precleaned</span>,</span></span>
-<span class="r-in"><span>                         exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                         output<span class="op">=</span><span class="st">'clean'</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
