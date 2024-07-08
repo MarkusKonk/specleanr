@@ -9,7 +9,7 @@ xkmeans(
   k,
   exclude = NULL,
   output,
-  mode,
+  mode = "soft",
   method = "silhouette",
   verbose = FALSE
 )
@@ -43,46 +43,24 @@ Flags outliers using kmeans clustering method
 
 \dontrun{
 
-library(terra)
+data("efidata")
 
-#species data from online databases
+gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 
-gbfinal <- merge_all(online = gbdata)
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                        lat = 'decimalLatitude',
+                        lon= 'decimalLongitude',
+                        colsp = 'speciescheck',
+                        bbox = db,
+                        multiple = TRUE,
+                        minpts = 10)
 
-#preclean and extract
-
-danube <- system.file('extdata/danube/basinfinal.shp',  package='specleanr')
-
-danubebasin <- sf::st_read(danube)
-
-#Get environmental data
-
-#worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
-
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
-
-precleaned <- pre_cleaner(data = gbchecked,
-                          raster= worldclim ,
-                          colsp = 'speciescheck',
-                          basin = danubebasin,
-                          multiple = FALSE,
-                          maxpts = 10)
-
-#outliers
-kmeanoutliers <- xkmeans(data = precleaned,
-                         k=6, exclude = c('x','y'),
-                         kmethod ='silhouette',
-                         output='outlier')
-
-#clean data
-kmeanclean <- xkmeans(data = precleaned,
-                         k=6, exclude = c('x','y'),
-                         kmethod ='silhouette',
-                         output='clean')
+kmeansout <- xkmeans(data = refdata[['Salmo trutta']],
+                      output='outlier', exclude = c('x', 'y'), mode = 'soft', k=3)
 }
 
 

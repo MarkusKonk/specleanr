@@ -4,12 +4,14 @@
 \alias{xkmedian}
 \title{Using kmedian outlier detection methods}
 \usage{
-xkmedian(data, k = 3)
+xkmedian(data, k = 3, setseed = 1144)
 }
 \arguments{
 \item{data}{Input data for for checking outliers}
 
 \item{k}{Number of clusters}
+
+\item{setseed}{Set randomness in the median values to initate the clusters.}
 }
 \value{
 clean or outlier data set after outlier detection.
@@ -37,7 +39,7 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        multiple = TRUE,
                        minpts = 10)
 
-kmedianout <- kmedian(data = refdata, k = 3)
+kmedianout <- xkmedian(data = refdata, k = 3)
 
 }
 
