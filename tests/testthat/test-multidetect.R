@@ -29,6 +29,7 @@ refdata <- pred_extract(data = matchclean, raster = wcd,
                         merge = F)
 
 
+
   testthat::test_that(desc = 'List of species with outliers produced',
           code = {
             outlist <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
@@ -37,7 +38,6 @@ refdata <- pred_extract(data = matchclean, raster = wcd,
                                    methods = c('mixediqr', "iqr", "seqfences", "mahal", 'glosh', 'onesvm'))
             testthat::expect_equal(length(outlist@result), length(refdata))
           })
-
 
 
 #when the data is a data frame
@@ -76,6 +76,15 @@ testthat::test_that(desc = 'Not enough data provided and other methods may not w
                                        methods = c('mixediqr', "iqr", "kmeans", "mahal")))
           })
 
+test_that("All methods indicated in the allowed methods-seqfenc is not in",
+          code = {
+            expect_error(multidetect(data = refdata, var = 'bio6', output = 'outlier',
+                                     exclude = c('x','y'),
+                                     multiple = TRUE,
+                                     methods = c('mixediqr', "iqr", "seqfenc",
+                                                 "mahal", 'glosh', 'onesvm')))
+          })
+
 
 testthat::test_that(desc = 'Check out outliers for one species and multiple',
           code = {
@@ -103,7 +112,12 @@ testthat::test_that(desc = 'Errors and warnings when the threshold is low or hig
                                    methods = c('mixediqr', "iqr","kmeans", "mahal"))
             expect_error(ocindex(x=out3, sp=1,  threshold = 0.8, warn = F))
 
+            #both threshold = NULL and autothreshold =FALSE
+            expect_error(ocindex(x=out3, sp=1,  threshold = NULL, warn = F, autothreshold = FALSE))
+
             expect_warning(ocindex(x=out3, sp=1, threshold = 0.2, warn = T))
+
+            expect_error(ocindex(x=out3, threshold = 0.2, warn = FALSE))#species index not provided
           })
 
 testthat::test_that(desc = 'Test for different method if they return a character/suitable method',

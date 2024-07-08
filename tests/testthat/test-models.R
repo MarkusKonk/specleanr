@@ -14,6 +14,7 @@ dataprep <- envextract(occurences = datacheckf, raster = worldclim,
 nb <- boots(data = dataprep, nboots = 10, testprob = 0.3)
 
 
+
 testthat::test_that("Size of the output differ when full vs not full",
 
                     code= {
@@ -22,8 +23,27 @@ testthat::test_that("Size of the output differ when full vs not full",
                       fullt= sdmfit(data = nb, models = "GLM", full = TRUE)
 
                       testthat::expect_gt(object.size(fullt), object.size(fullf))
+                      expect_equal(length(fullt[[1]]), 5) #full output--TRUE
+                      expect_equal(length(fullf[[1]]), 2)#full output --FALSE
                     }
 )
+test_that("Error if data is not from boot function and metrics are not dep, indep and all",
+          code = {
+            expect_error(sdmfit(data = datacheckf, models = 'GLM'))
+
+            expect_error(sdmfit(data = nb, models = 'GLM', metrics = 'deps'))
+          })
+
+test_that("Error if models used are not GLM, RF, and RF1 ",
+          code = {
+            expect_error(sdmfit(data = nb, models = 'GLM2'))
+          })
+
+test_that("Warning if cutoff is less than 0.5 or if its and integer",
+          code = {
+            expect_warning(sdmfit(data = nb, models = 'GLM', cutoff = 0.4))
+            expect_error(sdmfit(data = nb, models = 'GLM', cutoff = 2))
+          })
 
 
 datafew <- subset(efidata,  subset = scientificName %in%c("Tinca tinca"))

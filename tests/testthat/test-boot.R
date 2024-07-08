@@ -28,3 +28,27 @@ testthat::test_that("First inner list has two list of two dataframes",
                       testthat::expect_s3_class(nboots1[[1]][[1]], 'data.frame')
 
                     })
+
+testthat::test_that("nboots is not integer",
+                    code = {
+                      testthat::expect_error(boots(data = dataprep1, nboots = 10.3, testprob = 0.3))
+                    })
+testthat::test_that("Return warning when test prop is greater than/equal to 0.5",
+                    code = {
+                      testthat::expect_warning(boots(data = dataprep1, nboots = 10, testprob = 0.6))
+                    })
+testthat::test_that("data is not a dataframe",
+                    code = {
+                      testthat::expect_error(boots(data = dataprep1$bio1, nboots = 10, testprob = 0.3))
+                    })
+#initialize the data to zero
+
+dfnull <- dataprep1[NULL, ]
+
+testthat::test_that("If number of rows in data is zero, returns error",
+                    code = {
+                      testthat::expect_error(boots(data = dfnull , nboots = 10))
+                    }
+                    )
+
+

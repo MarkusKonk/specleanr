@@ -4,29 +4,27 @@
 \alias{sdmfit}
 \title{Species distribution modelling}
 \usage{
-sdmfit(data, models, cutoff = 0.5, metrics = "all", full = FALSE)
+sdmfit(data, models = "GLM", cutoff = 0.5, metrics = "all", full = FALSE)
 }
 \arguments{
-\item{data}{Species data list with both testing and training, probably
-from boots function.}
+\item{data}{A list species data with both testing and training, probably from boots function.}
 
-\item{models}{The models to be used to examine the relationship between
-species occurrences and environmental parameters. Only Random forest
-and generalized linear
-models are accepted. \code{GLM} is used to set to Generalized Linear Models
-and \code{RF} for Random Forest. \code{RF1} variant is slower and is suggested
-if RF fails.}
+\item{models}{A character of the acceptable models to be used to examine the
+relationship between species occurrences and environmental parameters. Only
+Random forest and generalized linear models are accepted. \code{GLM} is
+used to set to Generalized Linear Models and \code{RF} for Random Forest.
+\code{RF1} variant is slower and is suggested if RF fails.}
 
-\item{cutoff}{Defines a threshold classify the model predictions/probabilities
-as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.}
+\item{cutoff}{A numeric value that defines a threshold classify the model predictions/probabilities
+as presence or absent. Default is \code{0.5}. The maximum is \code{1} and lowest is \code{0}.}
 
-\item{metrics}{Either to only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
+\item{metrics}{A character to allow consider either only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
 or \code{all} evaluation metrics to determine model performance.}
 
-\item{full}{Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.}
+\item{full}{A character of either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.}
 }
 \value{
-model runs, and evaluation metrics.
+Lists of model runs, and performance evaluation metrics of both training and testing; and also threshold-dependeent and independent metrics..
 }
 \description{
 Species distribution modelling
@@ -35,8 +33,9 @@ Species distribution modelling
 
 \dontrun{
 
-
 data(efidata)
+
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
  datacheckf <- subset(efidata,  subset = scientificName \%in\%c("Squalius cephalus"))
 

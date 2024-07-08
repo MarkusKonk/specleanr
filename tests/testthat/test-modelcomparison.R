@@ -24,20 +24,19 @@ rdata <- pred_extract(data = datafinal, raster= worldclim ,lat = 'decimalLatitud
                       multiple = FALSE,minpts = 10, list=TRUE,
                       merge=F, verbose = F)
 
-#apply ensemble outlier detection. Note: (x and y in exclude parameter are
-#internally generally in pred_extract during environmental data extraction )
 
-outliersdf <- multidetect(data = rdata, multiple = FALSE,
-                          var = 'bio6',
-                          output = 'outlier',
+outliersdf <- multidetect(data = rdata, multiple = FALSE,var = 'bio6',output = 'outlier',
                           exclude = c('x','y'),
                           methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
 
 
 testthat::test_that(desc = "Model output comparison",
                     code = {
-                      modeout <- modelcomparison(refdata = rdata, outliers = outliersdf, raster = worldclim,
-                                                 lat = 'y', lon = 'x', models = c("GLM"),
+                      testthat::skip_if_offline()
+                      testthat::skip_on_cran()
+                      modeout <- modelcomparison(refdata = rdata, outliers = outliersdf,
+                                                 raster = worldclim,
+                                                 lat = 'y', lon = 'x', models = "GLM",
                                                  mode = 'best', testprop = 0.2, metrics = 'all',
                                                  thresholds = 0.2, full = FALSE, minpts = 10)
 
@@ -47,5 +46,41 @@ testthat::test_that(desc = "Model output comparison",
 
                       testthat::expect_equal(nrow(getperf), 20)
                     })
+test_that("Outliers parameter should be datacleaner class",
+          code = {
+              expect_error(modelcomparison(refdata = rdata, outliers = datafinal,
+                                           raster = worldclim,
+                                           lat = 'y', lon = 'x', models = "GLM",
+                                           mode = 'best', testprop = 0.2, metrics = 'all',
+                                           thresholds = 0.2, full = FALSE, minpts = 10))
+          }
+)
 
+test_that("Error if latitude and longitude not refdata",
+          code = {
+            expect_error(modelcomparison(refdata = rdata, outliers = outliersdf,
+                                         raster = worldclim,
+                                         lat = 'decimalLatitude', lon = 'decimalLongitude',
+                                         models = "GLM",
+                                         mode = 'best', testprop = 0.2, metrics = 'all',
+                                         thresholds = 0.2, full = FALSE, minpts = 10))
+          }
+)
+test_that("Error if any threshold value is greater than 1",
+          code = {
+            expect_error(modelcomparison(refdata = rdata, outliers = outliersdf, raster = worldclim,
+                                         lat = 'y', lon = 'x',
+                                         models = "GLM",mode = 'best', testprop = 0.2, metrics = 'all',
+                                         thresholds = c(0.3,1.1, 2), full = FALSE, minpts = 10))
+          }
+)
+test_that("Error if mode is not either best or abs",
+          code = {
+            expect_error(modelcomparison(refdata = rdata, outliers = outliersdf, raster = worldclim,
+                                         lat = 'y', lon = 'x',
+                                         models = "GLM",mode = 'bestmethod',
+                                         testprop = 0.2, metrics = 'all',
+                                         thresholds = c(0.3,0.4), full = FALSE, minpts = 10))
+          }
+)
 
