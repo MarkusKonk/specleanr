@@ -32,8 +32,8 @@ detect(
 
 \item{var}{Environmental parameter considered in flagging suspicious outliers.}
 
-\item{output}{Either \strong{clean}: for a data set with no outliers, or \strong{outlier}:
-to output a dataframe with outliers.}
+\item{output}{Either \strong{clean}; to produce a data set with no outliers, or \strong{outlier}:
+to output a dataframe with outliers. Default \code{outlier}.}
 
 \item{exclude}{Exclude variables that should not be considered in the fitting the one
 class model, for example x and y columns or
@@ -45,8 +45,8 @@ latitude/longitude or any column that the user doesn't want to consider.}
 
 \item{kmedoidpar}{Parameters for adjusting the distance metrics used in kmedoid method \link[specleanr]{multidetect}.}
 
-\item{ifpar}{Isolation forest parameter settings. Parmeters of the isolation
- model that are required include
+\item{ifpar}{Isolation forest parameter settings. Parameters of the isolation
+ model that are required, include
 the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1}
  but Default \strong{0.5}. Also,
 the \strong{size} of data partitioning for training should be determined.

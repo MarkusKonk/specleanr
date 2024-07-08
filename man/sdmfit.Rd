@@ -20,8 +20,8 @@ if RF fails.}
 \item{cutoff}{Defines a threshold classify the model predictions/probabilities
 as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.}
 
-\item{metrics}{Either to only consider threshold-dependent, threshold-independent
-or all evaluation metrics to determine model performance.}
+\item{metrics}{Either to only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
+or \code{all} evaluation metrics to determine model performance.}
 
 \item{full}{Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.}
 }

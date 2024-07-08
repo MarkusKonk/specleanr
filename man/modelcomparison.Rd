@@ -90,61 +90,56 @@ Comparing the model performance before and after outlier removal.
 \examples{
 
 \dontrun{
- data(jdsdata)
 
-data(efidata)
+#worldclim data for to extract environmental predictors
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-matchdata <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
-                           lats = 'lat', lons = 'lon',
-                           country = 'JDS4_site_ID',
-                           species = c('scientificName', 'speciesname'),
-                          date=c('sampling_date','Date'))
-
-datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE, verbose = FALSE)
-
-#select species with enough records
-
-datacheckf <- subset(datacheck, subset = speciescheck \%in\% c("Salmo trutta",
-"Gasterosteus aculeatus", "Squalius cephalus"))
-
+#get 500 records online using getdata function to compliment salmo trutta records and basin polygon
 #basin to get the bounding box to delineate the area of concern
 
 db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
 
-#worldclim data for to extract enviromental predictctors
+salmonline <- getdata(data = "Salmo trutta", gbiflim = 500, inatlim = 3, vertlim = 3, bbox = db)
 
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+salextract <- extract_online(salmonline)
+
+#merge both online and offline data and filter Salmo trutta
+
+#select species with enough records
+
+datafinal <- salextract[salextract[,'species'] == "Salmo trutta", ]
 
 #initial data extraction and preliminary analysis
 
-rdata <- pred_extract(data = datacheckf,
-                     raster= worldclim ,
-                     lat = 'decimalLatitude',
-                     lon= 'decimalLongitude',
-                     colsp = 'speciescheck',
-                    bbox  = db,
-                    multiple = TRUE,
-                     minpts = 10,
-                     list=TRUE,
-                     merge=F, verbose = F)
+rdata <- pred_extract(data = datafinal,
+                      raster= worldclim ,
+                      lat = 'decimalLatitude',
+                      lon= 'decimalLongitude',
+                      colsp = 'species',
+                      bbox  = db,
+                      multiple = FALSE,
+                      minpts = 10,
+                      list=TRUE,
+                      merge=F, verbose = F)
 
 
 #apply ensemble outlier detection. Note: (x and y in exclude parameter are
 #internally generally in pred_extract during environmental data extraction )
 
-outliers <- multidetect(data = rdata, multiple = TRUE,
-                       var = 'bio6',
-                       output = 'outlier',
-                       exclude = c('x','y'),
-                       methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
+outliersdf <- multidetect(data = rdata, multiple = FALSE,
+                          var = 'bio6',
+                          output = 'outlier',
+                          exclude = c('x','y'),
+                          methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
 
+modeout <- modelcomparison(refdata = rdata, outliers = outliersdf, raster = worldclim,
+                           lat = 'y', lon = 'x', models = c("GLM"),
+                           mode = 'best', testprop = 0.2, metrics = 'all',
+                           thresholds = 0.2, full = FALSE, minpts = 10)
 
-modecom <- modelcomparison(refdata = rdata, outliers = outliers, raster = worldclim,
-                          lat = 'y', lon = 'x', models = c("GLM"),
-                          mode = 'best', testprop = 0.2, metrics = 'indep',
-                         thresholds = seq(0.2, 0.9, 0.1), full = FALSE)
+getper <- get_performance(modeloutput = modeout)
 
-modelperfom <- get_performance(modecom)
+ggperform(modelout = modeout, cutoff = 0.1)
 
 }
 

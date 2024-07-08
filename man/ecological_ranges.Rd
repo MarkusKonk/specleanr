@@ -2,7 +2,7 @@
 % Please edit documentation in R/outliermethods.R
 \name{ecological_ranges}
 \alias{ecological_ranges}
-\title{Check for outliers for multiple species using temperature ranges from FishBase.}
+\title{Check for environmental outliers using species optimal ranges.}
 \usage{
 ecological_ranges(
   data,
@@ -24,105 +24,144 @@ ecological_ranges(
 )
 }
 \arguments{
-\item{data}{Dataframe to check for outliers.}
+\item{data}{Dataframe with environmental predictors for a species or multiple species.}
 
-\item{var}{Environmental parameter considered in flagging suspicious outliers}
+\item{var}{Environmental parameter considered in flagging suspicious outliers.}
 
 \item{output}{output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers.}
 
-\item{species}{Species column name for the standard database with optimal parameters.}
+\item{species}{The species should be indicated if the minimum \code{minval} and
+maximum values \code{maxval} are provided.}
 
-\item{optimumSettings}{o}
+\item{optimumSettings}{A list of optimal parameters are provided mostly when multiple species
+are examined.
+ \itemize{
+ \item{\code{optdf: }}{is the dataframe with species optimal values (min, max, or ecoparam). This dataset
+ can be generated from literature for different species.
+ }
+\item{\code{optspcol: }}{Is the column with species names in the \code{optdf} dataset. }
+ \item{\code{mincol: }}{Is the column name in the \code{optdf} with minimum values. }
+ \item{\code{maxcol: }}{Is the column name in the \code{optdf} with maximum values. }
+ \item{\code{ecoparam: }}{If in the \code{optdf} the minimum and maximum values are not found, then the
+ the column with ecoparam should be provided.}
+ \item{\code{direction: }}{If ecoparam is provided in the \code{optdf}, then column for direction should be provided.}
+ }}
 
-\item{minval}{Minimum temperature column from the standard optimal dataframe.}
+\item{minval, maxval}{Minimum  and maximum values (ranges) for a particular that are used to flag out
+values outside the ranges.}
 
-\item{maxval}{Maximum temperature column from the standard optimal dataframe.}
+\item{lat, lon}{If the \code{checkfishbase} and \code{mode} are set, then the columns for latitude
+longitude should be provided.}
 
-\item{lat, lon}{o}
+\item{ecoparam}{This parameter is used only when the lower bound (minimum) and upper bound maximum
+or ranges are absent. For example, if only minimum value is present for a particular
+species, then ecoparam is set and the direction is provided whether lower, greater,
+equal, less/equal or greater/equal the ecoparam value provided.}
 
-\item{ecoparam}{o}
+\item{direction}{This indicates if the provided ecological threshold \code{ecoparam} or ranges is greater than
+\code{greater}, less than \code{less}, equal \code{equal}, less or equal \code{le} or
+greater or equal \code{ge}. Íf the minimum and maximum values are known, then the \code{ecoparam}
+and \code{direction} should not be used.}
 
-\item{direction}{o}
+\item{pct}{The percentage similarity of the species name provided by the user and the one  in FishBase.
+Only fish species names are checked with Fishbase but other taxa can be checked using
+\code{taxize} package.}
 
-\item{pct}{o}
+\item{checkfishbase}{Either \code{TRUE} to check for both temperatures \code{temp} and latitudinal or
+geographical ranges \code{geo}. If the \code{checkfishbase} is set to \code{TRUE} then the
+\code{mode} parameter must be set to either \code{geo or temp}. This function applies for only
+fish species.}
 
-\item{checkfishbase}{o}
+\item{mode}{Either \code{geo} or \code{temp} for latitudinal ranges or temperature ranges respectively.
+See \code{\link{thermal_ranges}} or \code{\link{geo_ranges}} on how to obtain the data.}
 
-\item{mode}{o}
-
-\item{warn}{o}
+\item{warn}{Either \code{TRUE} to return warning messages or \code{FALSE} for no warning messages.
+the defualt is \code{FALSE}:}
 }
 \value{
 Dataframe with or with no outliers.
 }
 \description{
-Check for outliers for multiple species using temperature ranges from FishBase.
+Check for environmental outliers using species optimal ranges.
 }
 \examples{
 
 \dontrun{
 
-library(terra)
+data("efidata")
+data("jdsdata")
 
-#species data from online databases
+datafinal <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
+                            lats = 'lat',
+                            lons = 'lon',
+                            species = c('speciesname','scientificName'),
+                            date = c('Date', 'sampling_date'),
+                            country = c('JDS4_site_ID'))
 
-#data(efidata)
-#data(jdsdata)
+gbd <- check_names(data = datafinal, colsp='species', pct=90, merge=TRUE)
 
-#multispecies <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
-                    #lats = 'lat',
-                   # lons = 'lon',
-                    #species = c('speciesname','scientificName')
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 
-#multspchecked <- check_names(data = multispecies, colsp='species', pct=90, merge=TRUE)
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-#preclean and extract
+refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+                        colsp = 'speciescheck',
+                       bbox = db,
+                        multiple = TRUE,
+                        minpts = 10)
 
-#danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
+saldata <- refdata[['Salmo trutta']]
+#1. checking the annual maean temperature (bio1) are within the ranges in FishBase
+salmotherange <- thermal_ranges(x = "Salmo trutta")
 
-#danubebasin <- sf::st_read(danube, quiet=TRUE)
+sdatatemp <- ecological_ranges(data = saldata, var = 'bio1', species = "Salmo trutta",
+                              checkfishbase = TRUE, mode = 'temp', output = 'outlier')
+#zero record no outliers
+#====
+#2. geographical ranges: latitude longitude
+#geo ranges in fishbase
+salgeorange <- geo_ranges(data = "Salmo trutta")
+sdatageo <- ecological_ranges(data = saldata, lat = 'y', lon = 'x', output = 'outlier',
+                              species = "Salmo trutta",
+                              checkfishbase = TRUE, mode = 'geo')
+#3. GENERAL LITERATURE RANGES
+#======
+#1. when the min and and max are provided
+#multiple FALSE SHOULD BE SET
+#3.1: If only the minimum value is present: assuming minimum temperature is 6, varible: bio1
+#direction less than 6.0 is outlier and greater is not
+sdata <- ecological_ranges(data = saldata, ecoparam = 6.0, var = 'bio1',
+                           direction = 'greater' )
+#3.2
+sdata2 <- ecological_ranges(data = saldata, var = 'bio1', minval = 2,
+                            maxval = 24, species = "Salmo trutta" )
 
-#Get environmental data
+#4. Multiple TRUE
+#the optimal parameters should be provided in a dataframe format with min max, or ecoparam
+#4.1 optimal dataset
 
-#worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
+optdata <- data.frame(species= c("Salmo trutta", "Abramis brama"),
+                      mintemp = c(6, 1.6),maxtemp = c(20, 21),
+                      meantemp = c(8.5, 10.4), #ecoparam
+                      direction = c('greater', 'greater'))
 
-#worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
-
-#optimal_df <- ecoranges(multspchecked, colsp = 'speciescheck', range=c('n', 'a'),
-                              basin = 'Danu')
-
-#precleaned <- precleaner(data = gbchecked,
-                          #raster= worldclim ,
-                          #lat = 'decimalLatitude',
-                          #lon= 'decimalLongitude',
-                          #colsp = 'speciescheck',
-                          #basin = danubebasin,
-                          #multiple = FALSE,
-                          #minpts = 10)
-
-#only retain species with optimal ranges
-
-#finaldata <- precleaned \%>\% filter(species\%in\%optimal_df$Species)
-
-#outliers
-#multioultiers <- ecological_ranges(data = finaldata,
-                        #var = 'bio1',
-                        #sp = 'species',#preclenaed data
-                        #optimal = optimal_df,
-                        #min = 'TempMin',
-                        #max = 'TempMax',
-                        #species = 'Species', #optimal data
-                        #output='outlier')
-
-#multiout_clean <- ecological_ranges(data = finaldata,
-                        #var = 'bio1',
-                        #sp = 'species',#preclenaed data
-                        #optimal = optimal_df,
-                        #min = 'TempMin',
-                        #max = 'TempMax',
-                        #species = 'Species', #optimal data
-                        #output='clean')
-
+#parameter used is annual mean temperature (WORLDCLIM)
+#provide the column with species names in the environment dataset
+#set optimal list parameter
+#
+# #optimal parameters
+sdata3 <- ecological_ranges(data = saldata, species = 'Salmo trutta',
+                            var = 'bio1', output = "outlier",
+                            optimumSettings = list(optdf = optdata,maxcol = "maxtemp",
+                                                   mincol ="mintemp",optspcol = "species"))
+#
+#
+#only one ecological parameter (ecoparam is provided) and direction
+sdata4 <- ecological_ranges(data = saldata, species = 'Salmo trutta', var = 'bio1',
+                            output = "outlier",
+                            optimumSettings = list(optdf = optdata,
+                                                   ecoparam = "meantemp",
+                                                   optspcol = "species",
+                                                   direction= "direction"))
 }
-
 }

@@ -3,7 +3,7 @@
 \docType{data}
 \name{kdat}
 \alias{kdat}
-\title{Joint Danube Survey Data}
+\title{Sequental fences constants}
 \format{
 A \code{tibble} 101 rows and 2 columns.
 }

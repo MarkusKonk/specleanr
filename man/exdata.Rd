@@ -2,7 +2,7 @@
 % Please edit documentation in R/sdmdataprep.R
 \name{exdata}
 \alias{exdata}
-\title{An internal fucntion to check for missing value in environmental data before estraction.}
+\title{An internal function to check for missing value in environmental data before extraction.}
 \usage{
 exdata(raster, coords, labels, missingness, exclude, vifcutoff, verbose)
 }
@@ -21,13 +21,13 @@ then removing the rows will be problematic rather than column since it only affe
 
 \item{vifcutoff}{Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.}
 
-\item{verbose}{To return execution messages or not. The Default is F or FALSE or 0.}
+\item{verbose}{To return execution messages or not. The Default is \code{FALSE}.}
 }
 \value{
 extracted environmental data with labels.
 }
 \description{
-An internal fucntion to check for missing value in environmental data before estraction.
+An internal function to check for missing value in environmental data before extraction.
 }
 \references{
 \enumerate{

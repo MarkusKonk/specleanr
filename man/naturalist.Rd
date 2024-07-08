@@ -26,9 +26,6 @@ data("naturalist")
 naturalist
 }
 
-
-
-
 }
 \references{
 https://www.eea.europa.eu/themes/biodiversity/natura-2000.

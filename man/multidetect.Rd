@@ -7,7 +7,7 @@
 multidetect(
   data,
   var,
-  output,
+  output = "outlier",
   exclude = NULL,
   multiple,
   colsp = NULL,
@@ -28,7 +28,7 @@ multidetect(
   spname = NULL,
   warn = TRUE,
   missingness = 0.1,
-  showErrors = FALSE
+  showErrors = TRUE
 )
 }
 \arguments{
@@ -100,17 +100,16 @@ This function computes different outlier detection methods including univariate,
 
 \dontrun{
 
-data(jdsdata)
+data("efidata")
+data("jdsdata")
 
-data(efidata)
+matchdata <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
+                            lats = 'lat',
+                            lons = 'lon',
+                            species = c('speciesname','scientificName'),
+                            date = c('Date', 'sampling_date'),
+                            country = c('JDS4_site_ID'))
 
-
-matchdata <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
-                    lats = 'lat',
-                    lons = 'lon',
-                    species = c('speciesname','scientificName'),
-                    country= c('JDS4_site_ID),
-                    dates=c('sampling_date', 'Date'))
 
 datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
 
@@ -121,25 +120,48 @@ db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='speclean
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 rdata <- pred_extract(data = datacheck,
-                          raster= worldclim ,
-                          lat = 'decimalLatitude',
-                          lon= 'decimalLongitude',
-                          colsp = 'speciescheck',
-                          basin = db,
-                          multiple = TRUE,
-                          minpts = 10,
-                          list=TRUE,
-                          merge=F)
+                     raster= worldclim ,
+                     lat = 'decimalLatitude',
+                    lon= 'decimalLongitude',
+                    colsp = 'speciescheck',
+                    bbox = db,
+                     multiple = TRUE,
+                    minpts = 10,
+                    list=TRUE,
+                    merge=F)
 
 
 out_df <- multidetect(data = rdata, multiple = TRUE,
-                       var = 'bio6',
-                        output = 'outlier',
-                        exclude = c('x','y'),
-                        methods = c('zscore', 'adjbox',iqr', 'semiqr','hampel'),
-                        kmpar =list(k = 6, method='silhouette', mode='soft'),
-                        ifpar = list(cutoff = 0.5, size=0.7))
+                     var = 'bio6',
+                     output = 'outlier',
+                     exclude = c('x','y'),
+                     methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel', 'kmeans',
+                                'logboxplot', 'lof','iforest', 'mahal', 'seqfences'))
 
+
+optimal rnages in the multidetect: made up
+
+optdata <- data.frame(species= c("Salmo trutta", "Abramis brama"),
+                      mintemp = c(6, 1.6),maxtemp = c(20, 21),
+                       meantemp = c(8.5, 10.4), #ecoparam
+                      direction = c('greater', 'greater'))
+#species record
+
+salmoabramis <- rdata[c("Salmo trutta")]
+
+#even if one species, please indicate multiple to TRUE, since its picked from pred_extract function
+
+out_df <- multidetect(data = salmoabramis, multiple = TRUE,
+                      var = 'bio1',
+                      output = 'outlier',
+                      exclude = c('x','y'),
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel', 'kmeans',
+                                  'logboxplot', 'lof','iforest', 'mahal', 'seqfences', 'optimal'),
+                      optpar = list(optdf=optdata, optspcol = 'species',
+                                    mincol = "mintemp", maxcol = "maxtemp"))
+#plot the number of outliers
+
+ggoutliers(out_df, 1)
 
 }
 
