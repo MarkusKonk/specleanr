@@ -126,7 +126,7 @@
 "jdsdata"
 
 
-#' @title Joint Danube Survey Data
+#' @title Sequental fences constants
 #'
 #' @description A \code{tibble} data with k constants for sequential fences method.
 #'
@@ -213,9 +213,7 @@
 #' data("naturalist")
 #' naturalist
 #' }
-#'
-#'
-#'
+#
 #'
 #' @references https://www.eea.europa.eu/themes/biodiversity/natura-2000.
 #'

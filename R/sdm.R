@@ -10,8 +10,8 @@
 #'      if RF fails.
 #' @param cutoff Defines a threshold classify the model predictions/probabilities
 #'      as presence or absent. Default is 0.5. The maximum is 1 and lowest is 0.
-#' @param metrics Either to only consider threshold-dependent, threshold-independent
-#'      or all evaluation metrics to determine model performance.
+#' @param metrics Either to only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
+#'      or \code{all} evaluation metrics to determine model performance.
 #' @param full Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
 #'
 #'
@@ -57,10 +57,13 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
 
   response <- "y" #already genrated in exextract
 
+  #create a model equation to enable dynamic acceptance of parameters
   eqn= as.formula(paste(response, paste('.', collapse = " + "),sep = " ~ "))
 
+  #obtain the number of categories in the response column(presence/absence(P/A), 1/0, 1 only, 0 only)
   rclass = unique(df[,response])
 
+  #if the categories are less/greater than 2, stop
   if(length(rclass)<=1 || length(rclass)>2) stop('The classes must be 2')
 
   sapply(data, function(x){
@@ -72,15 +75,14 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
     testdf$y <- as.factor(testdf$y)
 
     if(("RF1"%in%models)==TRUE){
-
+      #the basic random forest model using randomForest function
       trainfit <- randomForest(eqn, importance = TRUE,ntree=500, proximity = TRUE, data = traindf)
-
+      #GLM formualation
     }else if (("GLM"%in%models)==TRUE){
 
       trainfit <- suppressWarnings(glm(eqn, data = traindf, family = 'binomial'))
-
+      #another random forest implementation using ranger function: speed is higher
     }else if(("RF"%in%models)==TRUE){
-
 
       trainfit <- ranger(eqn, importance = 'permutation', scale.permutation.importance = TRUE,
                          mtry = 3, probability = TRUE,  data = traindf)
@@ -88,7 +90,7 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
     }else{
       stop('No model selected.')
     }
-
+    #get model predictions and evaluations
     if(("RF1"%in%models)==TRUE){
       testpred <- predict(trainfit, testdf, type='prob')
 
@@ -127,6 +129,7 @@ sdmfit <- function(data, models, cutoff = 0.5, metrics='all', full=FALSE){
     }else{
       stop('No model selected. Please choose either or GLM')
     }
+    #saving the model outputs...this is later used in the modelcomparison function.
     if(isTRUE(full)){
       return(list(modeloutput = trainfit, predtest = testpred, predtrain = trainpred, perftest = perftest, perftrain = perftrain))
     }else{

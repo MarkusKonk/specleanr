@@ -855,10 +855,10 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
 
   #standard table 1 from (Schwertman NC, de Silva R. 2007)
 
-  kndata <- read.csv(file = 'functions/kndata.csv')
+  kndata <- specleanr::kdat
 
   #standard table 2 from (Schwertman NC, de Silva R. 2007)
-  mth <- read.csv(file = 'functions/mth.csv')
+  mth <- specleanr::mth
 
 
 
@@ -1323,22 +1323,50 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
   switch (output, clean= return(data[datIn,]), outlier= return(data[-datIn,]))
 }
 
-#' @title Check for outliers for multiple species using temperature ranges from FishBase.
+#' @title Check for environmental outliers using species optimal ranges.
 #'
-#' @param data Dataframe to check for outliers.
-#' @param species Species of interest.
-#' @param species Species column name for the standard database with optimal parameters.
-#' @param var Environmental parameter considered in flagging suspicious outliers
-#' @param minval Minimum temperature column from the standard optimal dataframe.
-#' @param maxval Maximum temperature column from the standard optimal dataframe.
-#' @param optimumSettings o
-#' @param lat,lon o
-#' @param ecoparam o
-#' @param direction o
-#' @param pct o
-#' @param checkfishbase o
-#' @param mode o
-#' @param warn o
+#' @param data Dataframe with environmental predictors for a species or multiple species.
+#' @param species The species should be indicated if the minimum \code{minval} and
+#'      maximum values \code{maxval} are provided.
+#' @param var Environmental parameter considered in flagging suspicious outliers.
+#' @param output Either \code{clean}: for dataframe with no suspicious outliers or
+#'          \code{outlier} to return dataframe with only outliers.
+#' @param minval,maxval Minimum  and maximum values (ranges) for a particular that are used to flag out
+#'        values outside the ranges.
+#' @param optimumSettings A list of optimal parameters are provided mostly when multiple species
+#'        are examined.
+#'         \itemize{
+#'         \item{\code{optdf: }}{is the dataframe with species optimal values (min, max, or ecoparam). This dataset
+#'         can be generated from literature for different species.
+#'         }
+#'        \item{\code{optspcol: }}{Is the column with species names in the \code{optdf} dataset. }
+#'         \item{\code{mincol: }}{Is the column name in the \code{optdf} with minimum values. }
+#'         \item{\code{maxcol: }}{Is the column name in the \code{optdf} with maximum values. }
+#'         \item{\code{ecoparam: }}{If in the \code{optdf} the minimum and maximum values are not found, then the
+#'         the column with ecoparam should be provided.}
+#'         \item{\code{direction: }}{If ecoparam is provided in the \code{optdf}, then column for direction should be provided.}
+#'         }
+#' @param lat,lon If the \code{checkfishbase} and \code{mode} are set, then the columns for latitude
+#'        longitude should be provided.
+#' @param ecoparam This parameter is used only when the lower bound (minimum) and upper bound maximum
+#'                or ranges are absent. For example, if only minimum value is present for a particular
+#'                species, then ecoparam is set and the direction is provided whether lower, greater,
+#'                equal, less/equal or greater/equal the ecoparam value provided.
+#' @param direction This indicates if the provided ecological threshold \code{ecoparam} or ranges is greater than
+#'       \code{greater}, less than \code{less}, equal \code{equal}, less or equal \code{le} or
+#'       greater or equal \code{ge}. Íf the minimum and maximum values are known, then the \code{ecoparam}
+#'       and \code{direction} should not be used.
+#' @param pct The percentage similarity of the species name provided by the user and the one  in FishBase.
+#'        Only fish species names are checked with Fishbase but other taxa can be checked using
+#'        \code{taxize} package.
+#' @param checkfishbase Either \code{TRUE} to check for both temperatures \code{temp} and latitudinal or
+#'        geographical ranges \code{geo}. If the \code{checkfishbase} is set to \code{TRUE} then the
+#'        \code{mode} parameter must be set to either \code{geo or temp}. This function applies for only
+#'        fish species.
+#' @param mode Either \code{geo} or \code{temp} for latitudinal ranges or temperature ranges respectively.
+#'        See \code{\link{thermal_ranges}} or \code{\link{geo_ranges}} on how to obtain the data.
+#' @param warn Either \code{TRUE} to return warning messages or \code{FALSE} for no warning messages.
+#'        the defualt is \code{FALSE}:
 #' @param output output Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers.
 #'
 #' @return Dataframe with or with no outliers.
@@ -1348,69 +1376,82 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 #'
 #' \dontrun{
 #'
-#' library(terra)
+#' data("efidata")
+#' data("jdsdata")
 #'
-#' #species data from online databases
+#' datafinal <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
+#'                             lats = 'lat',
+#'                             lons = 'lon',
+#'                             species = c('speciesname','scientificName'),
+#'                             date = c('Date', 'sampling_date'),
+#'                             country = c('JDS4_site_ID'))
 #'
-#' #data(efidata)
-#' #data(jdsdata)
+#' gbd <- check_names(data = datafinal, colsp='species', pct=90, merge=TRUE)
 #'
-#' #multispecies <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
-#'                     #lats = 'lat',
-#'                    # lons = 'lon',
-#'                     #species = c('speciesname','scientificName')
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
-#' #multspchecked <- check_names(data = multispecies, colsp='species', pct=90, merge=TRUE)
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' #preclean and extract
+#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+#'                         colsp = 'speciescheck',
+#'                        bbox = db,
+#'                         multiple = TRUE,
+#'                         minpts = 10)
 #'
-#' #danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
+#' saldata <- refdata[['Salmo trutta']]
+#' #1. checking the annual maean temperature (bio1) are within the ranges in FishBase
+#' salmotherange <- thermal_ranges(x = "Salmo trutta")
 #'
-#' #danubebasin <- sf::st_read(danube, quiet=TRUE)
+#' sdatatemp <- ecological_ranges(data = saldata, var = 'bio1', species = "Salmo trutta",
+#'                               checkfishbase = TRUE, mode = 'temp', output = 'outlier')
+#' #zero record no outliers
+#' #====
+#' #2. geographical ranges: latitude longitude
+#' #geo ranges in fishbase
+#' salgeorange <- geo_ranges(data = "Salmo trutta")
+#' sdatageo <- ecological_ranges(data = saldata, lat = 'y', lon = 'x', output = 'outlier',
+#'                               species = "Salmo trutta",
+#'                               checkfishbase = TRUE, mode = 'geo')
+#' #3. GENERAL LITERATURE RANGES
+#' #======
+#' #1. when the min and and max are provided
+#' #multiple FALSE SHOULD BE SET
+#' #3.1: If only the minimum value is present: assuming minimum temperature is 6, varible: bio1
+#' #direction less than 6.0 is outlier and greater is not
+#' sdata <- ecological_ranges(data = saldata, ecoparam = 6.0, var = 'bio1',
+#'                            direction = 'greater' )
+#' #3.2
+#' sdata2 <- ecological_ranges(data = saldata, var = 'bio1', minval = 2,
+#'                             maxval = 24, species = "Salmo trutta" )
 #'
-#' #Get environmental data
+#' #4. Multiple TRUE
+#' #the optimal parameters should be provided in a dataframe format with min max, or ecoparam
+#' #4.1 optimal dataset
 #'
-#' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
+#' optdata <- data.frame(species= c("Salmo trutta", "Abramis brama"),
+#'                       mintemp = c(6, 1.6),maxtemp = c(20, 21),
+#'                       meantemp = c(8.5, 10.4), #ecoparam
+#'                       direction = c('greater', 'greater'))
 #'
-#' #worldclim <- terra::rast(system.file('extdata/worldclim.tiff', quiet=TRUE, package='specleanr'))
-#'
-#' #optimal_df <- ecoranges(multspchecked, colsp = 'speciescheck', range=c('n', 'a'),
-#'                               basin = 'Danu')
-#'
-#' #precleaned <- precleaner(data = gbchecked,
-#'                           #raster= worldclim ,
-#'                           #lat = 'decimalLatitude',
-#'                           #lon= 'decimalLongitude',
-#'                           #colsp = 'speciescheck',
-#'                           #basin = danubebasin,
-#'                           #multiple = FALSE,
-#'                           #minpts = 10)
-#'
-#' #only retain species with optimal ranges
-#'
-#' #finaldata <- precleaned %>% filter(species%in%optimal_df$Species)
-#'
-#' #outliers
-#' #multioultiers <- ecological_ranges(data = finaldata,
-#'                         #var = 'bio1',
-#'                         #sp = 'species',#preclenaed data
-#'                         #optimal = optimal_df,
-#'                         #min = 'TempMin',
-#'                         #max = 'TempMax',
-#'                         #species = 'Species', #optimal data
-#'                         #output='outlier')
-#'
-#' #multiout_clean <- ecological_ranges(data = finaldata,
-#'                         #var = 'bio1',
-#'                         #sp = 'species',#preclenaed data
-#'                         #optimal = optimal_df,
-#'                         #min = 'TempMin',
-#'                         #max = 'TempMax',
-#'                         #species = 'Species', #optimal data
-#'                         #output='clean')
-#'
+#' #parameter used is annual mean temperature (WORLDCLIM)
+#' #provide the column with species names in the environment dataset
+#' #set optimal list parameter
+#' #
+#' # #optimal parameters
+#' sdata3 <- ecological_ranges(data = saldata, species = 'Salmo trutta',
+#'                             var = 'bio1', output = "outlier",
+#'                             optimumSettings = list(optdf = optdata,maxcol = "maxtemp",
+#'                                                    mincol ="mintemp",optspcol = "species"))
+#' #
+#' #
+#' #only one ecological parameter (ecoparam is provided) and direction
+#' sdata4 <- ecological_ranges(data = saldata, species = 'Salmo trutta', var = 'bio1',
+#'                             output = "outlier",
+#'                             optimumSettings = list(optdf = optdata,
+#'                                                    ecoparam = "meantemp",
+#'                                                    optspcol = "species",
+#'                                                    direction= "direction"))
 #' }
-#'
 ecological_ranges <- function(data, var = NULL, output= "outlier", species = NULL,
                               optimumSettings = list(optdf =NULL, optspcol = NULL,
                                                      mincol = NULL, maxcol = NULL,
@@ -1835,50 +1876,28 @@ mahal <- function(data, exclude = NULL, output, mode, pdf = 0.95){
 #'
 #' \dontrun{
 #'
-#' library(terra)
+#' data("efidata")
 #'
-#' #species data from online databases
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' gbdata <- df_retronline(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
-#' gbfinal <- merge_all(online = gbdata)
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                         lat = 'decimalLatitude',
+#'                         lon= 'decimalLongitude',
+#'                         colsp = 'speciescheck',
+#'                         bbox = db,
+#'                         multiple = TRUE,
+#'                         minpts = 10)
 #'
-#' #preclean and extract
-#'
-#' danube <- system.file('extdata/danube/basinfinal.shp',  package='specleanr')
-#'
-#' danubebasin <- sf::st_read(danube)
-#'
-#' #Get environmental data
-#'
-#' #worldclim_bio <- env_download(var='bio', resolution = 10, basin = danube, folder='worlclimddata')
-#'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
-#'
-#' precleaned <- pre_cleaner(data = gbchecked,
-#'                           raster= worldclim ,
-#'                           colsp = 'speciescheck',
-#'                           basin = danubebasin,
-#'                           multiple = FALSE,
-#'                           maxpts = 10)
-#'
-#' #outliers
-#' kmeanoutliers <- xkmeans(data = precleaned,
-#'                          k=6, exclude = c('x','y'),
-#'                          kmethod ='silhouette',
-#'                          output='outlier')
-#'
-#' #clean data
-#' kmeanclean <- xkmeans(data = precleaned,
-#'                          k=6, exclude = c('x','y'),
-#'                          kmethod ='silhouette',
-#'                          output='clean')
+#' kmeansout <- xkmeans(data = refdata[['Salmo trutta']],
+#'                       output='outlier', exclude = c('x', 'y'), mode = 'soft', k=3)
 #' }
 #'
 #'
-xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", verbose=FALSE){
+xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silhouette", verbose=FALSE){
 
   match.argc(mode, choices = c('soft', 'robust'))
 
@@ -1889,13 +1908,14 @@ xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", 
   if(!is.null(exclude)) df2 <- data[,!colnames(data) %in% exclude] else df2 <- data
 
   df_scaled <- scale(df2)
+
   if(k<1 || k==1) stop('Increase k to atleast 2 to form clusters in the data.')
+
+  if(nrow(df_scaled)<10) k = 3 else k = k # to avoid errors for few data.
 
   wcss <- c(); kcenters <- c(); sil_val <- list()
 
-  if(method=='elbow' && !is.null(method)){
-
-    if(nrow(df_scaled)<10) k = 3 else k = k # to avoid errors for few data.
+  if(method=='elbow'){
 
     for (ik in 2:k) {
 
@@ -1914,7 +1934,7 @@ xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", 
     if(opt_k>length(kcenters)) stop('Optimal cluster centers should be within the
                                    number of cluster iteration number: ', k, call. = FALSE)
   }
-  else if(method=='silhouette' && !is.null(method)){
+  else if(method=='silhouette'){
 
     #lower the k value for low samples but that can not looped through the different values
 
@@ -1984,6 +2004,7 @@ xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", 
 #'
 #' @param data Input data for for checking outliers
 #' @param k Number of clusters
+#' @param setseed Set randomness in the median values to initate the clusters.
 #'
 #' @return clean or outlier data set after outlier detection.
 #'
@@ -2009,16 +2030,14 @@ xkmeans <- function(data, k, exclude = NULL, output, mode, method="silhouette", 
 #'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
-#' kmedianout <- kmedian(data = refdata, k = 3)
+#' kmedianout <- xkmedian(data = refdata, k = 3)
 #'
 #' }
 #'
-xkmedian <- function(data, k=3){
-
-  set.seed(123)
+xkmedian <- function(data, k=3, setseed=1144){
 
   #select random starting rows
-  set.seed(123)
+  set.seed(setseed)
 
   rstart <- sample(x=nrow(data), size = k)
 

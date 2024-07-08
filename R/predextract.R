@@ -94,10 +94,10 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
   if(isTRUE(warn))  if(ymax12>ymax2)warning("Some species points are outside the raster layers provided. Please check ymax.", call. = FALSE)
 
-
+  #change the object into sf file format to enable geographical filtering outside the bounding box using st_filter
   spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = st_crs(4326))
 
-
+  #filter out records outside the bounding box if provided.
   if(!is.null(bbox)){
 
     if(inherits(bbox, "sf")) {
@@ -107,6 +107,7 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
     }else if(inherits(bbox, 'numeric') && length(bbox) == 4){
 
         class(bbox) <- "bbox"
+
 
         bb <- st_as_sfc(bbox) |> sf::st_set_crs(st_crs(spdata_new))
 

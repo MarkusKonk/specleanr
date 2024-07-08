@@ -1,5 +1,5 @@
 
-#' @title  An internal fucntion to check for missing value in environmental data before estraction.
+#' @title  An internal function to check for missing value in environmental data before extraction.
 #'
 #' @param raster A raster layer with species environmental data to be used during modelling.
 #' @param coords the coordinates geometry. Either x and y or geometry column if the species occurrences are in a geometry format.
@@ -9,7 +9,7 @@
 #'        then removing the rows will be problematic rather than column since it only affect one parameter than the whole dataset.
 #' @param exclude Indicate columns where checking non missing values or NAs should not be done.
 #' @param vifcutoff Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
-#' @param verbose To return execution messages or not. The Default is F or FALSE or 0.
+#' @param verbose To return execution messages or not. The Default is \code{FALSE}.
 #'
 #' @return extracted environmental data with labels.
 #'

@@ -54,7 +54,7 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
           datOut <- ocindex(x= outliers, absolute = TRUE, threshold = threshold, warn = warn, autothreshold = FALSE)
         }
 
-        if(isTRUE(verbose)) message('Even if  bestmethod  is selected, the number of rows removed exceed ', pabsconv, '%, so only absolute outliers will be removed.' )
+        if(isTRUE(verbose)) message('If  bestmethod  is implemented, the number of rows removed exceed ', pabsconv, '%, so only absolute outliers will be removed.' )
 
         varc <- unlist(data[, var])
 
@@ -115,7 +115,7 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
                             autothreshold = FALSE)
         }
 
-        if(isTRUE(verbose)) message('Even if bestmethod is selected rows removed exceed ', pabsconv, '%, so only absolute outliers will be removed.' )
+        if(isTRUE(verbose)) message('If  bestmethod  is implemented, the rows removed exceed ', pabsconv, '%, so only absolute outliers will be removed.' )
 
         varc <- unlist(data[, var])
 

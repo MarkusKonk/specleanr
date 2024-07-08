@@ -39,61 +39,57 @@
 #' @examples
 #'
 #' \dontrun{
-#'  data(jdsdata)
 #'
-#' data(efidata)
+#' #worldclim data for to extract environmental predictors
+
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' matchdata <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
-#'                            lats = 'lat', lons = 'lon',
-#'                            country = 'JDS4_site_ID',
-#'                            species = c('scientificName', 'speciesname'),
-#'                           date=c('sampling_date','Date'))
-#'
-#' datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE, verbose = FALSE)
-#'
-#' #select species with enough records
-#'
-#' datacheckf <- subset(datacheck, subset = speciescheck %in% c("Salmo trutta",
-#' "Gasterosteus aculeatus", "Squalius cephalus"))
-#'
+#' #get 500 records online using getdata function to compliment salmo trutta records and basin polygon
 #' #basin to get the bounding box to delineate the area of concern
 #'
 #' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
 #'
-#' #worldclim data for to extract enviromental predictctors
+#' salmonline <- getdata(data = "Salmo trutta", gbiflim = 500, inatlim = 3, vertlim = 3, bbox = db)
 #'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#' salextract <- extract_online(salmonline)
+#'
+#' #merge both online and offline data and filter Salmo trutta
+#'
+#' #select species with enough records
+#'
+#' datafinal <- salextract[salextract[,'species'] == "Salmo trutta", ]
 #'
 #' #initial data extraction and preliminary analysis
 #'
-#' rdata <- pred_extract(data = datacheckf,
-#'                      raster= worldclim ,
-#'                      lat = 'decimalLatitude',
-#'                      lon= 'decimalLongitude',
-#'                      colsp = 'speciescheck',
-#'                     bbox  = db,
-#'                     multiple = TRUE,
-#'                      minpts = 10,
-#'                      list=TRUE,
-#'                      merge=F, verbose = F)
+#' rdata <- pred_extract(data = datafinal,
+#'                       raster= worldclim ,
+#'                       lat = 'decimalLatitude',
+#'                       lon= 'decimalLongitude',
+#'                       colsp = 'species',
+#'                       bbox  = db,
+#'                       multiple = FALSE,
+#'                       minpts = 10,
+#'                       list=TRUE,
+#'                       merge=F, verbose = F)
 #'
 #'
 #' #apply ensemble outlier detection. Note: (x and y in exclude parameter are
 #' #internally generally in pred_extract during environmental data extraction )
 #'
-#'outliers <- multidetect(data = rdata, multiple = TRUE,
-#'                        var = 'bio6',
-#'                        output = 'outlier',
-#'                        exclude = c('x','y'),
-#'                        methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
+#' outliersdf <- multidetect(data = rdata, multiple = FALSE,
+#'                           var = 'bio6',
+#'                           output = 'outlier',
+#'                           exclude = c('x','y'),
+#'                           methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
 #'
+#' modeout <- modelcomparison(refdata = rdata, outliers = outliersdf, raster = worldclim,
+#'                            lat = 'y', lon = 'x', models = c("GLM"),
+#'                            mode = 'best', testprop = 0.2, metrics = 'all',
+#'                            thresholds = 0.2, full = FALSE, minpts = 10)
 #'
-#' modecom <- modelcomparison(refdata = rdata, outliers = outliers, raster = worldclim,
-#'                           lat = 'y', lon = 'x', models = c("GLM"),
-#'                           mode = 'best', testprop = 0.2, metrics = 'indep',
-#'                          thresholds = seq(0.2, 0.9, 0.1), full = FALSE)
+#' getper <- get_performance(modeloutput = modeout)
 #'
-#' modelperfom <- get_performance(modecom)
+#' ggperform(modelout = modeout, cutoff = 0.1)
 #'
 #' }
 #'
@@ -108,7 +104,8 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
                             thresholds = c(0.6, 0.7), autothreshold = FALSE,
                          mode='best',colsp =NULL, nboots= 10,
                          testprop=0.2, geom = NULL, lat = NULL, lon = NULL,
-                         prbackground=1, binary=FALSE, verbose = F, warn = F, full = FALSE, pabs = 0.1, minpts=10,...){
+                         prbackground=1, binary=FALSE, verbose = F, warn = F, full = FALSE,
+                         pabs = 0.1, minpts=10,...){
 
   modelist <- list()
   modelout <- list()
@@ -136,25 +133,28 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
 
     ref <- "REF" #reference dataset to avoid masking 1.0 threshold
 
-    #remove threshold in case its indicated by the user
+    #remove the zero threshold in case its indicated by the user
 
     checkzero <- thresholds%in%0
 
     if(any(checkzero) ==TRUE) sfinal <- thresholds[which(checkzero==FALSE)] else sfinal <- thresholds
 
+    #merge both the references and other thresholds
     tvalues <- c(ref, sfinal)
 
+    #loop through the thrsholds
     for (tv in 1:length(tvalues)){
 
       mdl = tvalues[tv]
 
+      #specifically for reference since no data extraction is required.
       if(mdl=="REF"){
 
         dfspx <- df[[mp]]
 
         if(outliers@mode==FALSE) spv <- NULL else spv <-  spl
 
-
+      #ohter references require data extraction.
       }else if(mdl !="REF"){
 
         dfsp<- df[[mp]]
@@ -165,6 +165,8 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
         if(outliers@mode==FALSE) spv <- NULL else spv <-  spl
 
         #the sp parameter is assigned the species name
+        #data extraction: try catch since if no absolute outliers are obtained with a particular
+        #the function will break yet, it needs to run check the next threshold.
         dfspx <- tryCatch(expr =  clean_data(data = dfsp, outliers = outliers, sp=spv, warn = warn, colsp = colsp, mode = mode,
                                                 threshold = mdl, autothreshold = autothreshold, verbose = verbose, pabs = pabs ),
                           error = function(e) e)
@@ -179,14 +181,17 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
       }else{
         stop('Mode not recorganised.')
       }
-
+      #minpts allows no to break the SDMs as few records will not allow evlauting the models.
       if(nrow(dfspx)>=minpts){
-
+        #data extraction and setting pesudo absences using terra::spatSample
+        #for presence only species data: if species have presence/absence , the spatSample will not be used.
         dataprep <- envextract(occurences = dfspx, raster = raster, lat = lat,
                                lon = lon, geom = geom, binary = binary,...)
 
+        #bootstrapping to create replicate samples, nboots can be set to any value
         btdata <- boots(data = dataprep, nboots = nboots, testprob = testprop)
 
+        #fit species distribution models using with random forest or glm
         modelout[[tv]] <- sdmfit(data=btdata, models = models, metrics = metrics, full = full)
 
         names(modelout)[tv]  <- mdl
@@ -194,7 +199,7 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
         #attr(modelout,'records')[tv] <- nrow(dataprep)
 
       }else{
-
+        #if the records are few and cannot allow model evaluation, a warning is raised.
         warning("The threshold option of ", mdl ,"  didnot run as the ", nrow(dfspx), " records for species ",spv, " are too few for a species distribution models.")
 
          modelout[[tv]] <- NA
@@ -204,8 +209,10 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
         #attr(modelout,'records')[tv] <- nrow(dfspx)
       }
     }
+    #saving model outputs
     if(outliers@mode==TRUE) modelist[[spl]] = modelout else modelist[[mp]] = modelout
 
+    #the attribute of full allows to only save the evaluation results and not model outputs as the memory intensive.
     attr(modelist, "full") <- full
 
   }
@@ -232,13 +239,12 @@ get_performance <- function(modeloutput, type='test'){
 
  #run through the species
   for (nm in 1:length(modeloutput)) {
-
+    #extract species name
     if(is.null(names(modeloutput)[nm])) spname <-  1 else spname <- names(modeloutput)[nm]
 
     spd = modeloutput[[spname]]
 
-    #remove species elements which didnot execute
-
+    #remove species elements which didn't execute
     lenout <- sapply(spd, length)
 
     if(any(lenout<=1)) spd <- within(spd, rm(list=names(spd[lenout <=1]))) else  spd
@@ -265,12 +271,11 @@ get_performance <- function(modeloutput, type='test'){
 
         runlist <- do.call(rbind, pdata)
 
-       runlist$species = spname
+        runlist$species = spname
 
         runlist$scenario = refnames
-
       }
-
+      #save data which has been extracted
       perfdata[[ref]] <- runlist
 
       pfinal <- do.call(rbind, perfdata)
@@ -279,8 +284,6 @@ get_performance <- function(modeloutput, type='test'){
     splist[[nm]] <- pfinal
 
     runfinal <- do.call(rbind, splist)
-
-
   }
   return(runfinal)
 }

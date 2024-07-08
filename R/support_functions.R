@@ -1,3 +1,13 @@
+
+
+#' @title obtain absolute path for the user
+#'
+#' @param dir to user the user directory to save data for future use.
+#' @param verbose to show messages during implementation or not. Default \code{FALSE}.
+#'
+#' @return absolute path
+#' @export
+#'
 .abspath <- function(dir, verbose=TRUE){
 
   gwd <- getwd()
@@ -21,9 +31,19 @@
 }
 
 
+#' @title create sub folders in the absolute path folder
+#'
+#' @param x is the absolute path set in .abspath
+#' @param var is the name of the folder with specific variables.
+#'
+#' @return subfolder in the absolute path
+#' @export
+
 .absx <- function(x, var){#x is the absolute path from .abspath function
 
   folder <- paste0(x,'/',var)
+
+  #if the folder doesn't exist, then a new one will be created to store data.
 
   if(dir.exists(folder)==FALSE){
 
@@ -37,16 +57,17 @@
   return(px)
 }
 
-
-
 #' @title  caching data
 #'
 #' @param x to indicate absolute path.
 #'
 #' @importFrom memoise memoise
 #'
+#' @export
 
 .cache <- function(x){
+
+  #to allow caching the data in the particular folder.
 
   abpath <- .abspath(x, verbose = F)
 
@@ -59,6 +80,7 @@
 
   cdx <- .cache(x=path)
 
+  #to keep the data from the particular function in the user pc to avoid multiple downloads.
   mfn <- memoise::memoise(f = fn, cache = cdx) # memoise
 
   outdata <- mfn(x = path)#takes the input of the function
@@ -144,6 +166,15 @@ match.argc <- function(x, choices, quiet=TRUE){
 }
 
 
+#' @title indicate excluded columns.
+#'
+#' @param x dataframe with columns to exclude.
+#' @param exclude columns to exclude.
+#' @param quiet TRUE if implementation messages to be shown. Default \code{FALSE}.
+#'
+#' @return columns excluded from the dataset.
+#' @export
+#'
 check.exclude <- function(x, exclude, quiet=TRUE){
 
   xcnames <- colnames(x)

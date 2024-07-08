@@ -88,13 +88,13 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
 #'
 #' @param x Dataframe with species occurrences
 #' @param var Environmental parameter considered in flagging suspicious outliers.
-#' @param output Either \strong{clean}: for a data set with no outliers, or \strong{outlier}:
-#'        to output a dataframe with outliers.
+#' @param output Either \strong{clean}; to produce a data set with no outliers, or \strong{outlier}:
+#'        to output a dataframe with outliers. Default \code{outlier}.
 #' @param exclude Exclude variables that should not be considered in the fitting the one
 #'      class model, for example x and y columns or
 #'      latitude/longitude or any column that the user doesn't want to consider.
-#' @param ifpar Isolation forest parameter settings. Parmeters of the isolation
-#'      model that are required include
+#' @param ifpar Isolation forest parameter settings. Parameters of the isolation
+#'      model that are required, include
 #'     the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1}
 #'      but Default \strong{0.5}. Also,
 #'     the \strong{size} of data partitioning for training should be determined.
@@ -163,7 +163,10 @@ detect <- function(x,
 
   mValues <- apply(x, 2, function(col)sum(is.na(col))/length(col))
 
+  #remove a column with high NAs instead of the rows if % missing values are greater than the user set %missingness. Default is 10%
   if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>missingness)]
+
+  #exclude columns that are not needed in the computation like the coordinates mostly for multivariate methods
 
   if(!is.null(exclude)) {
 
@@ -175,6 +178,8 @@ detect <- function(x,
     x2data <- na.omit(xdata)
   }
 
+  #identify and remove non-numeric columns
+
   df <- x2data[, which(sapply(x2data, class) =='numeric')]
 
   if(isTRUE(verbose)){
@@ -185,6 +190,7 @@ detect <- function(x,
 
   }
 
+  #run through each method
   methodList <- list()
 
   for (cii in methods) {
@@ -377,46 +383,68 @@ detect <- function(x,
 #'
 #' \dontrun{
 #'
-#' data(jdsdata)
+#' data("efidata")
+#' data("jdsdata")
 #'
-#' data(efidata)
-#'
-#'
-#' matchdata <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
-#'                     lats = 'lat',
-#'                     lons = 'lon',
-#'                     species = c('speciesname','scientificName'),
-#'                     country= c('JDS4_site_ID),
-#'                     dates=c('sampling_date', 'Date'))
-#'
-#' datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
+#' matchdata <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
+#'                             lats = 'lat',
+#'                             lons = 'lon',
+#'                             species = c('speciesname','scientificName'),
+#'                             date = c('Date', 'sampling_date'),
+#'                             country = c('JDS4_site_ID'))
 #'
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+#'datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
 #'
 #'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
-#'
-#' rdata <- pred_extract(data = datacheck,
-#'                           raster= worldclim ,
-#'                           lat = 'decimalLatitude',
-#'                           lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           basin = db,
-#'                           multiple = TRUE,
-#'                           minpts = 10,
-#'                           list=TRUE,
-#'                           merge=F)
+#'db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
 #'
 #'
-#' out_df <- multidetect(data = rdata, multiple = TRUE,
-#'                        var = 'bio6',
-#'                         output = 'outlier',
-#'                         exclude = c('x','y'),
-#'                         methods = c('zscore', 'adjbox',iqr', 'semiqr','hampel'),
-#'                         kmpar =list(k = 6, method='silhouette', mode='soft'),
-#'                         ifpar = list(cutoff = 0.5, size=0.7))
+#'worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
+#'rdata <- pred_extract(data = datacheck,
+#'                      raster= worldclim ,
+#'                      lat = 'decimalLatitude',
+#'                     lon= 'decimalLongitude',
+#'                     colsp = 'speciescheck',
+#'                     bbox = db,
+#'                      multiple = TRUE,
+#'                     minpts = 10,
+#'                     list=TRUE,
+#'                     merge=F)
+#'
+#'
+#'out_df <- multidetect(data = rdata, multiple = TRUE,
+#'                      var = 'bio6',
+#'                      output = 'outlier',
+#'                      exclude = c('x','y'),
+#'                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel', 'kmeans',
+#'                                 'logboxplot', 'lof','iforest', 'mahal', 'seqfences'))
+#'
+#'
+#' optimal rnages in the multidetect: made up
+#'
+#' optdata <- data.frame(species= c("Salmo trutta", "Abramis brama"),
+#'                       mintemp = c(6, 1.6),maxtemp = c(20, 21),
+#'                        meantemp = c(8.5, 10.4), #ecoparam
+#'                       direction = c('greater', 'greater'))
+#' #species record
+#'
+#' salmoabramis <- rdata[c("Salmo trutta")]
+#'
+#' #even if one species, please indicate multiple to TRUE, since its picked from pred_extract function
+#'
+#' out_df <- multidetect(data = salmoabramis, multiple = TRUE,
+#'                       var = 'bio1',
+#'                       output = 'outlier',
+#'                       exclude = c('x','y'),
+#'                       methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel', 'kmeans',
+#'                                   'logboxplot', 'lof','iforest', 'mahal', 'seqfences', 'optimal'),
+#'                       optpar = list(optdf=optdata, optspcol = 'species',
+#'                                     mincol = "mintemp", maxcol = "maxtemp"))
+#' #plot the number of outliers
+#'
+#' ggoutliers(out_df, 1)
 #'
 #' }
 #'
@@ -432,7 +460,7 @@ detect <- function(x,
 
 multidetect <- function(data,
                         var,
-                        output,
+                        output = "outlier",
                         exclude = NULL,
                         multiple,
                         colsp = NULL,
@@ -451,7 +479,7 @@ multidetect <- function(data,
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
                         verbose=FALSE, spname=NULL,warn=TRUE,
-                        missingness = 0.1, showErrors = FALSE){
+                        missingness = 0.1, showErrors = TRUE){
 
   match.argc(output, c("clean", "outlier"))
 
@@ -478,7 +506,6 @@ multidetect <- function(data,
   if(isTRUE(multiple) && !is(data, 'list') && is.null(colsp)){
     stop('For multiple species dataframe, provide the species column name in the colsp parameter.')
   }
-
 
   #check if there enough data to run Mahalanobis distance measure
 

@@ -7,9 +7,9 @@
 #'
 #' @details
 #' These are threshold-dependent metrics which vary if the cutoff is changed. The default is 0.5 which indicates that probabilities greater than 0.5 are recorded as
-#' the species is present and less than 0.5 indicates absence of a species. However, the cutoff is increased, probabilities converted as positive reduce and also the
+#' the species is present and less than 0.5 indicates absence of a species. However, if the cutoff is increased, probabilities converted as positive reduce and also the
 #' model evaluation metrics such as sensitivity, specificity or accuracy changes significantly. Different literature is used to compute the metrics including
-#' \strong{\code{Allouche et al. 2006}} and \strong{\code{Erickson & Kitamura 2021}}.
+#' \strong{\code{(Allouche et al. 2006)}} and \strong{\code{(Erickson & Kitamura 2021)}}.
 #'
 #'
 #' @return A list of threshold dependent metrics after models evaluation.
@@ -103,8 +103,7 @@ indep <- function(probs, observed, P, A){
   absences <- probs[which(observed == A)]
   presence <- probs[which(observed == P)]
 
-  #if(length(absences)<2) stop("Low occurences records to compute wilxcon test. Either increase sample size or set the parametr metrics = 'dep'. ", call. = FALSE)
-
+ #catch the errors with th wilxcon test especially when the records are few
   W <-  tryCatch(expr = unname(suppressWarnings(wilcox.test(presence, absences))$statistic),
                  error = function(e) e)
 
