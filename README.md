@@ -29,7 +29,6 @@ specleanr package for outlier detection
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("AnthonyBasooma/specleanr")
 ```
 
 **CRAN version**
@@ -155,7 +154,7 @@ methods (in terms of the outliers flagged) can be used. The
 have flagged the record as an outlier to the total number of methods
 used.
 
-- `extract_clean_data()` to extract clean data using the reference data
+- `clean_data_extract()` to extract clean data using the reference data
   and outliers for single species.
 
 5.  **Post-environmental outlier removal**
