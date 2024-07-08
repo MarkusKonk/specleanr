@@ -74,44 +74,59 @@
 
 
 <dl><dt id="arg-refdata">refdata<a class="anchor" aria-label="anchor" href="#arg-refdata"></a></dt>
-<dd><p>Species data generated during pre-cleaning process. This data set is used as the reference data in accessing the outlier detection performance using both
-threshold dependent and independent metrics. This data set must be same as when in detecting outliers to avoid mismatch.</p></dd>
+<dd><p>A list or dataframe of species data generated during
+pre-cleaning process. This data set is used as the reference data in
+accessing the outlier detection performance using both threshold dependent
+and independent metrics. This data set must be same as when in detecting
+outliers to avoid mismatch.</p></dd>
 
 
 <dt id="arg-outliers">outliers<a class="anchor" aria-label="anchor" href="#arg-outliers"></a></dt>
-<dd><p>The <code>datacleaner</code> class data set with all outliers obtained using the <code>multdetect</code> function. Please check <code>ocindex</code>.</p></dd>
+<dd><p>The <code>datacleaner</code> class data set with all outliers
+obtained using the <code>multdetect</code> function. Please check <code>ocindex</code>.</p></dd>
 
 
 <dt id="arg-raster">raster<a class="anchor" aria-label="anchor" href="#arg-raster"></a></dt>
-<dd><p>The environmental where pseudo absences are extracted using <a href="envextract.html">envextract</a>.</p></dd>
+<dd><p>The environmental where pseudo absences are extracted using
+<a href="envextract.html">envextract</a>.</p></dd>
 
 
 <dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
-<dd><p>The models to be used to examine the relationship between species occurrences and environmental parameters. Only Random forest and generalized linear
-models are accepted. <code>GLM</code> is used to set to Generalized Linear Models and <code>RF</code> for Random
-Forest. <code>RF1</code> variant is slower and is suggested if <code>RF</code> fails.</p></dd>
+<dd><p>The models to be used to examine the relationship between
+species occurrences and environmental parameters. Only Random forest and
+generalized linear models are accepted. <code>GLM</code> is used to set to
+Generalized Linear Models and <code>RF</code> for Random Forest. <code>RF1</code>
+variant is slower and is suggested if <code>RF</code> fails.</p></dd>
 
 
 <dt id="arg-metrics">metrics<a class="anchor" aria-label="anchor" href="#arg-metrics"></a></dt>
-<dd><p>Either to only consider threshold-dependent, threshold-independent or all evaluation metrics to determine model performance.</p></dd>
+<dd><p>Either to only consider threshold-dependent,
+threshold-independent or all evaluation metrics to determine model
+performance.</p></dd>
 
 
 <dt id="arg-thresholds">thresholds<a class="anchor" aria-label="anchor" href="#arg-thresholds"></a></dt>
-<dd><p>The different scenarios are implemented. Currently the reference data set and threshold, outlier cleaned data are allowed.</p></dd>
+<dd><p>The different scenarios are implemented. Currently the
+reference data set and threshold, outlier cleaned data are allowed.</p></dd>
 
 
 <dt id="arg-autothreshold">autothreshold<a class="anchor" aria-label="anchor" href="#arg-autothreshold"></a></dt>
-<dd><p>Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-       are deemed inappropriate for identifying absolute outliers. The autothreshold is used when <code>threshold</code> is set to <code>NULL</code>.
-#param species A list of species names and they must be contained in the outlier data set and precleaned data.</p></dd>
+<dd><p>logical which identifies the threshold with mean number
+of absolute outliers.The search is limited within 0.51 to 1 since
+thresholds less than are deemed inappropriate for identifying absolute
+outliers. The autothreshold is used when <code>threshold</code> is set to
+<code>NULL</code>.</p></dd>
 
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
-<dd><p>Either <code>abs</code> to use absolute outliers to filter data or <code>best</code> to use the best method to filter the data <code><a href="bestmethod.html">bestmethod</a></code>.</p></dd>
+<dd><p>A character of either <code>abs</code> to use absolute outliers to
+filter data or <code>best</code> to use the best method to filter the data
+<code><a href="bestmethod.html">bestmethod</a></code>.</p></dd>
 
 
 <dt id="arg-colsp">colsp<a class="anchor" aria-label="anchor" href="#arg-colsp"></a></dt>
-<dd><p>The column with species names if the species occurrence is a data frame not list,</p></dd>
+<dd><p>The column with species names if the species occurrence is a
+data frame not list,</p></dd>
 
 
 <dt id="arg-nboots">nboots<a class="anchor" aria-label="anchor" href="#arg-nboots"></a></dt>
@@ -123,24 +138,28 @@ Forest. <code>RF1</code> variant is slower and is suggested if <code>RF</code> f
 
 
 <dt id="arg-geom">geom<a class="anchor" aria-label="anchor" href="#arg-geom"></a></dt>
-<dd><p>Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.</p></dd>
+<dd><p>character which is used in data extraction when the species
+occurrences is of <code>sf</code> class and have geometry column instead of latitude
+and longitude.</p></dd>
 
 
-<dt id="arg-lat">lat<a class="anchor" aria-label="anchor" href="#arg-lat"></a></dt>
-<dd><p>If the species occurrences don't have the geometry column or not spatial vector file, the latitude must be provided for data extraction form the raster layers.</p></dd>
-
-
-<dt id="arg-lon">lon<a class="anchor" aria-label="anchor" href="#arg-lon"></a></dt>
-<dd><p>If the species occurrences don't have the geometry column or not spatial vector file, the longitude must be provided for data extraction form the raster layers.</p></dd>
+<dt id="arg-lat-lon">lat, lon<a class="anchor" aria-label="anchor" href="#arg-lat-lon"></a></dt>
+<dd><p>character if the species occurrences don't have the geometry
+column or not spatial vector file, the latitude and longitude must be
+provided for data extraction from the raster layers.</p></dd>
 
 
 <dt id="arg-prbackground">prbackground<a class="anchor" aria-label="anchor" href="#arg-prbackground"></a></dt>
-<dd><p>the proportion of pseudo absences compare to the species presences.</p></dd>
+<dd><p>numeric value indicating the proportion of pseudo
+absences compare to the species presences. Used in <code>spatSample</code> function.
+Ranges from at least 0.1 to 1</p></dd>
 
 
 <dt id="arg-binary">binary<a class="anchor" aria-label="anchor" href="#arg-binary"></a></dt>
-<dd><p>Either <code>FALSE</code> if the species dataset do not have label column for presence absence. Therefore, the <code>FALSE</code> is used
-when the parameter <code>label</code> is NULL. If only species presences and absences are indicated, the user should select <code>TRUE</code> option.</p></dd>
+<dd><p>logical of <code>FALSE</code> if the species dataset do not have
+label column for presence absence. Therefore, the <code>FALSE</code> is used when
+the parameter <code>label</code> is NULL. If only species presences and absences
+are indicated, the user should select <code>TRUE</code> option.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -152,20 +171,26 @@ when the parameter <code>label</code> is NULL. If only species presences and abs
 
 
 <dt id="arg-full">full<a class="anchor" aria-label="anchor" href="#arg-full"></a></dt>
-<dd><p>Either full model output for <code>TRUE</code> or <code>FALSE</code> for only performance metrics output.</p></dd>
+<dd><p>logical of either full model output for <code>TRUE</code> or <code>FALSE</code> for only
+performance metrics output.</p></dd>
 
 
 <dt id="arg-pabs">pabs<a class="anchor" aria-label="anchor" href="#arg-pabs"></a></dt>
-<dd><p>Percentage of outliers allowed to be extracted from the data. If <code>best</code> is used to extract outliers and the <code>pabs</code> is exceeded,
-the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.</p></dd>
+<dd><p>Percentage of outliers allowed to be extracted from the data. If
+<code>best</code> is used to extract outliers and the <code>pabs</code> is exceeded,
+the absolute outliers are removed instead. This because some records  in
+the best methods are repeated and they will likely to remove true values as
+outliers.</p></dd>
 
 
 <dt id="arg-minpts">minpts<a class="anchor" aria-label="anchor" href="#arg-minpts"></a></dt>
-<dd><p>Minimum number of records required to run the species distribution model.</p></dd>
+<dd><p>numeric value indicating the minimum number of records required to run the species
+distribution model. Default is <code>10</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>other parameters can be used from <code><a href="envextract.html">envextract</a></code> function.</p></dd>
+<dd><p>other parameters can be used from <code><a href="envextract.html">envextract</a></code>
+function.</p></dd>
 
 </dl></div>
     <div class="section level2">
