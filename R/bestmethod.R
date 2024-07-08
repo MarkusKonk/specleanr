@@ -20,29 +20,46 @@
 #'
 #' \dontrun{
 #'
-#' data(efidata)
+# #' data("efidata")
+#' data("jdsdata")
 #'
-#' db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp', package = "specleanr"),
-#'                   quiet = TRUE)
+#' matchdata <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
+#'                             lats = 'lat',
+#'                             lons = 'lon',
+#'                             species = c('speciesname','scientificName'),
+#'                             date = c('Date', 'sampling_date'),
+#'                             country = c('JDS4_site_ID'))
 #'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package = "specleanr"))
 #'
-#' checkname <- check_names(data=efidata, colsp ='scientificName', pct = 90, merge = T)
+#'datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
 #'
-#' extdf <- pred_extract(data = checkname, raster = wcd,
-#'                     lat = 'decimalLatitude', lon = 'decimalLongitude',
-#'                      colsp = 'speciescheck',
-#'                      list = TRUE,verbose = F,
-#'                      minpts = 6,merge = F)#basin removed
 #'
-#'  #outlier detection
+#'db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
 #'
-#' outliers <- multidetect(data = extdf,output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
 #'
-#' bmout <- bestmethod(x = outliers, sp= 1, threshold = 0.2#
+#'worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#'rdata <- pred_extract(data = datacheck,
+#'                      raster= worldclim ,
+#'                      lat = 'decimalLatitude',
+#'                     lon= 'decimalLongitude',
+#'                     colsp = 'speciescheck',
+#'                     bbox = db,
+#'                      multiple = TRUE,
+#'                     minpts = 10,
+#'                     list=TRUE,
+#'                     merge=F)
+#'
+#'
+#'out_df <- multidetect(data = rdata, multiple = TRUE,
+#'                      var = 'bio6',
+#'                      output = 'outlier',
+#'                      exclude = c('x','y'),
+#'                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel', 'kmeans',
+#'                                 'logboxplot', 'lof','iforest', 'mahal', 'seqfences'))
+
+#'
+#' bmout <- bestmethod(x = out_df, sp= 1, threshold = 0.2)#
 #'
 #'
 #' }

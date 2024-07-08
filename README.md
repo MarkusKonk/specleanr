@@ -35,7 +35,7 @@ release](https://img.shields.io/github/release/AnthonyBasooma/specleanr.svg)](ht
 remotes::install_github("AnthonyBasooma/specleanr")
 ```
 
-\*\*CRAN version
+**CRAN version**
 
 ``` r
 ### install.packages("specleanr")
@@ -128,7 +128,6 @@ as the coordinates such that they are not included in the computation.
 | `xlof()`      | Local outlier factor                         |                             lof |
 | `xkmeans()`   | k-means clustering                           |                          kmeans |
 | `xkmedoids()` | Partitioning around the kmedoids             |                         kmedoid |
-| `xkmedian()`  | k-medians clustering                         |                         kmedian |
 | `mahal()`     | Mahalanobis distances both robust and simple |                           mahal |
 
 **Ecological ranges**
@@ -164,17 +163,26 @@ used.
 
 5.  **Post-environmental outlier removal**
 
-After environmental outlier removal, the user can examine the
-improvement in the model performance before and after environmental
-outlier removal. The following function can be used.
-
+- `ggoutliers()` to visualize the outliers flagged by each method. If
+  multiple species are considered, then the index or species name should
+  be provided.
+  <p>
+  After environmental outlier removal, the user can examine the
+  improvement in the model performance before and after environmental
+  outlier removal. The following function can be used.
+  </p>
 - `sdmfit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
-- `modelcomparison` to compare model performance before and outlier
+- `modelcomparison()` to compare model performance before and outlier
   removal using threshold-dependent and independent metrics such as Area
   Under the Curve, true skill statistics, specificity, sensitivity,
   kappa, and accuracy.
-- `get_performance` to obtain the dataset with the performance values
+- `get_performance()` to obtain the dataset with the performance values
   for both scenarios.
+- `ggperform()` for ploting the threshold results from
+  **`modelcomparison()`** output.
+
+**Package website** To access the details of this package, please check
+it website on <https://anthonybasooma.github.io/specleanr/>
 
 ### Package citation
 

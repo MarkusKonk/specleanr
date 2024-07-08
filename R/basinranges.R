@@ -15,15 +15,23 @@
 
   xfp <- .absx(fp, var = 'basinfiles')
 
+  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("curl"),
+                                                       reason="To check if internet is connected for the user pc to download data.")))
+
+  if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
+
+  #Download the Tesedesco at al., 2017 basin data from figshare
+
   download.file(url = 'https://figshare.com/ndownloader/files/8964583',
                 destfile = file.path(fp, 'gbshp.zip'), mode = 'wb')
 
   unzip(file.path(fp, 'gbshp.zip'), exdir = file.path(xfp))
 
   unlink(file.path(fp, 'gbshp.zip'))
-
+  #load the saved shapefiles from the globalbasin folder created on the user computer.
   f <- list.files(path = xfp, pattern = '.shp$', full.names = TRUE)
 
+  #read the sf files
   s <- sf::st_read(f, quiet=T)
 
   cat('Please cite this global basin dataset as:
@@ -33,20 +41,52 @@
   return(s)
 }
 
-basinranges <- function(x, species, lat, lon, verbose=TRUE, discard=TRUE, output='records'){
 
-  xdf <- as.data.frame(x)
 
+#' @title Records within a particular basin range based on Tesedesco at al., 2017
+#'
+#' @param occurrences Species occurrences for a particular to check for the basin where they lie in
+#' @param species species name considered as its recorded in the occurrences
+#' @param lat,lon latitude and longitude column names in the species occurrences records.
+#' @param verbose Whether implementation messages are shown. Default \code{TRUE}.
+#' @param discard Whether to discard records with basins or not. Default \code{FALSE}.
+#' @param output Whether to produce the records or the basin files. Default \code{records}.
+#'
+#' @return species occurrence records and their basins were they are found.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("efidata")
+#'
+#' sal <- subset(efidata, scientificName=='Anguilla anguilla')
+#'
+#' br <- basinranges(occurrences = sal, species = "Anguilla anguilla",
+#'                   lat = 'decimalLatitude', lon = 'decimalLongitude')
+#' }
+#'
+#'
+basinranges <- function(occurrences, species, lat, lon, verbose=TRUE, discard=TRUE, output='records'){
+
+  xdf <- as.data.frame(occurrences)
+
+  #convert the species data to sf format to be compatible with the global basin data downloaded from Tesedesco at al., 2017
   xdf_sf <- xdf |> sf::st_as_sf(coords=c(lon, lat), crs = st_crs(4326L))
 
   match.arg(output, choices = c('records', 'basin'))
 
+  #the basin files are cached to avoid continued data download in the next user session
+
   gb_df <- .mem_files(fn=.gbdownload, path = 'globalbasins') #path where information will be cached
 
-  #join data sets
+  #join data sets but after making the shapefiles valid ti properly intersect species data.
 
   df_join <- xdf_sf |> sf::st_join(sf::st_make_valid(gb_df), join = st_intersects, left = TRUE)
 
+  #identify the records with no basin data, which will be flagged
   naVal <- is.na(df_join$BasinName)
 
   naTot <- length(naVal[which(naVal==TRUE)])
@@ -84,17 +124,40 @@ basinranges <- function(x, species, lat, lon, verbose=TRUE, discard=TRUE, output
 
 
 
-#for multiple species
+#' @title Basin ranges for multiple species.
+#'
+#' @inheritParams basinranges
+#' @param colsp species column considered as its recorded in the occurrences.
+#' @param batch if \code{TRUE} all species records will be considered at once. Otherwise species-wise checks can
+#' can be done. Default \code{TRUE}
+#'
+#' @return species occurrence records and their basins were they are found.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("efidata")
+#'
+#' salmo1 <- efidata[efidata[,'scientificName'] == c("Anguilla anguilla", "Cottus gobio"), ]
+#'
+#' br <- mbasinranges(occurrences = salmo1, lat = 'decimalLatitude', lon = 'decimalLongitude')
+#'
+#' }
+mbasinranges <- function(occurrences, colsp = NULL, lat, lon, verbose=TRUE, discard=TRUE, batch = TRUE, output='records') {
 
-mbasinranges <- function(x, colsp, lat, lon, verbose=TRUE, discard=TRUE, batch = TRUE, output='records') {
+  xdf <- as.data.frame(occurrences)
 
-  xdf <- as.data.frame(x)
-
+  #all the species records are considered at once. Other individual species are filtered out.
   if(isTRUE(batch)==TRUE){
 
-    dfinal <- basinranges(x = x, species = 'all species', lat =lat, lon = lon, verbose=verbose, discard= discard, output = output)
+    dfinal <- basinranges(occurrences = xdf, species = 'all species', lat =lat, lon = lon, verbose=verbose, discard= discard, output = output)
 
   }else{
+
+    if(is.null(colsp)) stop("Provide the column for species names in the colsp paramter.")
 
     species <- unique(unlist(xdf[, colsp]))
 
@@ -106,7 +169,7 @@ mbasinranges <- function(x, colsp, lat, lon, verbose=TRUE, discard=TRUE, batch =
 
       xsp <- xdf[xdf[,colsp] ==spnames,]
 
-      spr <- basinranges(x = xsp, species = spnames, lat =lat, lon = lon, verbose=verbose, discard= discard)
+      spr <- basinranges(occurrences = xsp, species = spnames, lat =lat, lon = lon, verbose=verbose, discard= discard)
 
       spl[[cv]] <- spr
 
