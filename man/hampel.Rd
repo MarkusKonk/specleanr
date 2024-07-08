@@ -54,5 +54,5 @@ Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Ham
 2546-2550 2015 23rd European Signal Processing Conference (EUSIPCO).
 }
 \author{
-Anthony Basooma (anthony.basooma@boku.ac.at)
+#
 }

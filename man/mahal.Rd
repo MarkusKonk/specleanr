@@ -4,7 +4,7 @@
 \alias{mahal}
 \title{Flags outliers based on Mahalanobis distance matrix for all records.}
 \usage{
-mahal(data, exclude = NULL, output, mode, pdf = 0.95)
+mahal(data, exclude = NULL, output = "outlier", mode = "soft", pdf = 0.95)
 }
 \arguments{
 \item{data}{Dataframe to check for outliers}
@@ -61,11 +61,6 @@ precleaned <- precleaner(data = gbchecked,
 mahal_outliers <- mahal(data = precleaned,
                          exclude = c('x','y'),
                          output='outlier')
-
-#clean data
-mahal_clean <- mahal(data = precleaned,
-                         exclude = c('x','y'),
-                         output='clean')
 
 
 }

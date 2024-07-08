@@ -4,7 +4,7 @@
 \alias{check_natura}
 \title{Check whether species is on NATURA2000 list}
 \usage{
-check_natura(x, quiet = TRUE, details = FALSE)
+check_natura(x, quiet = TRUE, details = FALSE, citeshow = TRUE)
 }
 \arguments{
 \item{x}{Dataframe or vector of names.}
@@ -12,6 +12,8 @@ check_natura(x, quiet = TRUE, details = FALSE)
 \item{quiet}{TRUE to hide implementation messages and \code{FALSE} to show messages. Default \code{FALSE}.}
 
 \item{details}{TRUE to give species details such as the country where it is found or \code{FALSE} to whether the species is NATURA2000. Default \code{FALSE}.}
+
+\item{citeshow}{Show the data citation or not. Default \code{TRUE}}
 }
 \value{
 species list

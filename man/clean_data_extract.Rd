@@ -51,16 +51,13 @@ Extract cleaned record for multiple species.
 \dontrun{
 
 data(jdsdata)
-
 data(efidata)
-
-
-matchdata <- merge_datasets(datasets = list(jds = jdsdata, efi = efidata),
-                    lats = 'lat',
-                    lons = 'lon',
-                    species = c('speciesname','scientificName'),
-                    country= c('JDS4_site_ID),
-                    dates=c('sampling_date', 'Date'))
+matchdata <- match_datasets(datasets = list(jds = jdsdata, efi = efidata),
+                            lats = 'lat',
+                            lons = 'lon',
+                            species = c('speciesname','scientificName'),
+                            country= c('JDS4_site_ID'),
+                            date=c('sampling_date', 'Date'))
 
 datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
 
@@ -70,35 +67,33 @@ db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='speclean
 
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-rdata <- predextract(data = datacheck,
-                          raster= worldclim ,
-                          lat = 'decimalLatitude',
-                          lon= 'decimalLongitude',
-                          colsp = 'speciescheck',
-                          basin = db,
-                          multiple = TRUE,
-                          minpts = 10,
-                          list=TRUE,
-                          merge=F)
+rdata <- pred_extract(data = datacheck,
+                      raster= worldclim ,
+                      lat = 'decimalLatitude',
+                      lon= 'decimalLongitude',
+                      colsp = 'speciescheck',
+                      bbox = db,
+                      multiple = TRUE,
+                      minpts = 10,
+                      list=TRUE,
+                      merge=F)
 
 
 out_df <- multidetect(data = rdata, multiple = TRUE,
-                       var = 'bio6',
-                        output = 'outlier',
-                        exclude = c('x','y'),
-                        methods = c('zscore', 'adjbox',iqr', 'semiqr','hampel'),
-                        kmpar =list(k = 6, method='silhouette'),
-                        ifpar = list(cutoff = 0.5, size=0.7))
+                      var = 'bio6',
+                      output = 'outlier',
+                      exclude = c('x','y'),
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
 
- #extracting use the absolute method for one species
+#extracting use the absolute method for one species
 
- multextract_abs <- clean_data_extract(data = precleaned, outliers = out_df,
- var = 'bio6', type = 'absolute', threshold = 0.6, autothreshold = FALSE)
+extractabs <- clean_data_extract(refdata = rdata, outliers = out_df,
+                                 mode = 'abs', threshold = 0.6,
+                                 autothreshold = FALSE)
 
- bestmout_bm <- clean_data_extract(data = rdata, outliers = out_df,
- var = 'bio6', type = 'bestmethod', threshold = 0.6, autothreshold = FALSE)
-
-
+bestmout_bm <- clean_data_extract(refdata = rdata, outliers = out_df,
+                                  mode = 'best', threshold = 0.6,
+                                 autothreshold = FALSE)
 }
 
 

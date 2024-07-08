@@ -6,6 +6,7 @@
 #' @param type Either test data output \code{test} or training data output \code{train}. Default \code{test}.
 #' @param cutoff The value to limit the thresholds to display. Default \code{0.5}
 #' @param scales Indicates facets scales based on ggplot2 object. Allowed \code{free_y, free_x, free}
+#' @param FUN a function to summarize the performance metrics. Default \code{mean}.
 #'
 #' @return ggplot2 output with performance metrics such as accuracy, sensitivity, specificity..
 #'
@@ -35,7 +36,7 @@ ggperform <- function(modelout, eval=c('auc', 'Accuracy'), type = 'test', cutoff
   gplot <- ggplot2::ggplot(data = meanperf, ggplot2::aes_string(x = "scenario", y = "values"))+
     ggplot2::geom_point()+
     ggplot2::facet_wrap(~ind,scales = 'free')+
-    labs(y =xlab, x="Thresholds")
+   ggplot2::labs(y =xlab, x="Thresholds")
 
   return(gplot)
 }

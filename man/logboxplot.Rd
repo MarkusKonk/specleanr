@@ -70,5 +70,5 @@ Barbato G, Barini EM, Genta G, Levi R. 2011. Features and performance of
 some outlier detection methods. Journal of Applied Statistics 38:2133-2149
 }
 \author{
-Anthony Basooma (anthony.basooma@boku.ac.at)
+#
 }

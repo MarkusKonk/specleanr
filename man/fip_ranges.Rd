@@ -35,16 +35,12 @@ Extract basin ranges from Freshwater Information Platform.
 data(jdsdata)
 
 
-nativedanube <- ecoranges(x = jdsdata, colsp = 'speciesname',
-range = 'n', verbose = T, basin = 'Danu')
+nativedanube <- fip_ranges(data = jdsdata, colsp = 'speciesname',
+                           range = 'n', verbose = T, basin = 'Danu')
 
 #Species introduced in Danube
 
-aliendf <- ecoranges(x = jdsdata, colsp = 'species', basin = 'Danu', range = 'a')
-
-# Species check from FIP and FB
-
-aliennativedf <- ecoranges(x = 'Salmo trutta', basin = 'Danu', range = c('n','a')
+aliendf <- fip_ranges(data = jdsdata, colsp = 'speciesname', basin = 'Danu', range = 'a')
 
 }
 

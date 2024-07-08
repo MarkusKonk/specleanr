@@ -861,7 +861,6 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
   mth <- specleanr::mth
 
 
-
   if(is(data, 'data.frame')){
     nd <- nrow(data)
     if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
@@ -1117,7 +1116,7 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
 #'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
-#' lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+#' lofout <- xlof(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
 #'                 output='outlier', metric ='manhattan',
 #'                 minPts = 10, mode = "soft")
 #' }
@@ -1196,7 +1195,7 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
-#' lofout <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+#' lofout <- xknn(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
 #'                 output='outlier', metric ='manhattan',
 #'                  mode = "soft")
 #'}
@@ -1791,11 +1790,6 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #'                          exclude = c('x','y'),
 #'                          output='outlier')
 #'
-#' #clean data
-#' mahal_clean <- mahal(data = precleaned,
-#'                          exclude = c('x','y'),
-#'                          output='clean')
-#'
 #'
 #' }
 #' @references
@@ -1803,7 +1797,7 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #' Use a robust variant of the Mahalanobis distance. Journal of Experimental
 #' Social Psychology 74:150-156.
 #'
-mahal <- function(data, exclude = NULL, output, mode, pdf = 0.95){
+mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95){
 
   if(missing(data)) stop('Data not provided.')
 

@@ -40,5 +40,5 @@ nboots <- boots(data = dataprep, nboots = 10, testprob = 0.3)
 \code{\link{sdmfit}}
 }
 \author{
-Anthony Basooma, \email{anthony.basooma@boku.ac.at}
+##
 }

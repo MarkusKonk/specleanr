@@ -66,7 +66,7 @@ downloadnatura <- function(x, timeout=180){
 #'
 #' data(efidata)
 #'
-#' spnat <- naturaranges(x= efidata, species = 'scientificName',
+#' spnat <- naturaranges(data= efidata, species = 'scientificName',
 #'                       lon = 'decimalLongitude', lat='decimalLatitude',
 #'                       verbose = T, batch = TRUE)
 #'
@@ -143,7 +143,7 @@ naturaranges <- function(data, species, lat, lon, verbose=FALSE, discard=TRUE, b
 #' @param x Dataframe or vector of names.
 #' @param quiet TRUE to hide implementation messages and \code{FALSE} to show messages. Default \code{FALSE}.
 #' @param details TRUE to give species details such as the country where it is found or \code{FALSE} to whether the species is NATURA2000. Default \code{FALSE}.
-#'
+#' @param citeshow Show the data citation or not. Default \code{TRUE}
 #' @return species list
 #' @export
 #'
@@ -154,7 +154,7 @@ naturaranges <- function(data, species, lat, lon, verbose=FALSE, discard=TRUE, b
 #' salmo <- check_natura(x="Salmo trutta")
 #'
 #' }
-check_natura <- function(x, quiet = TRUE, details = FALSE){
+check_natura <- function(x, quiet = TRUE, details = FALSE, citeshow=TRUE){
 
   if(is(x, 'atomic') || is(x, 'list') || is(x, 'data.frame')) stop("Only a string of species scientific name allowed.")
 
@@ -187,12 +187,12 @@ check_natura <- function(x, quiet = TRUE, details = FALSE){
       if(isFALSE(quiet))message("The species ", x , " is found in NATURA2000 database.")
     }
   }else{
-    message(x,' does not exist in the NATURA2000 database or check the species spelling.')
+    if(isFALSE(quiet))message(x,' does not exist in the NATURA2000 database or check the species spelling.')
 
     return(NULL)
   }
 
-  cat('Please visit https://www.eea.europa.eu/themes/biodiversity/natura-2000 for more information on NATURA2000 database.', '\n')
+  if(isTRUE(citeshow))cat('Please visit https://www.eea.europa.eu/themes/biodiversity/natura-2000 for more information on NATURA2000 database.', '\n')
 
   return(spdata)
 }
