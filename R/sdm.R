@@ -27,8 +27,9 @@
 #'
 #' \dontrun{
 #'
-#'
 #' data(efidata)
+#'
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #'  datacheckf <- subset(efidata,  subset = scientificName %in%c("Squalius cephalus"))
 #'

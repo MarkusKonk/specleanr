@@ -105,13 +105,15 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
 #'
 #' data(efidata)
 #'
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
 #' #select species with enough records
 #' #1. Presence data: the final dataset has both presence and pseudo absences
 #'  dfprep <- envextract(occurences = efidata, raster = worldclim,
 #'                         lat = "decimalLatitude", lon = "decimalLongitude",
 #'                         binary = FALSE, prop = 0.8)
 #'
-#' #2. Prensence absence
+#' #2. Presence absence
 #'
 #' efidata$pa <- rep(c("A", "P"), c(nrow(efidata)/2, nrow(efidata)/2))
 #'

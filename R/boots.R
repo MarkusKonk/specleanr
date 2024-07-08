@@ -20,6 +20,8 @@
 #'
 #' #select species with enough records
 #'
+#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
 #' dataprep <- envextract(occurences = jdsdata, raster = worldclim,
 #'                       lat = "lat", lon = "lon", binary = FALSE, prop = 0.8)
 #'
