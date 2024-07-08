@@ -41,7 +41,7 @@ plantdf <- getdata(data = c( "Populus nigra", "Fagus sylvatica"),
 extrdata <- extract_online(plantdf)
 
 ```
-1. ** Data acquisition: b) Environmental data**
+1. **Data acquisition: b) Environmental data**
 
 We used WORLDCLIM data archived in the package to enable users to test the package functions seamlessly. For direct interaction with the WORDCLIM data, please visit (https://www.worldclim.org/) and the **`geodata`** package for download in user-customized workflows.
 
@@ -92,7 +92,7 @@ p1cleaned <-  pred_extract(data= sp1df,
 
 3. **Detecting outliers using multiple outlier detection methods**
 
-```{r oultlier detection}
+```{r oultlier detection , fig.width = 6, fig.height= 5, fig.align='center'}
 
 outliersdata <- multidetect(data = plantcleaned,
                        multiple = TRUE,
@@ -112,9 +112,12 @@ out1df <- multidetect(data = p1cleaned,
 
 ggoutliers(outliersdata, 1, raw=FALSE)
 
+#for one species
+ggoutliers(out1df)
+
 ```
 
-```{r}
+```{r best methods}
 
 mbest <- multibestmethod(x = outliersdata, autothreshold = TRUE)
 
@@ -142,31 +145,41 @@ cleandf1 <- clean_data_extract(refdata = p1cleaned, outliers = out1df,
 
 ```{r data cleaning scenarios}
 
-modecom <- modelcomparison(refdata = plantcleaned, outliers = outliersdata, raster = worldclim,
+multsppmodel <- modelcomparison(refdata = plantcleaned, outliers = outliersdata, raster = worldclim,
                            lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',
                            thresholds = seq(0.2, 0.7, 0.1), full = FALSE)
 
 
 
-modecom3 <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = worldclim,
+onesppmodel <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = worldclim,
                            lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',  
                            thresholds = seq(0.2, 0.7, 0.1), full = TRUE)
 
 ```
 
+**Extract model performance**
+
 ```{r extract performanc}
 
-onespp <- get_performance(modeloutput = modecom3)
+onespp <- get_performance(modeloutput = onesppmodel)
 
-multspp <- get_performance(modeloutput = modecom)
-#ggperformance <- 
+multspp <- get_performance(modeloutput = multsppmodel)
+
 
 ```
 
+**Plotting to visualize comparisons**
+
+```{r visualisation, fig.width = 6, fig.height= 5, fig.align='center'}
+#one species 
+ggperform(modelout = onesppmodel, cutoff = 0.5)+
+  theme_bw()
+
+ggperform(modelout = multsppmodel, cutoff = 0.5)+
+  theme_bw()
 
 
-
-
+```
 
 
 ### References 

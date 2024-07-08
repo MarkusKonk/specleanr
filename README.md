@@ -18,9 +18,6 @@ specleanr package for outlier detection
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/AnthonyBasooma/specleanr)
-\[![Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/specleanr/total.svg)
-[![GitHub
-release](https://img.shields.io/github/release/AnthonyBasooma/specleanr.svg)](https://github.com/AnthonyBasooma/specleanr/releases)
 
 <!-- badges: end -->
 
@@ -45,7 +42,7 @@ The package aims to improve the reliability and acceptability of
 biogeographical models, including species distribution models,
 ecological niche models, and bioclimatic envelope models, by detecting
 outliers in the environmental predictors. In the package, we collate
-**22 outlier detection methods**, which a user can collectively apply
+**20 outlier detection methods**, which a user can collectively apply
 (ensemble outlier detection) and determine whether the species records
 are in a suitable environmental space. The package complements other
 packages that address geographical, taxonomic, and temporal checks.

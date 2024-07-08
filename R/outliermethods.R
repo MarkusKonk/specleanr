@@ -40,7 +40,7 @@
 #' @references Hubert M, Vandervieren E. 2008. An adjusted boxplot for skewed distributions.
 #' Computational Statistics and Data Analysis 52:5186-5201.
 #'
-#' @author Anthony Basooma (anthony.basooma@@boku.ac.at)
+#' @author
 #'
 adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
 
@@ -255,7 +255,7 @@ semiIQR <- function(data, var, output, x=3){
 #' Pearson Ronald, Neuvo Y, Astola J, Gabbouj M. 2016. The Class of Generalized Hampel Filters.
 #' 2546-2550 2015 23rd European Signal Processing Conference (EUSIPCO).
 #'
-#' @author Anthony Basooma (anthony.basooma@@boku.ac.at)
+#' @author #
 #'
 #'
 hampel <- function(data, var=NULL, output, x=3){
@@ -558,7 +558,7 @@ zscore <- function(data, var, output, type = 'mild', mode = 'soft'){
 #' }
 #'
 #'
-#' @author Anthony Basooma (anthony.basooma@@boku.ac.at)
+#' @author #
 #'
 logboxplot <- function(data, var, output, x=1.5){
 
@@ -609,7 +609,7 @@ logboxplot <- function(data, var, output, x=1.5){
 #'  logout <- mixediqr(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #' }
 #'
-#' @author Anthony Basooma \email{anthony.basooma@@boku.ac.at}
+#' @author #
 #'
 #' @references
 #' Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data.

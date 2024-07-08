@@ -26,7 +26,7 @@
 #' nboots <- boots(data = dataprep, nboots = 10, testprob = 0.3)
 #'
 #' }
-#' @author Anthony Basooma, \email{anthony.basooma@@boku.ac.at}
+#' @author ##
 #'
 boots <- function(data, nboots, setseed=1234, testprob=0.2){
 
