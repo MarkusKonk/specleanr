@@ -422,7 +422,7 @@ detect <- function(x,
 #'                                 'logboxplot', 'lof','iforest', 'mahal', 'seqfences'))
 #'
 #'
-#' optimal rnages in the multidetect: made up
+#' #optimal ranges in the multidetect: made up
 #'
 #' optdata <- data.frame(species= c("Salmo trutta", "Abramis brama"),
 #'                       mintemp = c(6, 1.6),maxtemp = c(20, 21),
@@ -430,7 +430,7 @@ detect <- function(x,
 #'                       direction = c('greater', 'greater'))
 #' #species record
 #'
-#' salmoabramis <- rdata[c("Salmo trutta")]
+#' salmoabramis <- rdata["Salmo trutta"]
 #'
 #' #even if one species, please indicate multiple to TRUE, since its picked from pred_extract function
 #'
