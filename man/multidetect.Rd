@@ -15,7 +15,6 @@ multidetect(
     = NULL, mincol = NULL, maxval = NULL, minval = NULL, checkfishbase = FALSE, mode =
     "geo", lat = NULL, lon = NULL, pct = 80, warn = FALSE),
   kmpar = list(k = 6, method = "silhouette", mode = "soft"),
-  kmedoidpar = list(k = 2, metric = "manhattan", full = FALSE),
   ifpar = list(cutoff = 0.5, size = 0.7),
   mahalpar = list(mode = "soft"),
   jkpar = list(mode = "soft"),
@@ -51,8 +50,6 @@ latitude/longitude or any column that the user doesn't want to consider.}
 
 \item{kmpar}{Parameters for k-means clustering like method and number of clusters for tuning.}
 
-\item{kmedoidpar}{Parameters for adjusting the distance metrics used in kmedoid method.}
-
 \item{ifpar}{Isolation forest parameter settings. Parameters of the isolation model that are required include
 the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1} but Default \strong{0.5}. Also,
 the \strong{size} of data partitioning for training should be determined. For more details check \strong{(Liu et al. 2008)}}
@@ -68,7 +65,7 @@ the \strong{size} of data partitioning for training should be determined. For mo
 \item{knnpar}{Parameters for varying the distance matrix such as \code{Euclidean} or \code{Manhattan distance}.}
 
 \item{lofpar}{Parameters for local outlier factor such as the distance matrix and mode of method implementation
-such as robust and soft modes..}
+such as robust and soft mode.}
 
 \item{methods}{Outlier detection methods considered. Use \strong{\code{extractMethod}} to get outliers implemented in the package.}
 

@@ -11,14 +11,14 @@ suggested.packages(
 )
 }
 \arguments{
-\item{listpkgs}{Packages to be included.}
+\item{listpkgs}{A \code{list} of packages to be suggested.}
 
-\item{reason}{Reason why packages needs to be installed.}
+\item{reason}{A \code{string} of character to describe the reason why packages are suggested.}
 
-\item{quiet}{Default TRUE, for no messages.}
+\item{quiet}{\code{logical} Default TRUE, for no messages.}
 }
 \value{
-Packages
+install suggested packages
 }
 \description{
 Check for suggested packages.
