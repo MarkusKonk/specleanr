@@ -54,7 +54,6 @@
 <span>    <span class="op">=</span> <span class="cn">NULL</span>, mincol <span class="op">=</span> <span class="cn">NULL</span>, maxval <span class="op">=</span> <span class="cn">NULL</span>, minval <span class="op">=</span> <span class="cn">NULL</span>, checkfishbase <span class="op">=</span> <span class="cn">FALSE</span>, mode <span class="op">=</span></span>
 <span>    <span class="st">"geo"</span>, lat <span class="op">=</span> <span class="cn">NULL</span>, lon <span class="op">=</span> <span class="cn">NULL</span>, pct <span class="op">=</span> <span class="fl">80</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  kmpar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>k <span class="op">=</span> <span class="fl">6</span>, method <span class="op">=</span> <span class="st">"silhouette"</span>, mode <span class="op">=</span> <span class="st">"soft"</span><span class="op">)</span>,</span>
-<span>  kmedoidpar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>k <span class="op">=</span> <span class="fl">2</span>, metric <span class="op">=</span> <span class="st">"manhattan"</span>, full <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  ifpar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cutoff <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>,</span>
 <span>  mahalpar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"soft"</span><span class="op">)</span>,</span>
 <span>  jkpar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"soft"</span><span class="op">)</span>,</span>
@@ -110,10 +109,6 @@ latitude/longitude or any column that the user doesn't want to consider.</p></dd
 <dd><p>Parameters for k-means clustering like method and number of clusters for tuning.</p></dd>
 
 
-<dt id="arg-kmedoidpar">kmedoidpar<a class="anchor" aria-label="anchor" href="#arg-kmedoidpar"></a></dt>
-<dd><p>Parameters for adjusting the distance metrics used in kmedoid method.</p></dd>
-
-
 <dt id="arg-ifpar">ifpar<a class="anchor" aria-label="anchor" href="#arg-ifpar"></a></dt>
 <dd><p>Isolation forest parameter settings. Parameters of the isolation model that are required include
 the <strong>cutoff</strong> to be used for denoting outliers. It ranges from <strong>0 to 1</strong> but Default <strong>0.5</strong>. Also,
@@ -142,7 +137,7 @@ the <strong>size</strong> of data partitioning for training should be determined
 
 <dt id="arg-lofpar">lofpar<a class="anchor" aria-label="anchor" href="#arg-lofpar"></a></dt>
 <dd><p>Parameters for local outlier factor such as the distance matrix and mode of method implementation
-such as robust and soft modes..</p></dd>
+such as robust and soft mode.</p></dd>
 
 
 <dt id="arg-methods">methods<a class="anchor" aria-label="anchor" href="#arg-methods"></a></dt>

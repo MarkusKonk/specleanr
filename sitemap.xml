@@ -12,13 +12,11 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/bestmethod.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/boots.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check.exclude.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/check_dates.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_names.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_natura.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_taxa_names.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data_extract.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_date.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_names.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/cosine.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/datacleaner-class.html</loc></url>
@@ -97,8 +95,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/thermal_ranges.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xglosh.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xkmeans.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/xkmedian.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/xkmedoid.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xknn.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xlof.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/zscore.html</loc></url>
