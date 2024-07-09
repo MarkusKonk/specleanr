@@ -14,6 +14,15 @@ testthat::test_that(desc = "Not found/found in the NATURA 2000 species list",
 
                     })
 
-
+test_that("Return error if data row are zero",
+          code = {
+            df <- efidata[NULL,]
+            expect_error(naturaranges(data= df, species = 'scientificName',
+                                       lon = 'decimalLongitude', lat='decimalLatitude',
+                                       verbose = T, batch = TRUE))
+            expect_error(naturaranges(data= unlist(efidata$decimalLatitude), species = 'scientificName',
+                                      lon = 'decimalLongitude', lat='decimalLatitude',
+                                      verbose = T, batch = TRUE))
+            })
 
 

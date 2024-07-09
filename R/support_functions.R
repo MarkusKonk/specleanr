@@ -1,4 +1,71 @@
+#' @title Collates synoynm data tables from FishBase.
+#'
+#' @param tables Tables from FishBase
+#'
+#' @return Two datasets
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' stdf <- fishbase(tables = 'synonym')
+#'
+#' }
+#'
+fishbase <- function(tables){
 
+  suppressMessages(suppressWarnings(suggested.packages(listpkgs =c('curl', 'rfishbase'), reason = 'to access FishBase data')))
+
+  if (!curl::has_internet()) stop('No internet connection, connect and try again later to access FishBase.')
+
+  fb_sy <- suppressMessages(rfishbase::synonyms())
+
+  if(nrow(fb_sy)<0) stop('The synonym table from rfishbase has not successfully loaded and names cannot be checked.')
+
+  fb_ranges <- suppressMessages(rfishbase::stocks())
+
+  if(nrow(fb_ranges)<0) stop('The stocks table from rfishbase has not successfully loaded and temperature/geogrpahical ranges and  cannot be determined.')
+
+  switch(tables, synonym = return(fb_sy), ranges = return(fb_ranges))
+}
+
+
+#' @title Internal function to clean names before checking them with fishbase
+#'
+#' @param sp species names
+#'
+#'
+#' @return corrected species
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' speciesname <- clean_names(sp='salmo trutta??')
+#'
+#' }
+#'
+#'
+clean_names <- function(sp){
+
+  suppressWarnings(specleanr::suggested.packages(c('stringr'), reason='Strings'))
+
+  #convert all letters to lower
+  tlw <- tolower(sp)
+  #remove accents
+  actr <- iconv(tlw, from = 'UTF-8', to = 'ASCII//TRANSLIT')
+
+  sppt <- gsub("[[:punct:]]", "", actr)
+
+  spc <- gsub("[^[:alnum:]]", " ", sppt)
+
+  spaces <- trimws(gsub("\\s+"," " ,spc), which = 'both')
+
+  spclean <- stringr::str_to_sentence(spaces)
+
+  return(spclean)
+}
 
 #' @title obtain absolute path for the user
 #'
@@ -6,7 +73,6 @@
 #' @param verbose to show messages during implementation or not. Default \code{FALSE}.
 #'
 #' @return absolute path
-#' @export
 #'
 .abspath <- function(dir, verbose=TRUE){
 
@@ -37,7 +103,6 @@
 #' @param var is the name of the folder with specific variables.
 #'
 #' @return subfolder in the absolute path
-#' @export
 
 .absx <- function(x, var){#x is the absolute path from .abspath function
 
@@ -63,8 +128,7 @@
 #'
 #' @importFrom memoise memoise
 #'
-#' @export
-
+#'
 .cache <- function(x){
 
   #to allow caching the data in the particular folder.
@@ -76,6 +140,7 @@
   return(d)
 }
 
+#' @noRd
 .mem_files <- function(fn, path){
 
   cdx <- .cache(x=path)
@@ -88,35 +153,16 @@
   return(outdata)
 }
 
-mode <- function(x){
-
-  if(inherits(x, 'character')){
-    xm <- table(x)
-    m <- x[which(xm==max(xm))]
-
-  }else if(inherits(x, 'numeric')){
-    xm <- table(sort(x))
-
-    m <- x[which(xm==max(xm))]
-
-    if(length(m)>1) message('the vector is bimodal..')
-  }
-
-  return(m)
-}
-
 
 #' @title Check for suggested packages.
 #'
-#' @param listpkgs Packages to be included.
-#' @param reason Reason why packages needs to be installed.
-#' @param quiet Default TRUE, for no messages.
+#' @param listpkgs A \code{list} of packages to be suggested.
+#' @param reason A \code{string} of character to describe the reason why packages are suggested.
+#' @param quiet \code{logical} Default TRUE, for no messages.
 #'
 #' @importFrom utils install.packages
 #'
-#' @return Packages
-#'
-#' @export
+#' @return install suggested packages
 #'
 suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
                                reason='open the R Shiny Application', quiet= TRUE){
@@ -177,9 +223,7 @@ match.argc <- function(x, choices, quiet=TRUE){
 #'
 check.exclude <- function(x, exclude, quiet=TRUE){
 
-  xcnames <- colnames(x)
-
-  indcols <- exclude%in%xcnames
+  indcols <- exclude%in%colnames(x)
 
   colsnotindf <- exclude[which(indcols==FALSE)]
 
@@ -229,7 +273,6 @@ getdiff <- function(x, y, full=FALSE){
     getcol <- c1[which(c1%in%c2==TRUE)][1]
 
     out <- y[which(y[,getcol] %in% x[,getcol]),]
-
 
   }else{
 
