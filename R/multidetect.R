@@ -26,7 +26,7 @@ extractMethods <- function(){
 
     }else if(imethods=='cluster'){
 
-        clb <- c('kmeans','kmedoids', 'kmedian')
+        clb <- c('kmeans')
 
     }else if(imethods=='densitybased'){
 
@@ -103,7 +103,6 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
 #'      to get outliers implemented in the package.
 #' @param optpar Parameters for species optimal ranges like temperatures ranges \link[specleanr]{multidetect}.
 #' @param kmpar Parameters for kmeans clustering like method and number of clusters for tuning \link[specleanr]{multidetect}.
-#' @param kmedoidpar Parameters for adjusting the distance metrics used in kmedoid method \link[specleanr]{multidetect}.
 #' @param lofpar Parameters for local outlier factor such as the distance matrix and mode of method implementation
 #'  such as robust and soft modes \link[specleanr]{multidetect}.
 #' @param jkpar Parameters for reverse jack knifing mainly the mode used \link[specleanr]{multidetect}.
@@ -138,7 +137,6 @@ detect <- function(x,
                     exclude,
                     optpar,
                     kmpar,
-                    kmedoidpar,
                     ifpar,
                     lofpar,
                     jkpar,
@@ -260,13 +258,6 @@ detect <- function(x,
                                           method = kmpar$method, verbose=verbose),
                                  fname = cii, verbose = verbose, spname = spname,
                                  warn=warn, showErrors = showErrors)
-    }else if(cii=='kmedoid'){
-
-      methodList[[cii]] <-  tcatch(func = xkmedoid(data = df, k = kmedoidpar$k, metric = kmedoidpar$metric,
-                                                   output = output, exclude = exclude, x=1.5, full = kmedoidpar$full),
-                                 fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, showErrors = showErrors)
-
     }else if(cii=='iforest'){
 
       methodList[[cii]] <-  tcatch(func = isoforest(data = df, size = ifpar$size, output=output,
@@ -353,9 +344,8 @@ detect <- function(x,
 #' @param colsp A column with species columns if the data set for species is a dataframe not a list. see \link[specleanr]{pred_extract} for extracting environmental data.
 #' @param optpar Parameters for species optimal ranges like temperatures ranges.
 #' @param kmpar Parameters for k-means clustering like method and number of clusters for tuning.
-#' @param kmedoidpar Parameters for adjusting the distance metrics used in kmedoid method.
 #' @param lofpar Parameters for local outlier factor such as the distance matrix and mode of method implementation
-#'  such as robust and soft modes..
+#'  such as robust and soft mode.
 #' @param jkpar Parameters for reverse jack knifing mainly the mode used.
 #' @param gloshpar Parameters for global local outlier score from hierarchies such as distance metric used..
 #' @param mahalpar Parameters for Malahanobis distance which includes varying the mode of output.
@@ -469,7 +459,6 @@ multidetect <- function(data,
                                       checkfishbase =FALSE, mode='geo', lat = NULL, lon = NULL, pct = 80,
                                       warn = FALSE),
                         kmpar =list(k=6, method='silhouette', mode='soft'),
-                        kmedoidpar = list(k=2, metric='manhattan', full = FALSE),
                         ifpar = list(cutoff = 0.5, size=0.7),
                         mahalpar = list(mode='soft'),
                         jkpar = list(mode='soft'),
@@ -489,7 +478,7 @@ multidetect <- function(data,
 
   allowedmethods <- c('reference','adjbox', 'zscore','kmeans', 'iforest', 'distboxplot','optimal',
                       'mixediqr', 'seqfences', 'mahal', 'medianrule', 'iqr','hampel',
-                      'logboxplot', 'onesvm', 'jknife', 'semiqr', 'lof','glosh', 'knn', "kmedoid")
+                      'logboxplot', 'onesvm', 'jknife', 'semiqr', 'lof','glosh', 'knn')
 
   tfcheck <- dup_methods%in%allowedmethods
 
@@ -518,7 +507,7 @@ multidetect <- function(data,
     outdata <-  detect(x = data, var = var, output = output,
                        exclude = exclude,optpar = optpar,
                        kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
-                       mahalpar = mahalpar, lofpar = lofpar, kmedoidpar = kmedoidpar,
+                       mahalpar = mahalpar, lofpar = lofpar,
                        zpar = zpar, gloshpar = gloshpar,
                        knnpar = knnpar,
                        methods = dup_methods,
@@ -552,7 +541,7 @@ multidetect <- function(data,
       d <-  detect(x = dfinal, var = var, output = output,
                    exclude = exclude,optpar = optpar,
                    kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
-                   mahalpar = mahalpar, lofpar = lofpar, kmedoidpar = kmedoidpar,
+                   mahalpar = mahalpar, lofpar = lofpar,
                    zpar = zpar, gloshpar = gloshpar, knnpar = knnpar,
                    methods = dup_methods, verbose = verbose, spname = mdi,warn=warn,
                    missingness = missingness, showErrors = showErrors)

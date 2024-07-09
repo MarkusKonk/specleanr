@@ -11,7 +11,6 @@ detect(
   exclude,
   optpar,
   kmpar,
-  kmedoidpar,
   ifpar,
   lofpar,
   jkpar,
@@ -42,8 +41,6 @@ latitude/longitude or any column that the user doesn't want to consider.}
 \item{optpar}{Parameters for species optimal ranges like temperatures ranges \link[specleanr]{multidetect}.}
 
 \item{kmpar}{Parameters for kmeans clustering like method and number of clusters for tuning \link[specleanr]{multidetect}.}
-
-\item{kmedoidpar}{Parameters for adjusting the distance metrics used in kmedoid method \link[specleanr]{multidetect}.}
 
 \item{ifpar}{Isolation forest parameter settings. Parameters of the isolation
  model that are required, include

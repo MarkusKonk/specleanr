@@ -164,6 +164,8 @@ clean_names <- function(sp){
 #'
 #' @return install suggested packages
 #'
+#' @export
+#'
 suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
                                reason='open the R Shiny Application', quiet= TRUE){
 
