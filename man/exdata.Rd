@@ -7,21 +7,21 @@
 exdata(raster, coords, labels, missingness, exclude, vifcutoff, verbose)
 }
 \arguments{
-\item{raster}{A raster layer with species environmental data to be used during modelling.}
+\item{raster}{\code{raster}. A raster layer with species environmental data to be used during modelling.}
 
-\item{coords}{the coordinates geometry. Either x and y or geometry column if the species occurrences are in a geometry format.}
+\item{coords}{\code{coordiantes}. the coordinates geometry. Either x and y or geometry column if the species occurrences are in a geometry format.}
 
-\item{labels}{If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
+\item{labels}{\code{string}. If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
 Character labels for example allowed, for example P for presences and A for absences recommended.}
 
-\item{missingness}{The limit at which a column is discarded from the data rather than removing numerous rows. For example, if the column has 50\% of the dataset missing values
+\item{missingness}{\code{numeric}. The limit at which a column is discarded from the data rather than removing numerous rows. For example, if the column has 50\% of the dataset missing values
 then removing the rows will be problematic rather than column since it only affect one parameter than the whole dataset.}
 
-\item{exclude}{Indicate columns where checking non missing values or NAs should not be done.}
+\item{exclude}{\code{vector}. Indicate columns where checking non missing values or NAs should not be done.}
 
-\item{vifcutoff}{Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.}
+\item{vifcutoff}{\code{numeric}. Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.}
 
-\item{verbose}{To return execution messages or not. The Default is \code{FALSE}.}
+\item{verbose}{\code{logical}. To return execution messages or not. The Default is \code{FALSE}.}
 }
 \value{
 extracted environmental data with labels.

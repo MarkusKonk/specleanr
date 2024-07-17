@@ -7,19 +7,18 @@
 mdistr_ranges(data, colsp, lat, lon, key, mode, verbose = T)
 }
 \arguments{
-\item{data}{species dataframe to check with International Union for Conservation of Nature.}
+\item{data}{\code{dataframe}. species data frame to check with International Union for Conservation of Nature.}
 
-\item{colsp}{column with species names.}
+\item{colsp}{\code{string}. The column names with species data.}
 
-\item{lat}{variable for latitude in the species data frame.}
+\item{lat, lon}{\code{coordinates}. Columns with latitude and longitude in the species data frame.}
 
-\item{lon}{variable for longitude in the species data frame.}
+\item{key}{\code{string}. API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.}
 
-\item{key}{API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.}
+\item{mode}{\code{string}. indicating whether the distribution range \code{dist} of the species should be collated or
+species IUCN status \code{iucn} or both.}
 
-\item{mode}{Either distribution only, or IUCN categories for species or both}
-
-\item{verbose}{TRUE to reutn messages or warning during the processing of data. Default is FALSE}
+\item{verbose}{\code{logical}. TRUE to return messages or warning during the processing of data. Default is FALSE}
 }
 \value{
 species records within the known distribution ranges of the species according

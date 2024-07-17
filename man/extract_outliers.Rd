@@ -7,12 +7,12 @@
 extract_outliers(x, sp = NULL)
 }
 \arguments{
-\item{x}{list of outlier outputs.}
+\item{x}{\code{list}. Outlier outputs.}
 
-\item{sp}{species name or index in the list from datacleaner output. NULL for a single species}
+\item{sp}{\code{string}. Species name or index in the list from datacleaner output. NULL for a single species}
 }
 \value{
-data frame of outliers for each method
+\code{data frame} Outliers for each method
 }
 \description{
 Extract outliers for a one species

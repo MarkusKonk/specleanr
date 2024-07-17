@@ -9,7 +9,7 @@ endemicity(basin, range)
 \arguments{
 \item{basin}{Basin under consideration.}
 
-\item{range}{Whether introduced (a) or native (n)}
+\item{range}{Whether introduced (a) or native (n).}
 }
 \value{
 dataframe showing species ranges

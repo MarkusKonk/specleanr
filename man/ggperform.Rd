@@ -8,23 +8,23 @@ ggperform(
   modelout,
   eval = c("auc", "Accuracy"),
   type = "test",
-  cutoff = 0.5,
   scales = "free",
-  FUN = "mean"
+  FUN = "mean",
+  scolor = c("grey75", "grey50")
 )
 }
 \arguments{
-\item{modelout}{The model comparison output obtained.}
+\item{modelout}{\code{list}. The model comparison output obtained from the \code{modelcomaprison} function.}
 
-\item{eval}{The model evaluation metrics. Check \code{\link{indep}} and \code{\link{dep}} for details.}
+\item{eval}{\code{vector}. The model evaluation metrics. Check \code{\link{indep}} and \code{\link{dep}} for details.}
 
-\item{type}{Either test data output \code{test} or training data output \code{train}. Default \code{test}.}
+\item{type}{\code{string}. Either test data output \code{test} or training data output \code{train}. Default \code{test}.}
 
-\item{cutoff}{The value to limit the thresholds to display. Default \code{0.5}}
-
-\item{scales}{Indicates facets scales based on ggplot2 object. Allowed \code{free_y, free_x, free}}
+\item{scales}{\code{string}. options to for facets scales based on ggplot2 object. Allowed \code{free_y, free_x, free}.}
 
 \item{FUN}{a function to summarize the performance metrics. Default \code{mean}.}
+
+\item{scolor}{\code{vector}. Two color options for Cleaned and Reference categories.}
 }
 \value{
 ggplot2 output with performance metrics such as accuracy, sensitivity, specificity..

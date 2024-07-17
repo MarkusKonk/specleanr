@@ -7,13 +7,13 @@
 indep(probs, observed, P, A)
 }
 \arguments{
-\item{probs}{Model probabilities after predictions.}
+\item{probs}{\code{numeric}. Model probabilities after predictions.}
 
-\item{observed}{The observed probabilities.}
+\item{observed}{\code{vector}. The observed probabilities.}
 
-\item{P}{Character for presence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.}
+\item{P}{\code{character}. for presence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.}
 
-\item{A}{Character for absence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.}
+\item{A}{\code{character}. for absence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.}
 }
 \value{
 Area Under the Curve values

@@ -18,30 +18,30 @@ getdata(
 )
 }
 \arguments{
-\item{data}{Data frame, list or vector of species names to retrieve records from online
+\item{data}{\code{dataframe}, \code{list}, \code{vector}, \code{string}. data to retrieve records from online
 databases (GBIF, VertNET, and iNaturalist).}
 
-\item{colsp}{A variable of species names. Provided if data is a data frame, so not
+\item{colsp}{\code{string}. A variable of species names. Provided if data is a data frame, so not
 required for lists and vector.}
 
-\item{bbox}{Bounding box to limit the download of records within a particular area. Otherwise all
+\item{bbox}{\code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
 records from the GBIF will be downloaded. These can be provided in two forms,
 either a shapefile \code{(sf)} class accepted or provide a list of
 \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.}
 
-\item{isFish}{logical, to indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
+\item{isFish}{\code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.}
 
-\item{gbiflim}{Limits on the records from the Global Biodiversity Information Platform}
+\item{gbiflim}{\code{integer}. Limits on the records from the Global Biodiversity Information Platform}
 
-\item{vertlim}{Limits on the records from VertNET.}
+\item{vertlim}{\code{integer}. Limits on the records from VertNET.}
 
-\item{inatlim}{Limits on the records from iNaturalist database.}
+\item{inatlim}{\code{integer}. Limits on the records from iNaturalist database.}
 
-\item{verbose}{\strong{TRUE} if detailed messages should be indicated and \strong{FALSE}
+\item{verbose}{\code{logical}. \strong{TRUE} if detailed messages should be indicated and \strong{FALSE}
 if download messages are not needed. Default \strong{TRUE}.}
 
-\item{warn}{logical, to indicate if warning messages should be shown. Default \code{FALSE}.}
+\item{warn}{\code{logical}. To indicate if warning messages should be shown. Default \code{FALSE}.}
 
 \item{...}{More function for species data download can be used.
 See \code{rgbif::occ_data} for more information, \code{rinat::get_inat_obs}, and

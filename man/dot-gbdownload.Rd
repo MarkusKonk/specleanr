@@ -7,10 +7,10 @@
 .gbdownload(x = "globalbasins")
 }
 \arguments{
-\item{x}{absolute path to cache global basin files}
+\item{x}{\code{string} absolute path to cache global basin files}
 }
 \value{
-download files for global basin
+Download files for global basin
 }
 \description{
 Downloads the global basin data based on Tesedesco at al., 2017

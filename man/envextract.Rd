@@ -22,35 +22,35 @@ envextract(
 )
 }
 \arguments{
-\item{occurences}{Species occurrences data with coordinates or geometry to enable generate pseudo absences and extract environmental data from the points.}
+\item{occurences}{\code{dataframe}. Species occurrences data with coordinates or geometry to enable generate pseudo absences and extract environmental data from the points.}
 
-\item{raster}{A raster layer with species environmental data to be used during modelling. Different sources, include WORLDCLIM}
+\item{raster}{\code{raster}. A raster layer with species environmental data to be used during modelling. Different sources, include WORLDCLIM}
 
-\item{lat, lon}{If the species occurrences don't have the geometry column or not spatial vector file, the latitude and longitude must be provided for data extraction form the raster layers.}
+\item{lat, lon}{\code{coordinates}. If the species occurrences don't have the geometry column or not spatial vector file, the latitude and longitude must be provided for data extraction form the raster layers.}
 
-\item{geom}{Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.}
+\item{geom}{\code{string}. Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.}
 
-\item{binary}{Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
+\item{binary}{\code{logical}. Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
 when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{TRUE} option.}
 
-\item{labels}{If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
+\item{labels}{\code{string}. If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
 Character labels for example allowed, for example P for presences and A for absences recommended.}
 
-\item{prop}{The proportion of pseudo absences to presences. Default of 1 is used. Therefore equal number of pseudo absences are generated commensurate to the species.}
+\item{prop}{\code{numeric}. The proportion of pseudo absences to presences. Default of 1 is used. Therefore equal number of pseudo absences are generated commensurate to the species.}
 
-\item{set.seed}{to ensure reproduciblity the seed is set. Same psudoabsences will be produced during each run.}
+\item{set.seed}{\code{integer}. to ensure reproduciblity the seed is set. Same psudoabsences will be produced during each run.}
 
-\item{positive}{if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
+\item{positive}{\code{logical}. if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
 models and computing the evaluation metrics.}
 
-\item{missingness}{Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
+\item{missingness}{\code{numeric}. Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
 if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.}
 
-\item{exclude}{Remove non numeric variables from the data.}
+\item{exclude}{\code{vector}. Remove non numeric variables from the data.}
 
-\item{vifcutoff}{Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.}
+\item{vifcutoff}{\code{numeric}. Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.}
 
-\item{verbose}{Either \code{TRUE} to return messages or \code{FALSE} for no implementation messages. Default \code{FALSE}}
+\item{verbose}{\code{logical}. Either \code{TRUE} to return messages or \code{FALSE} for no implementation messages. Default \code{FALSE}}
 }
 \value{
 Labeled presence absence data.
