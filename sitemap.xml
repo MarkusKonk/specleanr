@@ -23,7 +23,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/dataonline-class.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/dateformats.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/dep.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/detect.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/distboxplot.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/distr_ranges.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/dot-abspath.html</loc></url>
@@ -78,6 +77,7 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/ndata.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/ocindex.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/onesvm.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/optimal_threshold.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/overlap.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/plot-datacleaner-ANY-method.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/pred_extract.html</loc></url>
@@ -93,6 +93,7 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/suggested.packages.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/tcatch.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/thermal_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/thresh_search.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xglosh.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xkmeans.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xknn.html</loc></url>

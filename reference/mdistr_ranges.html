@@ -23,7 +23,7 @@
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -33,7 +33,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Determine species distribution ranges based on IUCN RedList.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/R/distribution.R" class="external-link"><code>R/distribution.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/master/R/distribution.R" class="external-link"><code>R/distribution.R</code></a></small>
       <div class="d-none name"><code>mdistr_ranges.Rd</code></div>
     </div>
 
@@ -51,31 +51,28 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>species dataframe to check with International Union for Conservation of Nature.</p></dd>
+<dd><p><code>dataframe</code>. species data frame to check with International Union for Conservation of Nature.</p></dd>
 
 
 <dt id="arg-colsp">colsp<a class="anchor" aria-label="anchor" href="#arg-colsp"></a></dt>
-<dd><p>column with species names.</p></dd>
+<dd><p><code>string</code>. The column names with species data.</p></dd>
 
 
-<dt id="arg-lat">lat<a class="anchor" aria-label="anchor" href="#arg-lat"></a></dt>
-<dd><p>variable for latitude in the species data frame.</p></dd>
-
-
-<dt id="arg-lon">lon<a class="anchor" aria-label="anchor" href="#arg-lon"></a></dt>
-<dd><p>variable for longitude in the species data frame.</p></dd>
+<dt id="arg-lat-lon">lat, lon<a class="anchor" aria-label="anchor" href="#arg-lat-lon"></a></dt>
+<dd><p><code>coordinates</code>. Columns with latitude and longitude in the species data frame.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.</p></dd>
+<dd><p><code>string</code>. API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.</p></dd>
 
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
-<dd><p>Either distribution only, or IUCN categories for species or both</p></dd>
+<dd><p><code>string</code>. indicating whether the distribution range <code>dist</code> of the species should be collated or
+species IUCN status <code>iucn</code> or both.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>TRUE to reutn messages or warning during the processing of data. Default is FALSE</p></dd>
+<dd><p><code>logical</code>. TRUE to return messages or warning during the processing of data. Default is FALSE</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -100,7 +97,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by h g.</p>
+  <p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">

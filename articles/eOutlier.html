@@ -42,7 +42,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -59,7 +59,7 @@
       <h1>Environmental outlier detection in fish species records.</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/vignettes/eOutlier.Rmd" class="external-link"><code>vignettes/eOutlier.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/master/vignettes/eOutlier.Rmd" class="external-link"><code>vignettes/eOutlier.Rmd</code></a></small>
       <div class="d-none name"><code>eOutlier.Rmd</code></div>
     </div>
 
@@ -67,167 +67,378 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/AnthonyBasooma/specleanr" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
-<p><strong>Environemtal outlier check for fish species from the Dnaube
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/removedxx/specleanr" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
+<p><strong>Environmental outlier check for fish species from the Danube
 River Basin</strong></p>
+<p>The workflow for environmental outlier detection and removal is
+similar across taxa, regions, or ecological realms. However, we included
+the <strong><code><a href="../reference/check_names.html">check_names()</a></code></strong> function to cater for
+fish species names exhaustively. In this worked example, we tried the
+functionalities on the fish species from the Danube River Basin, with
+extracts of species records from Joint Danube Survey (JDS) and EFI+ data
+archived in the package. We complimented the data with fish species
+occurrences from online sources including Global Biodiversity
+Information Facility (GBIF), iNaturalist, and VertNET using the
+<strong><code><a href="../reference/getdata.html">getdata()</a></code></strong> function. They are basically
+five steps, including: 1) Data acquisition and harmonization; 2)
+Precleaning and predictor extraction 3) outlier detection 4)
+identification of clean data and suitable method 5) developing species
+distribution models (optional).</p>
 <ol style="list-style-type: decimal">
-<li><strong>Collate species and environmental datasets</strong></li>
+<li><strong>Data acquisition: a) Collate species species records:
+offline and online data</strong></li>
 </ol>
 <p>The species records were obtained from the archived datasets
 extracted from the Joint Danube Survey (<a href="https://www.danubesurvey.org/jds4/" class="external-link uri">https://www.danubesurvey.org/jds4/</a>) and EFIPLUS (Logez
-et al., 2012). The Basin layer that was used to get the bounding box of
-the Danube Basin was obtained from Hydrography90m (<a href="https://hydrography.org/hydrography90m/hydrography90m_layers" class="external-link uri">https://hydrography.org/hydrography90m/hydrography90m_layers</a>).</p>
+et al., 2012). To compliment species records, we used the
+<strong><code><a href="../reference/getdata.html">getdata()</a></code></strong> function to retrieve data from
+the GBIF (<a href="https://www.gbif.org/" class="external-link uri">https://www.gbif.org/</a>), VertNet (<a href="http://www.vertnet.org/" class="external-link uri">http://www.vertnet.org/</a>)
+and iNaturalist ( <a href="https://www.inaturalist.org/" class="external-link uri">https://www.inaturalist.org/</a>) for <em>Squalius
+cephalus</em>, <em>Salmo trutta</em>, <em>Thymallus thymallus</em>, and
+<em>Anguilla anguilla</em>. For online data, we limited data to 50
+records from each data source to reduce on the execution time.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co">#1a. Get basin shapefile to delineate the study region: optional</span></span>
-<span></span>
-<span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">danube_basin</span>  <span class="op">&lt;-</span>     <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">danube</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#==========================</span></span>
-<span><span class="co">#Step 1b. Obtain Local data sources (Optional if not available)</span></span>
+<code class="sourceCode R"><span><span class="co">#==========================</span></span>
+<span><span class="co">#Step 1ai. Obtain Local data sources (archived in this package)</span></span>
 <span><span class="co">#=========================</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">efidata</span><span class="op">)</span> <span class="co">#Data extract from EFIPLUS data</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">jdsdata</span><span class="op">)</span> <span class="co">#Data extract from JDS4 data </span></span>
 <span></span>
-<span><span class="co">#==========</span></span>
-<span><span class="co">#Step 1c. Download environmental data</span></span>
+<span><span class="co">#===================================</span></span>
+<span><span class="co">#Step 1aii: Retrieve online data for the species: polygon to limit the extent to get records.</span></span>
+<span><span class="co">#=====================================</span></span>
+<span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span></span>
-<span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">worldclim</span><span class="op">)</span></span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li>
-<strong>Harmonizing data and collating species ecological parameters
-and nomenclature</strong> #Step 3. Merge local data files #Will also
-enable to generate the species list of interest #The efiplus latitude
-and longitude are in the standard format names (deimalLatitude and
-decimalLongitude), so they will not be changed. During binding of the
-two datasets, the column names are harmonised based on the Darwin Core
-format (Wieczorek et al., 2012).</li>
-</ol>
+<span></span>
+<span><span class="va">df_online</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getdata.html">getdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Squalius cephalus"</span>, <span class="st">'Salmo trutta'</span>, <span class="st">"Thymallus thymallus"</span>,<span class="st">"Anguilla anguilla"</span><span class="op">)</span>, </span>
+<span>                                bbox <span class="op">=</span> <span class="va">danube</span>,</span>
+<span>                                gbiflim <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                                inatlim <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                                vertlim <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                     verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#extract online data from dataonline class</span></span>
+<span></span>
+<span><span class="va">onlinedf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_online.html">extract_online</a></span><span class="op">(</span>online <span class="op">=</span> <span class="va">df_online</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">onlinedf</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 567   8</span></span></code></pre></div>
+<p><strong>Merging and harmonizing species records from different
+sources</strong></p>
+<p>The online data sources from <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong>
+and local files are merged using the
+<strong><code><a href="../reference/match_datasets.html">match_datasets()</a></code></strong> function. Five columns
+are harmonized while combining data from different sources: the country,
+species names, latitude/longitude columns, and dates. The Darwin Core
+standard names are country, species, decimalLatitude, decimalLongitude,
+and dates (Wieczorek et al., 2012). So, if the local dataset has a
+different name for standard names, the user should indicate it. For
+example, in JDS data, the species column is labeled
+<strong>speciesname</strong>, shown in the species parameter for
+automatic renaming and merging with other datasets. * Note: The user
+should indicate all dataset names in the list. *
+<code><a href="../reference/check_names.html">check_names()</a></code> is used to clean species names in terms of
+synonyms or spellings, based on FishBase (<a href="https://www.fishbase.se/" class="external-link uri">https://www.fishbase.se/</a>). This function generates
+another column <strong>speciescheck</strong> that contain the clean
+names.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">localdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/match_datasets.html">match_datasets</a></span><span class="op">(</span>datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>jds<span class="op">=</span><span class="va">jdsdata</span>, efi<span class="op">=</span><span class="va">efidata</span><span class="op">)</span>,</span>
-<span>                    lats <span class="op">=</span> <span class="st">'lat'</span>, lons <span class="op">=</span> <span class="st">'lon'</span>, </span>
-<span>                    species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'speciesname'</span>,<span class="st">'scientificName'</span><span class="op">)</span>,</span>
-<span>                    country <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'JDS4_site_ID'</span><span class="op">)</span>,</span>
-<span>                    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'sampling_date'</span>, <span class="st">'Date'</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co">#Step 4. Harmonize all the species names by crosschecking with FishBase</span></span>
-<span><span class="co">#Keep merge = TRUE to stick a cleaned species names column</span></span>
-<span><span class="co">#NAs species will be automatically dropped</span></span>
-<span></span>
-<span><span class="va">localdf_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_names.html">check_names</a></span><span class="op">(</span><span class="va">localdf</span>, colsp <span class="op">=</span> <span class="st">'species'</span>,verbose <span class="op">=</span> <span class="cn">FALSE</span>, pct <span class="op">=</span> <span class="fl">90</span>, </span>
-<span>                             merge <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#==============</span></span>
-<span></span>
-<span><span class="co">#Retrieve online data from Global Information Facility, VertNET and iNaturalist</span></span>
-<span><span class="co">#Note: Using the cleaned species column species</span></span>
-<span><span class="co">#If local data sources are NULL or optional, this will be mandatory and vice versa</span></span>
-<span></span>
-<span><span class="va">lagoco_online</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getdata.html">getdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Lampetra planeri'</span>, <span class="st">'Gobio gobio'</span>,<span class="st">'Cottus gobio'</span><span class="op">)</span>, </span>
-<span>                                bbox <span class="op">=</span> <span class="va">danube_basin</span>,</span>
-<span>                                gbiflim <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>                                inatlim <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>                                vertlim <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
-<li><strong>Further data handling</strong></li>
-</ol>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co">#======================</span></span>
-<span><span class="co">#Already online and local data sources prepared</span></span>
-<span></span>
-<span><span class="co">#1. Online parameter only accepts dataonline class</span></span>
-<span><span class="co">#2. The offline lists must be be named</span></span>
-<span><span class="co">#======</span></span>
-<span></span>
-<span><span class="va">onlinedf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_online.html">extract_online</a></span><span class="op">(</span>online <span class="op">=</span> <span class="va">lagoco_online</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#match all data sets</span></span>
-<span></span>
-<span><span class="va">matchalldf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/match_datasets.html">match_datasets</a></span><span class="op">(</span>datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>efi<span class="op">=</span> <span class="va">efidata</span>, jds <span class="op">=</span> <span class="va">jdsdata</span>, </span>
+<span><span class="va">mergealldfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/match_datasets.html">match_datasets</a></span><span class="op">(</span>datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>efi<span class="op">=</span> <span class="va">efidata</span>, jds <span class="op">=</span> <span class="va">jdsdata</span>, </span>
 <span>                                        onlinedata <span class="op">=</span> <span class="va">onlinedf</span><span class="op">)</span>,</span>
 <span>                country <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'JDS4_sampling_ID'</span><span class="op">)</span>,</span>
-<span>                lats <span class="op">=</span> <span class="st">'lat'</span>,</span>
-<span>                lons <span class="op">=</span> <span class="st">'lon'</span>,</span>
-<span>                date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'sampling_date'</span>, <span class="st">'Date'</span>, <span class="st">'dates'</span>, <span class="st">'date'</span><span class="op">)</span>,</span>
+<span>                lats <span class="op">=</span> <span class="st">'lat'</span>, lons <span class="op">=</span> <span class="st">'lon'</span>,</span>
 <span>                species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'speciesname'</span>, <span class="st">'scientificName'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Species names are re-cleaned since the species names from vertnet are changed.</span></span>
 <span></span>
-<span><span class="va">cleandata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_names.html">check_names</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">matchalldf</span>, colsp <span class="op">=</span> <span class="st">'species'</span>, pct <span class="op">=</span> <span class="fl">70</span>, merge <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<ol start="4" style="list-style-type: decimal">
-<li><strong>Precleaning and environmental data extraction</strong></li>
+<span><span class="va">cleannames_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_names.html">check_names</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mergealldfs</span>, colsp <span class="op">=</span> <span class="st">'species'</span>, pct <span class="op">=</span> <span class="fl">70</span>, merge <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Filter out species from cleannames df where the species names such as synonyms like Salmo trutta fario chnaged to Slamo trutta</span></span>
+<span></span>
+<span><span class="va">speciesfiltered</span> <span class="op">&lt;-</span> <span class="va">cleannames_df</span><span class="op">[</span><span class="va">cleannames_df</span><span class="op">$</span><span class="va">speciescheck</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Squalius cephalus"</span>, <span class="st">'Salmo trutta'</span>, <span class="st">"Thymallus thymallus"</span>,<span class="st">"Anguilla anguilla"</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li><strong>Data acquisition: b) Environmental predictors</strong></li>
 </ol>
+<p>We used WORLDCLIM data archived in the package to enable users to
+test the package functions seamlessly. For direct interaction with the
+WORDCLIM data, please visit (<a href="https://www.worldclim.org/" class="external-link uri">https://www.worldclim.org/</a>) and the
+<strong><code>geodata</code></strong> package for download in
+user-customized workflows. WORLDCLIM data has 19 bioclimatic variables
+(<a href="https://www.worldclim.org/data/bioclim.html" class="external-link uri">https://www.worldclim.org/data/bioclim.html</a>),
+including;</p>
+<ul>
+<li>
+<code>BIO1</code> = Annual Mean Temperature</li>
+<li>
+<code>BIO2</code> = Mean Diurnal Range (Mean of monthly (max temp -
+min temp))</li>
+<li>
+<code>BIO3</code> = Isothermality (BIO2/BIO7) (×100)</li>
+<li>
+<code>BIO4</code> = Temperature Seasonality (standard deviation
+×100)</li>
+<li>
+<code>BIO5</code> = Max Temperature of Warmest Month</li>
+<li>
+<code>BIO6</code> = Min Temperature of Coldest Month</li>
+<li>
+<code>BIO7</code> = Temperature Annual Range (BIO5-BIO6)</li>
+<li>
+<code>BIO8</code> = Mean Temperature of Wettest Quarter</li>
+<li>
+<code>BIO9</code> = Mean Temperature of Driest Quarter</li>
+<li>
+<code>BIO10</code> = Mean Temperature of Warmest Quarter</li>
+<li>
+<code>BIO11</code> = Mean Temperature of Coldest Quarter</li>
+<li>
+<code>BIO12</code> = Annual Precipitation</li>
+<li>
+<code>BIO13</code> = Precipitation of Wettest Month</li>
+<li>
+<code>BIO14</code> = Precipitation of Driest Month</li>
+<li>
+<code>BIO15</code> = Precipitation Seasonality (Coefficient of
+Variation)</li>
+<li>
+<code>BIO16</code> = Precipitation of Wettest Quarter</li>
+<li>
+<code>BIO17</code> = Precipitation of Driest Quarter</li>
+<li>
+<code>BIO18</code> = Precipitation of Warmest Quarter</li>
+<li>
+<code>BIO19</code> = Precipitation of Coldest Quarter</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#Get climatic variables from the package folder</span></span>
+<span></span>
+<span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>
+<strong>Precleaning and environmental data extraction</strong>
+Here,</li>
+</ol>
+<ul>
+<li>The duplicate records are removed if points they are obtained from
+the same location for the same species.</li>
+<li>The missing values coordinates are removed.</li>
+<li>The environmental predictors are extracted from the raster layers
+(WORLDCLIM).</li>
+<li>The user can set the minimum point for the species to be retianed
+for further analyis.</li>
+<li>The bounding box can be set to limit the extent of data extraction.
+For this case, we used the basin layer for the Danube Basin was obtained
+from Hydrography90m (<a href="https://hydrography.org/hydrography90m/hydrography90m_layers" class="external-link uri">https://hydrography.org/hydrography90m/hydrography90m_layers</a>).</li>
+<li>The user can either return a dataframe or list of the cleaned data.
+Important in the next steps.</li>
+</ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#two species</span></span>
+<span><span class="co">#Get basin shapefile to delineate the study region: optional</span></span>
 <span></span>
-<span><span class="co">#Generate lists of species data</span></span>
+<span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">precleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">cleandata</span>, </span>
+<span><span class="co">#For multiple species indicate multiple TRUE</span></span>
+<span><span class="va">multipreclened</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">speciesfiltered</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                             lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span>
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
 <span>                             colsp <span class="op">=</span> <span class="st">'speciescheck'</span>,</span>
-<span>                             bbox  <span class="op">=</span> <span class="va">danube_basin</span>,  </span>
+<span>                             bbox  <span class="op">=</span> <span class="va">danube</span>,  </span>
 <span>                             multiple <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">multipreclened</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Salmo trutta"        "Anguilla anguilla"   "Squalius cephalus"  </span></span>
+<span><span class="co">#&gt; [4] "Thymallus thymallus"</span></span>
 <span></span>
-<span><span class="va">salmo1</span> <span class="op">&lt;-</span> <span class="va">cleandata</span><span class="op">[</span><span class="va">cleandata</span><span class="op">[</span>,<span class="st">'speciescheck'</span><span class="op">]</span> <span class="op">==</span> <span class="st">"Salmo trutta"</span>, <span class="op">]</span></span>
 <span></span>
-<span><span class="va">precleaned1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">salmo1</span>, </span>
-<span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
+<span><span class="va">ttdata</span> <span class="op">&lt;-</span> <span class="va">speciesfiltered</span><span class="op">[</span><span class="va">speciesfiltered</span><span class="op">[</span>,<span class="st">'speciescheck'</span><span class="op">]</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Thymallus thymallus"</span><span class="op">)</span>,<span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttdata</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 135   7</span></span>
+<span></span>
+<span><span class="co">#For single species indicate multiple to FALSE</span></span>
+<span><span class="va">ttrefdata</span><span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">ttdata</span>, raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                             lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span>
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
 <span>                             colsp <span class="op">=</span> <span class="st">'speciescheck'</span>,</span>
-<span>                             bbox  <span class="op">=</span> <span class="va">danube_basin</span>,  </span>
+<span>                             bbox  <span class="op">=</span> <span class="va">danube</span>,  </span>
 <span>                             multiple <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>                             minpts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttrefdata</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 70 21</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>
+<strong>Outlier detection</strong> Multiple outlier detection are
+set. This package contains 20 outlier detection methods and the user can
+run <strong><code><a href="../reference/extractMethods.html">extractMethods()</a></code></strong> to get the allowed
+methods. They are categorized into univariate, multivariate and species
+ecological ranges.</li>
+</ol>
+<ul>
+<li>
+<code>var</code> is the predictor to be used univariate
+methods.</li>
+<li>
+<code>exclude</code> allows to remove predictors that user deems
+unnecessary. For example, the coordinates, since the multivariate
+methods consider the whole dataset.</li>
+</ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#For outliers, the output is set to outlier</span></span>
 <span></span>
-<span><span class="va">out_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">precleaned</span>,</span>
+<span><span class="va">multioutliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">multipreclened</span>,</span>
 <span>                      multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span>
 <span>                      output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
 <span>                     exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span>
-<span>                      methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zscore'</span>, <span class="st">'adjbox'</span>,<span class="st">'iqr'</span>, <span class="st">'semiqr'</span>,<span class="st">'hampel'</span>,<span class="st">'kmeans'</span><span class="op">)</span><span class="op">)</span></span>
+<span>                      methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zscore'</span>, <span class="st">'adjbox'</span>,<span class="st">'iqr'</span>, <span class="st">'semiqr'</span>,<span class="st">'hampel'</span>,<span class="st">'kmeans'</span>, <span class="st">'mahal'</span>,</span>
+<span>                                  <span class="st">'logboxplot'</span>,<span class="st">'jknife'</span>,<span class="st">'lof'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#single species</span></span>
-<span><span class="va">out_df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">precleaned1</span>,</span>
+<span><span class="va">ttoutlier</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ttrefdata</span>,</span>
 <span>                      multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span>
 <span>                      output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
 <span>                      exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span>
-<span>                      methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zscore'</span>, <span class="st">'adjbox'</span>,<span class="st">'iqr'</span>, <span class="st">'semiqr'</span>,<span class="st">'hampel'</span>,<span class="st">'kmeans'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<ol start="6" style="list-style-type: decimal">
-<li><strong>Data analysis and visualization</strong></li>
+<span>                      methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zscore'</span>, <span class="st">'adjbox'</span>,<span class="st">'iqr'</span>, <span class="st">'semiqr'</span>,<span class="st">'hampel'</span>,<span class="st">'kmeans'</span>, <span class="st">'mahal'</span>,</span>
+<span>                                  <span class="st">'logboxplot'</span>, <span class="st">'jknife'</span>, <span class="st">'lof'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Outlier visualization</strong></li>
 </ol>
+<ul>
+<li>
+<code>ggoutliers</code> are based in ggplot2, so it can be modified
+based on user needs. x: is the output for outlier detection, y is the
+species name or index for multiple species, and raw = TRUE if the number
+of outliers are the displayed, otherwise the proportion of outliers to
+the total number of records will be plotted.</li>
+</ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_df</span>, y<span class="op">=</span><span class="fl">8</span>, raw<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#for multiple species</span></span>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">multioutliers</span>, y<span class="op">=</span><span class="fl">2</span>, raw<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="eOutlier_files/figure-html/visualisation-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cleanfishdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">precleaned</span>, outliers <span class="op">=</span> <span class="va">out_df</span>, threshold <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cleanfishdata1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">precleaned1</span>, outliers <span class="op">=</span> <span class="va">out_df1</span>, threshold <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#for single species</span></span>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">ttoutlier</span>, raw<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/visualisation-2.png" width="576" style="display: block; margin: auto;"></p>
+<p><strong>Identify the best threshold using loess model.</strong> The
+local regression is used to optimize and identify the best threshold for
+denoting the point as an absolute outlier. We fit the local region model
+between the data retained at every threshold, and we identify a maxima
+when the number of records retain are number of records retained does
+not significantly vary with an increased increase in the threshold.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">modelcompare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">precleaned1</span>, outliers <span class="op">=</span> <span class="va">out_df1</span>, raster <span class="op">=</span> <span class="va">worldclim</span>, </span>
-<span>                                lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, full <span class="op">=</span> <span class="cn">FALSE</span>, metrics <span class="op">=</span> <span class="st">'dep'</span><span class="op">)</span></span>
+<span><span class="va">ttoptimal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/threshold%20identifcation-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#obtain the optimal thresholds for multiple species </span></span>
+<span><span class="co">#plotting is not allowed for multiple species.</span></span>
 <span></span>
-<span><span class="va">mp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modeloutput <span class="op">=</span> <span class="va">modelcompare</span><span class="op">)</span></span></code></pre></div>
-<p>*<strong>References</strong> 1. Wieczorek, J., Bloom, D., Guralnick,
+<span><span class="va">multioptimal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Extracting clean data from the reference data (precleaned
+data in step 2).</strong></li>
+</ol>
+<p>The user sets a threshold ranging from 0.1 to 1 but its advisable to
+set a value above 0.5 to include above 50% of the methods.
+<strong>threshold</strong> is the value indicating the proportion of
+methods to be used to classify a record as a true outlier. For example,
+a threshold of 0.6 means that at least in the 4 of the 6 methods noted
+during outlier detection in step 3. We used the loess method for
+identifying the optimal threshold.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">multspecies_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span>, loess <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7      bio8</span></span>
+<span><span class="co">#&gt; 1 6.293614 8.755938 31.96181 690.1050 20.90625 -6.48875 27.39500  7.375333</span></span>
+<span><span class="co">#&gt; 2 8.415927 9.549812 33.45236 722.5972 23.70675 -4.84075 28.54750 17.290958</span></span>
+<span><span class="co">#&gt; 3 8.747239 9.561563 33.16130 735.3621 24.23025 -4.60325 28.83350 17.790833</span></span>
+<span><span class="co">#&gt; 4 8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.440792</span></span>
+<span><span class="co">#&gt; 5 8.497177 8.913187 33.22129 689.5564 22.77225 -4.05750 26.82975 16.926792</span></span>
+<span><span class="co">#&gt; 6 8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.440792</span></span>
+<span><span class="co">#&gt;          bio9    bio10       bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
+<span><span class="co">#&gt; 1 -1.17562509 14.80313 -2.06429172  2118   241   105 21.73814   663   379   530</span></span>
+<span><span class="co">#&gt; 2 -0.46312499 17.29096 -0.46312499   748   100    36 34.12024   277   119   277</span></span>
+<span><span class="co">#&gt; 3 -0.28391668 17.79083 -0.28391668   643    87    28 38.32993   248    96   248</span></span>
+<span><span class="co">#&gt; 4 -0.30200002 16.44079 -0.30200002  1229   163    67 33.78827   468   213   468</span></span>
+<span><span class="co">#&gt; 5  0.01145836 16.92679  0.01145836  1173   150    64 31.66039   435   206   435</span></span>
+<span><span class="co">#&gt; 6 -0.30200002 16.44079 -0.30200002  1229   163    67 33.78827   468   213   468</span></span>
+<span><span class="co">#&gt;   bio19        x        y      species</span></span>
+<span><span class="co">#&gt; 1   412 13.91667 46.25000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 2   119 15.58333 48.08333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 3    96 15.58333 48.25000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 4   213 12.08333 47.75000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 5   206 11.91667 47.91667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 6   213 12.08333 47.75000 Salmo trutta</span></span>
+<span></span>
+<span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 68 21</span></span></code></pre></div>
+<p><strong>Model comparison</strong></p>
+<p>This is done to identify the suitable threshold that produces the
+highest model performance.</p>
+<ul>
+<li><p><code>minpts</code> parameters indicates the points that should
+be allowed in fitting a distribution model. Default is 10. error might
+appear if the records are not enough to fit the models.</p></li>
+<li><p><code>loessthreshold</code> set to TRUE to execute data cleaning
+data extraction using optimal threshold identified using the loess
+method.</p></li>
+<li><p>Note: When using <strong><code><a href="../reference/modelcomparison.html">modelcomparison()</a></code></strong>,
+the function of <strong><code><a href="../reference/sdmfit.html">sdmfit()</a></code></strong>, and
+<strong><code><a href="../reference/clean_data_extract.html">clean_data_extract()</a></code></strong> are incorporated and
+therefore the user do not need to do these steps separately.</p></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">ttcompare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, raster <span class="op">=</span> <span class="va">worldclim</span>, </span>
+<span>                                lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, full <span class="op">=</span> <span class="cn">FALSE</span>, metrics <span class="op">=</span> <span class="st">'all'</span>, minpts <span class="op">=</span> <span class="fl">17</span>,</span>
+<span>                             loessthreshold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span></span>
+<span><span class="va">ttmodper</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modelcomp  <span class="op">=</span> <span class="va">ttcompare</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">multcomparion</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span>, </span>
+<span>                                     raster <span class="op">=</span> <span class="va">worldclim</span>, </span>
+<span>                                     lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, full <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                                     metrics <span class="op">=</span> <span class="st">'all'</span>, minpts <span class="op">=</span> <span class="fl">18</span>,loessthreshold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">multmodelper</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modelcomp <span class="op">=</span> <span class="va">multcomparion</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Vising the performance of models before and after removal of
+outliers.</strong></p>
+<p>The outlier removal in the species records of <em>Thymallus
+thymallus</em> led to improved model performance in accuracy and Area
+under the curve (AUC). However, in the multiple species, the performance
+of the <em>Anguilla anguilla</em> and_Squalius cephalus_ models remained
+the same. This is because there were no absolute outliers at the optimal
+threshold; therefore, the reference and clean datasets were the same.
+The performance in the Salmo trutta models was slightly higher for the
+reference dataset based on the Area Under the Curve.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#, Thymallus thymallus alone</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span><span class="va">ttcompare</span>, scolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey40"</span>, <span class="st">"orange"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/unnamed-chunk-2-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#For multiple species Squalius cephalus, Salmo trutta, Thymallus thymallus,Anguilla anguilla</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span><span class="va">multcomparion</span>, scolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey40"</span>, <span class="st">"orange"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/unnamed-chunk-2-2.png" width="576" style="display: block; margin: auto;"></p>
+<p><strong>References</strong> 1. Wieczorek, J., Bloom, D., Guralnick,
 R., Blum, S., Döring, M., Giovanni, R., Robertson, T., &amp; Vieglais,
 D. (2012). Darwin core: An evolving community-developed biodiversity
 data standard. PLoS ONE, 7(1). <a href="https://doi.org/10.1371/journal.pone.0029715" class="external-link uri">https://doi.org/10.1371/journal.pone.0029715</a></p>
@@ -237,7 +448,7 @@ data standard. PLoS ONE, 7(1). <a href="https://doi.org/10.1371/journal.pone.002
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by h g.</p>
+  <p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">

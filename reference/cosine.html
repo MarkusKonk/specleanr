@@ -23,7 +23,7 @@
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -33,7 +33,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Cosine similarity index based on (Gautam &amp; Kulkarni 2014; Joy &amp; Renumol 2020)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/R/similaritytests.R" class="external-link"><code>R/similaritytests.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/master/R/similaritytests.R" class="external-link"><code>R/similaritytests.R</code></a></small>
       <div class="d-none name"><code>cosine.Rd</code></div>
     </div>
 
@@ -51,28 +51,41 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>List of data frames for each methods used to identify outliers in mult_detect function.</p></dd>
+<dd><p><code>datacleaner</code> class for each methods used to identify outliers
+in <code>multidetect</code> function.</p></dd>
 
 
 <dt id="arg-sp">sp<a class="anchor" aria-label="anchor" href="#arg-sp"></a></dt>
-<dd><p>species name or index if multiple species are considered during outlier detection.</p></dd>
+<dd><p><code>string</code>. Species name or index if multiple species are
+considered during outlier detection.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
-<dd><p>Maximum value to denote an absolute outlier. The threshold ranges from <code>0</code> which indicates a point has not been flagged by any outlier detection method
-as an <code>outlier</code> or <code>1</code>, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-Therefore the <code>default</code> cutoff is 0.6 but <code>autothreshold</code> can be used to select the appropriate threshold.</p></dd>
+<dd><p><code>numeric</code>. Maximum value to denote an absolute outlier.
+The threshold ranges from <code>0</code>, which indicates a point has not been
+flagged by any outlier detection method as an <code>outlier</code>, to <code>1</code>,
+which means the record is an absolute or true outlier since all methods
+have identified it. At both extremes, many records are classified at low
+threshold values, which may be due to individual method weakness or
+strength and data distribution. Also, at higher threshold values, the true
+outliers are retained. For example, if ten methods are considered and 9
+methods flag a record as an outlier, If a cutoff of 1 is used, then that
+particular record is retained. Therefore, the <code>default</code> cutoff is
+<code>0.6</code>, but <code>autothreshold</code> can be used to select the appropriate
+threshold.</p></dd>
 
 
 <dt id="arg-warn">warn<a class="anchor" aria-label="anchor" href="#arg-warn"></a></dt>
-<dd><p>If <strong>TRUE</strong>, warning on whether absolute outliers obtained at a low threshold is indicated. Default <strong>TRUE</strong>.</p></dd>
+<dd><p><code>logical</code>. If <strong>TRUE</strong>, warning on whether absolute
+outliers obtained at a low threshold is indicated. Default <strong>TRUE</strong>.</p></dd>
 
 
 <dt id="arg-autothreshold">autothreshold<a class="anchor" aria-label="anchor" href="#arg-autothreshold"></a></dt>
-<dd><p>Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-are deemed inappropriate for identifying absolute outliers. The autothreshold is used when <code>threshold</code> is set to <code>NULL</code>.</p></dd>
+<dd><p><code>vector</code>. Identifies the threshold with mean number
+of absolute outliers.The search is limited within 0.51 to 1 since
+thresholds less than are deemed inappropriate for identifying absolute
+outliers. The autothreshold is used when <code>threshold</code> is set to
+<code>NULL</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -118,7 +131,7 @@ are deemed inappropriate for identifying absolute outliers. The autothreshold is
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by h g.</p>
+  <p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">
