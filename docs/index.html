@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="specleanr is used detect or flag and remove environmental outliers in species distribution models across taxa 
+<meta name="description" content="A framework used to detect and remove environmental outliers in species distribution models across taxa 
     and environmental predictors. Also, data retrieval and preprocessing, model fitting to enable performance comparisions
     are allowed.">
 <title>Detecting Environmental Outliers in Biogeographical Modeling Workflows • specleanr</title>
@@ -14,7 +14,7 @@
 <script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Detecting Environmental Outliers in Biogeographical Modeling Workflows">
-<meta property="og:description" content="specleanr is used detect or flag and remove environmental outliers in species distribution models across taxa 
+<meta property="og:description" content="A framework used to detect and remove environmental outliers in species distribution models across taxa 
     and environmental predictors. Also, data retrieval and preprocessing, model fitting to enable performance comparisions
     are allowed.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -56,7 +56,7 @@
 
       <ul class="navbar-nav">
 <li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="github">
+  <a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="github">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -94,12 +94,11 @@
 </h3>
 <p><strong>Development version on GitHub:</strong></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"AnthonyBasooma/specleanr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span></code></pre></div>
 <p><strong>CRAN version</strong></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### install.packages("specleanr")</span></span></code></pre></div>
-<p>The package aims to improve the reliability and acceptability of biogeographical models, including species distribution models, ecological niche models, and bioclimatic envelope models, by detecting outliers in the environmental predictors. In the package, we collate <strong>22 outlier detection methods</strong>, which a user can collectively apply (ensemble outlier detection) and determine whether the species records are in a suitable environmental space. The package complements other packages that address geographical, taxonomic, and temporal checks.</p>
+<p>The package aims to improve the reliability and acceptability of biogeographical models, including species distribution models, ecological niche models, and bioclimatic envelope models, by detecting outliers in the environmental predictors. In the package, we collate <strong>20 outlier detection methods</strong>, which a user can collectively apply (ensemble outlier detection) and determine whether the species records are in a suitable environmental space. The package complements other packages that address geographical, taxonomic, and temporal checks.</p>
 </div>
 <div class="section level3">
 <h3 id="process-of-identifying-environmental-outliers">Process of identifying environmental outliers.<a class="anchor" aria-label="anchor" href="#process-of-identifying-environmental-outliers"></a>
@@ -258,7 +257,7 @@
 <p>The <strong>reference dataset</strong> in <strong>Step 2</strong> and lists or outliers flagged by each method in <strong>Step 3</strong> are then used to retain the <strong>clean dataset</strong>. Under the hood, two approaches are implemented <strong>1) absolute method</strong>: where absolute outliers are removed at a particular threshold or <strong>2) suitable or best outlier detection method</strong> where a method with highest proportion of absolute outliers and has highest similarity with other methods (in terms of the outliers flagged) can be used. The <strong>threshold</strong> parameter is a measure of proportion of the methods that have flagged the record as an outlier to the total number of methods used.</p>
 <ul>
 <li>
-<code>extract_clean_data()</code> to extract clean data using the reference data and outliers for single species.</li>
+<code><a href="reference/clean_data_extract.html">clean_data_extract()</a></code> to extract clean data using the reference data and outliers for single species.</li>
 </ul>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Post-environmental outlier removal</strong></li>
@@ -279,7 +278,7 @@ After environmental outlier removal, the user can examine the improvement in the
 <li>
 <code><a href="reference/ggperform.html">ggperform()</a></code> for ploting the threshold results from <strong><code><a href="reference/modelcomparison.html">modelcomparison()</a></code></strong> output.</li>
 </ul>
-<p><strong>Package website</strong> To access the details of this package, please check it website on <a href="https://anthonybasooma.github.io/specleanr/" class="uri">https://anthonybasooma.github.io/specleanr/</a></p>
+<p><strong>Package website</strong> To access the details of this package, please check it website on <a href="https://removedxx.github.io/specleanr/" class="external-link uri">https://removedxx.github.io/specleanr/</a></p>
 </div>
 <div class="section level3">
 <h3 id="package-citation">Package citation<a class="anchor" aria-label="anchor" href="#package-citation"></a>
@@ -302,8 +301,8 @@ After environmental outlier removal, the user can examine the improvement in the
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/AnthonyBasooma/specleanr/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/AnthonyBasooma/specleanr/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/removedxx/specleanr/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/removedxx/specleanr/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -326,7 +325,7 @@ After environmental outlier removal, the user can examine the improvement in the
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>h g <br><small class="roles"> Author, maintainer </small>  </li>
+<li>x x <br><small class="roles"> Author, maintainer </small>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -335,9 +334,8 @@ After environmental outlier removal, the user can examine the improvement in the
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="http://www.gnu.org/licenses/gpl-3.0.html" class="external-link"><img src="https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat" alt="License"></a></li>
-<li><a href="https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/AnthonyBasooma/specleanr" class="external-link"><img src="https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG" alt="codecov"></a></li>
-<li><a href="https://github.com/AnthonyBasooma/specleanr/releases" class="external-link"><img src="https://img.shields.io/github/release/AnthonyBasooma/specleanr.svg" alt="GitHub release"></a></li>
+<li><a href="https://github.com/removedxx/specleanr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/removedxx/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/removedxx/specleanr" class="external-link"><img src="https://codecov.io/gh/removedxx/specleanr/graph/badge.svg?token=M9431LXVLG" alt="codecov"></a></li>
 </ul>
 </div>
 
@@ -347,7 +345,7 @@ After environmental outlier removal, the user can examine the improvement in the
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by h g.</p>
+<p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">

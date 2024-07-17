@@ -52,7 +52,7 @@
 
       <ul class="navbar-nav">
 <li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="github">
+  <a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="github">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -72,7 +72,7 @@
       <img src="" class="logo" alt=""><h1>Detecting environmental outliers in species distribution models for plants.</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/HEAD/vignettes/Plants.Rmd" class="external-link"><code>vignettes/Plants.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/HEAD/vignettes/Plants.Rmd" class="external-link"><code>vignettes/Plants.Rmd</code></a></small>
       <div class="d-none name"><code>Plants.Rmd</code></div>
     </div>
 
@@ -83,7 +83,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/AnthonyBasooma/specleanr" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
 <p><strong><em>Detect environmental outliers for species occurrences in
 </em>Fagus sylvatica<em>, and </em>Populus nigra* records based on
-bioclimatic data</strong>.</p>
+bioclimatic data</strong>*.</p>
 <p>To test the workflow on two plant species, namely the black poplar
 (<em>Populus nigra</em>) , which is a pioneer wind-pollinated deciduous
 tree from the Salicaceae family (de Rigo et al., 2016). The tree is
@@ -105,15 +105,34 @@ tree species IUCN RedList threat status is assessed as Least Concern
 Information Facility-GBIF (<a href="https://www.gbif.org/" class="external-link uri">https://www.gbif.org/</a>). We use the
 <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong> function, built around rvertnet,
 rgbif, and rinat packages. We limited the occurrence records from GBIF
-to 700 and Inaturalist to 100. To extract data from the dataonline class
-returned by <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong>, we used the
-<strong><code><a href="../reference/extract_online.html">extract_online()</a></code></strong> function.
+to 700 and Inaturalist to 100. To extract data from the
+<strong><code>dataonline</code></strong> class returned by
+<strong><code><a href="../reference/getdata.html">getdata()</a></code></strong>, we used the
+<strong><code><a href="../reference/extract_online.html">extract_online()</a></code></strong> function. *
 <strong>Note</strong>: If the user has locally saved data, then after
 extracting the online data, the
 <strong><code><a href="../reference/match_datasets.html">match_datasets()</a></code></strong> function can be used to
 merge all the data sets.</p>
+<ul>
+<li>We set the bounding box <strong><code>(bbox)</code></strong>
+parameter for <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong> to return only
+records within the Danube basin. However, the user can set this to suit
+the area of concern. If not set, the user data will download records
+globally, which is time-consuming and likely to break during the
+download. Therefore, it is strongly advisable to set the
+<strong><code>bounding box</code></strong>. Also, if a shapefile is
+available, the user can provide it instead of the bounding box, and the
+function will automatically extract the bounding box.</li>
+<li>
+<code>isFish</code> is necessary to indicate whether it’s a fish
+species since function cross-checks fish taxa names in FishBase for
+synonyms, name spelling, and other taxa names using the
+<strong><code>taxize</code></strong> package. Therefore, no fish taxa
+will return errors.</li>
+</ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plantdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getdata.html">getdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"Populus nigra"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>, </span>
+<code class="sourceCode R"><span></span>
+<span><span class="va">plantdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getdata.html">getdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"Populus nigra"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>, </span>
 <span>                    gbiflim <span class="op">=</span> <span class="fl">700</span>, inatlim <span class="op">=</span> <span class="fl">100</span>, isFish <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                     hasCoordinate <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                   bbox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">8.15250</span>, ymin <span class="op">=</span> <span class="fl">42.08333</span>, xmax<span class="op">=</span><span class="fl">29.73583</span>, ymax <span class="op">=</span> <span class="fl">50.24500</span><span class="op">)</span>,</span>
@@ -122,13 +141,58 @@ merge all the data sets.</p>
 <span></span>
 <span><span class="va">extrdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_online.html">extract_online</a></span><span class="op">(</span><span class="va">plantdf</span><span class="op">)</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
-<li>** Data acquisition: b) Environmental data**</li>
+<li><strong>Data acquisition: b) Environmental predictors</strong></li>
 </ol>
 <p>We used WORLDCLIM data archived in the package to enable users to
 test the package functions seamlessly. For direct interaction with the
 WORDCLIM data, please visit (<a href="https://www.worldclim.org/" class="external-link uri">https://www.worldclim.org/</a>) and the
 <strong><code>geodata</code></strong> package for download in
-user-customized workflows.</p>
+user-customized workflows. WORLDCLIM data has 19 bioclimatic variables
+(<a href="https://www.worldclim.org/data/bioclim.html" class="external-link uri">https://www.worldclim.org/data/bioclim.html</a>) (Amatulli
+et al., 2022), including</p>
+<ul>
+<li>
+<code>BIO1</code> = Annual Mean Temperature</li>
+<li>
+<code>BIO2</code> = Mean Diurnal Range (Mean of monthly (max temp -
+min temp))</li>
+<li>
+<code>BIO3</code> = Isothermality (BIO2/BIO7) (×100)</li>
+<li>
+<code>BIO4</code> = Temperature Seasonality (standard deviation
+×100)</li>
+<li>
+<code>BIO5</code> = Max Temperature of Warmest Month</li>
+<li>
+<code>BIO6</code> = Min Temperature of Coldest Month</li>
+<li>
+<code>BIO7</code> = Temperature Annual Range (BIO5-BIO6)</li>
+<li>
+<code>BIO8</code> = Mean Temperature of Wettest Quarter</li>
+<li>
+<code>BIO9</code> = Mean Temperature of Driest Quarter</li>
+<li>
+<code>BIO10</code> = Mean Temperature of Warmest Quarter</li>
+<li>
+<code>BIO11</code> = Mean Temperature of Coldest Quarter</li>
+<li>
+<code>BIO12</code> = Annual Precipitation</li>
+<li>
+<code>BIO13</code> = Precipitation of Wettest Month</li>
+<li>
+<code>BIO14</code> = Precipitation of Driest Month</li>
+<li>
+<code>BIO15</code> = Precipitation Seasonality (Coefficient of
+Variation)</li>
+<li>
+<code>BIO16</code> = Precipitation of Wettest Quarter</li>
+<li>
+<code>BIO17</code> = Precipitation of Driest Quarter</li>
+<li>
+<code>BIO18</code> = Precipitation of Warmest Quarter</li>
+<li>
+<code>BIO19</code> = Precipitation of Coldest Quarter</li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Get climatic variables from the package folder</span></span>
@@ -145,13 +209,15 @@ user did not set the bounding box during data download. After that, the
 environmental data predictors are extracted. The user can set either
 parameter <strong>list = TRUE</strong> to return a list of datasets for
 each species, if multiple species are considered, or <strong>list =
-FALSE</strong> to return a combined dataframe.</p>
+FALSE</strong> to return a combined dataframe. The Danube basin was
+collated from the Hydrography90m basin files (<a href="https://hydrography.org/hydrography90m/hydrography90m_layers" class="external-link uri">https://hydrography.org/hydrography90m/hydrography90m_layers</a>).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">danube_basin</span>  <span class="op">&lt;-</span>     <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">danube</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co">#Environmental predictors extraction for multiple species (multiple = TRUE)</span></span>
 <span></span>
 <span><span class="va">plantcleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">extrdata</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
@@ -163,7 +229,8 @@ FALSE</strong> to return a combined dataframe.</p>
 <span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">extrdata</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Populus nigra"</span><span class="op">)</span></span>
+<span><span class="co">#Environmental prediction extraction for a single species (multiple = FALSE)</span></span>
+<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">extrdata</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1cleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">sp1df</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
@@ -178,27 +245,100 @@ FALSE</strong> to return a combined dataframe.</p>
 <li><strong>Detecting outliers using multiple outlier detection
 methods</strong></li>
 </ol>
+<ul>
+<li>To detect outliers we selected ensembled seven outlier detection
+methods at least from different categories i.e., 1) <strong>univariate
+methods</strong>: adjusted boxplot
+<strong><code>adjbox()</code></strong>, Hampel filter:
+<strong><code><a href="../reference/hampel.html">hampel()</a></code></strong>, Z-score
+<strong><code><a href="../reference/zscore.html">zscore()</a></code></strong> and reverse jackknifing
+<strong><code><a href="../reference/jknife.html">jknife()</a></code></strong>; 2) <strong>Multivariate methods
+or machine learning models</strong>: local outlier factor:
+<strong><code>lof()</code></strong>, K-means:
+<strong><code><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans()</a></code></strong>, and Mahalanobis distance measure
+<strong><code><a href="../reference/mahal.html">mahal()</a></code></strong>.</li>
+</ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co">#Flag outlier in single species data (multiple = TRUE)</span></span>
+<span></span>
 <span><span class="va">outliersdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plantcleaned</span>,</span>
 <span>                       multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       var <span class="op">=</span> <span class="st">'bio1'</span>,</span>
 <span>                       output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
 <span>                       exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>, </span>
-<span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, <span class="st">'lof'</span>, <span class="st">'jknife'</span><span class="op">)</span>,</span>
+<span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, </span>
+<span>                                   <span class="st">'lof'</span>, <span class="st">'jknife'</span>, <span class="st">'kmeans'</span>, <span class="st">'mahal'</span><span class="op">)</span>,</span>
 <span>                       showErrors  <span class="op">=</span> <span class="cn">TRUE</span>, warn <span class="op">=</span> <span class="cn">F</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Flag outlier in single species data (multiple = FALSE)</span></span>
 <span></span>
 <span><span class="va">out1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">p1cleaned</span>,</span>
 <span>                       multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                       var <span class="op">=</span> <span class="st">'bio1'</span>,</span>
 <span>                       output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
 <span>                       exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>, </span>
-<span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, <span class="st">'lof'</span>, <span class="st">'jknife'</span><span class="op">)</span>,</span>
-<span>                       showErrors  <span class="op">=</span> <span class="cn">TRUE</span>, warn <span class="op">=</span> <span class="cn">F</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">outliersdata</span>, <span class="fl">1</span>, raw<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plants_files/figure-html/oultlier%20detection-1.png" width="700"></p>
+<span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, </span>
+<span>                                   <span class="st">'lof'</span>, <span class="st">'jknife'</span>, <span class="st">'kmeans'</span>, <span class="st">'mahal'</span><span class="op">)</span>,</span>
+<span>                       showErrors  <span class="op">=</span> <span class="cn">TRUE</span>, warn <span class="op">=</span> <span class="cn">F</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Visualizing outliers flagged by each method</strong></p>
+<p>The plots are wrapped on a ggplot2 object and extensible with ggplot2
+parameters. The <strong><code>ggoultiers()</code></strong> takes in 3
+parameters: <strong>1: x</strong> the outlier object of
+<strong><code>datacleaner class</code></strong>; <strong>2: y</strong>
+the index or species name if the outlier has more than one species, and
+<strong>3: raw</strong> to either indicate the number of outlier if
+<strong>TRUE</strong> or proportional or outliers flagged about total
+number of occurrences if <strong>FALSE</strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">outliersdata</span>, y<span class="op">=</span> <span class="fl">1</span>, raw<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/visualize%20outliers-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#for one species: no index needed</span></span>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">out1df</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/visualize%20outliers-2.png" width="576" style="display: block; margin: auto;"><strong>Identify the best threshold using loess model.</strong></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">optimal1</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   thresholdvalues dataretained</span></span>
+<span><span class="co">#&gt; 1             0.1          312</span></span>
+<span><span class="co">#&gt; 2             0.2          421</span></span>
+<span><span class="co">#&gt; 3             0.3          433</span></span>
+<span><span class="co">#&gt; 4             0.4          433</span></span>
+<span><span class="co">#&gt; 5             0.5          437</span></span>
+<span><span class="co">#&gt; 6             0.6          438</span></span>
+<span><span class="co">#&gt; 7             0.7          438</span></span>
+<span><span class="co">#&gt; 8             0.8          439</span></span>
+<span><span class="co">#&gt; 9             0.9          439</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/threshold%20identifcation-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span></span>
+<span><span class="va">optimalthreshold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   thresholdvalues dataretained</span></span>
+<span><span class="co">#&gt; 1             0.1          287</span></span>
+<span><span class="co">#&gt; 2             0.2          371</span></span>
+<span><span class="co">#&gt; 3             0.3          377</span></span>
+<span><span class="co">#&gt; 4             0.4          377</span></span>
+<span><span class="co">#&gt; 5             0.5          380</span></span>
+<span><span class="co">#&gt; 6             0.6          386</span></span>
+<span><span class="co">#&gt; 7             0.7          386</span></span>
+<span><span class="co">#&gt; 8             0.8          386</span></span>
+<span><span class="co">#&gt; 9             0.9          386</span></span>
+<span><span class="co">#&gt;   thresholdvalues dataretained</span></span>
+<span><span class="co">#&gt; 1             0.1          304</span></span>
+<span><span class="co">#&gt; 2             0.2          419</span></span>
+<span><span class="co">#&gt; 3             0.3          434</span></span>
+<span><span class="co">#&gt; 4             0.4          434</span></span>
+<span><span class="co">#&gt; 5             0.5          436</span></span>
+<span><span class="co">#&gt; 6             0.6          439</span></span>
+<span><span class="co">#&gt; 7             0.7          439</span></span>
+<span><span class="co">#&gt; 8             0.8          439</span></span>
+<span><span class="co">#&gt; 9             0.9          439</span></span></code></pre></div>
+<p>*Indicate the best methods obtained for each species</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">mbest</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multibestmethod.html">multibestmethod</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">outliersdata</span>, autothreshold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
@@ -207,8 +347,9 @@ detection</strong></li>
 </ol>
 <p>The mode can be set to <strong>mode = abs</strong> to discard only
 absolute outliers or <strong>mode = best</strong> to use the best
-method.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+method. The outlier flagged by the best method will be used to clean the
+data. For more information, check (B….2024).</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
@@ -217,32 +358,59 @@ method.</p>
 <span></span>
 <span></span>
 <span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
-<span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.6</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Model comparison</strong></li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>We vary the different thresholds, which determine the number of
+outlier detections used to indicate that a record is an outlier. For
+example, a record flagged as an outlier at a threshold of 1 means that
+all the methods ensembled identified the record as an outlier.
+Therefore, based on that principle, we vary the threshold from 0.2 to
+0.7 and predict and develop models at each step. Then, we evaluate the
+model performance using threshold-dependent and independent evaluation
+metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the
+Curve (AUC).</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">modecom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
+<span><span class="va">multsppmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
 <span>                           lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GLM"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">'abs'</span>,</span>
-<span>                           thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span><span class="op">)</span>, full <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>                           thresholds <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span></span>
-<span><span class="va">modecom3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
+<span><span class="va">onesppmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
 <span>                           lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GLM"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">'abs'</span>,  </span>
-<span>                           thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span><span class="op">)</span>, full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">onespp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modeloutput <span class="op">=</span> <span class="va">modecom3</span><span class="op">)</span></span>
+<span>                           thresholds <span class="op">=</span> <span class="fl">0.8</span>, nboots <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Extract model performance</strong></p>
+<ul>
+<li>cutoff of 0.5, is to limit which threshold results the user whats to
+plot.</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#for one species</span></span>
+<span><span class="va">onespp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modelcomp  <span class="op">=</span> <span class="va">onesppmodel</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">multspp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modeloutput <span class="op">=</span> <span class="va">modecom</span><span class="op">)</span></span>
-<span><span class="co">#ggperformance &lt;- </span></span></code></pre></div>
+<span><span class="co">#for multiple species</span></span>
+<span><span class="va">multspp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modelcomp <span class="op">=</span> <span class="va">multsppmodel</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Plotting to visualize comparisons</strong></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#one species </span></span>
+<span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span>modelout <span class="op">=</span> <span class="va">onesppmodel</span>, eval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"Accuracy"</span>, <span class="st">"Sensitivity"</span>,</span>
+<span>                                                         <span class="st">"Kappa"</span>, <span class="st">"Specificity"</span>, <span class="st">"TSS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/visualisation-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span>modelout <span class="op">=</span> <span class="va">multsppmodel</span>, eval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"Accuracy"</span>, <span class="st">"Sensitivity"</span>,</span>
+<span>                                                         <span class="st">"Kappa"</span>, <span class="st">"Specificity"</span>, <span class="st">"TSS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/visualisation2-1.png" width="864" style="display: block; margin: auto;"></p>
 <div class="section level3">
 <h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
 <ol style="list-style-type: decimal">
+<li><p>Amatulli, Giuseppe, et al. “Hydrography90m: A new high-resolution
+global hydrographic dataset.” Earth System Science Data 14.10 (2022):
+4525-4550.</p></li>
 <li><p>Harvey-Brown, Y., Barstow, M., Mark, J. &amp; Rivers, M.C. 2017.
 Populus nigra. The IUCN Red List of Threatened Species 2017:
 e.T63530A68106816. <a href="https://dx.doi.org/10.2305/IUCN.UK.2017-3.RLTS.T63530A68106816.en" class="external-link uri">https://dx.doi.org/10.2305/IUCN.UK.2017-3.RLTS.T63530A68106816.en</a>.
@@ -263,7 +431,7 @@ Accessed on 24 June 2024.</p></li>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by h g.</p>
+<p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">
