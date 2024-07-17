@@ -2,11 +2,11 @@
 #'
 #' @title Downloads the global basin data based on Tesedesco at al., 2017
 #'
-#' @param x absolute path to cache global basin files
+#' @param x \code{string} absolute path to cache global basin files
 #'
 #' @importFrom utils unzip download.file
 #'
-#' @return download files for global basin
+#' @return Download files for global basin
 #'
 #'
 .gbdownload <- function(x='globalbasins'){#this will go into the mfn function for memoise
@@ -45,12 +45,12 @@
 
 #' @title Records within a particular basin range based on Tesedesco at al., 2017
 #'
-#' @param occurrences Species occurrences for a particular to check for the basin where they lie in
-#' @param species species name considered as its recorded in the occurrences
-#' @param lat,lon latitude and longitude column names in the species occurrences records.
-#' @param verbose Whether implementation messages are shown. Default \code{TRUE}.
-#' @param discard Whether to discard records with basins or not. Default \code{FALSE}.
-#' @param output Whether to produce the records or the basin files. Default \code{records}.
+#' @param occurrences \code{dataframe}. Species occurrences for a particular to check for the basin where they lie in.
+#' @param species \code{string}. Species name considered as its recorded in the occurrences.
+#' @param lat,lon \code{coordinates}. Latitude and longitude column names in the species occurrences records.
+#' @param verbose \code{logical}. Whether implementation messages are shown. Default \code{TRUE}.
+#' @param discard \code{logical}. Whether to discard records with basins or not. Default \code{FALSE}.
+#' @param output \code{character}. Whether to produce the records or the basin files. Default \code{records}.
 #'
 #' @return species occurrence records and their basins were they are found.
 #'
@@ -129,8 +129,8 @@ basinranges <- function(occurrences, species, lat, lon, verbose=TRUE, discard=TR
 #' @title Basin ranges for multiple species.
 #'
 #' @inheritParams basinranges
-#' @param colsp species column considered as its recorded in the occurrences.
-#' @param batch if \code{TRUE} all species records will be considered at once. Otherwise species-wise checks can
+#' @param colsp \code{character}. Species column considered as its recorded in the occurrences.
+#' @param batch \code{logical}. if \code{TRUE} all species records will be considered at once. Otherwise species-wise checks can
 #' can be done. Default \code{TRUE}
 #'
 #' @return species occurrence records and their basins were they are found.

@@ -1,10 +1,10 @@
 
 #' @title Creating sub-samples for modeling evaluation.
 #'
-#' @param data A dataframe to be sub sampled and partitioned.
-#' @param nboots An integer indicating the number of iterations of sub sampling to be conducted.
-#' @param setseed An integer to allow reproducibility of the sub-samples across platforms and users.
-#' @param testprob A decimal ranging from at least 0.1 to 1. The probability to be used for partitioning data.
+#' @param data \code{dataframe}. Data to be sub sampled and partitioned.
+#' @param nboots \code{integer}. Indicating the number of iterations of sub sampling to be conducted.
+#' @param setseed \code{integer} Allow reproducibility of the sub-samples across platforms and users.
+#' @param testprob \code{numeric} Value ranging from at least 0.1 to 1. The probability to be used for partitioning data.
 #'
 #' @return A list of training and test data sets for use in the sdmfit.
 #'

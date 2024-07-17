@@ -5,7 +5,7 @@
 #' @title Determines the species ranges, whether native or alien based on Freshwater Information Platform.
 #'
 #' @param basin Basin under consideration.
-#' @param range Whether introduced (a) or native (n)
+#' @param range Whether introduced (a) or native (n).
 #'
 #' @return dataframe showing species ranges
 #'
@@ -102,17 +102,16 @@ get_iucn <- function(x, key){
 
 #' @title Determine species distribution ranges based on IUCN RedList.
 #'
-#' @param data species data frame to check with International Union for Conservation of Nature.
-#' @param species species name
-#' @param lat variable for latitude in the species data frame.
-#' @param lon variable for longitude in the species data frame.
-#' @param key API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.
-#' @param verbose if TRUE processing messages or warning will be produced.
+#' @param data \code{dataframe}. species data frame to check with International Union for Conservation of Nature.
+#' @param species \code{string}. Species column name in the data.
+#' @param lat,lon \code{coordinates}. Columns with latitude and longitude in the species data frame.
+#' @param key \code{string}. API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.
+#' @param verbose \code{logical}. if \code{TRUE} processing messages or warning will be produced.
 #'
 #' @importFrom stats na.omit
 #' @importFrom sf st_intersects st_make_valid st_join st_read
 #'
-#' @return species records within the known distribution ranges of the species according to IUCN RedList database.
+#' @return \code{dataframe} Species records within the known distribution ranges of the species according to IUCN RedList database.
 #' @export
 #'
 #' @examples
@@ -230,13 +229,11 @@ distr_ranges <- function(data, species, lat, lon, key =NULL, verbose=T){
 
 #' @title Determine species distribution ranges based on IUCN RedList.
 #'
-#' @param data species dataframe to check with International Union for Conservation of Nature.
-#' @param colsp column with species names.
-#' @param lat variable for latitude in the species data frame.
-#' @param lon variable for longitude in the species data frame.
-#' @param key API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.
-#' @param mode Either distribution only, or IUCN categories for species or both
-#' @param verbose TRUE to reutn messages or warning during the processing of data. Default is FALSE
+#' @inheritParams distr_ranges
+#' @param colsp \code{string}. The column names with species data.
+#' @param mode \code{string}. indicating whether the distribution range \code{dist} of the species should be collated or
+#'      species IUCN status \code{iucn} or both.
+#' @param verbose \code{logical}. TRUE to return messages or warning during the processing of data. Default is FALSE
 #'
 #' @return species records within the known distribution ranges of the species according
 #'  to IUCN RedList database for multiple species.

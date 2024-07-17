@@ -77,10 +77,10 @@ dep <- function(observed, predicted, P, A){
 
 #' threshold independent evaluation
 #'
-#' @param probs Model probabilities after predictions.
-#' @param observed The observed probabilities.
-#' @param P Character for presence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.
-#' @param A Character for absence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.
+#' @param probs  \code{numeric}. Model probabilities after predictions.
+#' @param observed  \code{vector}. The observed probabilities.
+#' @param P \code{character}. for presence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.
+#' @param A  \code{character}. for absence label. Important to indicate the presence/absence character to correctly compute the evaluation metric in \code{evaluate} function.
 #'
 #' @details
 #' The threshold-independent evalation parameter does not dependent on the cutoff to classify probability if a species is present or not.

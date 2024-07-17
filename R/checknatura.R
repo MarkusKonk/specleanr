@@ -41,13 +41,13 @@ downloadnatura <- function(x, timeout=180){
 
 #' @title Check if the records are obtained within the NATURA2000 geographical ranges.
 #'
-#' @param data Dataframe input with species records. Only dataframe accepted.
-#' @param species Column name containing species names.
-#' @param lat Column in the data with latitude coordinates. Only decimal degrees accepted.
-#' @param lon Column in the data with longitude coordinates. Only decimal degrees accepted.
-#' @param verbose TRUE, to show processing messages. Default FALSE
-#' @param discard TRUE to discard records outside the NATURA2000 sites and FALSE to retained then in the final dataset. Defualt TRUE
-#' @param batch TRUE, if the records have more than one species one species.
+#' @param data \code{dataframe}. Data input with species records. Only dataframe accepted.
+#' @param species \code{string}. Column name containing species names.
+#' @param lat,lon \code{coordinates}. Column in the data with latitude and longitudes coordinates.
+#'    Only decimal degrees accepted.
+#' @param verbose \code{logical}. TRUE, to show processing messages. Default FALSE
+#' @param discard \code{logical}. TRUE to discard records outside the NATURA2000 sites and FALSE to retained then in the final dataset. Defualt TRUE
+#' @param batch \code{logical}. TRUE, if the records have more than one species one species.
 #'
 #' @details
 #' The function is aimed at identifying records that located in the NATURA2000 protected sites mostly for invasive species.

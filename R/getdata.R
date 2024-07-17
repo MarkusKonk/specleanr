@@ -1,9 +1,9 @@
 
 #' @title standardize species names.
 #'
-#' @param spp species name provided by the user.
-#' @param verbose Default \code{TRUE} to show implementation messages.
-#' @param accept The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}
+#' @param spp \code{string} species name provided by the user.
+#' @param verbose \code{logical}. Default \code{TRUE} to show implementation messages.
+#' @param accept \code{logical}. The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}
 #' @param ... Other arguments are allowed. See \code{gnr_resolve} for details.
 #'
 #' @return species name standardized under taxize package
@@ -84,21 +84,21 @@ check_taxa_names <- function(spp, verbose, accept =TRUE, ...){
 
 #' @title Download species records from online database.
 #'
-#' @param data Data frame, list or vector of species names to retrieve records from online
+#' @param data \code{dataframe}, \code{list}, \code{vector}, \code{string}. data to retrieve records from online
 #'      databases (GBIF, VertNET, and iNaturalist).
-#' @param colsp A variable of species names. Provided if data is a data frame, so not
+#' @param colsp \code{string}. A variable of species names. Provided if data is a data frame, so not
 #'      required for lists and vector.
-#' @param bbox Bounding box to limit the download of records within a particular area. Otherwise all
+#' @param bbox \code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
 #'      records from the GBIF will be downloaded. These can be provided in two forms,
 #'      either a shapefile \code{(sf)} class accepted or provide a list of
 #'      \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.
-#' @param gbiflim Limits on the records from the Global Biodiversity Information Platform
-#' @param vertlim Limits on the records from VertNET.
-#' @param inatlim Limits on the records from iNaturalist database.
-#' @param warn logical, to indicate if warning messages should be shown. Default \code{FALSE}.
-#' @param isFish logical, to indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
+#' @param gbiflim \code{integer}. Limits on the records from the Global Biodiversity Information Platform
+#' @param vertlim \code{integer}. Limits on the records from VertNET.
+#' @param inatlim \code{integer}. Limits on the records from iNaturalist database.
+#' @param warn \code{logical}. To indicate if warning messages should be shown. Default \code{FALSE}.
+#' @param isFish \code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 #'      accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.
-#' @param verbose \strong{TRUE} if detailed messages should be indicated and \strong{FALSE}
+#' @param verbose \code{logical}. \strong{TRUE} if detailed messages should be indicated and \strong{FALSE}
 #'      if download messages are not needed. Default \strong{TRUE}.
 #' @param ... More function for species data download can be used.
 #'      See \code{rgbif::occ_data} for more information, \code{rinat::get_inat_obs}, and

@@ -1,24 +1,30 @@
 #' @title Extract final clean data using either absolute or best method generated outliers.
 #'
-#' @param data The reference data for the species used in outlier detection.
-#' @param outliers Output from the outlier detection process.
-#' @param sp species name. NULL if a single species is considered in outlier detection.
-#' @param mode Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method
-#' @param threshold value to consider whether the outlier is an absolute outlier or not.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
+#' @param data \code{dataframe}. The reference data for the species used in outlier detection.
+#' @param outliers \code{string}. Output from the outlier detection process.
+#' @param sp \code{string}. species name. NULL if a single species is considered in outlier detection.
+#' @param mode \code{character}. Either \code{abs} to use absolute outliers to filter data or \code{best} to outliers from best method.
+#' @param threshold \code{numeric}. Value to consider whether the outlier is an absolute outlier or not.
+#' @param autothreshold \code{vector}. Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 #'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param colsp A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.
-#' @param warn If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
-#' @param pabs Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
+#' @param colsp \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.
+#' @param warn \code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @param pabs \code{numeric}. Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 #'      the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.
-#' @param verbose Produces messages or not. Default \strong{FALSE}.
+#' @param verbose \code{logical}. Produces messages or not. Default \strong{FALSE}.
+#' @param loess \code{logical}. Set to \code{TRUE} to use loess threshold optimisation to extract clean data.
+#'
 #' ###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.
 #'
-#' @return cleaned data frame of species records.
-
+#' @return \code{dataframe} Cleaned dataframe of species records.
+#'
+#' @seealso \code{\link{thresh_search}}
 
 clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, threshold = NULL,
-                       verbose=FALSE, warn=FALSE, pabs = 0.1, autothreshold=FALSE){
+                       verbose=FALSE, warn=FALSE, pabs = 0.1, autothreshold=FALSE,
+                       loess= FALSE){
+
+  if(!is.null(threshold) && loess==TRUE) stop("Set either loess to FALSE and provide the threshold manually but not both.")
 
   var <- outliers@varused
 
@@ -28,8 +34,19 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 
     if(mode =='best'){
 
-      bs <- bestmethod(x= outliers,  threshold = threshold, warn = warn, verbose = verbose,
-                       autothreshold = autothreshold)
+      if(loess==TRUE && is.null(threshold)){
+
+        optthreshold <- thresh_search(data = data, outliers = outliers, warn = warn, verbose = verbose)
+
+        bs <- bestmethod(x= outliers,  threshold =  unname(optthreshold[2]), warn = warn, verbose = verbose,
+                         autothreshold = FALSE)
+      }else if(!is.null(threshold)){
+        bs <- bestmethod(x= outliers,  threshold = threshold, warn = warn, verbose = verbose,
+                         autothreshold = autothreshold)
+      }else{
+        bs <- bestmethod(x= outliers,  threshold = NULL, warn = warn, verbose = verbose,
+                         autothreshold = TRUE)
+      }
 
       varc <- unlist(data[, var])
 
@@ -51,7 +68,18 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 
           datOut <- ocindex(x= outliers, absolute = TRUE, threshold = NULL, warn = warn, autothreshold = TRUE)
         }else{
-          datOut <- ocindex(x= outliers, absolute = TRUE, threshold = threshold, warn = warn, autothreshold = FALSE)
+
+          if(loess==TRUE && is.null(threshold)){
+
+            optthreshold <- thresh_search(data = data, outliers = outliers, warn = warn, verbose = verbose)
+
+            datOut <- ocindex(x= outliers, absolute = TRUE, threshold = unname(optthreshold[2]), warn = warn,
+                              autothreshold = FALSE)
+          }else{
+            datOut <- ocindex(x= outliers, absolute = TRUE, threshold = threshold, warn = warn,
+                              autothreshold = FALSE)
+          }
+
         }
 
         if(isTRUE(verbose)) message('If  bestmethod  is implemented, the number of rows removed exceed ', pabsconv, '%, so only absolute outliers will be removed.' )
@@ -73,8 +101,18 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
         datOut <- ocindex(x= outliers,  absolute = TRUE, threshold = NULL, warn = warn,
                           autothreshold = TRUE)
       }else{
-        datOut <- ocindex(x= outliers, absolute = TRUE, threshold = threshold, warn = warn,
-                          autothreshold = FALSE)
+
+        if(loess==TRUE && is.null(threshold)){
+
+          optthreshold <- thresh_search(data = data, outliers = outliers, warn = warn, verbose = verbose)
+
+          datOut <- ocindex(x= outliers, absolute = TRUE, threshold = unname(optthreshold[2]), warn = warn,
+                            autothreshold = FALSE)
+        }else{
+          datOut <- ocindex(x= outliers, absolute = TRUE, threshold = threshold, warn = warn,
+                            autothreshold = FALSE)
+        }
+
       }
       varc <- unlist(data[, var])
 
@@ -87,7 +125,19 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 
     if(mode =='best'){
 
-      bs <- bestmethod(x= outliers, sp= sp,  threshold = threshold, warn = warn, verbose = verbose, autothreshold = autothreshold)
+      if(loess==TRUE && is.null(threshold)){
+
+        optthreshold <- thresh_search(data = data, outliers = outliers, warn = warn, verbose = verbose)
+
+        bs <- bestmethod(x= outliers, sp= sp,  threshold =  unname(optthreshold[2]), warn = warn, verbose = verbose,
+                         autothreshold = FALSE)
+      }else if(!is.null(threshold)){
+        bs <- bestmethod(x= outliers, sp= sp,  threshold = threshold, warn = warn, verbose = verbose,
+                         autothreshold = autothreshold)
+      }else{
+        bs <- bestmethod(x= outliers, sp= sp,  threshold = NULL, warn = warn, verbose = verbose,
+                         autothreshold = TRUE)
+      }
 
       varc <- unlist(data[, var])
 
@@ -111,8 +161,18 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 
         }else{
 
-          datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE, threshold = threshold, warn = warn,
-                            autothreshold = FALSE)
+
+          if(loess==TRUE && is.null(threshold)){
+
+            optthreshold <- thresh_search(data = data, outliers = outliers, warn = warn, verbose = verbose)
+
+            datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE, threshold = unname(optthreshold[2]), warn = warn,
+                              autothreshold = FALSE)
+
+          }else{
+            datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE, threshold = threshold, warn = warn,
+                              autothreshold = FALSE)
+          }
         }
 
         if(isTRUE(verbose)) message('If  bestmethod  is implemented, the rows removed exceed ', pabsconv, '%, so only absolute outliers will be removed.' )
@@ -133,8 +193,19 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
         datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE,  threshold = NULL, warn = warn,
                           autothreshold = TRUE)
       }else{
-        datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE, threshold = threshold, warn = warn,
-                          autothreshold = FALSE)
+
+        if(loess==TRUE && is.null(threshold)){
+
+          optthreshold <- thresh_search(data = data, outliers = outliers, warn = warn, verbose = verbose)
+
+          datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE, threshold = unname(optthreshold[2]), warn = warn,
+                            autothreshold = FALSE)
+
+        }else{
+          datOut <- ocindex(x= outliers,  sp =sp, absolute = TRUE, threshold = threshold, warn = warn,
+                            autothreshold = FALSE)
+        }
+
       }
 
       varc <- unlist(data[, var])
@@ -153,23 +224,10 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 
 #' @title Extract cleaned record for multiple species.
 #'
-#' @param refdata Species data frame from precleaned analysis
-#' @param outliers Output from the outlier detection
-#' @param threshold value to consider whether the outlier is an absolute outlier or not.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param mode Either all to consider all similarity measure to consider suitable method or custom.
-#'  to indicate the similarity measures or interest. simple matching coefficient, jaccard, sorensen,
-#'  and overlap coefficient can be used.
-#'  Otherwise a data frame will be produced. Default FALSE.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
-#' @param verbose Produces messages or not. Default \strong{FALSE}.
-#' @param colsp Column with species names.
-#' @param pabs Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
-#'      the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.
-
+#' @param refdata \code{dataframe}. Species data frame from precleaned analysis
+#' @inheritParams clean_data
 #'
-#' @return Either a list or data frame of cleaned records for multiple species.
+#' @return Either a \code{list} or \code{dataframe} of cleaned records for multiple species.
 #' @export
 #'
 #' @examples
@@ -225,8 +283,9 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 #'
 #'
 
-clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL, threshold =NULL, warn=FALSE, verbose=FALSE,
-                               autothreshold =FALSE, pabs = 0.1){
+clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
+                               threshold =NULL, warn=FALSE, verbose=FALSE,
+                               autothreshold =FALSE, pabs = 0.1, loess = FALSE){
 
   if(deparse(substitute(refdata))!=outliers@dfname)stop('The dataset for species occurences and outliers are different.')
 
@@ -237,7 +296,8 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL, thr
   if(outliers@mode==FALSE){
 
     dfdata <- clean_data(data = refdata, outliers = outliers, mode = mode, threshold = threshold, verbose = verbose,
-                         warn = warn, pabs = pabs, autothreshold = autothreshold, colsp = colsp)
+                         warn = warn, pabs = pabs, autothreshold = autothreshold, colsp = colsp,
+                         loess = loess)
 
   }else if(outliers@mode==TRUE){
 
@@ -269,7 +329,7 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL, thr
       cx <- tryCatch(expr = clean_data(data = data2, outliers = outliers, sp = spnames,
                                        mode = mode, threshold = threshold, colsp = colsp,
                                        warn = warn, verbose = verbose, autothreshold = autothreshold,
-                                       pabs = pabs),
+                                       pabs = pabs, loess = loess),
 
                      error=function(e) e)
       if(!inherits(cx, 'error')){

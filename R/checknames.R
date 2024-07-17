@@ -1,13 +1,13 @@
 #' @title Check species names for inconsistencies
 #'
-#' @param data Data frame with species names to checked from FishBase.
-#' @param colsp variable in data with the species column names.
-#' @param verbose To indicate the merges during checking of names. The default is FALSE not to show whether the species are in Fish base or not found.
-#' @param pct The percentage similarity used to assign a relatively similar name from FishBase if the exact match is absent. Default 90%.
+#' @param data \code{dataframe}. Data frame with species names to checked from FishBase.
+#' @param colsp \code{string}. A column in the data with the species column names.
+#' @param verbose \code{logical}. To indicate the merges during checking of names. The default is FALSE not to show whether the species are in Fish base or not found.
+#' @param pct \code{numeric}. The percentage similarity used to assign a relatively similar name from FishBase if the exact match is absent. Default 90%.
 #' The higher the values, the higher percentage similarity are considered to replace a species name that is cheeked from Fishbase.
-#' @param merge Default is \strong{FALSE}, not to merge the cleaned species column on to the data frame but rather only two columns
+#' @param merge \code{logical}. Default is \strong{FALSE}, not to merge the cleaned species column on to the data frame but rather only two columns
 #' returned.
-#' @param sn whether to consider synonyms. Default FALSE so accepted names will be considered from
+#' @param sn \code{logical}. Whether to consider synonyms. Default FALSE so accepted names will be considered from
 #' FishBase database.
 #'
 #' @details
