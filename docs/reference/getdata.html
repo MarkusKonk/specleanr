@@ -32,7 +32,7 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
       <ul class="navbar-nav"><li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="github">
+  <a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="github">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -45,7 +45,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Download species records from online database.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/HEAD/R/getdata.R" class="external-link"><code>R/getdata.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/HEAD/R/getdata.R" class="external-link"><code>R/getdata.R</code></a></small>
       <div class="d-none name"><code>getdata.Rd</code></div>
     </div>
 
@@ -72,46 +72,46 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>data</dt>
-<dd><p>Data frame, list or vector of species names to retrieve records from online
+<dd><p><code>dataframe</code>, <code>list</code>, <code>vector</code>, <code>string</code>. data to retrieve records from online
 databases (GBIF, VertNET, and iNaturalist).</p></dd>
 
 
 <dt>colsp</dt>
-<dd><p>A variable of species names. Provided if data is a data frame, so not
+<dd><p><code>string</code>. A variable of species names. Provided if data is a data frame, so not
 required for lists and vector.</p></dd>
 
 
 <dt>bbox</dt>
-<dd><p>Bounding box to limit the download of records within a particular area. Otherwise all
+<dd><p><code>vector</code> or <code>sf</code>. Bounding box to limit the download of records within a particular area. Otherwise all
 records from the GBIF will be downloaded. These can be provided in two forms,
 either a shapefile <code>(sf)</code> class accepted or provide a list of
 <code>xmin</code>, <code>ymin</code>, <code>xmax</code>, and <code>ymax</code>.</p></dd>
 
 
 <dt>isFish</dt>
-<dd><p>logical, to indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
+<dd><p><code>logical</code>. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 accordingly. For other taxa a different name checks is conducted. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt>gbiflim</dt>
-<dd><p>Limits on the records from the Global Biodiversity Information Platform</p></dd>
+<dd><p><code>integer</code>. Limits on the records from the Global Biodiversity Information Platform</p></dd>
 
 
 <dt>vertlim</dt>
-<dd><p>Limits on the records from VertNET.</p></dd>
+<dd><p><code>integer</code>. Limits on the records from VertNET.</p></dd>
 
 
 <dt>inatlim</dt>
-<dd><p>Limits on the records from iNaturalist database.</p></dd>
+<dd><p><code>integer</code>. Limits on the records from iNaturalist database.</p></dd>
 
 
 <dt>verbose</dt>
-<dd><p><strong>TRUE</strong> if detailed messages should be indicated and <strong>FALSE</strong>
+<dd><p><code>logical</code>. <strong>TRUE</strong> if detailed messages should be indicated and <strong>FALSE</strong>
 if download messages are not needed. Default <strong>TRUE</strong>.</p></dd>
 
 
 <dt>warn</dt>
-<dd><p>logical, to indicate if warning messages should be shown. Default <code>FALSE</code>.</p></dd>
+<dd><p><code>logical</code>. To indicate if warning messages should be shown. Default <code>FALSE</code>.</p></dd>
 
 
 <dt>...</dt>
@@ -168,7 +168,7 @@ See <code><a href="https://docs.ropensci.org/rgbif/reference/occ_data.html" clas
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by h g.</p>
+  <p></p><p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">
