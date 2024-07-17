@@ -15,17 +15,17 @@ basinranges(
 )
 }
 \arguments{
-\item{occurrences}{Species occurrences for a particular to check for the basin where they lie in}
+\item{occurrences}{\code{dataframe}. Species occurrences for a particular to check for the basin where they lie in.}
 
-\item{species}{species name considered as its recorded in the occurrences}
+\item{species}{\code{string}. Species name considered as its recorded in the occurrences.}
 
-\item{lat, lon}{latitude and longitude column names in the species occurrences records.}
+\item{lat, lon}{\code{coordinates}. Latitude and longitude column names in the species occurrences records.}
 
-\item{verbose}{Whether implementation messages are shown. Default \code{TRUE}.}
+\item{verbose}{\code{logical}. Whether implementation messages are shown. Default \code{TRUE}.}
 
-\item{discard}{Whether to discard records with basins or not. Default \code{FALSE}.}
+\item{discard}{\code{logical}. Whether to discard records with basins or not. Default \code{FALSE}.}
 
-\item{output}{Whether to produce the records or the basin files. Default \code{records}.}
+\item{output}{\code{character}. Whether to produce the records or the basin files. Default \code{records}.}
 }
 \value{
 species occurrence records and their basins were they are found.

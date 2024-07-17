@@ -1,14 +1,14 @@
 #' @title Collates minimum, maximum, and preferable temperatures from FishBase.
 #'
-#' @param x species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.
-#' @param colsp if \strong{\code{x}} is a data frame, then the column species is required. Otherwise for list of species or vector, the \code{colsp} is NULL.
-#' @param verbose logical, to return implementation messages. Default \code{FALSE}.
-#' @param pct numeric, provide the perecentage similarity of the species name provided and the one in FishBase. The lower the \code{pct} value, the higher the chances
+#' @param x \code{dataframe} or \code{string}. species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.
+#' @param colsp \code{string}. if \strong{\code{x}} is a data frame, then the column species is required. Otherwise for list of species or vector, the \code{colsp} is NULL.
+#' @param verbose \code{logical} To return implementation messages. Default \code{FALSE}.
+#' @param pct \code{numeric}. Provide the perecentage similarity of the species name provided and the one in FishBase. The lower the \code{pct} value, the higher the chances
 #'        of getting a wrong species in the standard databases (FishBase). The plausible pct value should be greater than \strong{0.9}.
-#' @param sn logical, either to output synonym or only accepted names. This parameter reduces duplication of species synonyms and old name etc. For more information
+#' @param sn \code{logical}. Either to output synonym or only accepted names. This parameter reduces duplication of species synonyms and old name etc. For more information
 #'        see \href{https://www.fishbase.se/}{FishBase}.
-#' @param ranges A standard database for ecological ranges from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.
-#' @param synonym A standard database for species synonym names from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.
+#' @param ranges \code{fishbasedataframe}. A standard database for ecological ranges from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.
+#' @param synonym \code{fishbasedataframe}. A standard database for species synonym names from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.
 #'
 #' @return Data table for minimum, maximum and preferable species temperatures from FishBase.
 #' @export

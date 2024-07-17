@@ -10,7 +10,7 @@ batch_extract(x)
 \item{x}{Species list}
 }
 \value{
-data frame of outliers for multiple species
+\code{dataframe} Outliers for multiple species.
 }
 \description{
 Extract oultiers for multiple species

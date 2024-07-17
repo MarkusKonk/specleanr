@@ -2,28 +2,29 @@
 % Please edit documentation in R/outliermethods.R
 \name{adjustboxplots}
 \alias{adjustboxplots}
-\title{Adjust the boxplots bounding fences using medcouple to flag suspicious outliers (Hubert & Vandervieren 2008).}
+\title{Adjust the boxplots bounding fences using medcouple to flag suspicious outliers.}
 \usage{
 adjustboxplots(data, var, output, a = -4, b = 3, coef = 1.5)
 }
 \arguments{
-\item{data}{Dataframe to check for outliers}
+\item{data}{\code{dataframe}. Dataframe to check for outliers.}
 
-\item{var}{Environmental parameter considered in flagging suspicious outliers}
+\item{var}{\code{string}. Environmental predictor considered in flagging suspicious outliers.}
 
-\item{output}{Either clean: for dataframe with no suspicious outliers or outlier: to return dataframe with only outliers}
+\item{output}{\code{string} Either clean: for dataframe with no suspicious outliers or
+outlier: to return dataframe with only outliers.}
 
-\item{a}{Constant for adjusted boxplots}
+\item{a}{\code{numeric}. Constant for adjusted boxplots.}
 
-\item{b}{Constant for adjusted boxplots}
+\item{b}{\code{numeric}. Constant for adjusted boxplots.}
 
-\item{coef}{Constant for adjusted boxplots}
+\item{coef}{\code{numeric}. Constant for adjusted boxplots.}
 }
 \value{
-Dataframe with or with no outliers.
+\code{dataframe}. Dataframe with or with no outliers.
 }
 \description{
-Adjust the boxplots bounding fences using medcouple to flag suspicious outliers (Hubert & Vandervieren 2008).
+Adjust the boxplots bounding fences using medcouple to flag suspicious outliers.
 }
 \examples{
 
