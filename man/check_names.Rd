@@ -14,19 +14,19 @@ check_names(
 )
 }
 \arguments{
-\item{data}{Data frame with species names to checked from FishBase.}
+\item{data}{\code{dataframe}. Data frame with species names to checked from FishBase.}
 
-\item{colsp}{variable in data with the species column names.}
+\item{colsp}{\code{string}. A column in the data with the species column names.}
 
-\item{verbose}{To indicate the merges during checking of names. The default is FALSE not to show whether the species are in Fish base or not found.}
+\item{verbose}{\code{logical}. To indicate the merges during checking of names. The default is FALSE not to show whether the species are in Fish base or not found.}
 
-\item{pct}{The percentage similarity used to assign a relatively similar name from FishBase if the exact match is absent. Default 90%.
+\item{pct}{\code{numeric}. The percentage similarity used to assign a relatively similar name from FishBase if the exact match is absent. Default 90%.
 The higher the values, the higher percentage similarity are considered to replace a species name that is cheeked from Fishbase.}
 
-\item{merge}{Default is \strong{FALSE}, not to merge the cleaned species column on to the data frame but rather only two columns
+\item{merge}{\code{logical}. Default is \strong{FALSE}, not to merge the cleaned species column on to the data frame but rather only two columns
 returned.}
 
-\item{sn}{whether to consider synonyms. Default FALSE so accepted names will be considered from
+\item{sn}{\code{logical}. Whether to consider synonyms. Default FALSE so accepted names will be considered from
 FishBase database.}
 }
 \value{

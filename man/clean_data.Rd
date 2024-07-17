@@ -14,36 +14,43 @@ clean_data(
   verbose = FALSE,
   warn = FALSE,
   pabs = 0.1,
-  autothreshold = FALSE
+  autothreshold = FALSE,
+  loess = FALSE
 )
 }
 \arguments{
-\item{data}{The reference data for the species used in outlier detection.}
+\item{data}{\code{dataframe}. The reference data for the species used in outlier detection.}
 
-\item{outliers}{Output from the outlier detection process.}
+\item{outliers}{\code{string}. Output from the outlier detection process.}
 
-\item{sp}{species name. NULL if a single species is considered in outlier detection.}
+\item{sp}{\code{string}. species name. NULL if a single species is considered in outlier detection.}
 
-\item{mode}{Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method}
+\item{mode}{\code{character}. Either \code{abs} to use absolute outliers to filter data or \code{best} to outliers from best method.}
 
-\item{colsp}{A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
+\item{colsp}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
 
-\item{threshold}{value to consider whether the outlier is an absolute outlier or not.}
+\item{threshold}{\code{numeric}. Value to consider whether the outlier is an absolute outlier or not.}
 
-\item{verbose}{Produces messages or not. Default \strong{FALSE}.
-###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.}
+\item{verbose}{\code{logical}. Produces messages or not. Default \strong{FALSE}.}
 
-\item{warn}{If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
+\item{warn}{\code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 
-\item{pabs}{Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
+\item{pabs}{\code{numeric}. Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.}
 
-\item{autothreshold}{Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
+\item{autothreshold}{\code{vector}. Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.}
+
+\item{loess}{\code{logical}. Set to \code{TRUE} to use loess threshold optimisation to extract clean data.
+
+###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.}
 }
 \value{
-cleaned data frame of species records.
+\code{dataframe} Cleaned dataframe of species records.
 }
 \description{
 Extract final clean data using either absolute or best method generated outliers.
+}
+\seealso{
+\code{\link{thresh_search}}
 }

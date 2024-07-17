@@ -7,13 +7,13 @@
 boots(data, nboots, setseed = 1234, testprob = 0.2)
 }
 \arguments{
-\item{data}{A dataframe to be sub sampled and partitioned.}
+\item{data}{\code{dataframe}. Data to be sub sampled and partitioned.}
 
-\item{nboots}{An integer indicating the number of iterations of sub sampling to be conducted.}
+\item{nboots}{\code{integer}. Indicating the number of iterations of sub sampling to be conducted.}
 
-\item{setseed}{An integer to allow reproducibility of the sub-samples across platforms and users.}
+\item{setseed}{\code{integer} Allow reproducibility of the sub-samples across platforms and users.}
 
-\item{testprob}{A decimal ranging from at least 0.1 to 1. The probability to be used for partitioning data.}
+\item{testprob}{\code{numeric} Value ranging from at least 0.1 to 1. The probability to be used for partitioning data.}
 }
 \value{
 A list of training and test data sets for use in the sdmfit.

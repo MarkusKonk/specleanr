@@ -7,11 +7,11 @@
 check_taxa_names(spp, verbose, accept = TRUE, ...)
 }
 \arguments{
-\item{spp}{species name provided by the user.}
+\item{spp}{\code{string} species name provided by the user.}
 
-\item{verbose}{Default \code{TRUE} to show implementation messages.}
+\item{verbose}{\code{logical}. Default \code{TRUE} to show implementation messages.}
 
-\item{accept}{The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}}
+\item{accept}{\code{logical}. The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}}
 
 \item{...}{Other arguments are allowed. See \code{gnr_resolve} for details.}
 }

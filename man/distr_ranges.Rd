@@ -7,20 +7,18 @@
 distr_ranges(data, species, lat, lon, key = NULL, verbose = T)
 }
 \arguments{
-\item{data}{species data frame to check with International Union for Conservation of Nature.}
+\item{data}{\code{dataframe}. species data frame to check with International Union for Conservation of Nature.}
 
-\item{species}{species name}
+\item{species}{\code{string}. Species column name in the data.}
 
-\item{lat}{variable for latitude in the species data frame.}
+\item{lat, lon}{\code{coordinates}. Columns with latitude and longitude in the species data frame.}
 
-\item{lon}{variable for longitude in the species data frame.}
+\item{key}{\code{string}. API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.}
 
-\item{key}{API key to access IUCN RedList data. Use rl_use_iucn() to apply for it.}
-
-\item{verbose}{if TRUE processing messages or warning will be produced.}
+\item{verbose}{\code{logical}. if \code{TRUE} processing messages or warning will be produced.}
 }
 \value{
-species records within the known distribution ranges of the species according to IUCN RedList database.
+\code{dataframe} Species records within the known distribution ranges of the species according to IUCN RedList database.
 }
 \description{
 Determine species distribution ranges based on IUCN RedList.
