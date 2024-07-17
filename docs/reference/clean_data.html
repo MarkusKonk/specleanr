@@ -32,7 +32,7 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
       <ul class="navbar-nav"><li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="github">
+  <a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="github">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -45,7 +45,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Extract final clean data using either absolute or best method generated outliers.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/HEAD/R/cleandataextraction.R" class="external-link"><code>R/cleandataextraction.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/HEAD/R/cleandataextraction.R" class="external-link"><code>R/cleandataextraction.R</code></a></small>
       <div class="d-none name"><code>clean_data.Rd</code></div>
     </div>
 
@@ -65,60 +65,69 @@
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pabs <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  autothreshold <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  autothreshold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  loess <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>data</dt>
-<dd><p>The reference data for the species used in outlier detection.</p></dd>
+<dd><p><code>dataframe</code>. The reference data for the species used in outlier detection.</p></dd>
 
 
 <dt>outliers</dt>
-<dd><p>Output from the outlier detection process.</p></dd>
+<dd><p><code>string</code>. Output from the outlier detection process.</p></dd>
 
 
 <dt>sp</dt>
-<dd><p>species name. NULL if a single species is considered in outlier detection.</p></dd>
+<dd><p><code>string</code>. species name. NULL if a single species is considered in outlier detection.</p></dd>
 
 
 <dt>mode</dt>
-<dd><p>Either absolute to use absolute outliers to filter data or bestmethod to outliers from best method</p></dd>
+<dd><p><code>character</code>. Either <code>abs</code> to use absolute outliers to filter data or <code>best</code> to outliers from best method.</p></dd>
 
 
 <dt>colsp</dt>
-<dd><p>A parameter to be used if the <code>data</code> is a data frame and the user must indicate the column wih species names.</p></dd>
+<dd><p><code>string</code>. A parameter to be used if the <code>data</code> is a data frame and the user must indicate the column wih species names.</p></dd>
 
 
 <dt>threshold</dt>
-<dd><p>value to consider whether the outlier is an absolute outlier or not.</p></dd>
+<dd><p><code>numeric</code>. Value to consider whether the outlier is an absolute outlier or not.</p></dd>
 
 
 <dt>verbose</dt>
-<dd><p>Produces messages or not. Default <strong>FALSE</strong>.
-###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.</p></dd>
+<dd><p><code>logical</code>. Produces messages or not. Default <strong>FALSE</strong>.</p></dd>
 
 
 <dt>warn</dt>
-<dd><p>If <strong>FALSE</strong>, warning on whether absolute outliers obtained at a low threshold is indicated. Default <strong>TRUE</strong>.</p></dd>
+<dd><p><code>logical</code>. If <strong>FALSE</strong>, warning on whether absolute outliers obtained at a low threshold is indicated. Default <strong>TRUE</strong>.</p></dd>
 
 
 <dt>pabs</dt>
-<dd><p>Percentage of outliers allowed to be extracted from the data. If <code>best</code> is used to extract outliers and the <code>pabs</code> is exceeded,
+<dd><p><code>numeric</code>. Percentage of outliers allowed to be extracted from the data. If <code>best</code> is used to extract outliers and the <code>pabs</code> is exceeded,
 the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.</p></dd>
 
 
 <dt>autothreshold</dt>
-<dd><p>Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
+<dd><p><code>vector</code>. Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 are deemed inappropriate for identifying absolute outliers. The autothreshold is used when <code>threshold</code> is set to <code>NULL</code>.</p></dd>
+
+
+<dt>loess</dt>
+<dd><p><code>logical</code>. Set to <code>TRUE</code> to use loess threshold optimisation to extract clean data.</p>
+<p>###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>cleaned data frame of species records.</p>
+<p><code>dataframe</code> Cleaned dataframe of species records.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="thresh_search.html">thresh_search</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -126,7 +135,7 @@ are deemed inappropriate for identifying absolute outliers. The autothreshold is
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by h g.</p>
+  <p></p><p>Developed by x x.</p>
 </div>
 
 <div class="pkgdown-footer-right">
