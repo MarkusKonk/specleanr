@@ -10,9 +10,10 @@ modelcomparison(
   raster,
   models = "GLM",
   metrics = "all",
-  thresholds = c(0.6, 0.7),
+  thresholds = NULL,
+  loessthreshold = FALSE,
   autothreshold = FALSE,
-  mode = "best",
+  mode = "abs",
   colsp = NULL,
   nboots = 10,
   testprop = 0.2,
@@ -26,93 +27,103 @@ modelcomparison(
   full = FALSE,
   pabs = 0.1,
   minpts = 10,
+  plot = FALSE,
   ...
 )
 }
 \arguments{
-\item{refdata}{A list or dataframe of species data generated during
+\item{refdata}{\code{list} or \code{dataframe} of species data generated during
 pre-cleaning process. This data set is used as the reference data in
 accessing the outlier detection performance using both threshold dependent
 and independent metrics. This data set must be same as when in detecting
 outliers to avoid mismatch.}
 
-\item{outliers}{The \code{datacleaner} class data set with all outliers
-obtained using the \code{multdetect} function. Please check \code{ocindex}.}
+\item{outliers}{\code{datacleaner} class data set with all outliers
+obtained using the \code{multdetect} function.}
 
-\item{raster}{The environmental where pseudo absences are extracted using
-\link[specleanr]{envextract}.}
+\item{raster}{\code{SpatRaster}. The environmental where pseudo absences are extracted using
+\code{\link{envextract}} function.}
 
-\item{models}{The models to be used to examine the relationship between
+\item{models}{\code{character}. The models to be used to examine the relationship between
 species occurrences and environmental parameters. Only Random forest and
 generalized linear models are accepted. \code{GLM} is used to set to
 Generalized Linear Models and \code{RF} for Random Forest. \code{RF1}
 variant is slower and is suggested if \code{RF} fails.}
 
-\item{metrics}{Either to only consider threshold-dependent,
-threshold-independent or all evaluation metrics to determine model
+\item{metrics}{\code{character}. Either to only consider threshold-dependent \code{dep},
+threshold-independent \code{indep} or all evaluation metrics \code{all} to determine model
 performance.}
 
-\item{thresholds}{The different scenarios are implemented. Currently the
-reference data set and threshold, outlier cleaned data are allowed.}
+\item{thresholds}{\code{numeric}. The thresholds ranging from 0.1 to 1 but greater than 0.5 is advisable.}
 
-\item{autothreshold}{logical which identifies the threshold with mean number
+\item{loessthreshold}{whether to consider loess or not.}
+
+\item{autothreshold}{\code{logical}. Identifies the threshold with mean number
 of absolute outliers.The search is limited within 0.51 to 1 since
 thresholds less than are deemed inappropriate for identifying absolute
 outliers. The autothreshold is used when \code{threshold} is set to
 \code{NULL}.}
 
-\item{mode}{A character of either \code{abs} to use absolute outliers to
+\item{mode}{\code{character} of either \code{abs} to use absolute outliers to
 filter data or \code{best} to use the best method to filter the data
-\code{\link{bestmethod}}.}
+\code{\link{bestmethod}} function.}
 
-\item{colsp}{The column with species names if the species occurrence is a
+\item{colsp}{\code{character}. Column with species names if the species occurrence is a
 data frame not list,}
 
-\item{nboots}{Creating sub samples for modeling evaluation.}
+\item{nboots}{\code{numeric} Creating sub samples for modeling evaluation. At least more than 5 is advisable.}
 
-\item{testprop}{The probability to be used for partitioning data.}
+\item{testprop}{\code{numeric}. The proportion to be used for partitioning data. Ranges from 0.1 to 1.
+Less than 0.5 is advisable to allow have more model training data.}
 
-\item{geom}{character which is used in data extraction when the species
+\item{geom}{\code{character}. Column name used to indicate geometry column during data extraction when the species
 occurrences is of \code{sf} class and have geometry column instead of latitude
 and longitude.}
 
-\item{lat, lon}{character if the species occurrences don't have the geometry
-column or not spatial vector file, the latitude and longitude must be
-provided for data extraction from the raster layers.}
+\item{lat, lon}{\code{character}. Column names for latitude/longitude if the species
+occurrences don't have the geometry column or not spatial vector file.
+The latitude and longitude must be
+ provided for data extraction from the raster layers.}
 
-\item{prbackground}{numeric value indicating the proportion of pseudo
-absences compare to the species presences. Used in \code{spatSample} function.
-Ranges from at least 0.1 to 1}
+\item{prbackground}{\code{numeric}. Value indicating the proportion of pseudo
+absences extracted in relation to the species presences. Used in \code{spatSample} function.
+Ranges from at least 0.1 to 1. Check \code{(Barbet-Massin et al., 2012)} on the number of
+pseudo absences required during species distribution modeling.}
 
-\item{binary}{logical of \code{FALSE} if the species dataset do not have
-label column for presence absence. Therefore, the \code{FALSE} is used when
-the parameter \code{label} is NULL. If only species presences and absences
-are indicated, the user should select \code{TRUE} option.}
+\item{binary}{\code{logical}. If \code{FALSE} the species dataset do not have
+label column for presence absence and \code{label} is NULL.
+If only species presences and absences  are indicated,
+the user should select \code{TRUE}.}
 
-\item{verbose}{Return messages or not. Default is \code{FALSE}.}
+\item{verbose}{\code{logical}. Return messages or not. Default is \code{FALSE}.}
 
-\item{warn}{Return warning or not. Default is \code{FALSE}.}
+\item{warn}{\code{logical}. Return warning or not. Default is \code{FALSE}.}
 
-\item{full}{logical of either full model output for \code{TRUE} or \code{FALSE} for only
+\item{full}{\code{logical}. Either full model output for \code{TRUE} or \code{FALSE} for only
 performance metrics output.}
 
-\item{pabs}{Percentage of outliers allowed to be extracted from the data. If
+\item{pabs}{\code{numeric}. Percentage of outliers allowed to be extracted from the data. If
 \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 the absolute outliers are removed instead. This because some records  in
 the best methods are repeated and they will likely to remove true values as
 outliers.}
 
-\item{minpts}{numeric value indicating the minimum number of records required to run the species
+\item{minpts}{\code{numeric} value indicating the minimum number of records required to run the species
 distribution model. Default is \code{10}.}
 
-\item{...}{other parameters can be used from \code{\link{envextract}}
+\item{plot}{true or false}
+
+\item{...}{Other parameters can be used from \code{\link{envextract}}
 function.}
 }
 \value{
 A list of model instance and model performance metrics.
 }
 \description{
-Comparing the model performance before and after outlier removal.
+The function is used to compare model performance before and outlier removal.
+The different thresholds are indicated and the model performance outputs are obtained
+based on threshold dependent and independent metrics such as accuracy, sensitivity,
+specificity, true skill statistics, and Area Under the Curve.
 }
 \examples{
 
@@ -170,16 +181,12 @@ ggperform(modelout = modeout, cutoff = 0.1)
 
 }
 
-
+}
+\references{
+Barbet-Massin, M., Jiguet, F., Albert, C. H., & Thuiller, W. (2012).
+Selecting pseudo-absences for species distribution models:
+how, where and how many? Methods Ecol Evol 3: 327–338.
 }
 \seealso{
-\link[specleanr]{sdmfit}
-
-\link[specleanr]{multidetect}
-
-\link[specleanr]{pred_extract}
-
-\link[specleanr]{envextract}
-
-\link[specleanr]{boots}
+\code{\link{sdmfit}}, \code{\link{multidetect}}, \code{\link{pred_extract}}, \code{\link{envextract}}, \code{\link{boots}}
 }

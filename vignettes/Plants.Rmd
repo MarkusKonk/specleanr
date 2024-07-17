@@ -102,7 +102,7 @@ plantcleaned <-  pred_extract(data= extrdata,
                              minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
 
 #Environmental prediction extraction for a single species (multiple = FALSE)
-sp1df <- subset(extrdata, species=="Populus nigra")
+sp1df <- subset(extrdata, species=="Fagus sylvatica")
 
 p1cleaned <-  pred_extract(data= sp1df, 
                              raster= worldclim, 
@@ -117,7 +117,7 @@ p1cleaned <-  pred_extract(data= sp1df,
 ```
 
 3. **Detecting outliers using multiple outlier detection methods**
-* To detect outliers we selected ensembled seven outlier detection methods at least from different categories i.e., 1) **univariate** (adjusted boxplot (**`adjbox()`**), Hampel filter (**`hampel()`**), Z-score (**`zscore()`**) and reverse jack knifing (**`jknife()`**)); 2) **Multivariate methods or machine learning models** (local outlier factor (**`lof()`**), K-means (**`kmeans()`**), and Mahalanobis distance measure (**`mahal()`**)).
+* To detect outliers we selected ensembled seven outlier detection methods at least from different categories i.e., 1) **univariate methods**: adjusted boxplot **`adjbox()`**, Hampel filter: **`hampel()`**, Z-score **`zscore()`** and reverse jackknifing **`jknife()`**; 2) **Multivariate methods or machine learning models**: local outlier factor: **`lof()`**, K-means: **`kmeans()`**, and Mahalanobis distance measure **`mahal()`**.
 
 ```{r oultlier detection}
 
@@ -156,6 +156,16 @@ ggoutliers(x=outliersdata, y= 1, raw=FALSE)
 ggoutliers(x= out1df)
 
 ```
+**Identify the best threshold using loess model.**
+
+```{r threshold identifcation, fig.width = 6, fig.height= 4, fig.align='center'}
+
+optimal1<- optimal_threshold(refdata = p1cleaned, outliers = out1df, plot = TRUE)
+
+
+optimalthreshold <- optimal_threshold(refdata = plantcleaned, outliers = outliersdata, plot = FALSE)
+```
+
 
 *Indicate the best methods obtained for each species 
 
@@ -176,26 +186,25 @@ cleandf <- clean_data_extract(refdata = plantcleaned, outliers = outliersdata,
 
 
 cleandf1 <- clean_data_extract(refdata = p1cleaned, outliers = out1df, 
-                         mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
-
+                         mode = "best", threshold = 0.6, warn = FALSE, verbose = TRUE, pabs = 0.1)
 
 ```
 
 5. **Model comparison**
 
-We vary the different thresholds, which determine the number of outlier detections used to indicate that a record is an outlier. For example, a record flagged as an outlier at a threshold of 1 means that all the methods ensembled identified the record as an outlier. Therefore, based on that principle, we vary the threshold from 0.2 to 0.7 and predict and develop models at each step. Then, we evaluate the model performance using threshold-dependent and independent evaluation metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve.
+We vary the different thresholds, which determine the number of outlier detections used to indicate that a record is an outlier. For example, a record flagged as an outlier at a threshold of 1 means that all the methods ensembled identified the record as an outlier. Therefore, based on that principle, we vary the threshold from 0.2 to 0.7 and predict and develop models at each step. Then, we evaluate the model performance using threshold-dependent and independent evaluation metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve (AUC).
 
 ```{r data cleaning scenarios}
 
 multsppmodel <- modelcomparison(refdata = plantcleaned, outliers = outliersdata, raster = worldclim,
                            lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',
-                           thresholds = seq(0.2, 0.7, 0.1), full = FALSE)
+                           thresholds = 0.8)
 
 
 
 onesppmodel <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = worldclim,
                            lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',  
-                           thresholds = seq(0.2, 0.7, 0.1), full = TRUE)
+                           thresholds = 0.8, nboots = 50)
 
 ```
 
@@ -203,12 +212,12 @@ onesppmodel <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = 
 
 * cutoff of 0.5, is to limit which threshold results the user whats to plot.
 
-```{r extract performanc}
+```{r extract performance}
 #for one species
-onespp <- get_performance(modeloutput = onesppmodel)
+onespp <- get_performance(modelcomp  = onesppmodel)
 
 #for multiple species
-multspp <- get_performance(modeloutput = multsppmodel)
+multspp <- get_performance(modelcomp = multsppmodel)
 
 
 ```
@@ -217,14 +226,16 @@ multspp <- get_performance(modeloutput = multsppmodel)
 
 ```{r visualisation, fig.width = 6, fig.height= 4, fig.align='center'}
 #one species 
-ggperform(modelout = onesppmodel, cutoff = 0.5)+
-  theme_bw()
-
-ggperform(modelout = multsppmodel, cutoff = 0.5)+
-  theme_bw()
-
+ggperform(modelout = onesppmodel, eval = c("auc", "Accuracy", "Sensitivity",
+                                                         "Kappa", "Specificity", "TSS"))
 
 ```
+
+```{r visualisation2, fig.width = 9, fig.height= 4, fig.align='center'}
+ggperform(modelout = multsppmodel, eval = c("auc", "Accuracy", "Sensitivity",
+                                                         "Kappa", "Specificity", "TSS"))
+```
+
 
 
 ### References 

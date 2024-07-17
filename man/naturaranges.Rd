@@ -15,19 +15,18 @@ naturaranges(
 )
 }
 \arguments{
-\item{data}{Dataframe input with species records. Only dataframe accepted.}
+\item{data}{\code{dataframe}. Data input with species records. Only dataframe accepted.}
 
-\item{species}{Column name containing species names.}
+\item{species}{\code{string}. Column name containing species names.}
 
-\item{lat}{Column in the data with latitude coordinates. Only decimal degrees accepted.}
+\item{lat, lon}{\code{coordinates}. Column in the data with latitude and longitudes coordinates.
+Only decimal degrees accepted.}
 
-\item{lon}{Column in the data with longitude coordinates. Only decimal degrees accepted.}
+\item{verbose}{\code{logical}. TRUE, to show processing messages. Default FALSE}
 
-\item{verbose}{TRUE, to show processing messages. Default FALSE}
+\item{discard}{\code{logical}. TRUE to discard records outside the NATURA2000 sites and FALSE to retained then in the final dataset. Defualt TRUE}
 
-\item{discard}{TRUE to discard records outside the NATURA2000 sites and FALSE to retained then in the final dataset. Defualt TRUE}
-
-\item{batch}{TRUE, if the records have more than one species one species.}
+\item{batch}{\code{logical}. TRUE, if the records have more than one species one species.}
 }
 \value{
 Data set with records found in NATURA2000 polygon sites.

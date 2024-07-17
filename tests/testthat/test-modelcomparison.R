@@ -42,7 +42,7 @@ testthat::test_that(desc = "Model output comparison",
 
                       testthat::expect_equal(length(modeout), 1)
 
-                      getperf <- get_performance(modeloutput = modeout)
+                      getperf <- get_performance(modelcomp  = modeout)
 
                       testthat::expect_equal(nrow(getperf), 20)
                     })

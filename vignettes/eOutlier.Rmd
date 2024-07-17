@@ -19,182 +19,264 @@ knitr::opts_chunk$set(
 library(specleanr)
 
 ```
-**Environemtal outlier check for fish species from the Dnaube River Basin** 
+**Environmental outlier check for fish species from the Danube River Basin** 
 
-1. **Collate species and environmental datasets**
+The workflow for environmental outlier detection and removal is similar across taxa, regions, or ecological realms. However, we included the **`check_names()`** function to cater for fish species names exhaustively. In this worked example, we tried the functionalities on the fish species from the Danube River Basin, with extracts of species records from Joint Danube Survey (JDS) and EFI+ data archived in the package. We complimented the data with fish species occurrences from online sources including Global Biodiversity Information Facility (GBIF), iNaturalist, and VertNET using the **`getdata()`** function. They are basically five steps, including: 1) Data acquisition and harmonization; 2) Precleaning and predictor extraction 3) outlier detection 4) identification of clean data and suitable method 5) developing species distribution models (optional).
 
-The species records were obtained from the archived datasets extracted from the Joint Danube Survey (https://www.danubesurvey.org/jds4/) and EFIPLUS (Logez et al., 2012). The Basin layer that was used to get the bounding box of the Danube Basin was obtained from Hydrography90m (https://hydrography.org/hydrography90m/hydrography90m_layers). 
+
+1. **Data acquisition: a) Collate species species records: offline and online data**
+
+The species records were obtained from the archived datasets extracted from the Joint Danube Survey (https://www.danubesurvey.org/jds4/) and EFIPLUS (Logez et al., 2012).  To compliment species records, we used the **`getdata()`** function to retrieve data from the GBIF (https://www.gbif.org/), VertNet (http://www.vertnet.org/) and iNaturalist ( https://www.inaturalist.org/) for _Squalius cephalus_, _Salmo trutta_, _Thymallus thymallus_, and _Anguilla anguilla_. For online data, we limited data to 50 records from each data source to reduce on the execution time.
 
 ```{r datasoruces, warning=FALSE}
-
-#1a. Get basin shapefile to delineate the study region: optional
-
-danube <- system.file('extdata/danube/basinfinal.shp', package = 'specleanr')
-
-danube_basin  <-     sf::st_read(danube, quiet=TRUE)
-
 #==========================
-#Step 1b. Obtain Local data sources (Optional if not available)
+#Step 1ai. Obtain Local data sources (archived in this package)
 #=========================
 
 data(efidata) #Data extract from EFIPLUS data
 
 data(jdsdata) #Data extract from JDS4 data 
 
-#==========
-#Step 1c. Download environmental data
-
-worldclim <- system.file('extdata/worldclim.tiff', package = 'specleanr')
-worldclim <- terra::rast(worldclim)
-
-```
+#===================================
+#Step 1aii: Retrieve online data for the species: polygon to limit the extent to get records.
+#=====================================
+danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
 
-2. **Harmonizing data and collating species ecological parameters and nomenclature**
-#Step 3. Merge local data files 
-#Will also enable to generate the species list of interest
-#The efiplus latitude and longitude are in the standard format names (deimalLatitude and decimalLongitude), so they will not be changed. During binding of the two datasets, the column names are harmonised based on the Darwin Core format (Wieczorek et al., 2012).  
+df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta', "Thymallus thymallus","Anguilla anguilla"), 
+                                bbox = danube,
+                                gbiflim = 50, 
+                                inatlim = 50, 
+                                vertlim = 50, 
+                     verbose = F)
 
-```{r datahandling}
+#extract online data from dataonline class
 
-localdf <- match_datasets(datasets = list(jds=jdsdata, efi=efidata),
-                    lats = 'lat', lons = 'lon', 
-                    species = c('speciesname','scientificName'),
-                    country = c('JDS4_site_ID'),
-                    date = c('sampling_date', 'Date'))
+onlinedf <- extract_online(online = df_online)
 
-
-#Step 4. Harmonize all the species names by crosschecking with FishBase
-#Keep merge = TRUE to stick a cleaned species names column
-#NAs species will be automatically dropped
-
-localdf_check <- check_names(localdf, colsp = 'species',verbose = FALSE, pct = 90, 
-                             merge = TRUE)
-
-#==============
-
-#Retrieve online data from Global Information Facility, VertNET and iNaturalist
-#Note: Using the cleaned species column species
-#If local data sources are NULL or optional, this will be mandatory and vice versa
-
-lagoco_online <- getdata(data = c('Lampetra planeri', 'Gobio gobio','Cottus gobio'), 
-                                bbox = danube_basin,
-                                gbiflim = 10, 
-                                inatlim = 10, 
-                                vertlim = 10, verbose = F)
+dim(onlinedf)
 
 ```
 
-3. **Further data handling**
+**Merging and harmonizing species records from different sources**
 
-```{r mergeclean}
+The online data sources from **`getdata()`** and local files are merged using the **`match_datasets()`** function. Five columns are harmonized while combining data from different sources: the country, species names, latitude/longitude columns, and dates. The Darwin Core standard names are country, species, decimalLatitude, decimalLongitude, and dates (Wieczorek et al., 2012). So, if the local dataset has a different name for standard names, the user should indicate it. For example, in JDS data, the species column is labeled **speciesname**, shown in the species parameter for automatic renaming and merging with other datasets. 
+* Note: The user should indicate all dataset names in the list.
+* `check_names()` is used to clean species names in terms of synonyms or spellings, based on FishBase (https://www.fishbase.se/). This function generates another column **speciescheck** that contain the clean names.
 
-#======================
-#Already online and local data sources prepared
+```{r merging and harmonising species records handling, warning=FALSE}
 
-#1. Online parameter only accepts dataonline class
-#2. The offline lists must be be named
-#======
-
-onlinedf <- extract_online(online = lagoco_online)
-
-#match all data sets
-
-matchalldf <- match_datasets(datasets = list(efi= efidata, jds = jdsdata, 
+mergealldfs <- match_datasets(datasets = list(efi= efidata, jds = jdsdata, 
                                         onlinedata = onlinedf),
                 country = c('JDS4_sampling_ID'),
-                lats = 'lat',
-                lons = 'lon',
-                date = c('sampling_date', 'Date', 'dates', 'date'),
+                lats = 'lat', lons = 'lon',
                 species = c('speciesname', 'scientificName'))
 
 #Species names are re-cleaned since the species names from vertnet are changed.
 
-cleandata <- check_names(data = matchalldf, colsp = 'species', pct = 70, merge = TRUE)
+cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE)
+
+#Filter out species from cleannames df where the species names such as synonyms like Salmo trutta fario chnaged to Slamo trutta
+
+speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in% c("Squalius cephalus", 'Salmo trutta', "Thymallus thymallus","Anguilla anguilla"),]
 
 ```
 
-4. **Precleaning and environmental data extraction**
+1. **Data acquisition: b) Environmental predictors**
+
+We used WORLDCLIM data archived in the package to enable users to test the package functions seamlessly. For direct interaction with the WORDCLIM data, please visit (https://www.worldclim.org/) and the **`geodata`** package for download in user-customized workflows. WORLDCLIM data has 19 bioclimatic variables (https://www.worldclim.org/data/bioclim.html), including;
+
+* `BIO1` = Annual Mean Temperature
+* `BIO2` = Mean Diurnal Range (Mean of monthly (max temp - min temp))
+* `BIO3` = Isothermality (BIO2/BIO7) (×100)
+* `BIO4` = Temperature Seasonality (standard deviation ×100)
+* `BIO5` = Max Temperature of Warmest Month
+* `BIO6` = Min Temperature of Coldest Month
+* `BIO7` = Temperature Annual Range (BIO5-BIO6)
+* `BIO8` = Mean Temperature of Wettest Quarter
+* `BIO9` = Mean Temperature of Driest Quarter
+* `BIO10` = Mean Temperature of Warmest Quarter
+* `BIO11` = Mean Temperature of Coldest Quarter
+* `BIO12` = Annual Precipitation
+* `BIO13` = Precipitation of Wettest Month
+* `BIO14` = Precipitation of Driest Month
+* `BIO15` = Precipitation Seasonality (Coefficient of Variation)
+* `BIO16` = Precipitation of Wettest Quarter
+* `BIO17` = Precipitation of Driest Quarter
+* `BIO18` = Precipitation of Warmest Quarter
+* `BIO19` = Precipitation of Coldest Quarter
+
+```{r environmental parameters from WORLDCLIM}
+
+#Get climatic variables from the package folder
+
+worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package = 'specleanr'))
+
+```
+
+2. **Precleaning and environmental data extraction**
+Here, 
+* The duplicate records are removed if points they are obtained from the same location for the same species. 
+* The missing values coordinates are removed. 
+* The environmental predictors are extracted from the raster layers (WORLDCLIM).
+* The user can set the minimum point for the species to be retianed for further analyis.
+* The bounding box can be set to limit the extent of data extraction. For this case, we used the basin layer for the Danube Basin was obtained from Hydrography90m (https://hydrography.org/hydrography90m/hydrography90m_layers).
+* The user can either return a dataframe or list of the cleaned data. Important in the next steps.
 
 ```{r precleanand, echo=TRUE}
 
-#two species
+#Get basin shapefile to delineate the study region: optional
 
-#Generate lists of species data
+danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
-precleaned <-  pred_extract(data= cleandata, 
+#For multiple species indicate multiple TRUE
+multipreclened <-  pred_extract(data= speciesfiltered, 
                              raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'speciescheck',
-                             bbox  = danube_basin,  
+                             bbox  = danube,  
                              multiple = TRUE, 
                              list= TRUE, 
                              minpts = 10, merge = FALSE)
+names(multipreclened)
 
-salmo1 <- cleandata[cleandata[,'speciescheck'] == "Salmo trutta", ]
 
-precleaned1 <-  pred_extract(data= salmo1, 
-                             raster= worldclim, 
+ttdata <- speciesfiltered[speciesfiltered[,'speciescheck'] %in%c("Thymallus thymallus"),]
+dim(ttdata)
+
+#For single species indicate multiple to FALSE
+ttrefdata<-  pred_extract(data= ttdata, raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'speciescheck',
-                             bbox  = danube_basin,  
+                             bbox  = danube,  
                              multiple = FALSE, 
                              list= TRUE, 
-                             minpts = 10, merge = FALSE)
+                             minpts = 10)
+dim(ttrefdata)
 
 ```
 
-
-
+3. **Outlier detection**
+Multiple outlier detection are set. This package contains 20 outlier detection methods and the user can run **`extractMethods()`** to get the allowed methods. They are categorized into univariate, multivariate and species ecological ranges.
+* `var` is the predictor to be used univariate methods.
+* `exclude` allows to remove predictors that user deems unnecessary. For example, the coordinates, since the multivariate methods consider the whole dataset.
 
 ```{r outlierdetection, echo=TRUE, message=FALSE, warning=FALSE}
 
 #For outliers, the output is set to outlier
 
-out_df <- multidetect(data = precleaned,
+multioutliers <- multidetect(data = multipreclened,
                       multiple = TRUE,
                       var = 'bio6',
                       output = 'outlier',
                      exclude = c('x','y'),
-                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans'))
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans', 'mahal',
+                                  'logboxplot','jknife','lof'))
 #single species
-out_df1 <- multidetect(data = precleaned1,
+ttoutlier<- multidetect(data = ttrefdata,
                       multiple = FALSE,
                       var = 'bio6',
                       output = 'outlier',
                       exclude = c('x','y'),
-                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans'))
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans', 'mahal',
+                                  'logboxplot', 'jknife', 'lof'))
 
 ```
 
 
-6. **Data analysis and visualization**
+3. **Outlier visualization**
+
+* `ggoutliers` are based in ggplot2, so it can be modified based on user needs. x: is the output for outlier detection, y is the species name or index for multiple species, and raw = TRUE if the number of outliers are the displayed, otherwise the proportion of outliers to the total number of records will be plotted.
 
 ```{r visualisation, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
+#for multiple species
+ggoutliers(multioutliers, y=2, raw=TRUE)
 
-plot(out_df, y=8, raw=TRUE)
+#for single species
+ggoutliers(ttoutlier, raw=TRUE)
+
 
 ```
+
+**Identify the best threshold using loess model.**
+The local regression is used to optimize and identify the best threshold for denoting the point as an absolute outlier. We fit the local region model between the data retained at every threshold, and we identify a maxima when the number of records retain are number of records retained does not significantly vary with an increased increase in the threshold.
+
+```{r threshold identifcation, fig.width = 6, fig.height= 5, fig.align='center'}
+
+ttoptimal <- optimal_threshold(refdata = ttrefdata, outliers = ttoutlier, plot = TRUE)
+
+#obtain the optimal thresholds for multiple species 
+#plotting is not allowed for multiple species.
+
+multioptimal <- optimal_threshold(refdata = multipreclened, outliers = multioutliers, plot = FALSE)
+
+```
+
+
+4. **Extracting clean data from the reference data (precleaned data in step 2).**
+
+The user sets a threshold ranging from 0.1 to 1 but its advisable to set a value above 0.5 to include above 50% of the methods. **threshold** is the value indicating the proportion of methods to be used to classify a record as a true outlier. For example, a threshold of 0.6 means that at least in the 4 of the 6 methods noted during outlier detection in step 3. We used the loess method for identifying the optimal threshold.
 
 ```{r extract clean dataset}
 
-cleanfishdata <- clean_data_extract(refdata = precleaned, outliers = out_df, threshold = 0.6)
+multspecies_clean <- clean_data_extract(refdata = multipreclened, outliers = multioutliers, loess =  TRUE)
+head(multspecies_clean)
 
-cleanfishdata1 <- clean_data_extract(refdata = precleaned1, outliers = out_df1, threshold = 0.6)
+ttclean<- clean_data_extract(refdata = ttrefdata, outliers = ttoutlier, loess = TRUE)
+dim(ttclean)
 
 ```
+
+**Model comparison**
+
+This is done to identify the suitable threshold that produces the highest model performance. 
+
+* `minpts` parameters indicates the points that should be allowed in fitting a distribution model. Default is 10. error might appear if the records are not enough to fit the models.
+* `loessthreshold` set to TRUE to execute data cleaning data extraction using optimal threshold identified using the loess method.
+
+* Note: When using **`modelcomparison()`**, the function of **`sdmfit()`**, and **`clean_data_extract()`** are incorporated and therefore the user do not need to do these steps separately.
 
 ```{r model comparison}
 
-modelcompare <- modelcomparison(refdata = precleaned1, outliers = out_df1, raster = worldclim, 
-                                lat = 'y', lon = 'x', full = FALSE, metrics = 'dep')
+ttcompare <- modelcomparison(refdata = ttrefdata, outliers = ttoutlier, raster = worldclim, 
+                                lat = 'y', lon = 'x', full = FALSE, metrics = 'all', minpts = 17,
+                             loessthreshold = TRUE)
 
-mp <- get_performance(modeloutput = modelcompare)
+
+
+ttmodper <- get_performance(modelcomp  = ttcompare)
+
+
+multcomparion <- modelcomparison(refdata = multipreclened, outliers = multioutliers, 
+                                     raster = worldclim, 
+                                     lat = 'y', lon = 'x', full = FALSE, 
+                                     metrics = 'all', minpts = 18,loessthreshold = TRUE)
+
+
+multmodelper <- get_performance(modelcomp = multcomparion)
 
 ```
 
-***References**
+**Vising the performance of models before and after removal of outliers.**
+
+The outlier removal in the species records of _Thymallus thymallus_ led to improved model performance in accuracy and Area under the curve (AUC). However, in the multiple species, the performance of the _Anguilla anguilla_ and_Squalius cephalus_ models remained the same. This is because there were no absolute outliers at the optimal threshold; therefore, the reference and clean datasets were the same. The performance in the Salmo trutta models was slightly higher for the reference dataset based on the Area Under the Curve. 
+
+```{r, fig.width = 6, fig.height= 5, fig.align='center'}
+
+#, Thymallus thymallus alone
+
+ggperform(ttcompare, scolor = c("grey40", "orange"))
+
+#For multiple species Squalius cephalus, Salmo trutta, Thymallus thymallus,Anguilla anguilla
+
+ggperform(multcomparion, scolor = c("grey40", "orange"))
+
+```
+
+
+
+**References**
 1. Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T., & Vieglais, D. (2012). Darwin core: An evolving community-developed biodiversity data standard. PLoS ONE, 7(1). https://doi.org/10.1371/journal.pone.0029715
 
