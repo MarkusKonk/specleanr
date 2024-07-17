@@ -1,18 +1,19 @@
 
 #Adjusted boxplots
 
-#' @title Adjust the boxplots bounding fences using medcouple to flag suspicious outliers (Hubert & Vandervieren 2008).
+#' @title Adjust the boxplots bounding fences using medcouple to flag suspicious outliers.
 #'
-#' @param data Dataframe to check for outliers
-#' @param var Environmental parameter considered in flagging suspicious outliers
-#' @param output Either clean: for dataframe with no suspicious outliers or outlier: to return dataframe with only outliers
-#' @param a Constant for adjusted boxplots
-#' @param b Constant for adjusted boxplots
-#' @param coef Constant for adjusted boxplots
+#' @param data \code{dataframe}. Dataframe to check for outliers.
+#' @param var \code{string}. Environmental predictor considered in flagging suspicious outliers.
+#' @param output \code{string} Either clean: for dataframe with no suspicious outliers or
+#'   outlier: to return dataframe with only outliers.
+#' @param a \code{numeric}. Constant for adjusted boxplots.
+#' @param b \code{numeric}. Constant for adjusted boxplots.
+#' @param coef \code{numeric}. Constant for adjusted boxplots.
 #'
 #' @importFrom robustbase adjboxStats
 #'
-#' @return Dataframe with or with no outliers.
+#' @return \code{dataframe}. Dataframe with or with no outliers.
 #' @export
 #'
 #' @examples

@@ -1,9 +1,9 @@
 #' @title Extract outliers for a one species
 #'
-#' @param x list of outlier outputs.
-#' @param sp species name or index in the list from datacleaner output. NULL for a single species
+#' @param x \code{list}. Outlier outputs.
+#' @param sp \code{string}. Species name or index in the list from datacleaner output. NULL for a single species
 #'
-#' @return data frame of outliers for each method
+#' @return \code{data frame} Outliers for each method
 #'
 #' @export
 #'
@@ -93,13 +93,13 @@ extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
   }
   return(mtdata)
 }
-#Many species
+
 
 #' @title Extract oultiers for multiple species
 #'
 #' @param x Species list
 #'
-#' @return data frame of outliers for multiple species
+#' @return \code{dataframe} Outliers for multiple species.
 #' @export
 #'
 #' @examples
@@ -252,21 +252,35 @@ oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
 
 #' @title Identifies absolute outliers and their proportions for a single species.
 #'
-#' @param x List of dataframes for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param absolute To output absolute outliers for a species.
-#' @param props To output the proportional absoluteness for each outlier.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @param x \code{datacleaner} class for each methods used to identify outliers
+#'   in \code{multidetect} function.
+#' @param sp \code{string}. Species name or index if multiple species are
+#'   considered during outlier detection.
+#' @param threshold \code{numeric}. Maximum value to denote an absolute outlier.
+#'   The threshold ranges from \code{0}, which indicates a point has not been
+#'   flagged by any outlier detection method as an \code{outlier}, to \code{1},
+#'   which means the record is an absolute or true outlier since all methods
+#'   have identified it. At both extremes, many records are classified at low
+#'   threshold values, which may be due to individual method weakness or
+#'   strength and data distribution. Also, at higher threshold values, the true
+#'   outliers are retained. For example, if ten methods are considered and 9
+#'   methods flag a record as an outlier, If a cutoff of 1 is used, then that
+#'   particular record is retained. Therefore, the \code{default} cutoff is
+#'   \code{0.6}, but \code{autothreshold} can be used to select the appropriate
+#'   threshold.
+#' @param autothreshold \code{vector}. Identifies the threshold with mean number
+#'   of absolute outliers.The search is limited within 0.51 to 1 since
+#'   thresholds less than are deemed inappropriate for identifying absolute
+#'   outliers. The autothreshold is used when \code{threshold} is set to
+#'   \code{NULL}.
+#' @param absolute \code{logical}. To output absolute outliers for a species.
+#' @param props \code{dataframe}. To output the proportional absoluteness for
+#'   each outlier.
+#' @param warn \code{logical}. If \strong{TRUE}, warning on whether absolute
+#'   outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
 #'
 #'
-#' @return vector or absolute outliers, best outlier detection method or data frame of absolute outliers and their
+#' @return \code{vector} or \code{dataframe} of absolute outliers, best outlier detection method or data frame of absolute outliers and their
 #' proportions
 #'
 #' @export
@@ -450,7 +464,7 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
                  listofmethods = lstvec, absolute = absolute, props= props, autothreshold = autothreshold)
 
     }else{
-      stop('No absolute outliers found with a threshold of ', threshold, '. Reduce and try again')
+      stop('No absolute outliers found with a threshold of ', threshold, '. Reduce and try again or continue with the reference dataset.')
     }
   }
 }
@@ -458,16 +472,7 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
 
 #' @title  Identifies absolute outliers for multiple species.
 #'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{"0"} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{"1"}, when means the record is an absolute or true outlier since it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param props To output the proportional absoluteness for each outlier
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
 #' @return vector or absolute outliers, best outlier detection method or data frame of absolute outliers and their
 #' proportions
@@ -496,13 +501,12 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
 #'
 #' outliers <- multidetect(data = extdf,output='outlier',
 #'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"))
 #'
 #' totabs_counts <- mult_abs(x = outliers, sp= 1, threshold = 0.2)
 #' }
 #'
-#' @seealso [ocindex()]
+#' @seealso \code{\link{ocindex}}
 #'
 
 mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=FALSE){
@@ -537,7 +541,7 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
 
           }
         },
-        error= function(){
+        error= function(e){
           if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.')
           return(0)
         })
@@ -566,7 +570,7 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
                               props = props, warn=warn, autothreshold = autothreshold)
 
         },
-        error= function(){
+        error= function(e){
           if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.', call. = FALSE)
           return(NULL)
         })
@@ -592,28 +596,13 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
 }
 
 
-
-#mult2 <- mult_abs(x=plantoutliers1, warn = TRUE, props = TRUE, threshold = 0.9)
-# mult <- mult_abs(x=out_df,  warn = FALSE, props = TRUE, threshold = 0.60)
-
-
-
 # Presence absence dissimilarity methods
 
 #' @title Identifies the best outlier detection method using Jaccard coefficient.
 #'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
-#' @return best method for identifying outliers.
+#' @return \code{string} best method for identifying outliers.
 #'
 #' @export
 #'
@@ -657,7 +646,7 @@ jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FA
   if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   #check if there are absolute outliers
-  if(isTRUE(autothreshold)){
+  if(autothreshold==TRUE){
 
     absoutliers_list <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn,
                                 autothreshold = autothreshold)
@@ -731,16 +720,7 @@ jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FA
 #
 #' Identifies best outlier detection method using Overlap coefficient.
 #'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
 #' @return best method for identifying outliers.
 #'
@@ -855,17 +835,7 @@ overlap <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold = 
 
 #' @title Cosine similarity index based on (Gautam & Kulkarni 2014; Joy & Renumol 2020)
 #
-#'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
 #' @return best method for identifying outliers.
 #'
@@ -978,16 +948,7 @@ cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FAL
 
 #' @title Identifies best outlier detection method suing Sorensen Similarity Index.
 #'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
 #' @return best method for identifying outliers.
 #'
@@ -1103,16 +1064,7 @@ sorensen <- function(x, sp = NULL,  threshold=NULL, warn=FALSE, autothreshold = 
 
 #' @title Identify best outlier detection method using simple matching coefficient.
 #'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
 #' @return best method for identifying outliers based on simple matching coefficient.
 #' @export
@@ -1302,16 +1254,7 @@ smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALS
 
 #' @title Identify best outlier detection method using Hamming distance.
 #'
-#' @param x List of data frames for each methods used to identify outliers in mult_detect function.
-#' @param sp species name or index if multiple species are considered during outlier detection.
-#' @param threshold Maximum value to denote an absolute outlier. The threshold ranges from \code{0} which indicates a point has not been flagged by any outlier detection method
-#'        as an \code{outlier} or \code{1}, when means the record is an absolute or true outlier sicen it has been identified by all methods. At both extremes, at low threshold values,
-#'        many records are classified, which may be due to individual method weakness or strength and data distribution. Also, at higher threshold values, the true outliers are retained
-#'        Fo example, if 10 methods are considered and 9 methods flags a record as an outlier, If a cut off 1 is used, then that particular record is retained.
-#'        Therefore the \code{default} cutoff is 0.6 but \code{autothreshold} can be used to select the appropriate threshold.
-#' @param autothreshold Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
-#'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param warn If \strong{TRUE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
+#' @inheritParams ocindex
 #'
 #' @return best method based on hamming distance
 #' @export

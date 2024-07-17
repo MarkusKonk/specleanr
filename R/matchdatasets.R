@@ -1,6 +1,6 @@
 
 #When standard column names are NULL
-
+#' @noRd
 .null <- function(x, y, std) {
 
   if(is.null(y)){

@@ -1,33 +1,43 @@
-#Preliminary
-#' @title  Preliminary data cleaning including removing duplicates, records outside a particular basin, and NAs.
+
+#' @title  Preliminary data cleaning including removing duplicates, records
+#'   outside a particular basin, and NAs.
 #'
-#' @param data Data frame with multiple species or only one species for checking records with no coordinates, duplicates, and check for
-#' records that fall on land, sea, country or city centroids, and geographical outliers(Zzika et al., 2022).
-#' @param raster Environmental layers from different providers such as WORLDCLIM (), Hydrogaphy90m (), CHELSA, Copernicus ().
-#' @param lat variable for latitude column name.
-#' @param lon variable for longitude column name.
-#' @param colsp variable already in the data.
-#' @param minpts minimum number of records for the species after removing duplicates and those within a particular basin.
-#' @param multiple TRUE if species are more than one and FALSE for one species in the data.
-#' @param list If TRUE the a list of multiple species data frames will be generated and FALSE for a dataframe of species data sets. Default TRUE
-#' @param bbox Object of class 'shapefile' If only a particular basin is considered. Bounding box vector points can also be provided
-#'      in the form \code{"c(xmin, ymin, xmax, ymax)"}. \code{xmin} is the minimum longitude,
-#'      \code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude and
-#'      \code{xmax} is the minimum latitude.
-#' @param verbose if TRUE message and warnings will be produced. Default TRUE
-#' @param warn logical, indicating to whether to show implementation warning or not. Default \code{FALSE}.
-#' @param merge To add the other columns in the species data after data extraction. Default \strong{TRUE}
+#' @param data \code{dataframe}. Data frame with multiple species or only one
+#'   species for checking records with no coordinates, duplicates, and check for
+#'   records that fall on land, sea, country or city centroids, and geographical
+#'   outliers(Zzika et al., 2022).
+#' @param raster \code{raster}. Environmental layers from different providers
+#'   such as WORLDCLIM (), Hydrogaphy90m (), CHELSA, Copernicus ().
+#' @param lat,lon \code{coordinates}. variable for latitude and longitude column
+#'   names.
+#' @param colsp \code{string}. variable already in the data.
+#' @param minpts \code{numeric}. Minimum number of records for the species after
+#'   removing duplicates and those within a particular basin.
+#' @param multiple \code{logical}. TRUE if species are more than one and FALSE for one species
+#'   in the data.
+#' @param list \code{logical}. If TRUE the a list of multiple species data frames will be
+#'   generated and FALSE for a dataframe of species data sets. Default TRUE
+#' @param bbox \code{sf} or \code{vector}. Object of class 'shapefile' If only a particular basin is
+#'   considered. Bounding box vector points can also be provided in the form
+#'   \code{"c(xmin, ymin, xmax, ymax)"}. \code{xmin} is the minimum longitude,
+#'   \code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude
+#'   and \code{xmax} is the minimum latitude.
+#' @param verbose \code{logical}. if TRUE message and warnings will be produced. Default \code{TRUE}.
+#' @param warn \code{logical}. indicating to whether to show implementation warning or
+#'   not. Default \code{FALSE}.
+#' @param merge \code{logical}. To add the other columns in the species data after data
+#'   extraction. Default \strong{TRUE}.
 #'
-#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf st_bbox st_set_crs st_as_sfc
+#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf
+#'   st_bbox st_set_crs st_as_sfc
 #' @importFrom terra extract ext
 #'
-#' @return precleaned cleaned data sets for single or multiple species
+#' @return \code{dataframe} or \code{list} of precleaned data sets for single or multiple species.
 #' @export
 #'
 #' @examples
 #'
 #' \dontrun{
-#'
 #'
 #' data(jdsdata)
 #'

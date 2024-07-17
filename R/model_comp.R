@@ -1,61 +1,71 @@
 #' @title Comparing the model performance before and after outlier removal.
 #'
-#' @param refdata A list or dataframe of species data generated during
+#' @description
+#' The function is used to compare model performance before and outlier removal.
+#' The different thresholds are indicated and the model performance outputs are obtained
+#' based on threshold dependent and independent metrics such as accuracy, sensitivity,
+#' specificity, true skill statistics, and Area Under the Curve.
+#'
+#' @param refdata \code{list} or \code{dataframe} of species data generated during
 #'   pre-cleaning process. This data set is used as the reference data in
 #'   accessing the outlier detection performance using both threshold dependent
 #'   and independent metrics. This data set must be same as when in detecting
 #'   outliers to avoid mismatch.
-#' @param outliers The \code{datacleaner} class data set with all outliers
-#'   obtained using the \code{multdetect} function. Please check \code{ocindex}.
-#' @param mode A character of either \code{abs} to use absolute outliers to
+#' @param outliers \code{datacleaner} class data set with all outliers
+#'   obtained using the \code{multdetect} function.
+#' @param mode \code{character} of either \code{abs} to use absolute outliers to
 #'   filter data or \code{best} to use the best method to filter the data
-#'   \code{\link{bestmethod}}.
-#' @param models The models to be used to examine the relationship between
+#'   \code{\link{bestmethod}} function.
+#' @param models \code{character}. The models to be used to examine the relationship between
 #'   species occurrences and environmental parameters. Only Random forest and
 #'   generalized linear models are accepted. \code{GLM} is used to set to
 #'   Generalized Linear Models and \code{RF} for Random Forest. \code{RF1}
 #'   variant is slower and is suggested if \code{RF} fails.
-#' @param metrics Either to only consider threshold-dependent,
-#'   threshold-independent or all evaluation metrics to determine model
+#' @param metrics \code{character}. Either to only consider threshold-dependent \code{dep},
+#'   threshold-independent \code{indep} or all evaluation metrics \code{all} to determine model
 #'   performance.
-#' @param binary logical of \code{FALSE} if the species dataset do not have
-#'   label column for presence absence. Therefore, the \code{FALSE} is used when
-#'   the parameter \code{label} is NULL. If only species presences and absences
-#'   are indicated, the user should select \code{TRUE} option.
-#' @param autothreshold logical which identifies the threshold with mean number
+#' @param binary \code{logical}. If \code{FALSE} the species dataset do not have
+#'   label column for presence absence and \code{label} is NULL.
+#'   If only species presences and absences  are indicated,
+#'   the user should select \code{TRUE}.
+#' @param autothreshold \code{logical}. Identifies the threshold with mean number
 #'   of absolute outliers.The search is limited within 0.51 to 1 since
 #'   thresholds less than are deemed inappropriate for identifying absolute
 #'   outliers. The autothreshold is used when \code{threshold} is set to
 #'   \code{NULL}.
-#' @param colsp The column with species names if the species occurrence is a
+#' @param colsp \code{character}. Column with species names if the species occurrence is a
 #'   data frame not list,
-#' @param raster The environmental where pseudo absences are extracted using
-#'   \link[specleanr]{envextract}.
-#' @param thresholds The different scenarios are implemented. Currently the
-#'   reference data set and threshold, outlier cleaned data are allowed.
-#' @param nboots Creating sub samples for modeling evaluation.
-#' @param testprop The probability to be used for partitioning data.
-#' @param lat,lon character if the species occurrences don't have the geometry
-#'   column or not spatial vector file, the latitude and longitude must be
+#' @param raster \code{SpatRaster}. The environmental where pseudo absences are extracted using
+#'   \code{\link{envextract}} function.
+#' @param thresholds \code{numeric}. The thresholds ranging from 0.1 to 1 but greater than 0.5 is advisable.
+#' @param nboots \code{numeric} Creating sub samples for modeling evaluation. At least more than 5 is advisable.
+#' @param testprop \code{numeric}. The proportion to be used for partitioning data. Ranges from 0.1 to 1.
+#'      Less than 0.5 is advisable to allow have more model training data.
+#' @param lat,lon \code{character}. Column names for latitude/longitude if the species
+#'  occurrences don't have the geometry column or not spatial vector file.
+#'  The latitude and longitude must be
 #'   provided for data extraction from the raster layers.
-#' @param prbackground numeric value indicating the proportion of pseudo
-#'      absences compare to the species presences. Used in \code{spatSample} function.
-#'      Ranges from at least 0.1 to 1
-#' @param geom character which is used in data extraction when the species
+#' @param geom \code{character}. Column name used to indicate geometry column during data extraction when the species
 #'   occurrences is of \code{sf} class and have geometry column instead of latitude
 #'   and longitude.
-#' @param verbose Return messages or not. Default is \code{FALSE}.
-#' @param warn Return warning or not. Default is \code{FALSE}.
-#' @param pabs Percentage of outliers allowed to be extracted from the data. If
+#' @param prbackground \code{numeric}. Value indicating the proportion of pseudo
+#'      absences extracted in relation to the species presences. Used in \code{spatSample} function.
+#'      Ranges from at least 0.1 to 1. Check \code{(Barbet-Massin et al., 2012)} on the number of
+#'      pseudo absences required during species distribution modeling.
+#' @param verbose \code{logical}. Return messages or not. Default is \code{FALSE}.
+#' @param warn \code{logical}. Return warning or not. Default is \code{FALSE}.
+#' @param pabs \code{numeric}. Percentage of outliers allowed to be extracted from the data. If
 #'   \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 #'   the absolute outliers are removed instead. This because some records  in
 #'   the best methods are repeated and they will likely to remove true values as
 #'   outliers.
-#' @param full logical of either full model output for \code{TRUE} or \code{FALSE} for only
+#' @param full \code{logical}. Either full model output for \code{TRUE} or \code{FALSE} for only
 #'   performance metrics output.
-#' @param minpts numeric value indicating the minimum number of records required to run the species
+#' @param minpts \code{numeric} value indicating the minimum number of records required to run the species
 #'   distribution model. Default is \code{10}.
-#' @param ... other parameters can be used from \code{\link{envextract}}
+#' @param loessthreshold whether to consider loess or not.
+#' @param plot true or false
+#' @param ... Other parameters can be used from \code{\link{envextract}}
 #'   function.
 #'
 #' @return A list of model instance and model performance metrics.
@@ -119,19 +129,19 @@
 #'
 #' }
 #'
+#' @seealso \code{\link{sdmfit}}, \code{\link{multidetect}}, \code{\link{pred_extract}}, \code{\link{envextract}}, \code{\link{boots}}
 #'
-#' @seealso \link[specleanr]{sdmfit}
-#' @seealso \link[specleanr]{multidetect}
-#' @seealso \link[specleanr]{pred_extract}
-#' @seealso \link[specleanr]{envextract}
-#' @seealso \link[specleanr]{boots}
+#' @references
+#' Barbet-Massin, M., Jiguet, F., Albert, C. H., & Thuiller, W. (2012).
+#' Selecting pseudo-absences for species distribution models:
+#' how, where and how many? Methods Ecol Evol 3: 327–338.
 #'
 modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics ='all',
-                            thresholds = c(0.6, 0.7), autothreshold = FALSE,
-                         mode='best',colsp =NULL, nboots= 10,
+                            thresholds = NULL, loessthreshold = FALSE, autothreshold = FALSE,
+                         mode='abs',colsp =NULL, nboots= 10,
                          testprop=0.2, geom = NULL, lat = NULL, lon = NULL,
                          prbackground=1, binary=FALSE, verbose = F, warn = F, full = FALSE,
-                         pabs = 0.1, minpts=10,...){
+                         pabs = 0.1, minpts=10, plot=FALSE,...){
 
 
   if(all(1>thresholds)==FALSE)stop("The threshold values should ranges from at least 0.1 to 1")
@@ -158,22 +168,48 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
   modelist <- list()
   modelout <- list()
 
+  #sequence through species
+
+  #thresholds by loess function
+
+  #spthresholds <- threshold_opt(refdata = refdata, outliers = outliers, mode = mode)
+
   for (mp in seq_along(df)) {
 
     if(outliers@mode==TRUE) spl <- names(df)[mp]
 
     ref <- "REF" #reference dataset to avoid masking 1.0 threshold
 
-    #remove the zero threshold in case its indicated by the user
+    if(loessthreshold==TRUE){
+      #run the loess threshold finder
+      #get for one species
+      if(outliers@mode==FALSE){
+        thresholdvalues <- optimal_threshold(refdata = refdata, outliers = outliers, plot = plot)
 
-    checkzero <- thresholds%in%0
+        sfinal <- unname(thresholdvalues)[2] #pick the maxima at index 2
+      }else{
+        #for multiple species
+        thresholdvalues<- optimal_threshold(refdata = refdata, outliers = outliers, plot = plot,
+                                           colsp = colsp)
+        #it generates a dataframe for all species
+        #extract for the species in the loop
+        speciesthreshold <- unlist(thresholdvalues$species)
+        speciesinloop <- spl
+        #get maxima or optimal threshold
+        sfinal <- unlist(thresholdvalues$maxima)[which(speciesthreshold==speciesinloop)]
+      }
 
-    if(any(checkzero) ==TRUE) sfinal <- thresholds[which(checkzero==FALSE)] else sfinal <- thresholds
+    }else{
+      #remove the zero threshold in case its indicated by the user
+      checkzero <- thresholds%in%0
+
+      if(any(checkzero) ==TRUE) sfinal <- thresholds[which(checkzero==FALSE)] else sfinal <- thresholds
+    }
 
     #merge both the references and other thresholds
     tvalues <- c(ref, sfinal)
 
-    #loop through the thrsholds
+    #loop through the thresholds
     for (tv in 1:length(tvalues)){
 
       mdl = tvalues[tv]
@@ -214,6 +250,7 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
       }
       #minpts allows no to break the SDMs as few records will not allow evlauting the models.
       if(nrow(dfspx)>=minpts){
+
         #data extraction and setting pesudo absences using terra::spatSample
         #for presence only species data: if species have presence/absence , the spatSample will not be used.
         dataprep <- envextract(occurences = dfspx, raster = raster, lat = lat,
@@ -250,73 +287,5 @@ modelcomparison <- function(refdata, outliers, raster, models = 'GLM', metrics =
   return(modelist)
 }
 
-#' @title Extract the model performance
-#'
-#' @param modeloutput The model output object where data is extracted.
-#' @param type Either test or train performance metrics.
-#'
-#' @return A data frame with performance metrics between reference and outlier cleaned dataset. This function takes the output from \code{\link{modelcomparison}} function.
-#'
-#' @export
-#'
-get_performance <- function(modeloutput, type='test'){
-
-  match.argc(type, choices = c('train', 'test'))
-
-  perfdata <- list()
-  splist <- list()
-  runlist<- list()
-  pdata <- list()
-
- #run through the species
-  for (nm in 1:length(modeloutput)) {
-    #extract species name
-    if(is.null(names(modeloutput)[nm])) spname <-  1 else spname <- names(modeloutput)[nm]
-
-    spd = modeloutput[[spname]]
-
-    #remove species elements which didn't execute
-    lenout <- sapply(spd, length)
-
-    if(any(lenout<=1)) spd <- within(spd, rm(list=names(spd[lenout <=1]))) else  spd
-
-    #run through the thresholds from REF to 0.9..
-    for(ref in 1:length(spd)){
-
-      refnames <- names(spd)[ref] #the thresholds
-
-      modedata <- spd[[refnames]]
-
-      for(r in 1:length(modedata)){
-
-        rundata <- modedata[[r]] #check if all thresholds executed
-
-        if((attributes(modeloutput)$full)==FALSE){
-
-          pdata[[r]]  <- switch (type, test = rundata[[1]], train=rundata[[2]] )
-
-        }else{
-          pdata[[r]]  <- switch (type, test = rundata[[4]], train=rundata[[5]] )
-
-        }
-
-        runlist <- do.call(rbind, pdata)
-
-        runlist$species = spname
-
-        runlist$scenario = refnames
-      }
-      #save data which has been extracted
-      perfdata[[ref]] <- runlist
-
-      pfinal <- do.call(rbind, perfdata)
-
-    }
-    splist[[nm]] <- pfinal
-
-    runfinal <- do.call(rbind, splist)
-  }
-  return(runfinal)
-}
 
 

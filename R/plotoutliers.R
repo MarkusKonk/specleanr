@@ -82,6 +82,7 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 #'
 #' @param raw Whether total number of outlier flagged in each method are provided (\code{TRUE}) or
 #'        \code{FALSE} to return the percentage outlier contribution for each method.
+#' @param color \code{string}. Color of the bars. Default is \code{grey}.
 #'
 #' @title Visualize the outliers identified by each method
 #'
@@ -90,7 +91,7 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 #' @export
 #'
 #'
-ggoutliers <-  function(x, y, raw=TRUE){
+ggoutliers <-  function(x, y, raw=TRUE, color='purple'){
 
   if(x@mode==FALSE){
 
@@ -133,7 +134,7 @@ ggoutliers <-  function(x, y, raw=TRUE){
   suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
 
   pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes_string(x="method", y= if(raw==TRUE) "totaloutliers" else "pct"))+
-    ggplot2::geom_bar(stat = 'identity', fill='bisque4')+
+    ggplot2::geom_bar(stat = 'identity', fill=color)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = 'none',
                    panel.grid.major.x = ggplot2::element_blank(),

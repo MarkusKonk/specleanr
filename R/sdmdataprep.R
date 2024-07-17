@@ -1,15 +1,15 @@
 
 #' @title  An internal function to check for missing value in environmental data before extraction.
 #'
-#' @param raster A raster layer with species environmental data to be used during modelling.
-#' @param coords the coordinates geometry. Either x and y or geometry column if the species occurrences are in a geometry format.
-#' @param labels If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
+#' @param raster \code{raster}. A raster layer with species environmental data to be used during modelling.
+#' @param coords \code{coordiantes}. the coordinates geometry. Either x and y or geometry column if the species occurrences are in a geometry format.
+#' @param labels \code{string}. If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
 #'        Character labels for example allowed, for example P for presences and A for absences recommended.
-#' @param missingness The limit at which a column is discarded from the data rather than removing numerous rows. For example, if the column has 50\% of the dataset missing values
+#' @param missingness \code{numeric}. The limit at which a column is discarded from the data rather than removing numerous rows. For example, if the column has 50\% of the dataset missing values
 #'        then removing the rows will be problematic rather than column since it only affect one parameter than the whole dataset.
-#' @param exclude Indicate columns where checking non missing values or NAs should not be done.
-#' @param vifcutoff Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
-#' @param verbose To return execution messages or not. The Default is \code{FALSE}.
+#' @param exclude \code{vector}. Indicate columns where checking non missing values or NAs should not be done.
+#' @param vifcutoff \code{numeric}. Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
+#' @param verbose \code{logical}. To return execution messages or not. The Default is \code{FALSE}.
 #'
 #' @return extracted environmental data with labels.
 #'
@@ -66,23 +66,23 @@ exdata <- function(raster, coords, labels, missingness, exclude, vifcutoff,
 
 #' @title Generating pseudo absences from raster layers for distribution modeling.
 #'
-#' @param occurences Species occurrences data with coordinates or geometry to enable generate pseudo absences and extract environmental data from the points.
-#' @param raster A raster layer with species environmental data to be used during modelling. Different sources, include WORLDCLIM
-#' @param geom Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.
-#' @param lat,lon If the species occurrences don't have the geometry column or not spatial vector file, the latitude and longitude must be provided for data extraction form the raster layers.
-#' @param labels If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
+#' @param occurences \code{dataframe}. Species occurrences data with coordinates or geometry to enable generate pseudo absences and extract environmental data from the points.
+#' @param raster \code{raster}. A raster layer with species environmental data to be used during modelling. Different sources, include WORLDCLIM
+#' @param geom \code{string}. Is used in data extraction when the species occurrences geometry column instead of latitude and longitude.
+#' @param lat,lon \code{coordinates}. If the species occurrences don't have the geometry column or not spatial vector file, the latitude and longitude must be provided for data extraction form the raster layers.
+#' @param labels \code{string}. If the dataset has presence absence column, it should be indicated here to be used for extracting the labels.
 #'        Character labels for example allowed, for example P for presences and A for absences recommended.
-#' @param prop The proportion of pseudo absences to presences. Default of 1 is used. Therefore equal number of pseudo absences are generated commensurate to the species.
-#' @param missingness Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
+#' @param prop \code{numeric}. The proportion of pseudo absences to presences. Default of 1 is used. Therefore equal number of pseudo absences are generated commensurate to the species.
+#' @param missingness \code{numeric}. Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
 #'      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.
-#' @param binary Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
+#' @param binary \code{logical}. Either \code{FALSE} if the species dataset do not have label column for presence absence. Therefore, the \code{FALSE} is used
 #'        when the parameter \code{label} is NULL. If only species presences and absences are indicated, the user should select \code{TRUE} option.
-#' @param positive if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
+#' @param positive \code{logical}. if \code{TRUE} is used, the user should indicate the positive label. For example, P for presence label. This is important in fitting the
 #'        models and computing the evaluation metrics.
-#' @param vifcutoff Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
-#' @param set.seed to ensure reproduciblity the seed is set. Same psudoabsences will be produced during each run.
-#' @param exclude Remove non numeric variables from the data.
-#' @param verbose Either \code{TRUE} to return messages or \code{FALSE} for no implementation messages. Default \code{FALSE}
+#' @param vifcutoff \code{numeric}. Used in assessing multicolinearity in environmental predictors using correlation from vifcor function from usdm package \code{Naimi et al., 2014}.
+#' @param set.seed \code{integer}. to ensure reproduciblity the seed is set. Same psudoabsences will be produced during each run.
+#' @param exclude \code{vector}. Remove non numeric variables from the data.
+#' @param verbose \code{logical}. Either \code{TRUE} to return messages or \code{FALSE} for no implementation messages. Default \code{FALSE}
 #'
 #' @importFrom sf st_crs st_drop_geometry
 #' @importFrom terra crs

@@ -1,16 +1,16 @@
 #' @title  Species distribution modelling
 #'
-#' @param data A list species data with both testing and training, probably from boots function.
-#' @param models A character of the acceptable models to be used to examine the
+#' @param data \code{list}. Species data with both testing and training, probably from boots function.
+#' @param models \code{character}. A character of the acceptable models to be used to examine the
 #'      relationship between species occurrences and environmental parameters. Only
 #'      Random forest and generalized linear models are accepted. \code{GLM} is
 #'      used to set to Generalized Linear Models and \code{RF} for Random Forest.
 #'      \code{RF1} variant is slower and is suggested if RF fails.
-#' @param cutoff A numeric value that defines a threshold classify the model predictions/probabilities
+#' @param cutoff \code{numeric}. value that defines a threshold classify the model predictions/probabilities
 #'      as presence or absent. Default is \code{0.5}. The maximum is \code{1} and lowest is \code{0}.
-#' @param metrics A character to allow consider either only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
+#' @param metrics \code{character}. To allow consider either only consider threshold-dependent \code{(dep)}, threshold-independent \code{(indep)}
 #'      or \code{all} evaluation metrics to determine model performance.
-#' @param full A character of either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
+#' @param full \code{logical} Either full model output for \code{TRUE} or \code{FALSE} for only performance metrics output.
 #'
 #'
 #' @return Lists of model runs, and performance evaluation metrics of both training and testing; and also threshold-dependeent and independent metrics..

@@ -83,54 +83,7 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
   }
 }
 
-
-#' @title Flags outliers or no outliers for multiple outlier methods.
-#'
-#' @param x Dataframe with species occurrences
-#' @param var Environmental parameter considered in flagging suspicious outliers.
-#' @param output Either \strong{clean}; to produce a data set with no outliers, or \strong{outlier}:
-#'        to output a dataframe with outliers. Default \code{outlier}.
-#' @param exclude Exclude variables that should not be considered in the fitting the one
-#'      class model, for example x and y columns or
-#'      latitude/longitude or any column that the user doesn't want to consider.
-#' @param ifpar Isolation forest parameter settings. Parameters of the isolation
-#'      model that are required, include
-#'     the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1}
-#'      but Default \strong{0.5}. Also,
-#'     the \strong{size} of data partitioning for training should be determined.
-#'     For more details check \strong{(Liu et al. 2008)}
-#' @param methods Outlier detection methods considered. Use \strong{\code{extractMethod}}
-#'      to get outliers implemented in the package.
-#' @param optpar Parameters for species optimal ranges like temperatures ranges \link[specleanr]{multidetect}.
-#' @param kmpar Parameters for kmeans clustering like method and number of clusters for tuning \link[specleanr]{multidetect}.
-#' @param lofpar Parameters for local outlier factor such as the distance matrix and mode of method implementation
-#'  such as robust and soft modes \link[specleanr]{multidetect}.
-#' @param jkpar Parameters for reverse jack knifing mainly the mode used \link[specleanr]{multidetect}.
-#' @param gloshpar Parameters for global local outlier score from hierarchies such as distance metric used \link[specleanr]{multidetect}.
-#' @param mahalpar Parameters for Malahanobis distance which includes varying the mode of output \link[specleanr]{multidetect}.
-#' @param knnpar Parameters for varying the distance matrix such euclidean or Manhattan \link[specleanr]{multidetect}.
-#' @param zpar Parameters for z-score such mode and x parameter \link[specleanr]{multidetect}.
-#' @param verbose whether to return messages or not. Default FALSE.
-#' @param warn whether to return warning or not. Default TRUE.
-#' @param spname species name being handled.
-#' @param missingness Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
-#'      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.
-#' @param showErrors show execution errors and therefore for multiple species the code will break if one of the
-#'      methods fails to execute.
-#'
-#' @return Dataframe with or with no outliers.
-#'
-#'
-#' @references
-#'
-#' \enumerate{
-#'   \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413-422
-#' In 2008 Eighth IEEE International Conference on Data Mining. Available from
-#' https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
-#'
-#' }
-#' @seealso  \code{\link[specleanr]{multidetect}}
-
+#' @noRd
 detect <- function(x,
                     var,
                     output,
@@ -327,45 +280,63 @@ detect <- function(x,
   return(methodList)
 }
 
-#' @title Allows ensemble multiple outlier detection methods.
+#' @title Ensemble multiple outlier detection methods.
 #'
-#' @param data Dataframe or list of data sets for multiple or single species after after of extraction of environment predictors.
-#' @param var A variable to check for outliers especially the one with directly affects species distribution such as
+#' @description
+#' The function allows to ensemble multiple outlier detection methods to ably compare the outliers flagged
+#' by each method.
+#'
+#' @param data \code{dataframe or list}. Data sets for multiple or single species after of extraction of environment predictors.
+#' @param var \code{character}. A variable to check for outliers especially the one with directly affects species distribution such as
 #' maximum temperature of the coldest month for bioclimatic variables \code{(IUCN Standards and Petitions Committee, 2022))} or
-#' stream power index for hydromorphological parameters \code{(Logez et al., 2012)}.
-#' @param output Either \strong{clean}: for a data set with no outliers, or \strong{outlier}: to output a dataframe with outliers. Default \code{outlier}.
-#' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
+#' stream power index for hydromorphological parameters \code{(Logez et al., 2012)}. This parameter is
+#' necessary for the univariate outlier detection methods such as Z-score.
+#' @param output \code{character}. Either \code{clean}: for a data set with no outliers, or \code{outlier}: to output a dataframe with outliers. Default \code{outlier}.
+#' @param exclude \code{vector}. Exclude variables that should not be considered in the fitting the one class model, for example \code{x} and \code{y} columns or
 #' latitude/longitude or any column that the user doesn't want to consider.
-#' @param ifpar Isolation forest parameter settings. Parameters of the isolation model that are required include
-#'     the \strong{cutoff} to be used for denoting outliers. It ranges from \strong{0 to 1} but Default \strong{0.5}. Also,
-#'     the \strong{size} of data partitioning for training should be determined. For more details check \strong{(Liu et al. 2008)}
-#' @param methods Outlier detection methods considered. Use \strong{\code{extractMethod}} to get outliers implemented in the package.
-#' @param multiple If the multiple species considered, then multiple set to TRUE: If FALSE then multiple should be set to FALSE.
-#' @param colsp A column with species columns if the data set for species is a dataframe not a list. see \link[specleanr]{pred_extract} for extracting environmental data.
-#' @param optpar Parameters for species optimal ranges like temperatures ranges.
-#' @param kmpar Parameters for k-means clustering like method and number of clusters for tuning.
-#' @param lofpar Parameters for local outlier factor such as the distance matrix and mode of method implementation
-#'  such as robust and soft mode.
-#' @param jkpar Parameters for reverse jack knifing mainly the mode used.
-#' @param gloshpar Parameters for global local outlier score from hierarchies such as distance metric used..
-#' @param mahalpar Parameters for Malahanobis distance which includes varying the mode of output.
-#' @param knnpar Parameters for varying the distance matrix such as \code{Euclidean} or \code{Manhattan distance}.
-#' @param zpar Parameters for z-score such mode and x parameter.
-#' @param spname species name being handled.
-#' @param missingness Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if
+#' @param ifpar \code{list}. Isolation forest parameter settings. Parameters of the isolation model that are required include
+#'     the \strong{cutoff} to be used for denoting outliers. It ranges from \code{0 to 1} but Default \code{0.5}. Also,
+#'     the \strong{size} of data partitioning for training should be determined. For more details check \code{(Liu et al. 2008)}
+#' @param methods \code{vector}. Outlier detection methods considered. Use \code{\link{extractMethods}} to get outlier detection methods implemented in this package.
+#' @param multiple \code{logical}. If the multiple species are considered, then multiple must be set to \code{TRUE} and \code{FALSE} for single species.
+#' @param colsp \code{string}. A column with species names if \code{dataset} for species is a dataframe not a list. See \code{\link{pred_extract}} for extracting environmental data.
+#' @param optpar \code{list}. Parameters for species optimal ranges like temperatures ranges. For details check \code{\link{ecological_ranges}}.
+#' @param kmpar \code{list}. Parameters for k-means clustering like method and number of clusters for tuning. For details, check \code{\link{xkmeans}}.
+#' @param lofpar \code{list}. Parameters for local outlier factor such as the distance matrix and mode of method implementation
+#'  such as robust and soft mode. For details \code{\link{xlof}}.
+#' @param jkpar \code{list}. Parameters for reverse jack knifing mainly the mode used. For details \code{\link{jknife}}.
+#' @param gloshpar \code{list}. Parameters for global local outlier score from hierarchies such as distance metric used. For details \code{\link{xglosh}}.
+#' @param mahalpar \code{list}. Parameters for Malahanobis distance which includes varying the mode of output  \code{\link{mahal}}.
+#' @param knnpar \code{list}. Parameters for varying the distance matrix such as \code{Euclidean} or \code{Manhattan distance}. For details \code{\link{xknn}}
+#' @param zpar \code{list}. Parameters for z-score such as \code{mode} and \code{x} parameter. For details \code{\link{zscore}}
+#' @param spname \code{string}. species name being handled.
+#' @param missingness \code{numeric}. Allowed missing values in a column to allow a user decide whether to remove the individual
+#' columns or rows from the data sets. Default 0.1. Therefore,
 #'      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.
-#' @param verbose whether to return messages or not. Default FALSE.
-#' @param warn whether to return warning or not. Default TRUE.
-#' @param showErrors show execution errors and therefore for multiple species the code will break if one of the
+#' @param verbose \code{logical}. whether to return messages or not. Default \code{FALSE}.
+#' @param warn \code{logical}. Whether to return warning or not. Default \code{TRUE}.
+#' @param showErrors \code{logical}. Show execution errors and therefore for multiple species the code will break if one of the
 #'      methods fails to execute.
 #'
 #' @details
 #' This function computes different outlier detection methods including univariate, multivariate and species
-#'      ecological ranges to enables seammless comaprision and similarities in the outliers detected by each
+#'      ecological ranges to enables seamless comparison and similarities in the outliers detected by each
 #'      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-#'      and thereafter the outliers can be extracted using the \link[specleanr]{clean_data_extract} function.
+#'      and thereafter the outliers can be extracted using the \code{\link{clean_data_extract}} function.
 #'
-#' @return Outliers or clean dataset.
+#' @return A \code{list} of outliers or clean dataset of \code{datacleaner} class. The different attributes are
+#' associated with the \code{datacleaner} class from \code{multidetect} function.
+#'
+#' \itemize{
+#'         \item{\code{result: }}{\code{dataframe}. list of dataframes with the outliers flagged by each method.
+#'         }
+#'        \item{\code{mode: }}{\code{logical}. Indicating whether it was multiple TRUE or FALSE.}
+#'         \item{\code{varused: }}{\code{character}. Indicating the variable used for the univariate outlier detection methods. }
+#'         \item{\code{out: }}{\code{character}. Whether outliers where indicated by the user or no oultier data. }
+#'         \item{\code{methodsused: }}{\code{vector}. The different methods used the outlier detection process.}
+#'         \item{\code{dfname: }}{\code{character}. The dataset name for the species records.}
+#'         \item{\code{exclude: }}{\code{vector}. The columns which were excluded during outlier detection if any.}
+#'         }
 #'
 #' @export
 #'
@@ -443,8 +414,8 @@ detect <- function(x,
 #'   \item IUCN Standards and Petitions Committee. (2022). THE IUCN RED LIST OF THREATENED SPECIESTM Guidelines for Using the IUCN Red List
 #' Categories and Criteria Prepared by the Standards and Petitions Committee of the IUCN Species Survival Commission.
 #' https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
-#' \item Liu FeiT, Ting KaiM, Zhou Z-H. 2008. Isolation Forest. Pages 413-422 In 2008 Eighth IEEE International Conference on Data Mining.
-#' Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
+#' \item Liu, F. T., Ting, K. M., & Zhou, Z. H. (2008, December). Isolation forest.
+#' In 2008 eighth ieee international conference on data mining (pp. 413-422). IEEE.
 #' }
 #'
 
@@ -467,7 +438,7 @@ multidetect <- function(data,
                         knnpar = list(metric='manhattan', mode='soft'),
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
-                        verbose=FALSE, spname=NULL,warn=TRUE,
+                        verbose=FALSE, spname=NULL,warn=FALSE,
                         missingness = 0.1, showErrors = TRUE){
 
   match.argc(output, c("clean", "outlier"))
@@ -537,6 +508,7 @@ multidetect <- function(data,
 
       dfinal<- df[[mdi]]
 
+      if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',mdi,' are less than variables and some methods may not function properly.')
 
       d <-  detect(x = dfinal, var = var, output = output,
                    exclude = exclude,optpar = optpar,
