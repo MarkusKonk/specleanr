@@ -15,21 +15,21 @@ thermal_ranges(
 )
 }
 \arguments{
-\item{x}{species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.}
+\item{x}{\code{dataframe} or \code{string}. species names or a dataframe of species to aid in retrieving temperature ranges from FishBase.}
 
-\item{colsp}{if \strong{\code{x}} is a data frame, then the column species is required. Otherwise for list of species or vector, the \code{colsp} is NULL.}
+\item{colsp}{\code{string}. if \strong{\code{x}} is a data frame, then the column species is required. Otherwise for list of species or vector, the \code{colsp} is NULL.}
 
-\item{verbose}{logical, to return implementation messages. Default \code{FALSE}.}
+\item{verbose}{\code{logical} To return implementation messages. Default \code{FALSE}.}
 
-\item{pct}{numeric, provide the perecentage similarity of the species name provided and the one in FishBase. The lower the \code{pct} value, the higher the chances
+\item{pct}{\code{numeric}. Provide the perecentage similarity of the species name provided and the one in FishBase. The lower the \code{pct} value, the higher the chances
 of getting a wrong species in the standard databases (FishBase). The plausible pct value should be greater than \strong{0.9}.}
 
-\item{sn}{logical, either to output synonym or only accepted names. This parameter reduces duplication of species synonyms and old name etc. For more information
+\item{sn}{\code{logical}. Either to output synonym or only accepted names. This parameter reduces duplication of species synonyms and old name etc. For more information
 see \href{https://www.fishbase.se/}{FishBase}.}
 
-\item{synonym}{A standard database for species synonym names from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.}
+\item{synonym}{\code{fishbasedataframe}. A standard database for species synonym names from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.}
 
-\item{ranges}{A standard database for ecological ranges from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.}
+\item{ranges}{\code{fishbasedataframe}. A standard database for ecological ranges from FishBase. See \href{https://www.fishbase.se/}{FishBase} for more information.}
 }
 \value{
 Data table for minimum, maximum and preferable species temperatures from FishBase.

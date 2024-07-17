@@ -2,7 +2,8 @@
 % Please edit documentation in R/predextract.R
 \name{pred_extract}
 \alias{pred_extract}
-\title{Preliminary data cleaning including removing duplicates, records outside a particular basin, and NAs.}
+\title{Preliminary data cleaning including removing duplicates, records
+  outside a particular basin, and NAs.}
 \usage{
 pred_extract(
   data,
@@ -20,44 +21,52 @@ pred_extract(
 )
 }
 \arguments{
-\item{data}{Data frame with multiple species or only one species for checking records with no coordinates, duplicates, and check for
-records that fall on land, sea, country or city centroids, and geographical outliers(Zzika et al., 2022).}
+\item{data}{\code{dataframe}. Data frame with multiple species or only one
+species for checking records with no coordinates, duplicates, and check for
+records that fall on land, sea, country or city centroids, and geographical
+outliers(Zzika et al., 2022).}
 
-\item{raster}{Environmental layers from different providers such as WORLDCLIM (), Hydrogaphy90m (), CHELSA, Copernicus ().}
+\item{raster}{\code{raster}. Environmental layers from different providers
+such as WORLDCLIM (), Hydrogaphy90m (), CHELSA, Copernicus ().}
 
-\item{lat}{variable for latitude column name.}
+\item{lat, lon}{\code{coordinates}. variable for latitude and longitude column
+names.}
 
-\item{lon}{variable for longitude column name.}
+\item{bbox}{\code{sf} or \code{vector}. Object of class 'shapefile' If only a particular basin is
+considered. Bounding box vector points can also be provided in the form
+\code{"c(xmin, ymin, xmax, ymax)"}. \code{xmin} is the minimum longitude,
+\code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude
+and \code{xmax} is the minimum latitude.}
 
-\item{bbox}{Object of class 'shapefile' If only a particular basin is considered. Bounding box vector points can also be provided
-in the form \code{"c(xmin, ymin, xmax, ymax)"}. \code{xmin} is the minimum longitude,
-\code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude and
-\code{xmax} is the minimum latitude.}
+\item{colsp}{\code{string}. variable already in the data.}
 
-\item{colsp}{variable already in the data.}
+\item{minpts}{\code{numeric}. Minimum number of records for the species after
+removing duplicates and those within a particular basin.}
 
-\item{minpts}{minimum number of records for the species after removing duplicates and those within a particular basin.}
+\item{multiple}{\code{logical}. TRUE if species are more than one and FALSE for one species
+in the data.}
 
-\item{multiple}{TRUE if species are more than one and FALSE for one species in the data.}
+\item{list}{\code{logical}. If TRUE the a list of multiple species data frames will be
+generated and FALSE for a dataframe of species data sets. Default TRUE}
 
-\item{list}{If TRUE the a list of multiple species data frames will be generated and FALSE for a dataframe of species data sets. Default TRUE}
+\item{merge}{\code{logical}. To add the other columns in the species data after data
+extraction. Default \strong{TRUE}.}
 
-\item{merge}{To add the other columns in the species data after data extraction. Default \strong{TRUE}}
+\item{verbose}{\code{logical}. if TRUE message and warnings will be produced. Default \code{TRUE}.}
 
-\item{verbose}{if TRUE message and warnings will be produced. Default TRUE}
-
-\item{warn}{logical, indicating to whether to show implementation warning or not. Default \code{FALSE}.}
+\item{warn}{\code{logical}. indicating to whether to show implementation warning or
+not. Default \code{FALSE}.}
 }
 \value{
-precleaned cleaned data sets for single or multiple species
+\code{dataframe} or \code{list} of precleaned data sets for single or multiple species.
 }
 \description{
-Preliminary data cleaning including removing duplicates, records outside a particular basin, and NAs.
+Preliminary data cleaning including removing duplicates, records
+  outside a particular basin, and NAs.
 }
 \examples{
 
 \dontrun{
-
 
 data(jdsdata)
 
