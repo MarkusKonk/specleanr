@@ -16,8 +16,8 @@ specleanr package for outlier detection
 <!-- badges: start -->
 
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
-[![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/AnthonyBasooma/specleanr)
+[![R-CMD-check](https://github.com/removedxx/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/removedxx/specleanr/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/removedxx/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/removedxx/specleanr)
 
 <!-- badges: end -->
 
@@ -60,7 +60,7 @@ locally stored data. The user can check for species records for
 geographical, taxonomic, or temporal inconsistencies such as missing
 coordinates, interchanged coordinates, species name spelling mistakes,
 and wrong event dates. Environmental data, mainly in the raster format,
-is based chiefly on user needs, but numerous sources include WORLDCLIM
+is based chiefly on user needs, but numerous sources, include WORLDCLIM
 (Fick & Hijmans, 2017) and CHELSA (Karger et al., 2017) for bioclimatic
 variables; Hydrography90m for stream or river-based hydromorphological
 parameters such as stream order, flow accumulation, stream power index,
@@ -71,13 +71,13 @@ for land use changes <https://www.copernicus.eu/en>.
 
 The environmental predictors are extracted from points where the species
 was recorded present or absent. The extracted dataset forms the species
-**reference dataset** for environmental outlier checks. In the package
-we included **`pred_extract()`** to extract the environmental
+**reference dataset** for environmental outlier checks. 
+We included **`pred_extract()`** to extract the environmental
 predictors.
 
 3.  **Ensemble multiple methods for outlier detection**.
 
-Multiple outlier detection methods are used; each method flags outliers
+Multiple outlier detection methods are used; each flags outliers
 in the same dataset. These outliers are then compared among methods to
 determine records, which are flagged by several methods called
 **absolute outliers** or **true outliers**. The total number of methods
@@ -178,7 +178,7 @@ used.
   **`modelcomparison()`** output.
 
 **Package website** To access the details of this package, please check
-it website on <https://anthonybasooma.github.io/specleanr/>
+it website on <https://xx.github.io/specleanr/>
 
 ### Package citation
 
