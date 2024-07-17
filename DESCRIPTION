@@ -2,10 +2,10 @@ Package: specleanr
 Type: Package
 Title: Detecting Environmental Outliers in Biogeographical Modeling Workflows
 Version: 0.1.0
-Authors@R: c(person('h', 'g', email='a@boku.ac.at', role =c('aut', 'cre'), 
+Authors@R: c(person('x', 'x', email='x@boku.ac.at', role =c('aut', 'cre'), 
     comment=c('0')))
-Maintainer: A <an@b.ac.at>
-Description: specleanr is used detect or flag and remove environmental outliers in species distribution models across taxa 
+Maintainer: A <xx@b.ac.at>
+Description: A framework used to detect and remove environmental outliers in species distribution models across taxa 
     and environmental predictors. Also, data retrieval and preprocessing, model fitting to enable performance comparisions
     are allowed.
 License: GPL (>= 3)

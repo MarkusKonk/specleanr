@@ -136,7 +136,7 @@
 #'
 #' @usage data(kdat)
 #'
-#' @keywords constants, seqfential fences
+#' @keywords constants sequential fences
 #'
 #' @format A \code{tibble} 101 rows and 2 columns.
 #'
@@ -201,7 +201,7 @@
 #'
 #' @usage data(naturalist)
 #'
-#' @keywords Appendix for NATURA2000, NATURA2000, fish.
+#' @keywords NATURA2000 NATURA2000 fish.
 #'
 #' @format A \code{tibble} 388303 rows and i9 columns.
 #'

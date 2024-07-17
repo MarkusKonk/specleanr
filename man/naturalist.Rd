@@ -30,7 +30,5 @@ naturalist
 \references{
 https://www.eea.europa.eu/themes/biodiversity/natura-2000.
 }
-\keyword{Appendix}
-\keyword{NATURA2000,}
+\keyword{NATURA2000}
 \keyword{fish.}
-\keyword{for}

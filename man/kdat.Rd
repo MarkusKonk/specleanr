@@ -32,6 +32,6 @@ kdat
 Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
 Computational Statistics and Data Analysis 51:3800–3810.
 }
-\keyword{constants,}
+\keyword{constants}
 \keyword{fences}
-\keyword{seqfential}
+\keyword{sequential}
