@@ -315,20 +315,20 @@ data. For more information, check (B….2024).</p>
 <span></span>
 <span></span>
 <span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
-<span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.6</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Model comparison</strong></li>
 </ol>
 <p>We vary the different thresholds, which determine the number of
-outlier detections used to indicate that a record is an outlier. For
+outlier detection used to indicate that a record is an outlier. For
 example, a record flagged as an outlier at a threshold of 1 means that
 all the methods ensembled identified the record as an outlier.
-Therefore, based on that principle, we vary the threshold from 0.2 to
-0.7 and predict and develop models at each step. Then, we evaluate the
-model performance using threshold-dependent and independent evaluation
-metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the
-Curve (AUC).</p>
+Therefore, based on that principle, we vary the threshold from 0.8 and
+predict and develop models at each step. Then, we evaluate the model
+performance using threshold-dependent and independent evaluation metrics
+such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve
+(AUC).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">multsppmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
@@ -360,7 +360,7 @@ plot.</li>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggperform.html">ggperform</a></span><span class="op">(</span>modelout <span class="op">=</span> <span class="va">multsppmodel</span>, eval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"Accuracy"</span>, <span class="st">"Sensitivity"</span>,</span>
 <span>                                                         <span class="st">"Kappa"</span>, <span class="st">"Specificity"</span>, <span class="st">"TSS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plants_files/figure-html/visualisation2-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Plants_files/figure-html/visualisation2-1.png" width="960" style="display: block; margin: auto;"></p>
 <div class="section level3">
 <h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
