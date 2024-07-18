@@ -186,13 +186,13 @@ cleandf <- clean_data_extract(refdata = plantcleaned, outliers = outliersdata,
 
 
 cleandf1 <- clean_data_extract(refdata = p1cleaned, outliers = out1df, 
-                         mode = "best", threshold = 0.6, warn = FALSE, verbose = TRUE, pabs = 0.1)
+                         mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
 
 ```
 
 5. **Model comparison**
 
-We vary the different thresholds, which determine the number of outlier detections used to indicate that a record is an outlier. For example, a record flagged as an outlier at a threshold of 1 means that all the methods ensembled identified the record as an outlier. Therefore, based on that principle, we vary the threshold from 0.2 to 0.7 and predict and develop models at each step. Then, we evaluate the model performance using threshold-dependent and independent evaluation metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve (AUC).
+We vary the different thresholds, which determine the number of outlier detection used to indicate that a record is an outlier. For example, a record flagged as an outlier at a threshold of 1 means that all the methods ensembled identified the record as an outlier. Therefore, based on that principle, we vary the threshold from 0.8 and predict and develop models at each step. Then, we evaluate the model performance using threshold-dependent and independent evaluation metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve (AUC).
 
 ```{r data cleaning scenarios}
 
@@ -231,7 +231,7 @@ ggperform(modelout = onesppmodel, eval = c("auc", "Accuracy", "Sensitivity",
 
 ```
 
-```{r visualisation2, fig.width = 9, fig.height= 4, fig.align='center'}
+```{r visualisation2, fig.width = 10, fig.height= 4, fig.align='center'}
 ggperform(modelout = multsppmodel, eval = c("auc", "Accuracy", "Sensitivity",
                                                          "Kappa", "Specificity", "TSS"))
 ```

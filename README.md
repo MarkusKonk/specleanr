@@ -1,17 +1,6 @@
 specleanr package for outlier detection
 ================
 
-<!-- <style> -->
-<!-- body { -->
-<!--     text-align: justify; -->
-<!--     font-family: Calibri; -->
-<!--     font-size: 17px; -->
-<!-- } -->
-<!-- .p { -->
-<!--  font-size:17px; -->
-<!--  font-family: Consolas; -->
-<!-- } -->
-<!-- </style> -->
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
