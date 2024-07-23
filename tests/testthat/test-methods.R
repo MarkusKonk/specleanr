@@ -234,4 +234,8 @@ testthat::test_that(desc = "Checks k-means whether return dataframe of outliers"
                                           mode = 'soft', k=3)
 
                       testthat::expect_s3_class(object = kmeanout, 'data.frame')
+
+                      #test that k less than 2 will lead to errors.
+                      expect_error(xkmeans(data = sp,output='outlier', exclude = c('x', 'y'),
+                                           mode = 'soft', k=1))
                     })

@@ -22,7 +22,11 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 
               OUTDF <- extract_outliers(x)
 
+
+              if(nrow(OUTDF)<1) stop("Nothing to plot. No outliers were flagged by all methods.")
+
               spnames <- ""
+
               refrecords <-nrow(get(x@dfname))
 
             }  else{
@@ -67,7 +71,7 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
                              axis.text.x = ggplot2::element_text(angle = angle, hjust = hjust),
                              plot.title = ggplot2::element_text(size = 10),
                              axis.text = ggplot2::element_text(size = 12))+
-            ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.1)))+
+              ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.1)))+
 
               ggplot2::labs(x="Outlier detection methods", y=ylab, title = spnames)
 
@@ -97,14 +101,22 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple'){
 
     OUTDF <- extract_outliers(x)
 
+    if(all(OUTDF$totaloutliers<1)==TRUE) stop("Nothing to plot. No outliers were flagged by all methods")
+
     spnames <- ""
+
     refrecords <-nrow(get(x@dfname))
 
   }  else{
 
+    if(is.null(y)) stop("Provide the index or species to plot the outliers for a particular species.")
+
     OUTDF <- extract_outliers(x, sp =y)
 
+    if(all(OUTDF$totaloutliers<1)==TRUE) stop("Nothing to plot. No outliers were flagged by all methods")
+
     spnames <- names(x@result)[y]
+
 
     #the reference dataset is extracted from the dfname slot of multidetect function.
     refrecords <- nrow(get(x@dfname)[[y]])

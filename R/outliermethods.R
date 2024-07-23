@@ -520,8 +520,9 @@ zscore <- function(data, var, output, type = 'mild', mode = 'soft'){
 #'      Where; Q1 is the lower quantile and Q3 is the upper quantile. The method consider the sample
 #'      size in setting the fences, to address the weakness of the interquartile range method \emph{(Tukey, 1977)}.
 #'      However. similar to IQR method for flagging outlier, log boxplot modification is affected by
-#'      data skewness and which can be address using \link[specleanr]{distboxplot}, \link[specleanr]{seqfences},\link[specleanr]{mixediqr} and
-#'      \link[specleanr]{semiIQR}.
+#'      data skewness and which can be address using
+#'       \link[specleanr]{distboxplot},  \code{\link{seqfences}}, \code{\link{mixediqr}} and
+#'      \code{\link{semiIQR}}.
 #'
 #' @return Dataframe with our without outliers depending on the output.
 #' \describe{
@@ -1808,10 +1809,20 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 
   if(!is.null(exclude))  df <- dfna[,!colnames(dfna) %in% exclude] else dfna <- data
 
+
+  #check if there is non numeric column in the dataset
+
+  # if(any(sapply(df, is.numeric)==FALSE)) {
+  #
+  #   charcolumn <- colnames(df)[which(sapply(df, is.numeric)==FALSE)]
+  #
+  #   stop("All columns must be numeric and ", charcolumn, " is not numeric.")
+  #
+  # }
   #check for multicolinearity in the data
+  df2<- usdm::exclude(df, usdm::vifstep(df))
 
   df2<- usdm::exclude(df, suppressWarnings(usdm::vifstep(df)))
-
 
   if(nrow(df2)<ncol(df2)){
     stop('Inverse matrix cannot be computed if number of variables are equal or greater than observations and NULL output generated')

@@ -7,14 +7,14 @@
 check.exclude(x, exclude, quiet = TRUE)
 }
 \arguments{
-\item{x}{dataframe with columns to exclude.}
+\item{x}{\code{dataframe} with columns to where the columns are supposed to be removed.}
 
-\item{exclude}{columns to exclude.}
+\item{exclude}{\code{string} or \code{vector} column names  to be checked if it is in the data.}
 
 \item{quiet}{TRUE if implementation messages to be shown. Default \code{FALSE}.}
 }
 \value{
-columns excluded from the dataset.
+columns that are not in the dataframe.
 }
 \description{
 indicate excluded columns.

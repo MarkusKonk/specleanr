@@ -5,8 +5,8 @@ specleanr package for outlier detection
 <!-- badges: start -->
 
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
-[![R-CMD-check](https://github.com/removedxx/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/removedxx/specleanr/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/gh/removedxx/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/removedxx/specleanr)
+[![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/AnthonyBasooma/specleanr)
 
 <!-- badges: end -->
 
@@ -167,7 +167,7 @@ used.
   **`modelcomparison()`** output.
 
 **Package website** To access the details of this package, please check
-it website on <https://removedxx.github.io/specleanr/>
+it website on <https://AnthonyBasooma.github.io/specleanr/>
 
 ### Package citation
 

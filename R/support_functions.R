@@ -216,12 +216,11 @@ match.argc <- function(x, choices, quiet=TRUE){
 
 #' @title indicate excluded columns.
 #'
-#' @param x dataframe with columns to exclude.
-#' @param exclude columns to exclude.
+#' @param x \code{dataframe} with columns to where the columns are supposed to be removed.
+#' @param \code{string} or \code{vector} column names  to be checked if it is in the data.
 #' @param quiet TRUE if implementation messages to be shown. Default \code{FALSE}.
 #'
-#' @return columns excluded from the dataset.
-#' @export
+#' @return columns that are not in the dataframe.
 #'
 check.exclude <- function(x, exclude, quiet=TRUE){
 

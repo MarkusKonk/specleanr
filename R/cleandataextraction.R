@@ -21,13 +21,13 @@
 #' @seealso \code{\link{thresh_search}}
 
 clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, threshold = NULL,
-                       verbose=FALSE, warn=FALSE, pabs = 0.1, autothreshold=FALSE,
-                       loess= FALSE){
+                       verbose=FALSE, warn=FALSE, pabs = 0.1, autothreshold=FALSE, loess= FALSE){
 
   if(!is.null(threshold) && loess==TRUE) stop("Set either loess to FALSE and provide the threshold manually but not both.")
 
   var <- outliers@varused
 
+  #the allowed modes: best for best method and abs : extract out only absolute outliers.
   match.argc(mode, choices = c('best', 'abs'))
 
   if(outliers@mode==FALSE){

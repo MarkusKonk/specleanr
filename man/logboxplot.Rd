@@ -38,8 +38,9 @@ the fences (lower and upper fences).
      Where; Q1 is the lower quantile and Q3 is the upper quantile. The method consider the sample
      size in setting the fences, to address the weakness of the interquartile range method \emph{(Tukey, 1977)}.
      However. similar to IQR method for flagging outlier, log boxplot modification is affected by
-     data skewness and which can be address using \link[specleanr]{distboxplot}, \link[specleanr]{seqfences},\link[specleanr]{mixediqr} and
-     \link[specleanr]{semiIQR}.
+     data skewness and which can be address using
+      \link[specleanr]{distboxplot},  \code{\link{seqfences}}, \code{\link{mixediqr}} and
+     \code{\link{semiIQR}}.
 }
 \examples{
 
