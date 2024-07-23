@@ -52,7 +52,8 @@
 <span>  colsp <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"darkblue"</span>, <span class="st">"orange"</span><span class="op">)</span></span>
+<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"darkblue"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
+<span>  tuneLoess <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -90,6 +91,11 @@
 
 <dt id="arg-colors">colors<a class="anchor" aria-label="anchor" href="#arg-colors"></a></dt>
 <dd><p><code>vector</code>. Colors for both the true data and the loess fitted data lines.</p></dd>
+
+
+<dt id="arg-tuneloess">tuneLoess<a class="anchor" aria-label="anchor" href="#arg-tuneloess"></a></dt>
+<dd><p><code>vector</code>. Values to tune the span of the loess modeling. The best is obtained when RMSE
+is minimum.</p></dd>
 
 </dl></div>
     <div class="section level2">
