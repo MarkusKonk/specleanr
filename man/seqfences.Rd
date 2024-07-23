@@ -2,7 +2,7 @@
 % Please edit documentation in R/outliermethods.R
 \name{seqfences}
 \alias{seqfences}
-\title{Sequwntial fences method}
+\title{Sequenctial fences method}
 \usage{
 seqfences(data, var, output, gamma = 0.95, mode = "eo")
 }
@@ -14,15 +14,16 @@ seqfences(data, var, output, gamma = 0.95, mode = "eo")
 \item{output}{Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 for outlier data frame or vectors.}
 
-\item{gamma}{lll}
+\item{gamma}{\code{numeric}. the p-values used to classify a record as an outlier. The lower the p-value,
+the extremeness is the outlier \code{Schwertman & de Silva 2007}.}
 
-\item{mode}{lll}
+\item{mode}{\code{string}. Indicates the extremeness of the outlier.}
 }
 \value{
 Dataframe or vector with or without outliers
 }
 \description{
-Sequwntial fences method
+Sequenctial fences method
 }
 \details{
 Sequential fences is a modification of the TUKEY boxplot, where the data is divided into groups each with its own

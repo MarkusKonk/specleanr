@@ -4,7 +4,7 @@
 \alias{zscore}
 \title{Computes z-scores to flag environmental outliers.}
 \usage{
-zscore(data, var, output, type = "mild", mode = "soft")
+zscore(data, var, output = "outlier", type = "mild", mode = "soft")
 }
 \arguments{
 \item{data}{Dataframe or vector to check for outliers.}

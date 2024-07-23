@@ -4,7 +4,7 @@
 \alias{jknife}
 \title{Identifies outliers using Reverse Jackknifing method based on Chapman et al., (2005).}
 \usage{
-jknife(data, var, output, mode = "soft")
+jknife(data, var, output = "outlier", mode = "soft")
 }
 \arguments{
 \item{data}{Dataframe to check for outliers}

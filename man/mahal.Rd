@@ -28,39 +28,25 @@ Flags outliers based on Mahalanobis distance matrix for all records.
 
 \dontrun{
 
-library(terra)
+data("efidata")
 
-#species data from online databases
+gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 
-gbfinal <- extract_online(online = gbdata)
+wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
-
-#preclean and extract
-
-danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
-
-danubebasin <- sf::st_read(danube)
-
-#Get environmental data
-
-worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
-
-precleaned <- precleaner(data = gbchecked,
-                          raster= worldclim ,
-                          lat = 'decimalLatitude',
-                          lon= 'decimalLongitude',
-                          colsp = 'speciescheck',
-                          basin = danubebasin,
-                          multiple = FALSE,
-                          minpts = 10)
+refdata <- pred_extract(data = gbd, raster= wcd ,
+                       lat = 'decimalLatitude',
+                       lon= 'decimalLongitude',
+                       colsp = 'speciescheck',
+                      bbox = db,
+                       multiple = TRUE,
+                       minpts = 10)
 
 #outliers
-mahal_outliers <- mahal(data = precleaned,
-                         exclude = c('x','y'),
-                         output='outlier')
+suppressWarnings(mahal(data = refdata1[['Salmo trutta']], exclude = c("x", "y"),
+                        output='outlier'))
 
 
 }

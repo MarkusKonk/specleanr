@@ -4,7 +4,7 @@
 \alias{adjustboxplots}
 \title{Adjust the boxplots bounding fences using medcouple to flag suspicious outliers.}
 \usage{
-adjustboxplots(data, var, output, a = -4, b = 3, coef = 1.5)
+adjustboxplots(data, var = NULL, output = "outlier", a = -4, b = 3, coef = 1.5)
 }
 \arguments{
 \item{data}{\code{dataframe}. Dataframe to check for outliers.}

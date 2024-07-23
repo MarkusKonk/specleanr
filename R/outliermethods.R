@@ -42,7 +42,7 @@
 #' Computational Statistics and Data Analysis 52:5186-5201.
 #'
 #'
-adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
+adjustboxplots <- function(data, var = NULL, output = 'outlier', a=-4, b=3, coef=1.5){
 
   options(mc_doScale_quiet=TRUE)
 
@@ -54,7 +54,7 @@ adjustboxplots <- function(data, var, output, a=-4, b=3, coef=1.5){
 
     if(!is(data, 'numeric')) stop('Only numeric data accepeted')
 
-    outdata <- robustbase::adjboxStats(var, coef = coef,a = a, b = b, do.conf = TRUE,
+    outdata <- robustbase::adjboxStats(data, coef = coef,a = a, b = b, do.conf = TRUE,
                                        do.out = TRUE)$out
     datIn <- which(!var%in%outdata)
 
@@ -257,7 +257,7 @@ semiIQR <- function(data, var, output, x=3){
 #'
 #'
 #'
-hampel <- function(data, var=NULL, output, x=3){
+hampel <- function(data, var=NULL, output ='outlier', x=3){
 
   if(is(data, 'atomic') || is(data,'vector')|| is(data,'list')){
 
@@ -350,7 +350,7 @@ hampel <- function(data, var=NULL, output, x=3){
 #' }
 #'
 #'
-jknife <- function(data, var, output, mode='soft'){
+jknife <- function(data, var, output ='outlier', mode='soft'){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
@@ -471,7 +471,7 @@ jknife <- function(data, var, output, mode='soft'){
 #'
 #' }
 #'
-zscore <- function(data, var, output, type = 'mild', mode = 'soft'){
+zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft'){
 
   match.argc(output, choices = c('clean','outlier'))
   match.argc(type, choices = c('extreme','mild'))
@@ -786,14 +786,15 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 }
 
 
-#' @title Sequwntial fences method
+#' @title Sequenctial fences method
 #'
 #' @param data Dataframe or vector where to check outliers.
 #' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
 #' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 #'     for outlier data frame or vectors.
-#' @param gamma lll
-#' @param mode lll
+#' @param gamma \code{numeric}. the p-values used to classify a record as an outlier. The lower the p-value,
+#'      the extremeness is the outlier \code{Schwertman & de Silva 2007}.
+#' @param mode \code{string}. Indicates the extremeness of the outlier.
 #'
 #'
 #' @details
@@ -848,6 +849,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
 
   if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
+
     stop('Only 0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995 are allowed values for gamma.')
   }
 
@@ -857,7 +859,6 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
 
   #standard table 2 from (Schwertman NC, de Silva R. 2007)
   mth <- specleanr::mth
-
 
   if(is(data, 'data.frame')){
     nd <- nrow(data)
@@ -874,17 +875,6 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
     stop('Only data frame or vector of values are accepted.')
   }
 
-  if(nd>400){
-    nd = 0
-  }else if(nd>=100 & nd <200){
-    nd = 100
-  }else if (nd>=200 && nd<300){
-    nd = 200
-  }else if(nd>=300 & nd<400){
-    nd = 300
-  }else{
-    nd
-  }
 
   kn <- kndata$kn[which(as.numeric(kndata$n) == nd)]
 
@@ -1744,7 +1734,7 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #' @param mode Either robust, if a robust mode is used which uses mcd() instead of mean. Default mode is soft.
 #' @param pdf Chisqure probability distribution used for flagging outliers \code{Leys et al. 2018}.
 #'
-#' @importFrom stats mahalanobis qchisq cov
+#' @importFrom stats mahalanobis qchisq cov complete.cases
 #' @importFrom usdm vifcor vifstep exclude
 #' @importFrom robust covRob
 #'

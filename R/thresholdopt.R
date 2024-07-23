@@ -4,7 +4,8 @@
 #' @inheritParams clean_data
 #' @param plot \code{logical}. to show plot of loess fitted function with minima and maxima (optimal threshold and clean data).
 #' @param colors \code{vector}. Colors for both the true data and the loess fitted data lines.
-#'
+#' @param tuneLoess \code{vector}. Values to tune the span of the loess modeling. The best is obtained when RMSE
+#'       is minimum.
 #' @importFrom stats loess
 #' @return Returns \code{numeric} of most suitable threshold at maxima of the loess smoothing.
 #'
@@ -13,7 +14,8 @@
 #'
 thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, warn=FALSE,
                           verbose=FALSE,
-                          colors = c('darkblue', 'orange')){
+                          colors = c('darkblue', 'orange'),
+                          tuneLoess = seq(0.75, 1, 0.1)){
 
   #Extract the variable used from the datacleaner class for outliers.
 
@@ -57,14 +59,14 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
 
   #fit a local weighted running smoother
   #optimize span-- the smoothing value
-  spns <- seq(0.75, 1, 0.1)
+  #tuneLoess <- seq(0.75, 1, 0.1)
   rmse <- c()
   spans <- c()
-  for (ip in seq_along(spns)) {
+  for (ip in seq_along(tuneLoess)) {
 
     lwrs <-tryCatch(
 
-      expr = loess(dataretained~thresholdvalues, data= absthreshold_df, span = spns[ip]),
+      expr = loess(dataretained~thresholdvalues, data= absthreshold_df, span = tuneLoess[ip]),
 
       error= function(e){
 
@@ -77,7 +79,7 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
     if(!is.null(lwrs)){
 
       rmse[ip] <- sqrt(mean((predict(lwrs)-unlist(absthreshold_df$dataretained))^2))
-      spans[ip] <- spns[ip]
+      spans[ip] <- tuneLoess[ip]
     }else{
       next
     }

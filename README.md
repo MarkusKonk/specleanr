@@ -132,6 +132,30 @@ other methods.
 
 4.  **Extract species environmental without outliers**
 
+**Threshold identification**
+
+After outlier removal, the threshold to classify a record as an absolute
+outlier and necessitates to be removed is pivotal in this workflow.
+Therefore we have developed three options for obtaining a threshold. A
+threshold is proportion of methods that flagged a record as an outlier
+to the total number of methods used. For example, if 10 methods are
+used, and a threshold of 0.7 is used, it indicates that a record flagged
+in at least methods will be highlighted as an outlier. In this package,
+developed three ways to identify the optimal threshold.
+
+- **Naive method**: where the user sets a value between 0.1 to 1. The
+  method is subjective but using this method, its advisable to user a
+  threshold beyond 0.6 to highlight records flagged in atleast more than
+  50% of the methods.
+- **Autothreshold** when the user sets **`autothreshold`** to TRUE in
+  **`clean_data_extract()`**, it automatically searches a threshold
+  between 0.5 to 1 and identifies a threshold with the mean number of
+  records retained.
+- **loess method**: we apply local regression (locally
+  estimated/weighted scatterplot smoothing) to identify the optimal
+  threshold, a non-parametric smoothing method that uses local
+  variability in the data (Cleveland & Loader, 1996; Loader, 2004).
+
 The **reference dataset** in **Step 2** and lists or outliers flagged by
 each method in **Step 3** are then used to retain the **clean dataset**.
 Under the hood, two approaches are implemented **1) absolute method**:

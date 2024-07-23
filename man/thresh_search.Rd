@@ -12,7 +12,8 @@ thresh_search(
   colsp = NULL,
   warn = FALSE,
   verbose = FALSE,
-  colors = c("darkblue", "orange")
+  colors = c("darkblue", "orange"),
+  tuneLoess = seq(0.75, 1, 0.1)
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ thresh_search(
 \item{verbose}{\code{logical}. Produces messages or not. Default \strong{FALSE}.}
 
 \item{colors}{\code{vector}. Colors for both the true data and the loess fitted data lines.}
+
+\item{tuneLoess}{\code{vector}. Values to tune the span of the loess modeling. The best is obtained when RMSE
+is minimum.}
 }
 \value{
 Returns \code{numeric} of most suitable threshold at maxima of the loess smoothing.

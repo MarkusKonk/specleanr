@@ -4,7 +4,7 @@
 \alias{hampel}
 \title{Flag suspicious outliers based on the Hampel filter method..}
 \usage{
-hampel(data, var = NULL, output, x = 3)
+hampel(data, var = NULL, output = "outlier", x = 3)
 }
 \arguments{
 \item{data}{Data frame to check for outliers}

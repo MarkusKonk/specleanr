@@ -4,7 +4,7 @@
 \alias{check_taxa_names}
 \title{standardize species names.}
 \usage{
-check_taxa_names(spp, verbose, accept = TRUE, ...)
+check_taxa_names(spp, verbose = FALSE, accept = TRUE, ...)
 }
 \arguments{
 \item{spp}{\code{string} species name provided by the user.}

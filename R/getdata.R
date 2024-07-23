@@ -10,16 +10,11 @@
 #'
 #' @export
 #'
-check_taxa_names <- function(spp, verbose, accept =TRUE, ...){
+check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 
   namesdf<- taxize::gnr_resolve(sci = spp,...)
 
-  if(nrow(namesdf)<1) {
-
-    warning("The species names ", spp, " provided does not have any match in the taxonomic databases. For the databases checked see taxize package.", call. = FALSE)
-    spfinal <- spp
-
-  }else if(nrow(namesdf)>=1){
+ if(nrow(namesdf)>=1){
 
     nmmatch <- namesdf$matched_name
 
@@ -75,9 +70,12 @@ check_taxa_names <- function(spp, verbose, accept =TRUE, ...){
 
       }
     }
-  }else{
-    stop("Check the spelling of the species name.")
-  }
+ }  else{
+
+   warning("The species names ", spp, " provided does not have any match in the taxonomic databases. For the databases checked see taxize package.", call. = FALSE)
+   spfinal <- spp
+
+ }
   return(spfinal)
 }
 

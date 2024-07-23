@@ -82,7 +82,17 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
 
   if(missing(datasets))  stop('A list of datasets should be provided')
 
-  if(is(datasets, 'list')==FALSE)  stop('Only list of datasets is accepted')
+  # #get the string used in the datasets parameter: check whether the user supplied a list of datasets.
+  # strdata <- deparse(substitute(datasets))
+  #
+  # #extract the word list from the strdata
+  #
+  # lst <- substr(strdata, 1, 4)
+  #
+  # if(lst != "list")  stop('Only list of datasets is accepted')
+  #
+  # #check if the user named the lists
+  # if(is.null(names(datasets))) stop("For each dataset provide a name inside the list. like list(jds=jdsdata) ")
 
   #check if null columns in the different parameters have standard names across all data sets.
 
@@ -114,9 +124,9 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
 
     dataset <- datasets[[datnames]]
 
-    if(is.null(dataset)==TRUE){
+    if(is.null(dataset) || nrow(dataset)<0){
 
-      'No records for species in dataset'
+      stop('No records for species in dataset')
     }
     else{
 
@@ -177,8 +187,6 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
         }
 
         colnames(dataset)[colnames(dataset)==dates2] <- 'dates'
-      }else{
-        'No date checks'
       }
 
       if(!'quality_grade'%in%colnames(dataset)){
