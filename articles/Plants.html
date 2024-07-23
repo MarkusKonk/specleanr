@@ -34,6 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection in fish species records.</a></li>
+    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul>
 </li>
@@ -310,13 +311,13 @@ data. For more information, check (B….2024).</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
+<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 3.</span></span>
 <span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
 <span></span>
 <span></span>
 <span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span></code></pre></div>
+<span><span class="co">#&gt; Criteria: Method with maximum number of votes and similar to OCI is selected.</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Model comparison</strong></li>
 </ol>

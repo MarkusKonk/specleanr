@@ -34,6 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection in fish species records.</a></li>
+    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul>
 </li>
@@ -270,7 +271,7 @@ Important in the next steps.</li>
 <span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttrefdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 70 21</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 71 21</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <strong>Outlier detection</strong> Multiple outlier detection are
@@ -360,29 +361,29 @@ identifying the optimal threshold.</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7      bio8</span></span>
 <span><span class="co">#&gt; 1 6.293614 8.755938 31.96181 690.1050 20.90625 -6.48875 27.39500  7.375333</span></span>
-<span><span class="co">#&gt; 2 8.747239 9.561563 33.16130 735.3621 24.23025 -4.60325 28.83350 17.790833</span></span>
-<span><span class="co">#&gt; 3 8.415927 9.549812 33.45236 722.5972 23.70675 -4.84075 28.54750 17.290958</span></span>
+<span><span class="co">#&gt; 2 8.415927 9.549812 33.45236 722.5972 23.70675 -4.84075 28.54750 17.290958</span></span>
+<span><span class="co">#&gt; 3 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.581375</span></span>
 <span><span class="co">#&gt; 4 8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.440792</span></span>
-<span><span class="co">#&gt; 5 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.581375</span></span>
-<span><span class="co">#&gt; 6 8.497177 8.913187 33.22129 689.5564 22.77225 -4.05750 26.82975 16.926792</span></span>
+<span><span class="co">#&gt; 5 8.497177 8.913187 33.22129 689.5564 22.77225 -4.05750 26.82975 16.926792</span></span>
+<span><span class="co">#&gt; 6 4.414302 7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.899292</span></span>
 <span><span class="co">#&gt;          bio9    bio10       bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
 <span><span class="co">#&gt; 1 -1.17562509 14.80313 -2.06429172  2118   241   105 21.73814   663   379   530</span></span>
-<span><span class="co">#&gt; 2 -0.28391668 17.79083 -0.28391668   643    87    28 38.32993   248    96   248</span></span>
-<span><span class="co">#&gt; 3 -0.46312499 17.29096 -0.46312499   748   100    36 34.12024   277   119   277</span></span>
+<span><span class="co">#&gt; 2 -0.46312499 17.29096 -0.46312499   748   100    36 34.12024   277   119   277</span></span>
+<span><span class="co">#&gt; 3  0.93133330 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
 <span><span class="co">#&gt; 4 -0.30200002 16.44079 -0.30200002  1229   163    67 33.78827   468   213   468</span></span>
-<span><span class="co">#&gt; 5  0.93133330 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt; 6  0.01145836 16.92679  0.01145836  1173   150    64 31.66039   435   206   435</span></span>
+<span><span class="co">#&gt; 5  0.01145836 16.92679  0.01145836  1173   150    64 31.66039   435   206   435</span></span>
+<span><span class="co">#&gt; 6 -2.72987509 11.89929 -2.72987509  1289   169    67 33.19698   486   219   486</span></span>
 <span><span class="co">#&gt;   bio19        x        y      species</span></span>
 <span><span class="co">#&gt; 1   412 13.91667 46.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 2    96 15.58333 48.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 3   119 15.58333 48.08333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 2   119 15.58333 48.08333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 3   234 13.08333 47.75000 Salmo trutta</span></span>
 <span><span class="co">#&gt; 4   213 12.08333 47.75000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 5   234 13.08333 47.75000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 6   206 11.91667 47.91667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 5   206 11.91667 47.91667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 6   219 11.08333 47.41667 Salmo trutta</span></span>
 <span></span>
 <span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 68 21</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 69 21</span></span></code></pre></div>
 <p><strong>Model comparison</strong></p>
 <p>This is done to identify the suitable threshold that produces the
 highest model performance.</p>
@@ -413,6 +414,12 @@ therefore the user do not need to do these steps separately.</p></li>
 <span>                                     raster <span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                                     lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, full <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                                     metrics <span class="op">=</span> <span class="st">'all'</span>, minpts <span class="op">=</span> <span class="fl">18</span>,loessthreshold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in modelcomparison(refdata = multipreclened, outliers = multioutliers,</span></span>
+<span><span class="co">#&gt; : The threshold option of REF didnot run as the 17 records for species Anguilla</span></span>
+<span><span class="co">#&gt; anguilla are too few for a species distribution models.</span></span>
+<span><span class="co">#&gt; Warning in modelcomparison(refdata = multipreclened, outliers = multioutliers,</span></span>
+<span><span class="co">#&gt; : The threshold option of 0.8 didnot run as the 17 records for species Anguilla</span></span>
+<span><span class="co">#&gt; anguilla are too few for a species distribution models.</span></span>
 <span></span>
 <span></span>
 <span><span class="va">multmodelper</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modelcomp <span class="op">=</span> <span class="va">multcomparion</span><span class="op">)</span></span></code></pre></div>
