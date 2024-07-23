@@ -346,15 +346,15 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
 
                       #expect names minima and maxima
 
-                      expect_named(thresh_search(data = refdata, outliers = outlierdf, sp = 1), c('minima', 'maxima'))
+                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf, sp = "Phoxinus phoxinus"), c('minima', 'maxima'))
 
-                      #expect error if the sp index or name  is provided
+                      #expect error if the multiple speces reference data is provided for thresh_search
 
                       expect_error(thresh_search(data = refdata, outliers = outlierdf))
 
                       #expect error if column name is not provided and yet reference data is a dataframe not list
 
-                      expect_error(thresh_search(data = refdata_df, outlierdf2, sp = 1))
+                      expect_error(optimal_threshold(data = refdata_df, outlierdf2, sp = 1))
 
                       #expect a dataframe but no plot for multiple species. even plot = TRUE
 

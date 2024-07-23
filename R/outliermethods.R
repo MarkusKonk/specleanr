@@ -1756,39 +1756,25 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #'
 #' \dontrun{
 #'
-#' library(terra)
+#' data("efidata")
 #'
-#' #species data from online databases
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
-#' gbfinal <- extract_online(online = gbdata)
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
-#'
-#' #preclean and extract
-#'
-#' danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
-#'
-#' danubebasin <- sf::st_read(danube)
-#'
-#' #Get environmental data
-#'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
-#'
-#' precleaned <- precleaner(data = gbchecked,
-#'                           raster= worldclim ,
-#'                           lat = 'decimalLatitude',
-#'                           lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           basin = danubebasin,
-#'                           multiple = FALSE,
-#'                           minpts = 10)
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                        lat = 'decimalLatitude',
+#'                        lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                       bbox = db,
+#'                        multiple = TRUE,
+#'                        minpts = 10)
 #'
 #' #outliers
-#' mahal_outliers <- mahal(data = precleaned,
-#'                          exclude = c('x','y'),
-#'                          output='outlier')
+#' suppressWarnings(mahal(data = refdata1[['Salmo trutta']], exclude = c("x", "y"),
+#'                         output='outlier'))
 #'
 #'
 #' }
@@ -1807,28 +1793,18 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 
   dfna <- data[complete.cases(data),]
 
-  if(!is.null(exclude))  df <- dfna[,!colnames(dfna) %in% exclude] else dfna <- data
+  if(!is.null(exclude))  df <- dfna[,!colnames(dfna) %in% exclude] else df <- dfna
 
-
-  #check if there is non numeric column in the dataset
-
-  # if(any(sapply(df, is.numeric)==FALSE)) {
-  #
-  #   charcolumn <- colnames(df)[which(sapply(df, is.numeric)==FALSE)]
-  #
-  #   stop("All columns must be numeric and ", charcolumn, " is not numeric.")
-  #
-  # }
   #check for multicolinearity in the data
-  df2<- usdm::exclude(df, usdm::vifstep(df))
 
   df2<- usdm::exclude(df, suppressWarnings(usdm::vifstep(df)))
+
 
   if(nrow(df2)<ncol(df2)){
     stop('Inverse matrix cannot be computed if number of variables are equal or greater than observations and NULL output generated')
 
   }else if(det(cov(df2))==0){
-    stop('The dterminant of the convariance matrix is zero and solve function failed.')
+    stop('The determinant of the convariance matrix is zero and solve function failed.')
 
   }else{
     if(mode=='soft'){
@@ -1853,6 +1829,10 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
     switch(output, clean=return(data[datIn,]), outlier=return(data[-datIn,]))
   }
 }
+
+
+
+
 
 
 #' @title Flags outliers using kmeans clustering method
