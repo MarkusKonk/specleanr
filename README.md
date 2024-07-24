@@ -18,6 +18,8 @@ specleanr package for outlier detection
 
 ``` r
 # install.packages("remotes")
+
+#remotes::install_github("AnthonyBasooma/specleanr")
 ```
 
 **CRAN version**
@@ -25,6 +27,16 @@ specleanr package for outlier detection
 ``` r
 ### install.packages("specleanr")
 ```
+
+**Package logo**
+
+<figure>
+<img src="man/figures/specleanrlogo.png" data-fig.align="center"
+width="240" height="300" alt="Packgage logo under review" />
+<figcaption aria-hidden="true">Packgage logo under review</figcaption>
+</figure>
+
+## Package and workflow description
 
 The package aims to improve the reliability and acceptability of
 biogeographical models, including species distribution models,
@@ -38,7 +50,15 @@ packages that address geographical, taxonomic, and temporal checks.
 ### Process of identifying environmental outliers.
 
 The process of identifying environmental outliers is generally
-classified into **four steps** as detailed below;
+classified into **four steps** as detailed below (Figure 1);
+
+<figure>
+<img src="man/figures/specleanrworkflow.png"
+alt="Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation." />
+<figcaption aria-hidden="true">Figure 1. Workflow for processing species
+occurrence data within the specleanr R-package for environmental outlier
+detection, removal, and evaluation.</figcaption>
+</figure>
 
 <!--(![This is the caption!](img/rmarkdown_hex.png))-->
 
@@ -135,22 +155,25 @@ other methods.
 **Threshold identification**
 
 After outlier removal, the threshold to classify a record as an absolute
-outlier and necessitates to be removed is pivotal in this workflow.
-Therefore we have developed three options for obtaining a threshold. A
-threshold is proportion of methods that flagged a record as an outlier
-to the total number of methods used. For example, if 10 methods are
-used, and a threshold of 0.7 is used, it indicates that a record flagged
-in at least methods will be highlighted as an outlier. In this package,
-developed three ways to identify the optimal threshold.
+outlier that necessitates the user to do so objectively is pivotal in
+this workflow. Therefore, we have developed three options for obtaining
+a threshold. A threshold is the proportion of methods that flagged a
+record as an outlier to the total number of techniques used. For
+example, if a user includes ten methods and sets a threshold of 0.7, it
+implies that an absolute outlier will be flagged in at least seven
+methods. In this package, we developed three ways to identify the
+optimal threshold.
 
-- **Naive method**: where the user sets a value between 0.1 to 1. The
-  method is subjective but using this method, its advisable to user a
-  threshold beyond 0.6 to highlight records flagged in atleast more than
-  50% of the methods.
-- **Autothreshold** when the user sets **`autothreshold`** to TRUE in
+- **Naive method**: where the user sets a value between 0.1 and 1. The
+  process is subjective, but using this method, it is advisable to use a
+  threshold beyond 0.6 to highlight records flagged in at least 50% of
+  the methods.
+
+- **Autothreshold**: When the user sets **`autothreshold`** to TRUE in
   **`clean_data_extract()`**, it automatically searches a threshold
   between 0.5 to 1 and identifies a threshold with the mean number of
   records retained.
+
 - **loess method**: we apply local regression (locally
   estimated/weighted scatterplot smoothing) to identify the optimal
   threshold, a non-parametric smoothing method that uses local
@@ -162,10 +185,7 @@ Under the hood, two approaches are implemented **1) absolute method**:
 where absolute outliers are removed at a particular threshold or **2)
 suitable or best outlier detection method** where a method with highest
 proportion of absolute outliers and has highest similarity with other
-methods (in terms of the outliers flagged) can be used. The
-**threshold** parameter is a measure of proportion of the methods that
-have flagged the record as an outlier to the total number of methods
-used.
+methods (in terms of the outliers flagged) can be used.
 
 - `clean_data_extract()` to extract clean data using the reference data
   and outliers for single species.
@@ -205,24 +225,32 @@ Under review
     dataset. Earth System Science Data, 14(10), 4525–4550.
     <https://doi.org/10.5194/essd-14-4525-2022>
 
-2.  Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial
+2.  Cleveland, W. S., & Loader, C. (1996). Smoothing by local
+    regression: Principles and methods. In Statistical Theory and
+    Computational Aspects of Smoothing: Proceedings of the COMPSTAT’94
+    Satellite Meeting Held in Semmering, Austria, 27-28, 10–49.
+
+3.  Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial
     resolution climate surfaces for global land areas. International
     Journal of Climatology, 37(12), 4302–4315.
     <https://doi.org/10.1002/joc.5086>
 
-3.  Karger, D. N., Conrad, O., Böhner, J., Kawohl, T., Kreft, H.,
+4.  Karger, D. N., Conrad, O., Böhner, J., Kawohl, T., Kreft, H.,
     Soria-Auza, R. W., Zimmermann, N. E., Linder, H. P., & Kessler, M.
     (2017). Climatologies at high resolution for the earth’s land
     surface areas. Scientific Data, 4.
     <https://doi.org/10.1038/sdata.2017.122>
 
-4.  Logez, M., Belliard, J., Melcher, A., Kremser, H., Pletterbauer, F.,
+5.  Loader, C. (2004). Smoothing: local regression techniques. Handbook
+    of Computational Statistics: Concepts and Methods, Art. 12.
+
+6.  Logez, M., Belliard, J., Melcher, A., Kremser, H., Pletterbauer, F.,
     Schmutz, S., Gorges, G., Delaigue, O., & Pont, D. (2012).
     Deliverable D5.1-3: BQEs sensitivity to global/climate change in
     European rivers: implications for reference conditions and
     pressure-impact-recovery chains.
 
-5.  IUCN Standards and Petitions Committee. (2022). THE IUCN RED LIST OF
+7.  IUCN Standards and Petitions Committee. (2022). THE IUCN RED LIST OF
     THREATENED SPECIESTM Guidelines for Using the IUCN Red List
     Categories and Criteria Prepared by the Standards and Petitions
     Committee of the IUCN Species Survival Commission.

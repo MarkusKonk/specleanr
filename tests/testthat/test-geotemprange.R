@@ -1,10 +1,15 @@
 
 data("efidata")
 
+db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp', package = "specleanr"), quiet = TRUE)
+
 test_that(desc = "Latitudinal/Longitudinal range",
           code = {
             #Missing data error
             expect_error(geo_ranges())
+
+            #Wrong data
+            expect_error(geo_ranges(data = db))
 
             #error if column for species not provided for dataframe
 
@@ -16,7 +21,7 @@ test_that(desc = "Latitudinal/Longitudinal range",
             #dataframe
             expect_type(geo_ranges(data = efidata, colsp = 'scientificName'), 'double')
             #list
-            expect_type(geo_ranges(data = efidata$scientificName), 'double')
+            expect_type(geo_ranges(data = as.list(efidata$scientificName)), 'double')
             #vector
             expect_type(geo_ranges(data = c("Salmo trutta", "Lates niloticus")), 'double')
 

@@ -32,6 +32,8 @@ knitr::opts_chunk$set(
 ``` r
 # install.packages("remotes")
 
+#remotes::install_github("AnthonyBasooma/specleanr")
+
 ```
 
 **CRAN version**
@@ -40,13 +42,24 @@ knitr::opts_chunk$set(
 ### install.packages("specleanr")
 ```
 
+**Package logo**
+
+![Packgage logo under review](man/figures/specleanrlogo.png){height=300px width=240px fig.align='center'}
+
+
+
+## Package and workflow description
 
 The package aims to improve the reliability and acceptability of biogeographical models, including species distribution models, ecological niche models, and bioclimatic envelope models, by detecting outliers in the environmental predictors. In the package, we collate **20 outlier detection methods**, which a user can collectively apply (ensemble outlier detection) and determine whether the species records are in a suitable environmental space. The package complements other packages that address geographical, taxonomic, and temporal checks.
 
 
+
 ### Process of identifying environmental outliers.
 
-The process of identifying environmental outliers is generally classified into **four steps** as detailed below; 
+The process of identifying environmental outliers is generally classified into **four steps** as detailed below (Figure 1); 
+
+![Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation.](man/figures/specleanrworkflow.png)
+
 
 <!--(![This is the caption!](img/rmarkdown_hex.png))-->
 
@@ -129,7 +142,7 @@ After outlier removal, the threshold to classify a record as an absolute outlier
 
 * **Naive method**: where the user sets a value between 0.1 and 1. The process is subjective, but using this method, it is advisable to use a threshold beyond 0.6 to highlight records flagged in at least 50% of the methods.
 
-* **Autothreshold** When the user sets **`autothreshold`** to TRUE in **`clean_data_extract()`**, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained. 
+* **Autothreshold**: When the user sets **`autothreshold`** to TRUE in **`clean_data_extract()`**, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained. 
 * **loess method**: we apply local regression (locally estimated/weighted scatterplot smoothing) to identify the optimal threshold, a non-parametric smoothing method that uses local variability in the data (Cleveland & Loader, 1996; Loader, 2004). 
 
 

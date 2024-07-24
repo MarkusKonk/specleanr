@@ -11,14 +11,14 @@
 #'
 extractMethods <- function(){
 
-  methodcategories <- c('univariate', 'opt', 'modelbased', 'cluster', 'densitybased', 'covariance')
+  methodcategories <- c('reference','univariate', 'opt', 'modelbased', 'cluster', 'densitybased', 'covariance')
 
   for (imethods in methodcategories) {
 
     if(imethods=='univariate'){
 
       univariate <- c('adjbox', 'iqr', 'hampel', 'jknife', 'seqfences','mixediqr',
-                      'distboxplot','semiqr',  'zscore', 'logboxplot')
+                      'distboxplot','semiqr',  'zscore', 'logboxplot', "medianrule")
 
     }else if(imethods=='modelbased'){
 
@@ -36,12 +36,16 @@ extractMethods <- function(){
 
       opt <- c('optimal')
 
+    }else if(imethods=='reference'){
+
+      reference <- c('reference')
+
     }else{
       covmd <- c('mahal')
     }
   }
 
-  return(list(univariate = univariate, clustermethods = clb, densistybased = dbd, optimal = opt,
+  return(list(reference =reference, univariate = univariate, clustermethods = clb, densistybased = dbd, optimal = opt,
               modelbased = modelb, covariance=covmd))
 }
 

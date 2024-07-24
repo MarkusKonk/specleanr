@@ -57,7 +57,7 @@ geo_ranges <- function(data, colsp =NULL, verbose=F, pct = 90,sn =FALSE, warn=FA
 
 
   }else{
-    stop('No data provided for species to check and merge')
+    stop('Wrong data class for species provided.')
   }
 
   #remove repeated species names

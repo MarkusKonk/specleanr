@@ -82,18 +82,6 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
 
   if(missing(datasets))  stop('A list of datasets should be provided')
 
-  # #get the string used in the datasets parameter: check whether the user supplied a list of datasets.
-  # strdata <- deparse(substitute(datasets))
-  #
-  # #extract the word list from the strdata
-  #
-  # lst <- substr(strdata, 1, 4)
-  #
-  # if(lst != "list")  stop('Only list of datasets is accepted')
-  #
-  # #check if the user named the lists
-  # if(is.null(names(datasets))) stop("For each dataset provide a name inside the list. like list(jds=jdsdata) ")
-
   #check if null columns in the different parameters have standard names across all data sets.
 
   for (i in c('country', 'lats', 'lons', 'species')) {

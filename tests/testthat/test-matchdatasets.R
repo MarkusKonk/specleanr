@@ -88,7 +88,7 @@ test_that(desc = "Latitudes,  Longitudes, country, dates, species are wrong for 
                                         lats = 'lat',
                                         lons = 'lon',
                                         species = c('spec','scientificName'),
-                                        date = c('Date', 'samplingate'),#sampling_date
+                                        date = c('Da', 'samplingate'),#sampling_date
                                         country = c('JDS4_site_ID')))
           })
 

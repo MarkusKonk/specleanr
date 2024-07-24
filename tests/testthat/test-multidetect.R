@@ -42,20 +42,24 @@ refdata_df <- pred_extract(data = matchclean, raster = wcd,
                         minpts = 6,
                         merge = F)
 
-
 testthat::test_that(desc = 'List of species with outliers produced',
                     code = {
                       outlist <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                                              exclude = c('x','y'),
                                              multiple = TRUE,
-                                             methods = c('mixediqr', "iqr", "seqfences","mahal", 'glosh', 'onesvm'))
+                                             methods = c('mixediqr', "iqr", "seqfences",
+                                                         "mahal", 'glosh', 'onesvm','logboxplot','knn',
+                                                         'distboxplot','medianrule',
+                                                         'iforest','jknife','reference'))
 
                       testthat::expect_equal(length(outlist@result), length(refdata))
                       testthat::expect_identical(outlist@dfname, "refdata")
                       testthat::expect_identical(outlist@varused, "bio6")
                       testthat::expect_identical(outlist@excluded, c('x','y'))
                       testthat::expect_identical(outlist@methodsused, c('mixediqr', "iqr", "seqfences",
-                                                                        "mahal", 'glosh', 'onesvm'))
+                                                                        "mahal", 'glosh', 'onesvm','logboxplot','knn',
+                                                                        'distboxplot','medianrule',
+                                                                        'iforest','jknife','reference'))
                       testthat::expect_identical(outlist@out, "outlier")
                       testthat::expect_identical(outlist@mode, TRUE)
                       testthat::expect_type(refdata, 'list') #not a dataframe but list
@@ -162,6 +166,32 @@ dfinal <- rbind(irisdata, rowsOutNA)
 
 test_that(desc = "NAs if univariate methods only selected",
           code = {
+            #showErrrors FALSE but the methods are well set: datacleaner produced and verbose = TRUE
+
+            expect_s4_class(suppressMessages(multidetect(data = dfinal, var = 'Sepal.Width',
+                        multiple = FALSE,
+                        methods = c('mixediqr', 'logboxplot','kmeans', 'lof'), verbose =TRUE,
+                        showErrors = FALSE)), 'datacleaner')
+
+
+            #return an error if the method parameter are wrongly set: using kmeans, warn=TRUE & showError=FALSE
+            #method wrongly set
+            expect_warning(multidetect(data = dfinal, var = 'Sepal.Width',
+                       multiple = FALSE,
+                       methods = c('mixediqr', 'logboxplot','kmeans'), warn=TRUE,
+                       showErrors = FALSE,
+                       kmpar = list(method="silhoest")))
+
+            #expect error if non numeric variable are provided as variable checks
+            expect_error(multidetect(data = dfinal, var = 'Species',
+                        multiple = FALSE,
+                        methods = c('mixediqr', 'logboxplot','iqr'), missingness = 0.01))
+
+            #expect error if data is not provided
+            expect_error(multidetect(var = 'Sepal.Width',
+                        multiple = FALSE,
+                        methods = c('mixediqr', 'logboxplot','iqr'), missingness = 0.01))
+
             #NA removed during computation only but the rows are left in the data output.
             testthat::expect_message(dout <- multidetect(data = dfinal, var = 'Sepal.Length',
                                                          multiple = FALSE,
