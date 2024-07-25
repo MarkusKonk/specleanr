@@ -10,11 +10,19 @@ specleanr package for outlier detection
 
 <!-- badges: end -->
 
-## specleanr
+<img src = "man/figures/specleanrlogo.png" align ="right" alt="logo" width="150" height="190" />
 
-### Package installation
+`specleanr` The package aims to improve the reliability and
+acceptability of biogeographical models, including species distribution
+models, ecological niche models, and bioclimatic envelope models, by
+detecting outliers in the environmental predictors. In the package, we
+collate **20 outlier detection methods**, which a user can collectively
+apply (ensemble outlier detection) and determine whether the species
+records are in a suitable environmental space. The package complements
+other packages that address geographical, taxonomic, and temporal
+checks.
 
-**Development version on GitHub:**
+## Installation
 
 ``` r
 # install.packages("remotes")
@@ -22,35 +30,10 @@ specleanr package for outlier detection
 #remotes::install_github("AnthonyBasooma/specleanr")
 ```
 
-**CRAN version**
-
-``` r
-### install.packages("specleanr")
-```
-
-**Package logo**
-
-<figure>
-<img src="man/figures/specleanrlogo.png" data-fig.align="center"
-width="240" height="300" alt="Packgage logo under review" />
-<figcaption aria-hidden="true">Packgage logo under review</figcaption>
-</figure>
-
-## Package and workflow description
-
-The package aims to improve the reliability and acceptability of
-biogeographical models, including species distribution models,
-ecological niche models, and bioclimatic envelope models, by detecting
-outliers in the environmental predictors. In the package, we collate
-**20 outlier detection methods**, which a user can collectively apply
-(ensemble outlier detection) and determine whether the species records
-are in a suitable environmental space. The package complements other
-packages that address geographical, taxonomic, and temporal checks.
-
 ### Process of identifying environmental outliers.
 
 The process of identifying environmental outliers is generally
-classified into **four steps** as detailed below (Figure 1);
+classified into **five steps** as detailed below (Figure 1);
 
 <figure>
 <img src="man/figures/specleanrworkflow.png"
