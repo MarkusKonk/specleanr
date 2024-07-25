@@ -359,27 +359,27 @@ identifying the optimal threshold.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">multspecies_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span>, loess <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
-<span><span class="co">#&gt; 2  8.415927 9.549812 33.45236 722.5972 23.70675 -4.84075 28.54750 17.29096</span></span>
-<span><span class="co">#&gt; 3  8.747239 9.561563 33.16130 735.3621 24.23025 -4.60325 28.83350 17.79083</span></span>
-<span><span class="co">#&gt; 4  8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
-<span><span class="co">#&gt; 5  8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.44079</span></span>
-<span><span class="co">#&gt; 8  8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.44079</span></span>
-<span><span class="co">#&gt; 11 6.505573 8.508604 33.53277 649.9034 19.95200 -5.42200 25.37400 14.46612</span></span>
-<span><span class="co">#&gt;          bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
-<span><span class="co">#&gt; 2  -0.4631250 17.29096 -0.4631250   748   100    36 34.12024   277   119   277</span></span>
-<span><span class="co">#&gt; 3  -0.2839167 17.79083 -0.2839167   643    87    28 38.32993   248    96   248</span></span>
-<span><span class="co">#&gt; 4   0.9313333 16.58138 -0.4191251  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt; 5  -0.3020000 16.44079 -0.3020000  1229   163    67 33.78827   468   213   468</span></span>
-<span><span class="co">#&gt; 8  -0.3020000 16.44079 -0.3020000  1229   163    67 33.78827   468   213   468</span></span>
-<span><span class="co">#&gt; 11 -0.3784584 14.46612 -1.3513334  1380   188    75 32.60979   522   255   522</span></span>
-<span><span class="co">#&gt;    bio19        x        y      species</span></span>
-<span><span class="co">#&gt; 2    119 15.58333 48.08333 Salmo trutta</span></span>
-<span><span class="co">#&gt; 3     96 15.58333 48.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 4    234 13.08333 47.75000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 5    213 12.08333 47.75000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 8    213 12.08333 47.75000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 11   261 13.25000 47.75000 Salmo trutta</span></span>
+<span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
+<span><span class="co">#&gt; 2 8.415927 9.549812 33.45236 722.5972 23.70675 -4.84075 28.54750 17.29096</span></span>
+<span><span class="co">#&gt; 3 8.747239 9.561563 33.16130 735.3621 24.23025 -4.60325 28.83350 17.79083</span></span>
+<span><span class="co">#&gt; 4 8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.44079</span></span>
+<span><span class="co">#&gt; 6 8.082250 8.630333 32.53905 683.7614 22.23800 -4.28500 26.52300 16.44079</span></span>
+<span><span class="co">#&gt; 8 6.505573 8.508604 33.53277 649.9034 19.95200 -5.42200 25.37400 14.46612</span></span>
+<span><span class="co">#&gt; 9 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
+<span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
+<span><span class="co">#&gt; 2 -0.4631250 17.29096 -0.4631250   748   100    36 34.12024   277   119   277</span></span>
+<span><span class="co">#&gt; 3 -0.2839167 17.79083 -0.2839167   643    87    28 38.32993   248    96   248</span></span>
+<span><span class="co">#&gt; 4 -0.3020000 16.44079 -0.3020000  1229   163    67 33.78827   468   213   468</span></span>
+<span><span class="co">#&gt; 6 -0.3020000 16.44079 -0.3020000  1229   163    67 33.78827   468   213   468</span></span>
+<span><span class="co">#&gt; 8 -0.3784584 14.46612 -1.3513334  1380   188    75 32.60979   522   255   522</span></span>
+<span><span class="co">#&gt; 9  0.9313333 16.58138 -0.4191251  1307   174    69 33.66177   499   233   499</span></span>
+<span><span class="co">#&gt;   bio19        x        y      species</span></span>
+<span><span class="co">#&gt; 2   119 15.58333 48.08333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 3    96 15.58333 48.25000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 4   213 12.08333 47.75000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 6   213 12.08333 47.75000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 8   261 13.25000 47.75000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 9   234 13.08333 47.75000 Salmo trutta</span></span>
 <span></span>
 <span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
