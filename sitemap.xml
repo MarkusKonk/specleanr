@@ -13,6 +13,7 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/bestmethod.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/boots.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check.exclude.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/check_iucn.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_names.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_natura.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_taxa_names.html</loc></url>
@@ -43,7 +44,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extract_outliers.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/fishbase.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/geo_ranges.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/get_iucn.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/get_performance.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/getdata.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/getdiff.html</loc></url>

@@ -47,7 +47,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">onesvm</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  kernel <span class="op">=</span> <span class="st">"radial"</span>,</span>
-<span>  tune <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tune <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">output</span>,</span>
 <span>  tpar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>gamma <span class="op">=</span> <span class="fl">1</span><span class="op">^</span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>, epislon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>, cost <span class="op">=</span> <span class="fl">2</span><span class="op">^</span><span class="fl">2</span><span class="op">:</span><span class="fl">4</span>, nu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">1</span>,</span>
