@@ -60,36 +60,19 @@
 <!-- badges: start -->
 
 <!-- badges: end -->
+<p><img src="reference/figures/specleanrlogo.png" align="right" alt="logo" width="150" height="190"></p>
+<p><code>specleanr</code> The package aims to improve the reliability and acceptability of biogeographical models, including species distribution models, ecological niche models, and bioclimatic envelope models, by detecting outliers in the environmental predictors. In the package, we collate <strong>20 outlier detection methods</strong>, which a user can collectively apply (ensemble outlier detection) and determine whether the species records are in a suitable environmental space. The package complements other packages that address geographical, taxonomic, and temporal checks.</p>
 <div class="section level2">
-<h2 id="specleanr">specleanr<a class="anchor" aria-label="anchor" href="#specleanr"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="section level3">
-<h3 id="package-installation">Package installation<a class="anchor" aria-label="anchor" href="#package-installation"></a>
-</h3>
-<p><strong>Development version on GitHub:</strong></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span></span>
 <span><span class="co">#remotes::install_github("AnthonyBasooma/specleanr")</span></span></code></pre></div>
-<p><strong>CRAN version</strong></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### install.packages("specleanr")</span></span></code></pre></div>
-<p><strong>Package logo</strong></p>
-<figure>
-&lt;img src=“man/figures/specleanrlogo.png” data-fig.align=“center” width=“240” height=“300” alt=“Packgage logo under review” /&gt;
-<figcaption aria-hidden="true">
-Packgage logo under review
-</figcaption></figure>
-</div>
-</div>
-<div class="section level2">
-<h2 id="package-and-workflow-description">Package and workflow description<a class="anchor" aria-label="anchor" href="#package-and-workflow-description"></a>
-</h2>
-<p>The package aims to improve the reliability and acceptability of biogeographical models, including species distribution models, ecological niche models, and bioclimatic envelope models, by detecting outliers in the environmental predictors. In the package, we collate <strong>20 outlier detection methods</strong>, which a user can collectively apply (ensemble outlier detection) and determine whether the species records are in a suitable environmental space. The package complements other packages that address geographical, taxonomic, and temporal checks.</p>
 <div class="section level3">
 <h3 id="process-of-identifying-environmental-outliers">Process of identifying environmental outliers.<a class="anchor" aria-label="anchor" href="#process-of-identifying-environmental-outliers"></a>
 </h3>
-<p>The process of identifying environmental outliers is generally classified into <strong>four steps</strong> as detailed below (Figure 1);</p>
+<p>The process of identifying environmental outliers is generally classified into <strong>five steps</strong> as detailed below (Figure 1);</p>
 <figure><img src="reference/figures/specleanrworkflow.png" alt="Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation."><figcaption aria-hidden="true">
 Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation.
 </figcaption></figure><!--(![This is the caption!](img/rmarkdown_hex.png))--><ol style="list-style-type: decimal">
