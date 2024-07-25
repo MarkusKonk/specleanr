@@ -4,19 +4,34 @@
 \alias{mahal}
 \title{Flags outliers based on Mahalanobis distance matrix for all records.}
 \usage{
-mahal(data, exclude = NULL, output = "outlier", mode = "soft", pdf = 0.95)
+mahal(
+  data,
+  exclude = NULL,
+  output = "outlier",
+  mode = "soft",
+  pdf = 0.95,
+  tol = 1e-20
+)
 }
 \arguments{
-\item{data}{Dataframe to check for outliers}
+\item{data}{\code{dataframe}. Dataframe to check for outliers or extract the clean data.}
 
-\item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
-latitude/longitude or any column that the user doesn't want to consider.}
+\item{exclude}{\code{vector or string} Variables that should not be
+considered in the executing the Mahalanobis distance matrix. These can be
+coordinates such as latitude/longitude or any column that the user doesn't
+want to consider.}
 
-\item{output}{Either clean: for a data set with no outliers or outlier: to output a data frame with outliers.}
+\item{output}{\code{string} Either \code{clean} for a data set with no outliers or \code{outlier} to
+output a data frame with outliers.}
 
-\item{mode}{Either robust, if a robust mode is used which uses mcd() instead of mean. Default mode is soft.}
+\item{mode}{\code{string} Either \code{robust}, if a robust mode is used which uses \code{auto} estimator to
+instead of mean. Default mode is \code{soft}.}
 
-\item{pdf}{Chisqure probability distribution used for flagging outliers \code{Leys et al. 2018}.}
+\item{pdf}{\code{numeric} chisqure probability distribution value used for flagging outliers
+\code{(Leys et al. 2018)}. Default is \code{0.95}.}
+
+\item{tol}{\code{numeric} tolernce value when the inverse calculation are too
+small. Default \code{1e-20}.}
 }
 \value{
 Either clean or outliers dataset

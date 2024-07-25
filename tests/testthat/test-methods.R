@@ -29,7 +29,7 @@ sp <- refdata[['Salmo trutta']]
 
 #test for adjustedbxplots
 
-testthat::test_that(desc = "Adjusted boxplots errors and success",
+test_that(desc = "Adjusted boxplots errors and success",
                     code = {
                       #var  not in data
                       expect_error(adjustboxplots(data = sp, var = 'bio', output = "outlier"))
@@ -134,6 +134,9 @@ testthat::test_that(desc = "Distribution boxplot returns a dataframe of outliers
 
                       expect_type(distboxplot(data = sp$bio6, output = 'clean'), 'double')
 
+                      #expect double
+                      expect_type(distboxplot(data = c(4,5,5,6,7,45,67,4,3,5,6,5,44), output = 'clean'), "double")
+
                       #data not a dataframe, list, atomic or vector
                       expect_error(distboxplot(data = wcd))
 
@@ -170,6 +173,19 @@ testthat::test_that(desc = "Sequential fences returns a dataframe of outliers.",
                       sprbind <- rbind(sp, sp, sp, sp)
 
                       testthat::expect_error(seqfences(data = sprbind, var = 'bio6', output='outlier'))
+
+                      #expect if vectors are more than 100
+
+                      expect_error(seqfences(data = runif(110, min = 43, max = 403)))
+
+                      #expect error if dataframe or vector/list/atomic not provided
+
+                      expect_error(seqfences(data = wcd))
+
+                      #expect double
+                      expect_type(seqfences(data = c(4,5,5,6,7,45,67,4,3,5,6,5,44, 100, 3, 45, 6, 7, 22),
+                                            output = 'clean'), "double")
+
                     })
 
 
@@ -177,8 +193,16 @@ testthat::test_that(desc = "Sequential fences returns a dataframe of outliers.",
 
 testthat::test_that('use minimum and maximum temperature to flag suspicious outlier',
           code = {
-            dx <- ecological_ranges(data = sp, min = 6.5, max = 15.8, var = 'bio1', output ='outlier')
-            expect_s3_class(dx, 'data.frame')
+            #output outliers
+            expect_s3_class(ecological_ranges(data = sp, min = 6.5, max = 15.8, var = 'bio1',
+                                              output ='outlier'),'data.frame')
+            #output clean data
+
+            expect_s3_class(ecological_ranges(data = sp, min = 6.5, max = 15.8, var = 'bio1',
+                                              output ='clean'),'data.frame')
+
+            #error if max and min are not provided
+           expect_error(ecological_ranges(data = sp, var = 'bio1',output ='outlier'))
           })
 
 testthat::test_that('use only one parameter such as max temperature-(ecoparam and direction)',
@@ -214,8 +238,8 @@ testthat::test_that(desc = "optimal ranges from literature for multiple species"
                                                                                optspcol = "species")),
                                       "data.frame")
 
-                      #Error if data is not provided
-                      expect_error(ecological_ranges(species = 'Salmo trutta',
+                      #Error if data = NULL is not provided
+                      expect_error(ecological_ranges(data = NULL, species = 'Salmo trutta',
                                                         var = 'bio1', output = "outlier",
                                                         optimumSettings = list(optdf = optdata,
                                                                                maxcol = "maxtemp",
@@ -231,11 +255,12 @@ testthat::test_that(desc = "optimal ranges from literature for multiple species"
                                                                                optspcol = "species")))
 
                       #Error expected if species column is not provided from the optimal dataset
-                      expect_error(ecological_ranges(species = 'Salmo trutta',
+                      expect_error(ecological_ranges(data = sp, species = 'Salmo trutta',
                                                      var = 'bio1', output = "outlier",
                                                      optimumSettings = list(optdf = optdata,
                                                                             maxcol = "maxtemp",
-                                                                            mincol ="mintemp")))
+                                                                            mincol ="mintemp",
+                                                                            optspcol = NULL)))
 
 
 
@@ -286,10 +311,21 @@ testthat::test_that(desc = "check for temperature or georanges",
                                                         var = 'bio1', output = "outlier",
                                                         checkfishbase = TRUE, mode = 'temp'), "data.frame")
 
+                      #species which is not in fishbase//first suppress checknames warnings
+                      #No temperature ranges for Salmo trutta332re from FishBase and original data will be output from clean data
+
+                      expect_message(suppressWarnings(ecological_ranges(data = sp, species = 'Salmo trutta332re',
+                                        var = 'bio1', output = "clean",
+                                        checkfishbase = TRUE, mode = 'temp')))
+
                       #provide decimal longitude and latitude for georanges (x and y extracted at pred_extract)
                       expect_s3_class(ecological_ranges(data = sp, species = 'Salmo trutta',
                                                         lat = 'y', lon = 'x', output = "outlier",
                                                         checkfishbase = TRUE, mode = 'geo'), "data.frame")
+
+                      #error if the lat and lon is not provided yet mode is geo
+                      expect_error(ecological_ranges(data = sp, species = 'Salmo trutta',
+                                                     output = "outlier",checkfishbase = TRUE, mode = 'geo'))
                     })
 
 
@@ -402,6 +438,18 @@ testthat::test_that(desc = "Checks Mahalanobis distance measures whether return 
 
                                             #data missing
                       expect_error(mahal(exclude = c('x','y'), output='clean'))
+
+                      #set the mode to robust for Phoxinus phoxinus
+
+                      expect_s3_class(mahal(data = refdata[['Phoxinus phoxinus']], mode = 'robust',
+                                            exclude = c('x','y')), "data.frame")
+
+                      #set the mode to robust for Salmo trutta did not exceute
+                      expect_error(suppressWarnings(mahal(data = sp, mode = 'robust')))
+
+                      #return a warning if the data has y, therefore change to vifcor not vifstep not exclude x and y
+
+                      expect_warning(mahal(data = refdata[['Phoxinus phoxinus']], tol = 1e-25))
 
                     })
 

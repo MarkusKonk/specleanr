@@ -42,15 +42,17 @@ refdata_df <- pred_extract(data = matchclean, raster = wcd,
                         minpts = 6,
                         merge = F)
 
+#for multiple species
+outlist <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
+                       exclude = c('x','y'),
+                       multiple = TRUE,
+                       methods = c('mixediqr', "iqr", "seqfences",
+                                   "mahal", 'glosh', 'onesvm','logboxplot','knn',
+                                   'distboxplot','medianrule',
+                                   'iforest','jknife','reference'))
+
 test_that(desc = 'List of species with outliers produced',
                     code = {
-                      outlist <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
-                                             exclude = c('x','y'),
-                                             multiple = TRUE,
-                                             methods = c('mixediqr', "iqr", "seqfences",
-                                                         "mahal", 'glosh', 'onesvm','logboxplot','knn',
-                                                         'distboxplot','medianrule',
-                                                         'iforest','jknife','reference'))
 
                       testthat::expect_equal(length(outlist@result), length(refdata))
                       testthat::expect_identical(outlist@dfname, "refdata")
@@ -66,6 +68,9 @@ test_that(desc = 'List of species with outliers produced',
 
                       #test that the datacleaner is printed out: multiple species
                       expect_output(show(outlist))
+
+                      #multiple but index not provided.
+                      expect_error(extract_outliers(outlist))
                     })
 
 #test trycatch errors
@@ -132,6 +137,7 @@ testthat::test_that(desc = 'Not enough data provided and other methods may not w
                                                  exclude = c('x','y'),
                                                  multiple = FALSE,
                                                  methods = c('mixediqr', "iqr", "kmeans", "mahal")))
+
                       #provide a list of dataframes but when multiple is FALSE returns an error-expects a dataframe
                       expect_error(multidetect(data = refdata, var = 'bio6', output = 'outlier',
                                                exclude = c('x','y'),
@@ -258,6 +264,9 @@ testthat::test_that(desc = 'Test for success and errors during outlier detection
                       #both threshold = NULL and autothreshold =FALSE
                       expect_error(ocindex(x=outlierdf, sp=1,  threshold = NULL, warn = F, autothreshold = FALSE))
 
+                      #both threshold = NOT NULL and autothreshold = TRUE
+                      expect_error(ocindex(x=outlierdf, sp=1,  threshold = 0.2, warn = F, autothreshold = TRUE))
+
                       #expect warning sinc the threshold is below 0.5
                       expect_warning(ocindex(x=outlierdf, sp=1, threshold = 0.2, warn = T))
 
@@ -272,7 +281,72 @@ testthat::test_that(desc = 'Test for success and errors during outlier detection
 
                       #when the outliers x is not provided
                       expect_error(ocindex(threshold = -0.1))
+
+                      #run autothreshold
+
+                      #expect error: No absolute outliers from 0.51 to 1
+
+                      expect_error(ocindex(x = outlist, autothreshold = TRUE, sp = 5))
+
+                      #executed successfully with autothreshold
+
+                      expect_type(ocindex(x = outlist, autothreshold = TRUE, sp = 1), 'character')
+
                     })
+
+#preliminary for outlier extraction
+
+test_that(desc = "Errors and success for extract outliers, batch_extract, mult abs",
+          code = {
+
+            #expect error missing outlier output
+            expect_error(extract_outliers())
+
+            expect_error(batch_extract())
+
+            expect_error(mult_abs())
+
+            #expect error if datacleaner not provided
+            expect_error(extract_outliers(x=wcd))
+
+            expect_error(batch_extract(x=wcd))
+
+            expect_error(mult_abs(x= wcd, threshold = 0.2))
+
+            #expect error if clean output is set at multidetect
+
+            cleanout <- multidetect(data = dfinal, var = 'Sepal.Length', output = 'clean',
+                        multiple = FALSE,
+                        methods = c('mixediqr', 'logboxplot','iqr'))
+
+            expect_error(extract_outliers(cleanout))
+
+            #expect error for multiple item at multidetect but batch_extract is used
+
+            expect_error(batch_extract(x=cleanout))
+
+            #expect error for mult_abs extract on clean data
+            expect_error(mult_abs(x= cleanout, threshold = 0.2))
+
+            outabs <- multidetect(data = dfinal, var = 'Sepal.Length', output = 'outlier',
+                                    multiple = FALSE,
+                                    methods = c('mixediqr', 'logboxplot','iqr'))
+
+            #expect error for mult_abs extract on outlying data but threshold >1
+            expect_error(mult_abs(x= outabs, threshold = 1.3))
+
+            #true multiple absolute outlier extract for multiple species-- the multiple for ociindex
+
+            expect_s3_class(mult_abs(x= outlist, threshold = 0.5, props = FALSE), 'data.frame')
+
+            expect_s3_class(mult_abs(outlist, threshold = 0.4, props = TRUE), 'data.frame')
+
+            expect_s3_class(mult_abs(x= outlist, autothreshold = TRUE, props = FALSE), 'data.frame')
+
+            expect_s3_class(mult_abs(outlist, autothreshold = TRUE, props = TRUE), 'data.frame')
+          })
+
+
 
 
 
@@ -295,6 +369,10 @@ testthat::test_that(desc = 'Test for different method if they return a character
                       #check for absolute = FALSE and prop=FALSE: expect a dataframe
                       testthat::expect_type(ocindex(x=outlierdf, threshold = 0.2, absolute = FALSE, props = FALSE,
                                                         warn = FALSE, sp=1 ), 'character')
+
+                      #expect error: wrong data set for outliers. only accepts datacleaner
+                      testthat::expect_error(ocindex(x=wcd, threshold = 0.2, absolute = TRUE, warn = F, sp = 1))
+
                     })
 
 #best methods checks
@@ -393,13 +471,21 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
                                                   sp = "Phoxinus phoxinus", tuneLoess = seq(0.1, 1, 0.1)),
                                    c('minima', 'maxima'))
 
-                      #expect error if the multiple speces reference data is provided for thresh_search
+                      #expect error if the multiple species reference data is provided for thresh_search
 
                       expect_error(thresh_search(data = refdata, outliers = outlierdf))
 
+                      #optimal threshold for one species
+                      spoutliers <- suppressWarnings(multidetect(data = spdata, var = 'bio6', output = 'outlier',
+                                  exclude = c('x','y'),
+                                  multiple = FALSE,
+                                  methods = c('mixediqr', "iqr", "kmeans", "mahal")))
+
+                      expect_named(optimal_threshold(refdata = spdata, outliers = spoutliers), c('minima', 'maxima'))
+
                       #expect error if column name is not provided and yet reference data is a dataframe not list
 
-                      expect_error(optimal_threshold(data = refdata_df, outlierdf2, sp = 1))
+                      expect_error(optimal_threshold(data = refdata_df, outliers = outlierdf2))
 
                       #expect a dataframe but no plot for multiple species. even plot = TRUE
 
@@ -409,6 +495,14 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
                       #expect unused argument error for sp index or name for multiple threshold search
 
                       expect_error(optimal_threshold(refdata = refdata, outliers = outlierdf, sp = 1, colsp = 'species'))
+
+                      #check if the same refdata was used in outlier detection threshold optimization
+
+                      expect_error(optimal_threshold(refdata = spdata, outliers = outlierdf))
+
+                      #use wrong reference datat
+
+                      expect_error(optimal_threshold(refdata = wcd, outliers = outlist))
 
                     })
 

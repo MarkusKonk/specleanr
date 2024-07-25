@@ -8,7 +8,7 @@ mult_abs(
   x,
   threshold = NULL,
   props = FALSE,
-  warn = TRUE,
+  warn = FALSE,
   autothreshold = FALSE
 )
 }

@@ -29,24 +29,22 @@ outliersdf <- multidetect(data = rdata, multiple = FALSE,var = 'bio6',output = '
                           exclude = c('x','y'),
                           methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
 
+modeout <- modelcomparison(refdata = rdata, outliers = outliersdf,
+                           raster = worldclim,
+                           lat = 'y', lon = 'x', models = "GLM",
+                           mode = 'best', testprop = 0.2, metrics = 'all',
+                           thresholds = 0.2, full = FALSE, minpts = 10)
 
 test_that(desc = "Model output comparison",
                     code = {
-                      testthat::skip_if_offline()
-                      testthat::skip_on_cran()
-                      modeout <- modelcomparison(refdata = rdata, outliers = outliersdf,
-                                                 raster = worldclim,
-                                                 lat = 'y', lon = 'x', models = "GLM",
-                                                 mode = 'best', testprop = 0.2, metrics = 'all',
-                                                 thresholds = 0.2, full = FALSE, minpts = 10)
-
+                      #model output
                       testthat::expect_equal(length(modeout), 1)
 
                       getperf <- get_performance(modelcomp  = modeout)
 
+                      #equal to number of boots
                       testthat::expect_equal(nrow(getperf), 20)
 
-                      #test ggperform
                       #test for test
                       expect_equal(length(class(ggperform(modelout = modeout))), 2)
 

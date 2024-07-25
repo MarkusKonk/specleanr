@@ -509,7 +509,7 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
 #' @seealso \code{\link{ocindex}}
 #'
 
-mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=FALSE){
+mult_abs <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -526,6 +526,8 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
   absoluteoutliers <- c() #Absolute outliers count
 
   species <- c()
+
+  #to extract the number of absolute outlier flagged by each method at a particular threshold
 
   if(isFALSE(props)){
 
@@ -557,6 +559,7 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
 
     dx <- data.frame(species = species, absoutliers = absoluteoutliers)
 
+    #to extract a dataframe of aboslute outlier proportions for all the methods at a particualr threshold
   }else if(isTRUE(props)){
 
     splist <- list()
@@ -567,7 +570,7 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
         expr = {
 
           absprops <- ocindex(x= x, sp = di, absolute = TRUE, threshold = threshold,
-                              props = props, warn=warn, autothreshold = autothreshold)
+                              props = TRUE, warn=warn, autothreshold = autothreshold)
 
         },
         error= function(e){
@@ -639,11 +642,6 @@ mult_abs <- function(x, threshold = NULL, props=FALSE, warn=TRUE, autothreshold=
 #'
 jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   #check if there are absolute outliers
   if(autothreshold==TRUE){
@@ -760,11 +758,6 @@ jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FA
 
 overlap <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold = FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   if(isTRUE(autothreshold)){
     absoutliers_list <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn,
@@ -874,12 +867,6 @@ overlap <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold = 
 
 cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
-
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
     absoutliers_list <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn,
@@ -987,11 +974,6 @@ cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FAL
 
 sorensen <- function(x, sp = NULL,  threshold=NULL, warn=FALSE, autothreshold = FALSE ){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   if(isTRUE(autothreshold)){
     absoutliers_list <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn,
@@ -1102,11 +1084,6 @@ sorensen <- function(x, sp = NULL,  threshold=NULL, warn=FALSE, autothreshold = 
 
 smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
@@ -1290,12 +1267,6 @@ smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALS
 #'
 
 hamming <- function(x, sp=NULL, threshold = NULL, warn = FALSE, autothreshold = FALSE){
-
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
-
-  if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
 
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){

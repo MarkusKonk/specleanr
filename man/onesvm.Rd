@@ -7,7 +7,7 @@
 onesvm(
   data,
   kernel = "radial",
-  tune = NULL,
+  tune = FALSE,
   exclude = NULL,
   output,
   tpar = list(gamma = 1^(-1:1), epislon = seq(0, 1, 0.1), cost = 2^2:4, nu = seq(0.05, 1,

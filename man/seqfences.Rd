@@ -2,9 +2,9 @@
 % Please edit documentation in R/outliermethods.R
 \name{seqfences}
 \alias{seqfences}
-\title{Sequenctial fences method}
+\title{Sequential fences method}
 \usage{
-seqfences(data, var, output, gamma = 0.95, mode = "eo")
+seqfences(data, var = NULL, output, gamma = 0.95, mode = "eo")
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}
@@ -23,7 +23,7 @@ the extremeness is the outlier \code{Schwertman & de Silva 2007}.}
 Dataframe or vector with or without outliers
 }
 \description{
-Sequenctial fences method
+Sequential fences method
 }
 \details{
 Sequential fences is a modification of the TUKEY boxplot, where the data is divided into groups each with its own

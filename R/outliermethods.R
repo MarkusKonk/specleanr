@@ -396,7 +396,7 @@ jknife <- function(data, var, output ='outlier', mode='soft'){
 
     datIn <- which(var%in%xvar)
 
-  }else if(mode=='robust'){
+  }else{
     y <- c()
     xc <- c()
     xbar <- stats::median(var)
@@ -419,8 +419,6 @@ jknife <- function(data, var, output ='outlier', mode='soft'){
     xvar <- var[var%in%xcv]
 
     datIn <- which(var%in%xvar)
-  }else{
-    stop('No mode selected. Use either robust or soft')
   }
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
@@ -485,13 +483,11 @@ zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft'){
 
     datIn = switch(type, mild = which(zscores< 2.5 & zscores > (-2.5)),
                    extreme= which(zscores< 3 & zscores > (-3)))
-  }else if (mode=='soft') {
+  }else {
     zscores <- (var - base::mean(var))/stats::sd(var)
 
     datIn = switch(type, mild = which(zscores< 2.5 & zscores > (-2.5)),
                    extreme= which(zscores< 3 & zscores > (-3)))
-  }else{
-    stop('Select mode of zscore whether robust or soft')
   }
 
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
@@ -786,7 +782,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 }
 
 
-#' @title Sequenctial fences method
+#' @title Sequential fences method
 #'
 #' @param data Dataframe or vector where to check outliers.
 #' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
@@ -846,7 +842,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #' }
 #'
 
-seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
+seqfences <- function(data, var = NULL, output, gamma=0.95, mode='eo'){
 
   if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
 
@@ -865,7 +861,7 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo'){
     if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
     var <- unlist(data[,var])
 
-  } else if(is(data, 'vector') || is(data, 'atomic')){
+  } else if(is(data, 'vector') || is(data, 'atomic') ){
     nd <- length(data)
 
     if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
@@ -1034,7 +1030,7 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
 #' nedata <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),  output='outlier')
 #'}
 #'
-onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
+onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
                    tpar = list(gamma = 1^(-1:1), epislon =seq(0, 1, 0.1),
                                cost =2^2:4, nu = seq(0.05, 1, 0.1))){
 
@@ -1042,14 +1038,14 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
 
   if(!is.null(exclude))  df<- data[!colnames(data)%in%exclude] else df <- data
 
-  if(is.null(tune)){
+  if(isFALSE(tune)){
 
     svm_model <- svm(df, type = 'one-classification', nu=0.1, scale = T, kernel = kernel)
 
     prediction <- predict(svm_model, df)
 
 
-  }else if(tune==TRUE){
+  }else{
 
     tunemodel =  tune.svm(x=df, y=rep(T,nrow(df)), type='one-classification', kernel= kernel,
                           nu=tpar$nu, gamma = tpar$gamma)#create TRUE class to validate the model
@@ -1058,8 +1054,6 @@ onesvm <- function(data, kernel='radial', tune=NULL, exclude = NULL, output,
 
     prediction <- predict(modnew, df)
 
-  }else{
-    message('Default untuned model executed')
   }
   datIn <- which(prediction==TRUE)
 
@@ -1558,12 +1552,12 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
 
       }else{
 
-        message("No temperature ranges for ", species ," from FishBase and orginal data will be output from clean data.")
+        message("No temperature ranges for ", species ," from FishBase and original data will be output from clean data.")
 
         switch(output, outlier= return(NA), clean = return(data))
 
       }
-    }else if(mode=="geo"){
+    }else{
 
       geox <- geo_ranges(data = species, warn = warn )
 
@@ -1576,10 +1570,7 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
         switch(output, outlier= return(NA), clean = return(data))
       }
 
-    }else{
-      message('set either georanges or tempranges')
     }
-
 
   }else{
     #if it is one species, and manual input of optimal parameters: min and max or ecoparam (when only one is provided.)
@@ -1727,12 +1718,19 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 
 #' @title Flags outliers based on Mahalanobis distance matrix for all records.
 #'
-#' @param data Dataframe to check for outliers
-#' @param exclude Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
-#' latitude/longitude or any column that the user doesn't want to consider.
-#' @param output Either clean: for a data set with no outliers or outlier: to output a data frame with outliers.
-#' @param mode Either robust, if a robust mode is used which uses mcd() instead of mean. Default mode is soft.
-#' @param pdf Chisqure probability distribution used for flagging outliers \code{Leys et al. 2018}.
+#' @param data \code{dataframe}. Dataframe to check for outliers or extract the clean data.
+#' @param exclude \code{vector or string} Variables that should not be
+#'   considered in the executing the Mahalanobis distance matrix. These can be
+#'   coordinates such as latitude/longitude or any column that the user doesn't
+#'   want to consider.
+#' @param output \code{string} Either \code{clean} for a data set with no outliers or \code{outlier} to
+#'   output a data frame with outliers.
+#' @param mode \code{string} Either \code{robust}, if a robust mode is used which uses \code{auto} estimator to
+#'  instead of mean. Default mode is \code{soft}.
+#' @param pdf \code{numeric} chisqure probability distribution value used for flagging outliers
+#'   \code{(Leys et al. 2018)}. Default is \code{0.95}.
+#' @param tol \code{numeric} tolernce value when the inverse calculation are too
+#'   small. Default \code{1e-20}.
 #'
 #' @importFrom stats mahalanobis qchisq cov complete.cases
 #' @importFrom usdm vifcor vifstep exclude
@@ -1773,7 +1771,7 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #' Use a robust variant of the Mahalanobis distance. Journal of Experimental
 #' Social Psychology 74:150-156.
 #'
-mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95){
+mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95, tol= 1e-20){
 
   if(missing(data)) stop('Data not provided.')
 
@@ -1787,9 +1785,18 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 
   #check for multicolinearity in the data
 
-  df2<- usdm::exclude(df, suppressWarnings(usdm::vifstep(df)))
+  #check if y is in the colnames
 
+  if(("y" %in% colnames(df))==TRUE){
 
+    warning('vifstep uses y to fit the model and this will create an error. Rename variable y or exclude it  or vifcor will be used instead.')
+
+    df2<- usdm::exclude(df, suppressWarnings(usdm::vifcor(df)))
+
+    }else{
+
+      df2<- usdm::exclude(df, suppressWarnings(usdm::vifstep(df)))
+  }
   if(nrow(df2)<ncol(df2)){
     stop('Inverse matrix cannot be computed if number of variables are equal or greater than observations and NULL output generated')
 
@@ -1799,19 +1806,25 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
   }else{
     if(mode=='soft'){
 
-      mdist <- stats::mahalanobis(df2 , center =  colMeans(df2), cov =  stats::cov(df2))
+      mdist <- stats::mahalanobis(df2 , center =  colMeans(df2), cov =  stats::cov(df2), tol= tol)
 
     }else{
 
-      cobj =  robust::covRob(df2, estim='mcd', alpha=0.7)
+      rob <- tryCatch(expr = robust::covRob(df2),
+                      error=function(e)NULL,
+                      warning = function(w)NULL)
+      if(!is.null(rob)){
+        cobj =  robust::covRob(df2)
 
-      covmatrix <- cobj$cov
+        covmatrix <- cobj$cov
 
-      centermatrix <- cobj$center
+        centermatrix <- cobj$center
 
-      mdist <- stats::mahalanobis(df2, center = centermatrix, cov = covmatrix)
+        mdist <- stats::mahalanobis(df2, center = centermatrix, cov = covmatrix,tol= tol)
+      }else{
+        stop("The robust mode did not succesfully execute.")
+      }
     }
-
     cutoff <- qchisq(p=pdf, df = ncol(df2))
 
     datIn <- which(mdist<cutoff)
@@ -1819,10 +1832,6 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
     switch(output, clean=return(data[datIn,]), outlier=return(data[-datIn,]))
   }
 }
-
-
-
-
 
 
 #' @title Flags outliers using kmeans clustering method

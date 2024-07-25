@@ -14,8 +14,7 @@ dataprep <- envextract(occurences = datacheckf, raster = worldclim,
 nb <- boots(data = dataprep, nboots = 10, testprob = 0.3)
 
 
-
-testthat::test_that("Size of the output differ when full vs not full",
+test_that("Size of the output differ when full vs not full",
 
                     code= {
                       fullf = sdmfit(data = nb, models = "GLM")
@@ -25,6 +24,16 @@ testthat::test_that("Size of the output differ when full vs not full",
                       testthat::expect_gt(object.size(fullt), object.size(fullf))
                       expect_equal(length(fullt[[1]]), 5) #full output--TRUE
                       expect_equal(length(fullf[[1]]), 2)#full output --FALSE
+
+                      xc <- sdmfit(data = nb, models = 'RF1')
+
+                      #check for randomForest function
+                      expect_equal(length(xc[[1]]), 2)
+
+                      #check for ranger model
+                      xc2 <- sdmfit(data = nb, models = 'RF')
+
+                      expect_equal(length(xc[[1]]), 2)
                     }
 )
 test_that("Error if data is not from boot function and metrics are not dep, indep and all",

@@ -81,7 +81,7 @@ endemicity <- function(basin, range){
 #' @export
 #'
 #'
-get_iucn <- function(x, key){
+check_iucn <- function(x, key){
 
   specleanr::suggested.packages(listpkgs= c('rredlist'), reason='IUCN data')
 
@@ -280,7 +280,7 @@ mdistr_ranges <- function(data, colsp, lat, lon, key, mode, verbose=T){
     }else if(mode == 'iucn'){
 
       sx <- tryCatch(expr = { #if its an error then x will be NULL
-        get_iucn(x=x, key = key)
+        check_iucn(x=x, key = key)
       },
       error=function(){
 
@@ -307,7 +307,7 @@ mdistr_ranges <- function(data, colsp, lat, lon, key, mode, verbose=T){
       distdata[[div]][,'species'] <- x
 
       sx <- tryCatch(expr = { #if its an error then x will be NULL
-        get_iucn(x=x, key = key)
+        check_iucn(x=x, key = key)
       },
       error=function(){
 
