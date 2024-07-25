@@ -379,7 +379,7 @@ extract_online <- function(online, verbose=FALSE){
                                       lats = c('latitude','decimallatitude'),
                                       lons = c('decimallongitude', 'longitude'),
                                       species = c('scientificname','scientific_name'),
-                                      date = c('datetime', 'year','eventdate'),
+                                      date = c('datetime', 'year','eventdate','dates'),
                                       country = c('place_guess'))
       dfinal <- do.call(rbind, species)
 

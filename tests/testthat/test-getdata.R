@@ -19,6 +19,10 @@ test_that(desc = 'Return species data',
             ondata <- getdata(data = 'Gymnocephalus baloni', mode = 'all', gbiflim = 10, vertlim = 10,
                               inatlim = 10, verbose = FALSE)
 
+            #test that the dataonline is printed out
+
+            expect_output(show(ondata))
+
             extd <- extract_online(online = ondata)
 
             expect_lt(nrow(extd), 30)

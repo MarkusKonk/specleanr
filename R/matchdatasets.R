@@ -170,7 +170,8 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
           dates2<- dates[1]
 
           if(isTRUE(verbose))message('Dataset ', datnames, ' has more than column options indicated for date standardisation.')
-        }else{
+
+           }else{
           dates2 <- dates
         }
 

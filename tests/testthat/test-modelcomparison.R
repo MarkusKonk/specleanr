@@ -30,7 +30,7 @@ outliersdf <- multidetect(data = rdata, multiple = FALSE,var = 'bio6',output = '
                           methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel'))
 
 
-testthat::test_that(desc = "Model output comparison",
+test_that(desc = "Model output comparison",
                     code = {
                       testthat::skip_if_offline()
                       testthat::skip_on_cran()
@@ -45,6 +45,17 @@ testthat::test_that(desc = "Model output comparison",
                       getperf <- get_performance(modelcomp  = modeout)
 
                       testthat::expect_equal(nrow(getperf), 20)
+
+                      #test ggperform
+                      #test for test
+                      expect_equal(length(class(ggperform(modelout = modeout))), 2)
+
+                      #for training data
+                      expect_equal(length(class(ggperform(modelout = modeout, type = 'train'))), 2)
+
+                      #test for scale
+                      expect_equal(length(class(ggperform(modelout = modeout, type = 'train', scales = 'free_x'))), 2)
+
                     })
 test_that("Outliers parameter should be datacleaner class",
           code = {

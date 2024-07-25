@@ -39,7 +39,9 @@ ggperform <- function(modelout, eval=c('auc', 'Accuracy'), type = 'test',
 
 
   #Plotting the summary using ggplot2
-  gplot <- ggplot2::ggplot(data = stackdata, ggplot2::aes_string(x = "ind2", y = "values", fill="scenario"))+
+
+  ind2 <- NULL; values = NULL; scenario = NULL
+  gplot <- ggplot2::ggplot(data = stackdata, ggplot2::aes(x = ind2, y = values, fill=scenario))+
     ggplot2::stat_boxplot(geom = 'errorbar', width = 0.3, position = ggplot2::position_dodge(width = 1))+
 
     ggplot2::geom_boxplot(position = ggplot2::position_dodge(width = 1))+

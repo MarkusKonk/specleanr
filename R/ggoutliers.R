@@ -62,7 +62,9 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
             }
             suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
 
-            pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes_string(x="method", y= if(raw==TRUE) "totaloutliers" else "pct"))+
+            method = NULL; pct = NULL ; totaloutliers = NULL
+
+            pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes(x=method, y= if(raw==TRUE) totaloutliers else pct))+
               ggplot2::geom_bar(stat = 'identity', fill='grey40')+
               ggplot2::theme_bw()+
               ggplot2::theme(legend.position = 'none',
@@ -144,8 +146,8 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple'){
     hjust <- 0.5
   }
   suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
-
-  pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes_string(x="method", y= if(raw==TRUE) "totaloutliers" else "pct"))+
+  method = NULL; pct = NULL ; totaloutliers = NULL
+  pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes(x=method, y= if(raw==TRUE) totaloutliers else pct))+
     ggplot2::geom_bar(stat = 'identity', fill=color)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = 'none',

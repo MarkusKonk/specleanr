@@ -132,7 +132,9 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
     #install suggested packages if not yet inatalled on user computer
     suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="loess and acutal values")))
 
-    gplot <- ggplot2::ggplot(data = absthreshold_df, ggplot2::aes_string(x = "thresholdvalues", y = "dataretained"))+
+    thresholdvalues <- NULL; dataretained <- NULL
+
+    gplot <- ggplot2::ggplot(data = absthreshold_df, ggplot2::aes(x = thresholdvalues, y = dataretained))+
 
       ggplot2::geom_point(shape=20, size=3)+
 

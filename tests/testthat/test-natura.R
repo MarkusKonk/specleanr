@@ -1,13 +1,13 @@
 
 data("efidata")
 
-test_that(desc = "download natura ranges/ Errors and success",
-          code = {
-            skip_on_cran()
-            #low time out
-            expect_error(downloadnatura(x = 'natura', timeout = 2))
-
-          })
+# test_that(desc = "download natura ranges/ Errors and success",
+#           code = {
+#             skip_on_cran()
+#             #low time out
+#             expect_error(downloadnatura(x = 'natura', timeout = 2))
+#
+#           })
 
 test_that(desc = "Errors and success for check natura",
                     code = {

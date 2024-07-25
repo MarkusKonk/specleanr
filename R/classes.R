@@ -66,7 +66,7 @@ setClass(Class = 'datacleaner',
 setMethod(f='show', signature = 'datacleaner', definition = function(object){
 
   if(object@mode==FALSE){
-    cat(" ======================================",'\n',
+    cat("======================================",'\n',
         ' Data cleaning summary','\n',
         "======================================",'\n',
         'Number of species        :',   1,'\n',

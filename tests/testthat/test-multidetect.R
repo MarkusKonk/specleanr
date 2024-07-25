@@ -42,7 +42,7 @@ refdata_df <- pred_extract(data = matchclean, raster = wcd,
                         minpts = 6,
                         merge = F)
 
-testthat::test_that(desc = 'List of species with outliers produced',
+test_that(desc = 'List of species with outliers produced',
                     code = {
                       outlist <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                                              exclude = c('x','y'),
@@ -63,8 +63,10 @@ testthat::test_that(desc = 'List of species with outliers produced',
                       testthat::expect_identical(outlist@out, "outlier")
                       testthat::expect_identical(outlist@mode, TRUE)
                       testthat::expect_type(refdata, 'list') #not a dataframe but list
-                    })
 
+                      #test that the datacleaner is printed out: multiple species
+                      expect_output(show(outlist))
+                    })
 
 #test trycatch errors
 
@@ -168,11 +170,14 @@ test_that(desc = "NAs if univariate methods only selected",
           code = {
             #showErrrors FALSE but the methods are well set: datacleaner produced and verbose = TRUE
 
-            expect_s4_class(suppressMessages(multidetect(data = dfinal, var = 'Sepal.Width',
+            outl <- suppressMessages(multidetect(data = dfinal, var = 'Sepal.Width',
                         multiple = FALSE,
                         methods = c('mixediqr', 'logboxplot','kmeans', 'lof'), verbose =TRUE,
-                        showErrors = FALSE)), 'datacleaner')
+                        showErrors = FALSE))
+            expect_s4_class(outl, 'datacleaner')
 
+            #test that the singl species multidetect is printed
+            expect_output(show(outl))
 
             #return an error if the method parameter are wrongly set: using kmeans, warn=TRUE & showError=FALSE
             #method wrongly set
@@ -376,7 +381,17 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
 
                       #expect names minima and maxima
 
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf, sp = "Phoxinus phoxinus"), c('minima', 'maxima'))
+                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                                                 sp = "Phoxinus phoxinus"), c('minima', 'maxima'))
+
+                      #expect an output map if plot is true
+                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                                                 sp = "Phoxinus phoxinus", plot = TRUE), c('minima', 'maxima'))
+
+                      ##expect error, warn, and next while optimizing span
+                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                                                  sp = "Phoxinus phoxinus", tuneLoess = seq(0.1, 1, 0.1)),
+                                   c('minima', 'maxima'))
 
                       #expect error if the multiple speces reference data is provided for thresh_search
 
