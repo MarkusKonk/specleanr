@@ -218,7 +218,7 @@ collated from the Hydrography90m basin files (<a href="https://hydrography.org/h
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Environmental prediction extraction for a single species (multiple = FALSE)</span></span>
-<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">extrdata</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
+<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">extrdata</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1cleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">sp1df</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
@@ -311,8 +311,8 @@ data. For more information, check (B….2024).</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 3.</span></span>
-<span><span class="co">#&gt; Criteria: Method with maximum number of votes and similar to OCI is selected.</span></span>
+<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
+<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
 <span></span>
 <span></span>
 <span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>

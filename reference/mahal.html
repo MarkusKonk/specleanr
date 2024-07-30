@@ -122,8 +122,8 @@ Social Psychology 74:150-156.</p>
 <span class="r-in"><span>                       minpts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#outliers</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu">mahal</span><span class="op">(</span>data <span class="op">=</span> <span class="va">refdata1</span><span class="op">[[</span><span class="st">'Salmo trutta'</span><span class="op">]</span><span class="op">]</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                        output<span class="op">=</span><span class="st">'outlier'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">outliers</span> <span class="op">&lt;-</span> <span class="fu">mahal</span><span class="op">(</span>data <span class="op">=</span> <span class="va">refdata</span><span class="op">[[</span><span class="st">'Salmo trutta'</span><span class="op">]</span><span class="op">]</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                        output<span class="op">=</span><span class="st">'outlier'</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>

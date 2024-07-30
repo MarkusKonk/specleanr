@@ -70,7 +70,8 @@ by each method.</p>
 <span>  spname <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  missingness <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  showErrors <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  showErrors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sdm <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -171,6 +172,13 @@ columns or rows from the data sets. Default 0.1. Therefore,
 <dd><p><code>logical</code>. Show execution errors and therefore for multiple species the code will break if one of the
 methods fails to execute.</p></dd>
 
+
+<dt id="arg-sdm">sdm<a class="anchor" aria-label="anchor" href="#arg-sdm"></a></dt>
+<dd><p>logical If the user sets <code>TRUE</code>, strict data checks will be done including removing all non-numeric
+columns from the datasets before identification of outliers. If set to <code>FALSE</code> non numeric columns will be left
+in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
+<code><a href="broad_classify.html">broad_classify</a></code> for the broad categories of the methods allowed.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -267,7 +275,7 @@ In 2008 eighth ieee international conference on data mining (pp. 413-422). IEEE.
 <span class="r-in"><span>                                    mincol <span class="op">=</span> <span class="st">"mintemp"</span>, maxcol <span class="op">=</span> <span class="st">"maxtemp"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co">#plot the number of outliers</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">out_df</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">#ggoutliers(out_df, 1)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

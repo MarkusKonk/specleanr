@@ -12,6 +12,7 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/batch_extract.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/bestmethod.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/boots.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/broad_classify.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check.exclude.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_iucn.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_names.html</loc></url>
@@ -19,7 +20,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_taxa_names.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data_extract.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_names.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/cosine.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/datacleaner-class.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/dataonline-class.html</loc></url>
@@ -42,7 +42,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extractMethods.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extract_online.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extract_outliers.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/fishbase.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/geo_ranges.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/get_performance.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/getdata.html</loc></url>
@@ -69,7 +68,7 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/mixediqr.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/modelcomparison.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/mth.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/mult_abs.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/multiabsolute.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/multibestmethod.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/multidetect.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/naturalist.html</loc></url>
@@ -89,7 +88,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/show-dataonline-method.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/smc.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/sorensen.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/sprange.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/suggested.packages.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/tcatch.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/thermal_ranges.html</loc></url>

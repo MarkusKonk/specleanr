@@ -135,17 +135,6 @@ See <code><a href="https://docs.ropensci.org/rgbif/reference/occ_data.html" clas
 <span class="r-in"><span>                            inatlim <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>                            vertlim <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#3. Generate species list from a dataframe</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">efidata</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">danubebasin</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">danube</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">datachecked</span> <span class="op">&lt;-</span> <span class="fu"><a href="check_names.html">check_names</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">efidata</span>,colsp <span class="op">=</span> <span class="st">'species'</span>, pct<span class="op">=</span><span class="fl">90</span>, merge <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="co">#clean names</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">Onlinedf</span> <span class="op">&lt;-</span> <span class="fu">getdata</span><span class="op">(</span>data <span class="op">=</span> <span class="va">datachecked</span>, colsp<span class="op">=</span><span class="st">'speciescheck'</span>, bbox<span class="op">=</span><span class="va">danubebasin</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
