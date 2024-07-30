@@ -20,6 +20,7 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
   #Extract the variable used from the datacleaner class for outliers.
 
   var <- outliers@varused
+  if(length(var)>1) var <- sp else var
 
   seqlen <- seq(0.1, 0.9, 0.1)
 

@@ -123,9 +123,9 @@
 #'                            mode = 'best', testprop = 0.2, metrics = 'all',
 #'                            thresholds = 0.2, full = FALSE, minpts = 10)
 #'
-#' getper <- get_performance(modeloutput = modeout)
+#' getper <- get_performance(modelcomp = modeout)
 #'
-#' ggperform(modelout = modeout, cutoff = 0.1)
+#' ggperform(modelout = modeout)
 #'
 #' }
 #'

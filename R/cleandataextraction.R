@@ -26,6 +26,7 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
   if(!is.null(threshold) && loess==TRUE) stop("Set either loess to FALSE and provide the threshold manually but not both.")
 
   var <- outliers@varused
+  if(length(var)>1) var <- sp else var
 
   #the allowed modes: best for best method and abs : extract out only absolute outliers.
   match.argc(mode, choices = c('best', 'abs'))
@@ -288,8 +289,6 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
                                autothreshold =FALSE, pabs = 0.1, loess = FALSE){
 
   if(deparse(substitute(refdata))!=outliers@dfname)stop('The dataset for species occurences and outliers are different.')
-
-  var <- outliers@varused
 
   #for a single species: clean data extraction
 

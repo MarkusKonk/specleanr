@@ -2,7 +2,7 @@
 % Please edit documentation in R/similaritytests.R
 \name{batch_extract}
 \alias{batch_extract}
-\title{Extract oultiers for multiple species}
+\title{Extract outliers for multiple species}
 \usage{
 batch_extract(x)
 }
@@ -13,7 +13,7 @@ batch_extract(x)
 \code{dataframe} Outliers for multiple species.
 }
 \description{
-Extract oultiers for multiple species
+Extract outliers for multiple species
 }
 \examples{
 
@@ -37,12 +37,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, output='outlier',
-                       exclude = c('x','y'), multiple = TRUE,
-                       methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-                       kmpar =list(k=6, method='silhouette', mode='soft'))
+outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+                         exclude = c('x','y'), multiple = TRUE,
+                         methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+                         showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 
-extractbatch <- batch_extract(x=outliers)
+extractbatch <- batch_extract(x=outliersdf)
 }
 
 }

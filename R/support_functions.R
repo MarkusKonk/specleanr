@@ -1,18 +1,5 @@
-#' @title Collates synoynm data tables from FishBase.
-#'
-#' @param tables Tables from FishBase
-#'
-#' @return Two datasets
-#'
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' stdf <- fishbase(tables = 'synonym')
-#'
-#' }
-#'
+
+#' @noRd
 fishbase <- function(tables){
 
   suppressMessages(suppressWarnings(suggested.packages(listpkgs =c('curl', 'rfishbase'), reason = 'to access FishBase data')))
@@ -31,22 +18,8 @@ fishbase <- function(tables){
 }
 
 
-#' @title Internal function to clean names before checking them with fishbase
-#'
-#' @param sp species names
-#'
-#'
-#' @return corrected species
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' speciesname <- clean_names(sp='salmo trutta??')
-#'
-#' }
-#'
-#'
+
+#' @noRd
 clean_names <- function(sp){
 
   suppressWarnings(specleanr::suggested.packages(c('stringr'), reason='Strings'))

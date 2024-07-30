@@ -814,7 +814,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #'
 #' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
 #'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet = TRUE)
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
@@ -1583,84 +1583,7 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
 }
 
 
-
-#' @title Detect outliers using predefined optimal ranges such as annual mean temperature from WORLDCLIM
-#'
-#' @param data Dataframe of species records with environmental data
-#' @param var Environmental parameter considered in flagging suspicious outliers. The parameter directly
-#'        influences the species distribution such as such as annual mean temperature,
-#'        minimum temperature of the coldest month, maximum temperature of the
-#'        warmest month, and spring precipitation (IUCN Standards and Petitions Committee 2022).
-#' @param minval Minimum temperature column from the standard optimal dataframe. This can be obtained
-#'      from literature or standard databases such as FishBase (www.fishbase.org),
-#'      the Freshwater Information platform (http://www.freshwaterplatform.eu/),
-#'      and the IUCN red list (https://www.iucnredlist.org/).
-#' @param maxval Maximum temperature column from the standard optimal dataframe.
-#' @param ecoparam If used then a single value is used and tgether with direction can be used to flag set otpimal conditions.
-#'      For example, if a mean of 10 is used, then ecoparam = 10 and direction can equal, less, greater or lesseqaul than
-#'      the stipulated value.
-#' @param direction Indicates which direction takes for the ecoparam. For example, less than ecoparam.
-#' @param lat,lon string columns with latitudes and longitudes.
-#' @param geo logical, to aid in switching between temperature parameter \code{temp} latitudinal/longitudinal ranges.
-#'
-#' @return Dataframe with or with no outliers.
-#'
-#' @export
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' library(terra)
-#'
-#' #species data from online databases
-#'
-#' gbdata <- getdata(data='Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
-#'
-#' gbfinal <- extract_online(online = gbdata)
-#'
-#' gbchecked <- check_names(data = gbfinal, colsp='species', pct=90, merge=TRUE)
-#'
-#' #preclean and extract
-#'
-#' danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
-#'
-#' danubebasin <- sf::st_read(danube)
-#'
-#' #Get environmental data
-#'
-#' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'), quiet=TRUE)
-#'
-#' precleaned <- precleaner(data = gbchecked,
-#'                           raster= worldclim ,
-#'                           lat = 'decimalLatitude',
-#'                           lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           basin = danubebasin,
-#'                           multiple = FALSE,
-#'                           minpts = 10)
-#'
-#' #outliers
-#' spoptimal_df <- optimal(data = precleaned, var = 'bio1', output='outlier', min = 4, max =20)
-#'
-#' #clean
-#' spoptimal_df <- optimal(data = precleaned, var = 'bio1', output='clean', min = 4, max =20)
-#'
-#' }
-#'
-#' @references
-#' \enumerate{
-#' \item García-Roselló E, Guisande C, Heine J, Pelayo-Villamil P, Manjarrés-Hernández A,
-#' González Vilas L, González-Dacosta J, Vaamonde A, Granado-Lorencio C. 2014.
-#' Using modestr to download, import and clean species distribution records.
-#' Methods in Ecology and Evolution 5:708-713.
-#' \item IUCN Standards and Petitions Committee. 2022. THE IUCN RED LIST OF THREATENED SPECIESTM
-#' Guidelines for Using the IUCN Red List Categories and Criteria Prepared by the Standards
-#' and Petitions Committee of the IUCN Species Survival Commission.
-#' Available from https://www.iucnredlist.org/documents/RedListGuidelines.pdf.
-#' }
-
-
+#' @noRd
 sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = NULL, lat =NULL, lon=NULL,
                     direction = NULL, geo=NULL){
 
@@ -1761,8 +1684,8 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #'                        minpts = 10)
 #'
 #' #outliers
-#' suppressWarnings(mahal(data = refdata1[['Salmo trutta']], exclude = c("x", "y"),
-#'                         output='outlier'))
+#' outliers <- mahal(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+#'                         output='outlier')
 #'
 #'
 #' }

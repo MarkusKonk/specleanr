@@ -33,7 +33,7 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 
               OUTDF <- extract_outliers(x, sp =y)
 
-              spnames <- names(x@result)[y]
+              if(is.numeric(y)) spnames <- names(x@result)[y] else spnames <- y
 
               #the reference dataset is extracted from the dfname slot of multidetect function.
               refrecords <- nrow(get(x@dfname)[[y]])
@@ -117,7 +117,7 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple'){
 
     if(all(OUTDF$totaloutliers<1)==TRUE) stop("Nothing to plot. No outliers were flagged by all methods")
 
-    spnames <- names(x@result)[y]
+    if(is.numeric(y)) spnames <- names(x@result)[y] else spnames <- y
 
 
     #the reference dataset is extracted from the dfname slot of multidetect function.

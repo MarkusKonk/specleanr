@@ -45,8 +45,44 @@ extractMethods <- function(){
     }
   }
 
-  return(list(reference =reference, univariate = univariate, clustermethods = clb, densistybased = dbd, optimal = opt,
+  return(list(reference =reference, univariate = univariate, clustermethods = clb,
+              densistybased = dbd, optimal = opt,
               modelbased = modelb, covariance=covmd))
+}
+
+
+
+#' @title Outlier detection method broad classification.
+#'
+#' @param category The different outlier categories including \code{mult}, \code{uni} and \code{ref}
+#'
+#' @return \code{vector} method broad categories
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' x <- broad_classify(category = "mult")
+#'
+#' }
+#'
+
+broad_classify <- function(category){
+
+  if(category=='uni'){
+
+    methodsout <- c('adjbox', 'iqr', 'hampel', 'jknife', 'seqfences','mixediqr',
+                    'distboxplot','semiqr',  'zscore', 'logboxplot', "medianrule", 'optimal')
+
+  }else if(category=='mult'){
+
+    methodsout <- c('onesvm', 'iforest','mahal', 'lof', 'knn', 'glosh','kmeans')
+  }else{
+    methodout <- "reference"
+  }
+  return(methodsout)
 }
 
 #Detect multiple outliers or clean data
@@ -106,7 +142,8 @@ detect <- function(x,
                    spname,
                    warn,
                    missingness,
-                   showErrors){
+                   showErrors,
+                   sdm){
 
   if(missing(x)) stop('Species data missing')
 
@@ -158,14 +195,34 @@ detect <- function(x,
     x2data <- na.omit(xdata)
   }
 
+  #identify and remove non-numeric columns if sdm is TRUE
 
-  #identify and remove non-numeric columns
+  if(isTRUE(sdm)){
 
-  df <- x2data[, which(sapply(x2data, class) =='numeric')]
+    df <- x2data[, which(sapply(x2data, class) =='numeric')]
 
-  xd <- setdiff(colnames(x2data), y=colnames(df))
+    xd <- setdiff(colnames(x2data), y=colnames(df))
 
-  if(length(xd)>=1) if(isTRUE(verbose)) message('Non numeric columns ', paste(xd, collapse =','), ' were removed from data.')
+    if(length(xd)>=1) if(isTRUE(verbose)) message('Non numeric columns ', paste(xd, collapse =','), ' were removed from data.')
+
+    if(is.null(ncol(df)) | !is(df, 'data.frame')){
+
+      stop("Only one column left after discarding non-numeric columns and cannot compute SDMs. Check the str of your data.")
+
+    } else if(ncol(df)==2) {
+
+      warning("Only ", ncol(df), " are remaining and may fial in detecting for SDMs.")
+    }
+  }else{
+
+    multivarmethods <- broad_classify(category = "mult")
+
+    removemet <- methods[which(methods%in%multivarmethods==TRUE)]
+
+    if(length(removemet)>=1) stop("Please remove ", paste(removemet, collapse = ','), " from the methods to continue.", call. = FALSE)
+
+    df <- x2data
+  }
 
   #run through each method
   methodList <- list()
@@ -343,6 +400,10 @@ detect <- function(x,
 #' @param warn \code{logical}. Whether to return warning or not. Default \code{TRUE}.
 #' @param showErrors \code{logical}. Show execution errors and therefore for multiple species the code will break if one of the
 #'      methods fails to execute.
+#' @param sdm {logical} If the user sets \code{TRUE}, strict data checks will be done including removing all non-numeric
+#'      columns from the datasets before identification of outliers. If set to \code{FALSE} non numeric columns will be left
+#'      in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
+#'      \code{\link{broad_classify}} for the broad categories of the methods allowed.
 #'
 #' @details
 #' This function computes different outlier detection methods including univariate, multivariate and species
@@ -431,7 +492,7 @@ detect <- function(x,
 #'                                     mincol = "mintemp", maxcol = "maxtemp"))
 #' #plot the number of outliers
 #'
-#' ggoutliers(out_df, 1)
+#' #ggoutliers(out_df, 1)
 #'
 #' }
 #'
@@ -465,13 +526,15 @@ multidetect <- function(data,
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
                         verbose=FALSE, spname=NULL,warn=FALSE,
-                        missingness = 0.1, showErrors = TRUE){
+                        missingness = 0.1, showErrors = TRUE, sdm = TRUE){
 
   #check if var is the excluded strings
 
-  if(var%in%exclude==TRUE) stop("Remove ", var, " among the strings to be excluded.")
+  if(any(var%in%exclude==TRUE)==TRUE) stop("Remove ", var, " among the strings to be excluded.")
 
   match.argc(output, c("clean", "outlier"))
+
+  if(length(var)>1 && isFALSE(multiple)) stop("For mulitple variables of concern, set multiple to TRUE.")
 
   #check if all methods indicated exist in the package
 
@@ -493,13 +556,7 @@ multidetect <- function(data,
   }
   if(multiple ==FALSE & !is.null(colsp)) stop("For single species do not provide the colsp parameter.")
 
-  #check for number of species
-
-  if(isTRUE(multiple) && !is(data, 'list') && is.null(colsp)){
-    stop('For multiple species dataframe, provide the species column name in the colsp parameter.')
-  }
-
-  #check if there enough data to run Mahalanobis distance measure
+  #run for single dataframe
 
   if(isFALSE(multiple) && is.null(colsp) ){
 
@@ -516,7 +573,7 @@ multidetect <- function(data,
                        methods = dup_methods,
                        verbose = verbose,
                        spname = spname,warn=warn,
-                       missingness = missingness, showErrors = showErrors)
+                       missingness = missingness, showErrors = showErrors, sdm = sdm)
 
   }else {
 
@@ -526,29 +583,41 @@ multidetect <- function(data,
 
     }else if(is(data, 'data.frame') ){
 
-      if(!any(colnames(data)%in%colsp)==TRUE) stop('The column name provided in colsp parameter is not in the species data.')
+      if(length(var)>1){
 
-      if(!is.null(exclude)) if((colsp%in%exclude)==TRUE) warning("Remove the column for species names in the exclude parameter.")
+        df <- sapply(var, function(x) x <-  data, simplify = FALSE)
 
-      df <- split(data, f= data[,colsp])
+      }else{
+
+        if(is.null(colsp)) stop('For multiple species dataframe, provide the species column name in the colsp parameter.')
+
+        if(!any(colnames(data)%in%colsp)==TRUE) stop('The column name provided in colsp parameter is not in the species data.')
+
+        if(!is.null(exclude)) if((colsp%in%exclude)==TRUE) warning("Remove the column for species names in the exclude parameter.")
+
+        df <- split(data, f= data[,colsp])
+      }
 
     }else{
       stop('Data format not recognised, Only lists of datasets or dataframe are accepted.')
     }
     outdata <- list()
+
     for (mdi in names(df)) {
 
       dfinal<- df[[mdi]]
 
       if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',mdi,' are less than variables and some methods may not function properly.')
 
-      d <-  detect(x = dfinal, var = var, output = output,
+      if(length(var)>1) var1 = mdi else var1 = var
+
+      d <-  detect(x = dfinal, var = var1, output = output,
                    exclude = exclude,optpar = optpar,
                    kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
                    mahalpar = mahalpar, lofpar = lofpar,
                    zpar = zpar, gloshpar = gloshpar, knnpar = knnpar,
                    methods = dup_methods, verbose = verbose, spname = mdi,warn=warn,
-                   missingness = missingness, showErrors = showErrors)
+                   missingness = missingness, showErrors = showErrors, sdm = sdm)
       outdata[[mdi]] <- d
     }
   }

@@ -27,12 +27,12 @@
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' extractoutlier <- extract_outliers(x=outliers, sp = 5)
+#' extractoutlier <- extract_outliers(x=outliersdf, sp = 8)
 #'
 #' }
 #'
@@ -95,7 +95,7 @@ extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
 }
 
 
-#' @title Extract oultiers for multiple species
+#' @title Extract outliers for multiple species
 #'
 #' @param x Species list
 #'
@@ -124,12 +124,12 @@ extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' extractbatch <- batch_extract(x=outliers)
+#' extractbatch <- batch_extract(x=outliersdf)
 #' }
 #'
 batch_extract <- function(x){
@@ -304,18 +304,18 @@ oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#'outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                           exclude = c('x','y'), multiple = TRUE,
+#'                           methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                           showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' ociss <- ocindex(x = outliers, sp= 1, threshold = 0.2, absolute = TRUE)#
+#' ociss <- ocindex(x = outliersdf, sp= 8, threshold = 0.2, absolute = TRUE)#
 #' #No outliers detected in more than two methods
 #'
 #' }
 #'
 #'
-ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE, warn=TRUE, autothreshold=FALSE){
+ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE, warn = FALSE, autothreshold=FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -332,6 +332,7 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
   #Get the variable used in outlier detection
 
   var <- x@varused
+  if(length(var)>1) var <- sp else var
 
   #For multiple species
 
@@ -498,18 +499,18 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
 #'                      minpts = 6,merge = F)#basin removed
 #'
 #'  #outlier detection
+#'outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                           exclude = c('x','y'), multiple = TRUE,
+#'                           methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                           showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' outliers <- multidetect(data = extdf,output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"))
-#'
-#' totabs_counts <- mult_abs(x = outliers, sp= 1, threshold = 0.2)
+#' totabs_counts <- multiabsolute(x = outliersdf, threshold = 0.2)
 #' }
 #'
 #' @seealso \code{\link{ocindex}}
 #'
 
-mult_abs <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothreshold = FALSE){
+multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothreshold = FALSE){
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -540,15 +541,15 @@ mult_abs <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothres
           }else{
 
             abscount <- ocindex(x= x, sp = di, absolute = TRUE, threshold = threshold, props = FALSE, warn=warn, autothreshold = FALSE )
-
           }
         },
         error= function(e){
           if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.')
-          return(0)
+          return(NULL)
         })
 
-      if(length(absx) >=1){
+      if(length(absx) >0){
+
         absoluteoutliers[di] <- if(autothreshold ==TRUE) length(abscount[[2]]) else length(abscount)
 
       }else{
@@ -559,7 +560,7 @@ mult_abs <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothres
 
     dx <- data.frame(species = species, absoutliers = absoluteoutliers)
 
-    #to extract a dataframe of aboslute outlier proportions for all the methods at a particualr threshold
+    #to extract a dataframe of absolute outlier proportions for all the methods at a particualr threshold
   }else if(isTRUE(props)){
 
     splist <- list()
@@ -629,12 +630,12 @@ mult_abs <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothres
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' jaccardout <- jaccard(x = outliers, sp= 1, threshold = 0.2)#
+#' jaccardout <- jaccard(x = outliersdf, sp= 8, threshold = 0.2)#
 #'
 #'
 #' }
@@ -655,6 +656,7 @@ jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FA
   }
 
   var <- x@varused
+  if(length(var)>1) var <- sp else var
 
   if(x@mode == TRUE && !is.null(sp)){
 
@@ -744,12 +746,12 @@ jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FA
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' overlapout <- overlap(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' overlapout <- overlap(x = outliersdf, sp= 8, threshold = 0.2)#
 #'
 #'
 #' }
@@ -768,6 +770,7 @@ overlap <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold = 
   }
 
   var <- x@varused
+  if(length(var)>1) var <- sp else var
 
   if(x@mode == TRUE && !is.null(sp)){
 
@@ -854,18 +857,18 @@ overlap <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold = 
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' consineout <- cosine(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' consineout <- cosine(x = outliersdf, sp= 8, threshold = 0.2)#
 #'
 #'
 #' }
 #'
 
-cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FALSE){
+cosine <- function(x, sp = NULL,threshold = NULL, warn=FALSE, autothreshold = FALSE){
 
   #check if there are absolute outliers
   if(isTRUE(autothreshold)){
@@ -875,7 +878,10 @@ cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FAL
   }else{
     absoutliers <- ocindex(x= x, sp = sp, absolute = TRUE, threshold = threshold, warn = warn)
   }
+
   var <- x@varused
+  if(length(var)>1) var <- sp else var
+
 
   if(x@mode == TRUE && !is.null(sp)){
 
@@ -961,12 +967,12 @@ cosine <- function(x, sp = NULL,threshold = NULL, warn=TRUE, autothreshold = FAL
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' sordata <- sorensen(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' sordata <- sorensen(x = outliersdf, sp= 8, threshold = 0.2)#
 #'
 #'
 #' }
@@ -982,7 +988,9 @@ sorensen <- function(x, sp = NULL,  threshold=NULL, warn=FALSE, autothreshold = 
   }else{
     absoutliers <- ocindex(x= x, sp = sp,  absolute = TRUE, threshold = threshold, warn = warn)
   }
+
   var <- x@varused
+  if(length(var)>1) var <- sp else var
 
   if(x@mode == TRUE && !is.null(sp)){
 
@@ -1070,19 +1078,19 @@ sorensen <- function(x, sp = NULL,  threshold=NULL, warn=FALSE, autothreshold = 
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf,  output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' smcout <- smc(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' smcout <- smc(x = outliersdf, sp= 8, threshold = 0.2)#
 #'
 #'
 #' }
 #'
 
 
-smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALSE){
+smc <- function(x, sp=NULL,  threshold = NULL, warn = FALSE, autothreshold = FALSE){
 
 
   #check if there are absolute outliers
@@ -1096,6 +1104,7 @@ smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALS
   }
 
   var <- x@varused
+  if(length(var)>1) var <- sp else var
 
   if(x@mode == TRUE && !is.null(sp)){
 
@@ -1256,12 +1265,12 @@ smc <- function(x, sp=NULL,  threshold = NULL, warn = TRUE, autothreshold = FALS
 #'
 #'  #outlier detection
 #'
-#' outliers <- multidetect(data = extdf, output='outlier',
-#'                        exclude = c('x','y'), multiple = TRUE,
-#'                        methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-#'                        kmpar =list(k=6, method='silhouette', mode='soft'))
+#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+#'                          exclude = c('x','y'), multiple = TRUE,
+#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 #'
-#' hamout <- hamming(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+#' hamout <- hamming(x = outliersdf, sp= 8, threshold = 0.2)#
 #'
 #' }
 #'
@@ -1278,6 +1287,7 @@ hamming <- function(x, sp=NULL, threshold = NULL, warn = FALSE, autothreshold = 
   }
 
   var <- x@varused
+  if(length(var)>1) var <- sp else var
 
   if(x@mode == TRUE && !is.null(sp)){
 
