@@ -37,12 +37,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, output='outlier',
-                       exclude = c('x','y'), multiple = TRUE,
-                       methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-                       kmpar =list(k=6, method='silhouette', mode='soft'))
+outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+                         exclude = c('x','y'), multiple = TRUE,
+                         methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+                         showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 
-extractoutlier <- extract_outliers(x=outliers, sp = 5)
+extractoutlier <- extract_outliers(x=outliersdf, sp = 8)
 
 }
 

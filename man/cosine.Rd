@@ -4,7 +4,7 @@
 \alias{cosine}
 \title{Cosine similarity index based on (Gautam & Kulkarni 2014; Joy & Renumol 2020)}
 \usage{
-cosine(x, sp = NULL, threshold = NULL, warn = TRUE, autothreshold = FALSE)
+cosine(x, sp = NULL, threshold = NULL, warn = FALSE, autothreshold = FALSE)
 }
 \arguments{
 \item{x}{\code{datacleaner} class for each methods used to identify outliers
@@ -61,12 +61,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
-                       exclude = c('x','y'), multiple = TRUE,
-                       methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-                       kmpar =list(k=6, method='silhouette', mode='soft'))
+outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+                         exclude = c('x','y'), multiple = TRUE,
+                         methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+                         showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 
-consineout <- cosine(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+consineout <- cosine(x = outliersdf, sp= 8, threshold = 0.2)#
 
 
 }

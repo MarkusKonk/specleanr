@@ -172,6 +172,18 @@ colnames(rowsOutNA) <- colnames(irisdata)
 
 dfinal <- rbind(irisdata, rowsOutNA)
 
+test_that(desc= "Errors ",
+          code = {
+            seldf <- dfinal[, 4:5]
+            #Not enough columns to run SDMs
+            expect_error(multidetect(data = seldf, var = "Petal.Width", multiple = FALSE,
+                                     methods = c('logboxplot', 'iqr', 'semiqr', 'hampel', 'mixediqr'),
+                                     sdm = TRUE))
+            expect_s4_class(multidetect(data = seldf, var = "Petal.Width", multiple = FALSE,
+                                        methods = c('logboxplot', 'iqr', 'semiqr', 'hampel', 'mixediqr'),
+                                        sdm = FALSE), 'datacleaner')
+          })
+
 test_that(desc = "NAs if univariate methods only selected",
           code = {
             #showErrrors FALSE but the methods are well set: datacleaner produced and verbose = TRUE
@@ -304,14 +316,14 @@ test_that(desc = "Errors and success for extract outliers, batch_extract, mult a
 
             expect_error(batch_extract())
 
-            expect_error(mult_abs())
+            expect_error(multiabsolute())
 
             #expect error if datacleaner not provided
             expect_error(extract_outliers(x=wcd))
 
             expect_error(batch_extract(x=wcd))
 
-            expect_error(mult_abs(x= wcd, threshold = 0.2))
+            expect_error(multiabsolute(x= wcd, threshold = 0.2))
 
             #expect error if clean output is set at multidetect
 
@@ -325,25 +337,25 @@ test_that(desc = "Errors and success for extract outliers, batch_extract, mult a
 
             expect_error(batch_extract(x=cleanout))
 
-            #expect error for mult_abs extract on clean data
-            expect_error(mult_abs(x= cleanout, threshold = 0.2))
+            #expect error for multiabsolute extract on clean data
+            expect_error(multiabsolute(x= cleanout, threshold = 0.2))
 
             outabs <- multidetect(data = dfinal, var = 'Sepal.Length', output = 'outlier',
                                     multiple = FALSE,
                                     methods = c('mixediqr', 'logboxplot','iqr'))
 
-            #expect error for mult_abs extract on outlying data but threshold >1
-            expect_error(mult_abs(x= outabs, threshold = 1.3))
+            #expect error for multiabsolute extract on outlying data but threshold >1
+            expect_error(multiabsolute(x= outabs, threshold = 1.3))
 
             #true multiple absolute outlier extract for multiple species-- the multiple for ociindex
 
-            expect_s3_class(mult_abs(x= outlist, threshold = 0.5, props = FALSE), 'data.frame')
+            expect_s3_class(multiabsolute(x= outlist, threshold = 0.5, props = FALSE), 'data.frame')
 
-            expect_s3_class(mult_abs(outlist, threshold = 0.4, props = TRUE), 'data.frame')
+            expect_s3_class(multiabsolute(outlist, threshold = 0.4, props = TRUE), 'data.frame')
 
-            expect_s3_class(mult_abs(x= outlist, autothreshold = TRUE, props = FALSE), 'data.frame')
+            expect_s3_class(multiabsolute(x= outlist, autothreshold = TRUE, props = FALSE), 'data.frame')
 
-            expect_s3_class(mult_abs(outlist, autothreshold = TRUE, props = TRUE), 'data.frame')
+            expect_s3_class(multiabsolute(outlist, autothreshold = TRUE, props = TRUE), 'data.frame')
           })
 
 

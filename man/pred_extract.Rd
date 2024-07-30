@@ -68,7 +68,7 @@ Preliminary data cleaning including removing duplicates, records
 
 \dontrun{
 
-data(jdsdata)
+data("efidata")
 
 danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
 
@@ -78,15 +78,15 @@ danubebasin <- sf::st_read(danube, quiet=TRUE)
 
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-referencedata <- pred_extract(data = jdsdata,
+referencedata <- pred_extract(data = efidata,
                           raster= worldclim ,
-                          lat ='decimalLatitude',
+                          lat ="decimalLatitude",
                           lon = 'decimalLongitude',
-                          colsp = 'speciesname',
+                          colsp = 'scientificName',
                           bbox = danubebasin,
                           multiple = TRUE,
                           list= TRUE, #list will be generated for all species
-                          minpts = 10, merge=T)
+                          minpts = 7, merge=T)
 }
 
 

@@ -61,12 +61,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, output='outlier',
-                       exclude = c('x','y'), multiple = TRUE,
-                       methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-                       kmpar =list(k=6, method='silhouette', mode='soft'))
+outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+                         exclude = c('x','y'), multiple = TRUE,
+                         methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+                         showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 
-hamout <- hamming(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+hamout <- hamming(x = outliersdf, sp= 8, threshold = 0.2)#
 
 }
 

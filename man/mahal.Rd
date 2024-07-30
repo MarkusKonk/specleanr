@@ -60,8 +60,8 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        minpts = 10)
 
 #outliers
-suppressWarnings(mahal(data = refdata1[['Salmo trutta']], exclude = c("x", "y"),
-                        output='outlier'))
+outliers <- mahal(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
+                        output='outlier')
 
 
 }

@@ -61,12 +61,12 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 
  #outlier detection
 
-outliers <- multidetect(data = extdf, var = 'bio6', output='outlier',
-                       exclude = c('x','y'), multiple = TRUE,
-                       methods = c('mixediqr', "iqr", "kmeans", "mahal"),
-                       kmpar =list(k=6, method='silhouette', mode='soft'))
+outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
+                         exclude = c('x','y'), multiple = TRUE,
+                         methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
+                         showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 
-sordata <- sorensen(x = outliers, sp= 1, threshold = 0.2, var = 'bio6')#
+sordata <- sorensen(x = outliersdf, sp= 8, threshold = 0.2)#
 
 
 }

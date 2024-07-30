@@ -70,17 +70,6 @@ sp_records <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),gbiflim = 10
                             inatlim = 100,
                             vertlim = 100)
 
-#3. Generate species list from a dataframe
-
-data(efidata)
-
-danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
-
-danubebasin <- sf::st_read(danube, quiet=TRUE)
-
-datachecked <- check_names(data= efidata,colsp = 'species', pct=90, merge = TRUE)#clean names
-
-Onlinedf <- getdata(data = datachecked, colsp='speciescheck', bbox=danubebasin)
 
 }
 

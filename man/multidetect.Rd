@@ -27,7 +27,8 @@ multidetect(
   spname = NULL,
   warn = FALSE,
   missingness = 0.1,
-  showErrors = TRUE
+  showErrors = TRUE,
+  sdm = TRUE
 )
 }
 \arguments{
@@ -82,6 +83,11 @@ columns or rows from the data sets. Default 0.1. Therefore,
 
 \item{showErrors}{\code{logical}. Show execution errors and therefore for multiple species the code will break if one of the
 methods fails to execute.}
+
+\item{sdm}{{logical} If the user sets \code{TRUE}, strict data checks will be done including removing all non-numeric
+columns from the datasets before identification of outliers. If set to \code{FALSE} non numeric columns will be left
+in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
+\code{\link{broad_classify}} for the broad categories of the methods allowed.}
 }
 \value{
 A \code{list} of outliers or clean dataset of \code{datacleaner} class. The different attributes are
@@ -173,7 +179,7 @@ out_df <- multidetect(data = salmoabramis, multiple = TRUE,
                                     mincol = "mintemp", maxcol = "maxtemp"))
 #plot the number of outliers
 
-ggoutliers(out_df, 1)
+#ggoutliers(out_df, 1)
 
 }
 
