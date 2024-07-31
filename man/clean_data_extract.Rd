@@ -14,7 +14,8 @@ clean_data_extract(
   verbose = FALSE,
   autothreshold = FALSE,
   pabs = 0.1,
-  loess = FALSE
+  loess = FALSE,
+  returnNA = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,10 @@ the absolute outliers are removed instead. This because some records  in the bes
 \item{loess}{\code{logical}. Set to \code{TRUE} to use loess threshold optimisation to extract clean data.
 
 ###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.}
+
+\item{returnNA}{\code{logical} If \code{TRUE} a clean dataset will have outliers replaced with NAs.
+This parameter is experimented to ouput dataframe when multiple variables of concerns are considered
+during outlier detection.}
 }
 \value{
 Either a \code{list} or \code{dataframe} of cleaned records for multiple species.

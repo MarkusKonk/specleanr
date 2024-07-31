@@ -7,6 +7,9 @@
 #' @param raw Whether total number of outlier flagged in each method are provided (\code{TRUE}) or
 #'        \code{FALSE} to return the percentage outlier contribution for each method.
 #'
+#' @param colsp \code{string} If the reference dataset is a \code{dataframe} class,  \code{multiple = TRUE}, and
+#'      \code{raw = FALSE}, provide the column with species or parameter names.
+#'
 #' @title Visualize the outliers identified by each method
 #'
 #' @return ggplot object indicating outlier detection methods and number of outlier flagged.
@@ -16,7 +19,7 @@
 #'
 setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 
-          definition = function(x, y, raw=TRUE){
+          definition = function(x, y, raw=TRUE, colsp = NULL){
 
             if(x@mode==FALSE){
 
@@ -36,7 +39,27 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
               if(is.numeric(y)) spnames <- names(x@result)[y] else spnames <- y
 
               #the reference dataset is extracted from the dfname slot of multidetect function.
-              refrecords <- nrow(get(x@dfname)[[y]])
+              #the reference dataset is extracted from the dfname slot of multidetect function.
+
+              if(length(x@varused)>1) {
+
+                refrecords <- nrow(get(x@dfname))
+              } else{
+                if(is(get(x@dfname), 'list')) {
+
+                  refrecords <- nrow(get(x@dfname)[[y]])
+
+                } else {
+                  #get ref data
+                  if(is.null(colsp)) stop('Provide the column with species or parameter names.', call. = FALSE)
+
+                  rfd <- get(x@dfname)
+
+                  splitdf <- split(rfd, f= rfd[,colsp])
+
+                  refrecords <- nrow(splitdf[[y]])
+                }
+              }
 
             }
 
@@ -89,6 +112,8 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 #' @param raw Whether total number of outlier flagged in each method are provided (\code{TRUE}) or
 #'        \code{FALSE} to return the percentage outlier contribution for each method.
 #' @param color \code{string}. Color of the bars. Default is \code{grey}.
+#' @param colsp \code{string} If the reference dataset is a \code{dataframe} class,  \code{multiple = TRUE}, and
+#'      \code{raw = FALSE}, provide the column with species or parameter names.
 #'
 #' @title Visualize the outliers identified by each method
 #'
@@ -97,7 +122,7 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
 #' @export
 #'
 #'
-ggoutliers <-  function(x, y, raw=TRUE, color='purple'){
+ggoutliers <-  function(x, y, raw=TRUE, color='purple', colsp= NULL){
 
   if(x@mode==FALSE){
 
@@ -121,7 +146,26 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple'){
 
 
     #the reference dataset is extracted from the dfname slot of multidetect function.
-    refrecords <- nrow(get(x@dfname)[[y]])
+
+    if(length(x@varused)>1) {
+
+      refrecords <- nrow(get(x@dfname))
+      } else{
+        if(is(get(x@dfname), 'list')) {
+
+          refrecords <- nrow(get(x@dfname)[[y]])
+
+        } else {
+          #get ref data
+          if(is.null(colsp)) stop('Provide the column with species or parameter names.', call. = FALSE)
+
+          rfd <- get(x@dfname)
+
+          splitdf <- split(rfd, f= rfd[,colsp])
+
+          refrecords <- nrow(splitdf[[y]])
+          }
+      }
 
   }
 

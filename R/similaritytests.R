@@ -158,6 +158,8 @@ batch_extract <- function(x){
 }
 
 #identify absolute outliers, proportions and best methods.
+
+#' @noRd
 oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
                 absolute, props, autothreshold){
 
@@ -523,6 +525,8 @@ multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, auto
   if(!is.null(threshold) && isTRUE(autothreshold)) stop("Either set threshold value (from 0 to 1) or autothreshold to TRUE but not both.")
 
   if(!is.null(threshold)) if(threshold>1 | threshold<0) stop('threshold must range from 0 to 1.')
+
+  if(x@mode==FALSE)stop("Instead use ocindex when single dataset or parameters considered.")
 
   absoluteoutliers <- c() #Absolute outliers count
 

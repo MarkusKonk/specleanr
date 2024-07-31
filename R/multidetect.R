@@ -143,7 +143,8 @@ detect <- function(x,
                    warn,
                    missingness,
                    showErrors,
-                   sdm){
+                   sdm,
+                   na.inform){
 
   if(missing(x)) stop('Species data missing')
 
@@ -154,6 +155,8 @@ detect <- function(x,
   varcheck <- unlist(x[,var])
 
   if(!is(varcheck, 'numeric')) stop('Only numeric column is allowed for parameter var, variable.')
+
+  if(isTRUE(sdm)){
 
   #check if the variable parameter provided in var does not have NAs
 
@@ -179,6 +182,7 @@ detect <- function(x,
 
   mValues <- apply(x, 2, function(col)sum(is.na(col))/length(col))
 
+
   #remove a column with high NAs instead of the rows if % missing values are greater than the user set %missingness. Default is 10%
   if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>missingness)]
 
@@ -188,7 +192,6 @@ detect <- function(x,
     #check if the columns to be excluded are in the data.
     check.exclude(x=x, exclude = exclude)
 
-    #the
     if(!is.null(optpar$mode)) x2data <- na.omit(xdata) else x2data <- na.omit(xdata[,!colnames(xdata) %in% exclude])
 
   } else {
@@ -197,7 +200,7 @@ detect <- function(x,
 
   #identify and remove non-numeric columns if sdm is TRUE
 
-  if(isTRUE(sdm)){
+
 
     df <- x2data[, which(sapply(x2data, class) =='numeric')]
 
@@ -214,6 +217,17 @@ detect <- function(x,
       warning("Only ", ncol(df), " are remaining and may fial in detecting for SDMs.")
     }
   }else{
+    #remove NAs in the var
+    vecNAs <- which(is.na(unlist(varcheck)==TRUE))
+
+    totNA <- length(vecNAs)
+
+    propNA <- (totNA/nrow(x))*100
+
+    if(isTRUE(na.inform)) message(totNA, ' (', propNA, '%) NAs removed for parameter ', var, ' in ', deparse(substitute(x)))
+
+    if(length(vecNAs)>=1) xdata <- x[-vecNAs,] else xdata <- x
+
 
     multivarmethods <- broad_classify(category = "mult")
 
@@ -221,7 +235,7 @@ detect <- function(x,
 
     if(length(removemet)>=1) stop("Please remove ", paste(removemet, collapse = ','), " from the methods to continue.", call. = FALSE)
 
-    df <- x2data
+    df <- xdata
   }
 
   #run through each method
@@ -404,6 +418,7 @@ detect <- function(x,
 #'      columns from the datasets before identification of outliers. If set to \code{FALSE} non numeric columns will be left
 #'      in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
 #'      \code{\link{broad_classify}} for the broad categories of the methods allowed.
+#' @param na.inform \code{logical} Inform on the NAs removed in executing general datasets. Default \code{FALSE}.
 #'
 #' @details
 #' This function computes different outlier detection methods including univariate, multivariate and species
@@ -526,7 +541,7 @@ multidetect <- function(data,
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
                         verbose=FALSE, spname=NULL,warn=FALSE,
-                        missingness = 0.1, showErrors = TRUE, sdm = TRUE){
+                        missingness = 0.1, showErrors = TRUE, sdm = TRUE, na.inform = FALSE){
 
   #check if var is the excluded strings
 
@@ -573,7 +588,7 @@ multidetect <- function(data,
                        methods = dup_methods,
                        verbose = verbose,
                        spname = spname,warn=warn,
-                       missingness = missingness, showErrors = showErrors, sdm = sdm)
+                       missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
 
   }else {
 
@@ -617,7 +632,7 @@ multidetect <- function(data,
                    mahalpar = mahalpar, lofpar = lofpar,
                    zpar = zpar, gloshpar = gloshpar, knnpar = knnpar,
                    methods = dup_methods, verbose = verbose, spname = mdi,warn=warn,
-                   missingness = missingness, showErrors = showErrors, sdm = sdm)
+                   missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
       outdata[[mdi]] <- d
     }
   }

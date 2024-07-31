@@ -1,3 +1,29 @@
+
+#' @title Extract final clean data when multiple variables are considered.
+#'
+#' @inheritParams clean_data
+#'
+#' @return \code{dataframe} A dataframe with outliers replaced with NAs and is strictly used when multiple variables
+#'          of concerns are used during outlier detection.
+#'
+clean_data_2 <- function(data, outliers, threshold, warn= FALSE){
+
+  vars <- outliers@varused
+
+  for (ivar in vars) {
+    #try catch to handle parameters with no outliers
+    absout <- tryCatch(expr =  ocindex(x=outliers, sp = ivar, absolute = TRUE, threshold = threshold,
+                                       warn = warn),
+                       error = function(e)return(NULL))
+    vals <- unlist(data[,ivar])
+    datOut <- which(vals %in% absout)
+    data[,ivar][datOut] <- NA
+  }
+  return(data)
+}
+
+
+
 #' @title Extract final clean data using either absolute or best method generated outliers.
 #'
 #' @param data \code{dataframe}. The reference data for the species used in outlier detection.
@@ -26,6 +52,7 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
   if(!is.null(threshold) && loess==TRUE) stop("Set either loess to FALSE and provide the threshold manually but not both.")
 
   var <- outliers@varused
+
   if(length(var)>1) var <- sp else var
 
   #the allowed modes: best for best method and abs : extract out only absolute outliers.
@@ -226,6 +253,10 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 #' @title Extract cleaned record for multiple species.
 #'
 #' @param refdata \code{dataframe}. Species data frame from precleaned analysis
+#' @param returnNA \code{logical} If \code{TRUE} a clean dataset will have outliers replaced with NAs.
+#'        This parameter is experimented to ouput dataframe when multiple variables of concerns are considered
+#'        during outlier detection.
+#'
 #' @inheritParams clean_data
 #'
 #' @return Either a \code{list} or \code{dataframe} of cleaned records for multiple species.
@@ -286,15 +317,22 @@ clean_data <- function(data, outliers, sp=NULL, mode = 'best', colsp = NULL, thr
 
 clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
                                threshold =NULL, warn=FALSE, verbose=FALSE,
-                               autothreshold =FALSE, pabs = 0.1, loess = FALSE){
+                               autothreshold =FALSE, pabs = 0.1, loess = FALSE,
+                               returnNA = FALSE){
 
   if(deparse(substitute(refdata))!=outliers@dfname)stop('The dataset for species occurences and outliers are different.')
+
+  #experimental
+  if(isTRUE(returnNA)){
+    dfdata <- clean_data_2(data = refdata, outliers = outliers, warn = warn, threshold = threshold)
+  }else{
 
   #for a single species: clean data extraction
 
   if(outliers@mode==FALSE){
 
-    dfdata <- clean_data(data = refdata, outliers = outliers, mode = mode, threshold = threshold, verbose = verbose,
+    dfdata <- clean_data(data = refdata, outliers = outliers, mode = mode, threshold = threshold,
+                         verbose = verbose,
                          warn = warn, pabs = pabs, autothreshold = autothreshold, colsp = colsp,
                          loess = loess)
 
@@ -308,12 +346,20 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
 
     } else if(is(refdata, 'data.frame')){
 
+      if(length(outliers@varused)>1){
+
+        vars <- outliers@varused
+
+        splist <- sapply(vars, function(x) x <-  refdata, simplify = FALSE)
+
+      }else{
+
       if(is.null(colsp)) stop('Provide the column with species names in parameter, colsp .')
 
       splist <- split(refdata, f= refdata[,colsp])
 
       if(length(splist)!= length(outliers@result)) stop('Number of species in in data and outlier detection are not equal')
-
+}
     }else{
       stop('Only list or dataframe of species occurences accepted or set the `colsp parameter`.')
     }
@@ -323,7 +369,13 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
 
       spnames <- names(splist)[dv]
 
-      if(is(refdata, 'data.frame'))  data2<- refdata[refdata[,colsp] == spnames, ] else  data2<- refdata[[spnames]]
+      if(is(refdata, 'data.frame'))  {
+
+        if(length(outliers@varused)>1)  data2 <- splist[[spnames]] else  data2 <- refdata[refdata[,colsp] == spnames, ]
+
+        }else  {
+          data2<- refdata[[spnames]]
+        }
 
       cx <- tryCatch(expr = clean_data(data = data2, outliers = outliers, sp = spnames,
                                        mode = mode, threshold = threshold, colsp = colsp,
@@ -348,6 +400,7 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
     }
   }else{
     stop("Either multiple or single species allowed.")
+  }
   }
   return(dfdata)
 }

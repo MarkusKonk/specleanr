@@ -20,7 +20,7 @@ test_that(desc = "count the classes produced",
 
             #test for multiple species
 
-            expect_equal(length(class( ggoutliers(moutl, 1))), 2)
+            expect_equal(length(class( ggoutliers(moutl, 1, colsp = 'Species'))), 2)
 
             #expect error if no index provided for multiple items ggoutlier
             expect_error(ggoutliers(moutl))
@@ -33,7 +33,7 @@ test_that(desc = "count the classes produced",
 
             #test for multiple species
 
-            expect_equal(length(class( plot(moutl, 1))), 2)
+            expect_equal(length(class( plot(moutl, 1, colsp = "Species"))), 2)
 
             #expect error if no index provided for multiple items
             expect_error(plot(moutl))

@@ -4,7 +4,7 @@
 \alias{ggoutliers}
 \title{Visualize the outliers identified by each method}
 \usage{
-ggoutliers(x, y, raw = TRUE, color = "purple")
+ggoutliers(x, y, raw = TRUE, color = "purple", colsp = NULL)
 }
 \arguments{
 \item{x}{. the datacleaner object}
@@ -15,6 +15,9 @@ ggoutliers(x, y, raw = TRUE, color = "purple")
 \code{FALSE} to return the percentage outlier contribution for each method.}
 
 \item{color}{\code{string}. Color of the bars. Default is \code{grey}.}
+
+\item{colsp}{\code{string} If the reference dataset is a \code{dataframe} class,  \code{multiple = TRUE}, and
+\code{raw = FALSE}, provide the column with species or parameter names.}
 }
 \value{
 ggplot object indicating outlier detection methods and number of outlier flagged.

@@ -28,7 +28,8 @@ multidetect(
   warn = FALSE,
   missingness = 0.1,
   showErrors = TRUE,
-  sdm = TRUE
+  sdm = TRUE,
+  na.inform = FALSE
 )
 }
 \arguments{
@@ -88,6 +89,8 @@ methods fails to execute.}
 columns from the datasets before identification of outliers. If set to \code{FALSE} non numeric columns will be left
 in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
 \code{\link{broad_classify}} for the broad categories of the methods allowed.}
+
+\item{na.inform}{\code{logical} Inform on the NAs removed in executing general datasets. Default \code{FALSE}.}
 }
 \value{
 A \code{list} of outliers or clean dataset of \code{datacleaner} class. The different attributes are
