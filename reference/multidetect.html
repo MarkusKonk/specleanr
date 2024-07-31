@@ -71,7 +71,8 @@ by each method.</p>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  missingness <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  showErrors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sdm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  sdm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  na.inform <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -178,6 +179,10 @@ methods fails to execute.</p></dd>
 columns from the datasets before identification of outliers. If set to <code>FALSE</code> non numeric columns will be left
 in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
 <code><a href="broad_classify.html">broad_classify</a></code> for the broad categories of the methods allowed.</p></dd>
+
+
+<dt id="arg-na-inform">na.inform<a class="anchor" aria-label="anchor" href="#arg-na-inform"></a></dt>
+<dd><p><code>logical</code> Inform on the NAs removed in executing general datasets. Default <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

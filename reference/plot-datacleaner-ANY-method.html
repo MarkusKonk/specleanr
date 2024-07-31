@@ -45,7 +45,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for class 'datacleaner,ANY'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, raw <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, raw <span class="op">=</span> <span class="cn">TRUE</span>, colsp <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,6 +63,11 @@
 <dt id="arg-raw">raw<a class="anchor" aria-label="anchor" href="#arg-raw"></a></dt>
 <dd><p>Whether total number of outlier flagged in each method are provided (<code>TRUE</code>) or
 <code>FALSE</code> to return the percentage outlier contribution for each method.</p></dd>
+
+
+<dt id="arg-colsp">colsp<a class="anchor" aria-label="anchor" href="#arg-colsp"></a></dt>
+<dd><p><code>string</code> If the reference dataset is a <code>dataframe</code> class,  <code>multiple = TRUE</code>, and
+<code>raw = FALSE</code>, provide the column with species or parameter names.</p></dd>
 
 </dl></div>
     <div class="section level2">

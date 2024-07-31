@@ -54,7 +54,8 @@
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  autothreshold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pabs <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  loess <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  loess <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  returnNA <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -103,6 +104,12 @@ the absolute outliers are removed instead. This because some records  in the bes
 <dt id="arg-loess">loess<a class="anchor" aria-label="anchor" href="#arg-loess"></a></dt>
 <dd><p><code>logical</code>. Set to <code>TRUE</code> to use loess threshold optimisation to extract clean data.</p>
 <p>###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.</p></dd>
+
+
+<dt id="arg-returnna">returnNA<a class="anchor" aria-label="anchor" href="#arg-returnna"></a></dt>
+<dd><p><code>logical</code> If <code>TRUE</code> a clean dataset will have outliers replaced with NAs.
+This parameter is experimented to ouput dataframe when multiple variables of concerns are considered
+during outlier detection.</p></dd>
 
 </dl></div>
     <div class="section level2">
