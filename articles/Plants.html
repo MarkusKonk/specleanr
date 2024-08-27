@@ -125,6 +125,7 @@ will return errors.</li>
 <span>                     hasCoordinate <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                   bbox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">8.15250</span>, ymin <span class="op">=</span> <span class="fl">42.08333</span>, xmax<span class="op">=</span><span class="fl">29.73583</span>, ymax <span class="op">=</span> <span class="fl">50.24500</span><span class="op">)</span>,</span>
 <span>                   verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Using libcurl 7.81.0 with OpenSSL/3.0.2</span></span>
 <span></span>
 <span></span>
 <span><span class="va">extrdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_online.html">extract_online</a></span><span class="op">(</span><span class="va">plantdf</span><span class="op">)</span></span></code></pre></div>
@@ -258,6 +259,8 @@ or machine learning models</strong>: local outlier factor:
 <span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, </span>
 <span>                                   <span class="st">'lof'</span>, <span class="st">'jknife'</span>, <span class="st">'kmeans'</span>, <span class="st">'mahal'</span><span class="op">)</span>,</span>
 <span>                       showErrors  <span class="op">=</span> <span class="cn">TRUE</span>, warn <span class="op">=</span> <span class="cn">F</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "bio1"</span></span>
+<span><span class="co">#&gt; [1] "bio1"</span></span>
 <span></span>
 <span><span class="co">#Flag outlier in single species data (multiple = FALSE)</span></span>
 <span></span>
@@ -311,7 +314,7 @@ data. For more information, check (B….2024).</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
+<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 3.</span></span>
 <span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
 <span></span>
 <span></span>
