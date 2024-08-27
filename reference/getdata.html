@@ -49,11 +49,14 @@
 <span>  colsp <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bbox <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  isFish <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gbif"</span>, <span class="st">"vertnet"</span>, <span class="st">"inat"</span><span class="op">)</span>,</span>
 <span>  gbiflim <span class="op">=</span> <span class="fl">1e+06</span>,</span>
 <span>  vertlim <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  inatlim <span class="op">=</span> <span class="fl">3000</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pct <span class="op">=</span> <span class="fl">80</span>,</span>
+<span>  sn <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -84,6 +87,10 @@ either a shapefile <code>(sf)</code> class accepted or provide a list of
 accordingly. For other taxa a different name checks is conducted. Default is <code>TRUE</code>.</p></dd>
 
 
+<dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
+<dd><p><code>vector</code>. The different databases allowed including <code>'gbif', 'vertnet', and 'inat'</code>.</p></dd>
+
+
 <dt id="arg-gbiflim">gbiflim<a class="anchor" aria-label="anchor" href="#arg-gbiflim"></a></dt>
 <dd><p><code>integer</code>. Limits on the records from the Global Biodiversity Information Platform</p></dd>
 
@@ -103,6 +110,16 @@ if download messages are not needed. Default <strong>TRUE</strong>.</p></dd>
 
 <dt id="arg-warn">warn<a class="anchor" aria-label="anchor" href="#arg-warn"></a></dt>
 <dd><p><code>logical</code>. To indicate if warning messages should be shown. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-pct">pct<a class="anchor" aria-label="anchor" href="#arg-pct"></a></dt>
+<dd><p><code>numeric</code>. The percentage similarity used to assign a relatively similar name from FishBase if the exact match is absent. Default 90<!-- %. -->
+The higher the values, the higher percentage similarity are considered to replace a species name that is cheeked from Fishbase.</p></dd>
+
+
+<dt id="arg-sn">sn<a class="anchor" aria-label="anchor" href="#arg-sn"></a></dt>
+<dd><p><code>logical</code>. Whether to consider synonyms. Default FALSE so accepted names will be considered from
+FishBase database.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
