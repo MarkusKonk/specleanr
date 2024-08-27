@@ -6,17 +6,17 @@
 #' @param accept \code{logical}. The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}
 #' @param ... Other arguments are allowed. See \code{gnr_resolve} for details.
 #'
-#' @importFrom taxize gnr_resolve
 #'
 #' @return species name standardized under taxize package
-#'
 #'
 #'
 #' @export
 #'
 check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 
-  namesdf <- gnr_resolve(sci = spp,...)
+  suggested.packages('taxize')
+
+  namesdf <- taxize::gnr_resolve(sci = spp,...)
 
  if(nrow(namesdf)>=1){
 

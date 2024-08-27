@@ -26,7 +26,8 @@ Suggests:
     ggplot2,
     ggpmisc,
     tibble,
-    rredlist
+    rredlist,
+    taxize
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
@@ -48,7 +49,6 @@ Imports:
     rvertnet,
     curl,
     rgbif,
-    rinat,
-    taxize
+    rinat
 Depends: 
     R (>= 3.5.0)
