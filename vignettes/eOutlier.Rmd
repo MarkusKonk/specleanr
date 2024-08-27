@@ -43,7 +43,8 @@ data(jdsdata) #Data extract from JDS4 data
 danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
 
-df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta', "Thymallus thymallus","Anguilla anguilla"), 
+df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta', 
+                              "Thymallus thymallus","Anguilla anguilla"), 
                                 bbox = danube,
                                 gbiflim = 50, 
                                 inatlim = 50, 

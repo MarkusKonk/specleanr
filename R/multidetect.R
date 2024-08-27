@@ -222,9 +222,9 @@ detect <- function(x,
 
     totNA <- length(vecNAs)
 
-    propNA <- (totNA/nrow(x))*100
+    propNA <- round((totNA/nrow(x))*100, 2)
 
-    if(isTRUE(na.inform)) message(totNA, ' (', propNA, '%) NAs removed for parameter ', var, ' in ', deparse(substitute(x)))
+    if(isTRUE(na.inform)) message(totNA, ' (', propNA, '%) NAs removed for parameter ', var, '.')
 
     if(length(vecNAs)>=1) xdata <- x[-vecNAs,] else xdata <- x
 
@@ -625,6 +625,7 @@ multidetect <- function(data,
       if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',mdi,' are less than variables and some methods may not function properly.')
 
       if(length(var)>1) var1 = mdi else var1 = var
+      print(var1)
 
       d <-  detect(x = dfinal, var = var1, output = output,
                    exclude = exclude,optpar = optpar,

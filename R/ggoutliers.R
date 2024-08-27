@@ -39,7 +39,6 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
               if(is.numeric(y)) spnames <- names(x@result)[y] else spnames <- y
 
               #the reference dataset is extracted from the dfname slot of multidetect function.
-              #the reference dataset is extracted from the dfname slot of multidetect function.
 
               if(length(x@varused)>1) {
 

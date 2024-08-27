@@ -159,9 +159,15 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE, gbiflim = 1e6, 
   } else{
     stop('Data either list or dataframe not provided for download.')
   }
+  if(isTRUE(isFish)){
+    #remove taxize
+    suggested.packages(listpkgs=c("curl", "rvertnet", "rgbif", "rinat"),
+                       reason="Acces online database")
+  }else{
+    suggested.packages(listpkgs=c("taxize", "curl", "rvertnet", "rgbif", "rinat"),
+                       reason="Access online database and species name checks")
+  }
 
-  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("taxize", "curl", "rvertnet", "rgbif", "rinat"),
-                                                       reason="to access GBIF, VertNET, and iNaturalist databased")))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
 
@@ -381,3 +387,4 @@ extract_online <- function(online, verbose=FALSE){
 
   return(dfinal)
 }
+

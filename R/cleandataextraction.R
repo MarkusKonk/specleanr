@@ -320,7 +320,7 @@ clean_data_extract <- function(refdata, outliers, mode ='best',colsp = NULL,
                                autothreshold =FALSE, pabs = 0.1, loess = FALSE,
                                returnNA = FALSE){
 
-  if(deparse(substitute(refdata))!=outliers@dfname)stop('The dataset for species occurences and outliers are different.')
+  if(deparse(substitute(refdata))!=outliers@dfname)stop('The reference dataset used in outlier detection and the output of outlier detection are different.')
 
   #experimental
   if(isTRUE(returnNA)){

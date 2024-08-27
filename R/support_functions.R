@@ -99,7 +99,7 @@ clean_names <- function(sp){
 #'
 #' @param x to indicate absolute path.
 #'
-#' @importFrom memoise memoise
+#' @importFrom memoise memoise cache_filesystem
 #'
 #'
 .cache <- function(x){
