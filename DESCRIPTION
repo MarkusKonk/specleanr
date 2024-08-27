@@ -13,17 +13,12 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/removedxx/specleanr, https://removedxx.github.io/specleanr/
 BugReports: https://github.com/removedxx/specleanr/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests: 
-    curl,
     dplyr,
     DT,
     knitr,
-    rfishbase,
-    rgbif,
-    rinat,
     rmarkdown,
-    rvertnet,
     shiny,
     stringr,
     shinydashboard,
@@ -31,8 +26,7 @@ Suggests:
     ggplot2,
     ggpmisc,
     tibble,
-    rredlist,
-    taxize
+    rredlist
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
@@ -49,6 +43,12 @@ Imports:
     usdm,
     memoise,
     ranger,
-    randomForest
+    randomForest,
+    rfishbase,
+    rvertnet,
+    curl,
+    rgbif,
+    rinat,
+    taxize
 Depends: 
     R (>= 3.5.0)

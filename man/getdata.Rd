@@ -9,11 +9,14 @@ getdata(
   colsp = NULL,
   bbox = NULL,
   isFish = TRUE,
+  db = c("gbif", "vertnet", "inat"),
   gbiflim = 1e+06,
   vertlim = 1000,
   inatlim = 3000,
   verbose = FALSE,
   warn = FALSE,
+  pct = 80,
+  sn = F,
   ...
 )
 }
@@ -32,6 +35,8 @@ either a shapefile \code{(sf)} class accepted or provide a list of
 \item{isFish}{\code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.}
 
+\item{db}{\code{vector}. The different databases allowed including \code{'gbif', 'vertnet', and 'inat'}.}
+
 \item{gbiflim}{\code{integer}. Limits on the records from the Global Biodiversity Information Platform}
 
 \item{vertlim}{\code{integer}. Limits on the records from VertNET.}
@@ -42,6 +47,12 @@ accordingly. For other taxa a different name checks is conducted. Default is \co
 if download messages are not needed. Default \strong{TRUE}.}
 
 \item{warn}{\code{logical}. To indicate if warning messages should be shown. Default \code{FALSE}.}
+
+\item{pct}{\code{numeric}. The percentage similarity used to assign a relatively similar name from FishBase if the exact match is absent. Default 90%.
+The higher the values, the higher percentage similarity are considered to replace a species name that is cheeked from Fishbase.}
+
+\item{sn}{\code{logical}. Whether to consider synonyms. Default FALSE so accepted names will be considered from
+FishBase database.}
 
 \item{...}{More function for species data download can be used.
 See \code{rgbif::occ_data} for more information, \code{rinat::get_inat_obs}, and

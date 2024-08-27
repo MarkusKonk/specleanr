@@ -430,14 +430,14 @@ detect <- function(x,
 #' associated with the \code{datacleaner} class from \code{multidetect} function.
 #'
 #' \itemize{
-#'         \item{\code{result: }}{\code{dataframe}. list of dataframes with the outliers flagged by each method.
+#'         \item{\code{result}: \code{dataframe}. list of dataframes with the outliers flagged by each method.
 #'         }
-#'        \item{\code{mode: }}{\code{logical}. Indicating whether it was multiple TRUE or FALSE.}
-#'         \item{\code{varused: }}{\code{character}. Indicating the variable used for the univariate outlier detection methods. }
-#'         \item{\code{out: }}{\code{character}. Whether outliers where indicated by the user or no oultier data. }
-#'         \item{\code{methodsused: }}{\code{vector}. The different methods used the outlier detection process.}
-#'         \item{\code{dfname: }}{\code{character}. The dataset name for the species records.}
-#'         \item{\code{exclude: }}{\code{vector}. The columns which were excluded during outlier detection if any.}
+#'        \item{\code{mode}: \code{logical}. Indicating whether it was multiple TRUE or FALSE.}
+#'         \item{\code{varused}: \code{character}. Indicating the variable used for the univariate outlier detection methods. }
+#'         \item{\code{out}: \code{character}. Whether outliers where indicated by the user or no outlier data. }
+#'         \item{\code{methodsused}: \code{vector}. The different methods used the outlier detection process.}
+#'         \item{\code{dfname}: \code{character}. The dataset name for the species records.}
+#'         \item{\code{exclude}: \code{vector}. The columns which were excluded during outlier detection if any.}
 #'         }
 #'
 #' @export

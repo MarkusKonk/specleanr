@@ -6,13 +6,17 @@
 #' @param accept \code{logical}. The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}
 #' @param ... Other arguments are allowed. See \code{gnr_resolve} for details.
 #'
+#' @importFrom taxize gnr_resolve
+#'
 #' @return species name standardized under taxize package
+#'
+#'
 #'
 #' @export
 #'
 check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 
-  namesdf<- taxize::gnr_resolve(sci = spp,...)
+  namesdf <- gnr_resolve(sci = spp,...)
 
  if(nrow(namesdf)>=1){
 
@@ -90,6 +94,7 @@ check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 #'      records from the GBIF will be downloaded. These can be provided in two forms,
 #'      either a shapefile \code{(sf)} class accepted or provide a list of
 #'      \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.
+#' @param db \code{vector}. The different databases allowed including \code{'gbif', 'vertnet', and 'inat'}.
 #' @param gbiflim \code{integer}. Limits on the records from the Global Biodiversity Information Platform
 #' @param vertlim \code{integer}. Limits on the records from VertNET.
 #' @param inatlim \code{integer}. Limits on the records from iNaturalist database.
@@ -101,6 +106,7 @@ check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 #' @param ... More function for species data download can be used.
 #'      See \code{rgbif::occ_data} for more information, \code{rinat::get_inat_obs}, and
 #'      \code{rvertnet::searchbyterm}.
+#' @inheritParams check_names
 #'
 #'
 #' @details
@@ -109,6 +115,9 @@ check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 #'
 #' @importFrom sf st_bbox
 #' @importFrom methods new
+#' @importFrom rvertnet searchbyterm
+#' @importFrom rinat get_inat_obs
+#' @importFrom rgbif occ_data occ_count
 #'
 #' @return Lists of species records from online databases
 #'
@@ -131,13 +140,14 @@ check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 #' }
 #'
 #'
-getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE, gbiflim = 1e6, vertlim = 1e3,
-                    inatlim =3e3, verbose= FALSE, warn =FALSE, ...){
+getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
+                     db = c("gbif", 'vertnet', 'inat'),
+                     gbiflim = 1e6, vertlim = 1e3,
+                     inatlim =3e3, verbose= FALSE, warn =FALSE, pct = 80, sn = F, ...){
 
-  if(missing(data)){
+ if(missing(data)){
 
     stop('Provide a list of species or at least one species.')
-
   }
 
   if(is(data, 'data.frame') && is.null(colsp)){
@@ -146,46 +156,35 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE, gbiflim = 1e6, 
 
   } else if(is(data, 'data.frame') && !is.null(colsp)){
 
-    data <- unlist(data[, colsp])
+    data <- unique(unlist(data[, colsp]))
 
   }else if(is(data, 'vector') || is(data, 'atomic')){
 
-    data
+    data <- unique(data)
 
   }else if(is(data, 'list')){
 
-    data <- unlist(data)
+    data <- unique(unlist(data))
 
   } else{
     stop('Data either list or dataframe not provided for download.')
   }
-  if(isTRUE(isFish)){
-    #remove taxize
-    suggested.packages(listpkgs=c("curl", "rvertnet", "rgbif", "rinat"),
-                       reason="Acces online database")
-  }else{
-    suggested.packages(listpkgs=c("taxize", "curl", "rvertnet", "rgbif", "rinat"),
-                       reason="Access online database and species name checks")
-  }
-
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
 
-  df_online <- list()
-
-  for (aii in data){
+  sppdata <- sapply(data, function(spp){
 
     if(isTRUE(isFish)){
 
-      checkFB<- check_names(data = aii, verbose = verbose)
+      checkFB<- check_names(data = spp, verbose = verbose, pct = pct, sn = sn)
 
       #check if a name is found in the FishBase
 
       if(is.na(checkFB)) {
 
-        checksppx <- aii
+        checksppx <- spp
 
-        if(isTRUE(warn)) warning("The fish species name ", aii, " is not found in FishBase and the original name provider by the user will be used.",  call. = FALSE )
+        if(isTRUE(warn)) warning("The fish species name ", spp, " is not found in FishBase and the original name provider by the user will be used.",  call. = FALSE )
 
       } else{
 
@@ -193,121 +192,138 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE, gbiflim = 1e6, 
       }
 
     }else{
-      checksppx <- check_taxa_names(spp = aii, verbose = verbose)
+      checksppx <- check_taxa_names(spp = spp, verbose = verbose)
     }
 
-    ndata <- rgbif::occ_count(scientificName = checksppx)
+    sapply(db, FUN = function(x) {
 
+      if(x=='gbif'){
 
-    if(ndata==0){
+        ndata <- occ_count(scientificName = spp)
 
-      if(isTRUE(verbose)) message('No records for ', checksppx, ' in GBIF')
+        if(ndata==0){
 
-      gbifx <- NULL
+          if(isTRUE(verbose)) message('No records for ', spp, ' in GBIF')
 
-    } else if(ndata<=50000){
+          gbifx <- NULL
 
-      if(gbiflim<50000){
+        } else if(ndata<=50000){
 
-        gbifsp <-rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
+          if(gbiflim<50000){
 
-        gbifx <- gbifsp$data
+            gbifsp <-rgbif::occ_data(scientificName = spp, limit = gbiflim)
 
-        if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbiflimit ', gbiflim)
+            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', spp,' in GBIF were downloaded based on the gbiflimit of ', gbiflim)
+
+            gbifx <- gbifsp$data
+
+          }else{
+
+            gbifsp <- occ_data(scientificName = spp, limit = ndata)
+
+            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', spp,' in GBIF were download as they were the maximum records found.')
+
+            gbifx <- gbifsp$data
+          }
+
+        }else if (ndata>50000 && !is.null(bbox)){
+
+          if(inherits(bbox, what = 'sf')){
+
+            ext2 <- unname(sf::st_bbox(bbox))
+
+          }  else{
+            ext2 <- bbox
+
+            stdbox <- c("xmin", "ymin", "xmax", "ymax")
+
+            if(setequal(stdbox, names(ext2))==FALSE) stop("the labels provided in the bounding are not standard. Please use xmin, xmax, ymin, ymax")
+          }
+
+          if(gbiflim<=50000){
+
+            gbifsp <- rgbif:: occ_data(scientificName = spp, limit = gbiflim,
+                                       decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
+                                       decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
+
+            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', spp,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
+
+          }else{
+
+            gbifsp <- rgbif:: occ_data(scientificName = spp, limit = gbiflim,
+                                       decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
+                                       decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
+
+            if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', spp,' in GBIF were downloaded')
+          }
+
+          gbifx <- gbifsp$data
+        }
+        else if (ndata>50000 && is.null(bbox)){
+
+          if(isTRUE(verbose)) message("Only ", gbiflim, " records will be downloaded.")
+
+          gbifsp <- occ_data(scientificName = spp, limit = gbiflim,...)
+
+          gbifx <- gbifsp$data
 
         }else{
+          gbifx = "NO DATA FOUND"
+        }
 
-        gbifsp <-rgbif::occ_data(scientificName = checksppx, limit = ndata)
+      }else if(x=='vertnet'){
 
-        gbifx <- gbifsp$data
+        sptx <- scan(text = spp, what = ' ', quiet = T)
 
-        if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were download as they were the maximum records found.')
-      }
+        vertx <- searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
+                              limit = vertlim, messages = FALSE)
+        if(is.null(vertx)){
 
-    }else if (ndata>50000 && !is.null(bbox)){
+          if(isTRUE(verbose)) message('No records for ', spp, ' in VertNet')
 
-      if(inherits(bbox, what = 'sf')){
+          vertxdf <- NULL
 
-        ext2 <- unname(sf::st_bbox(bbox))
+        }else{
+          vertxdf  <- vertx$data
 
-      }  else{
-        ext2 <- bbox
+          if(isTRUE(verbose)) message(nrow(vertxdf), ' records for ', spp, ' in VertNet downloaded.')
+          vertxdf
+        }
 
-        stdbox <- c("xmin", "xmax", "ymin", "ymax")
+        #handle iNaturalist data download using rinat::get_inat_obs
+      }else if(x=='inat'){
 
-        if(setequal(stdbox,names(ext2))==FALSE) stop("the labels provided in the bounding are not standard. Please use xmin, xmax, ymin, ymax")
-      }
+        inatx <- tryCatch(
+          expr = {
+            sx <- get_inat_obs(taxon_name= spp, maxresults = inatlim)
+          },
+          error= function(e){
 
+            if(isTRUE(verbose)) message('No data exist for species ', spp, ' in iNaturalist')
 
-      if(gbiflim<50000){
+            return(0)
+          })
 
-        gbifsp <-rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
-                                  decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
-                                  decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
-        if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
+        if(length(inatx) >1 ){
 
+          inatx <-  sx
+
+          if(isTRUE(verbose))message(nrow(inatx), ' records for ', spp, ' in iNaturalist downloaded.')
+
+          inatx
+        }else{
+          inatx <- NULL
+        }
       }else{
-
-        gbifsp <-rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
-                                  decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
-                                  decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
-        if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded')
+        stop('Database name not acceptable')
       }
 
-      gbifx <- gbifsp$data
-    }
-    else if (ndata>50000 && is.null(bbox)){
+    }, simplify = FALSE)
 
-      if(isTRUE(verbose)) message("Only ", gbiflim, " records will be downloaded.")
+  }, simplify = FALSE)
 
-      gbifsp <-rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,...)
-
-      gbifx <- gbifsp$data
-
-    }else{
-      gbifx = "NO DATA FOUND"
-    }
-
-    #considering for vertnet records
-
-    sptx <- scan(text = checksppx, what = ' ', quiet = T)
-
-    vertx <- rvertnet::searchbyterm(genus= tolower( sptx[1]),  specificepithet = tolower(sptx[2]),
-                                    limit = vertlim, messages = FALSE)
-    if(is.null(vertx)){
-
-      if(isTRUE(verbose)) message('No records for ', checksppx, ' in VertNet')
-
-      vertxdf <- NULL
-    }else{
-      vertxdf  <- vertx$data
-      if(isTRUE(verbose)) message(nrow(vertxdf), ' records for ', checksppx, ' in VertNet downloaded.')
-    }
-
-    #handle iNaturalist data download using rinat::get_inat_obs
-
-    inatx <- tryCatch(
-      expr = {
-        sx <- rinat::get_inat_obs(taxon_name= checksppx, maxresults = inatlim)
-      },
-      error= function(e){
-
-        if(isTRUE(verbose))message('No data exist for species ', checksppx, ' in iNaturalist')
-
-        return(0)
-      })
-
-    if(length(inatx) >1 ){
-      inatx <-  sx
-      if(isTRUE(verbose))message(nrow(inatx), ' records for ', checksppx, ' in iNaturalist downloaded.')
-    }else{
-      inatx <- NULL
-    }
-    df_online[[aii]] <- list(inaturalist = inatx, vertnet= vertxdf, gbif=gbifx)
-  }
-  return(new('dataonline', output= df_online))
+  return(new('dataonline', output= sppdata))
 }
-
 
 
 #Main function for merging all files

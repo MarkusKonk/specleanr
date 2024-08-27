@@ -1,8 +1,8 @@
 
 #' @noRd
+#' @importFrom rfishbase synonyms stocks
+#'
 fishbase <- function(tables){
-
-  suppressMessages(suppressWarnings(suggested.packages(listpkgs =c('curl', 'rfishbase'), reason = 'to access FishBase data')))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later to access FishBase.')
 

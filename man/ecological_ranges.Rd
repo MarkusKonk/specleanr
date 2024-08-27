@@ -36,15 +36,15 @@ maximum values \code{maxval} are provided.}
 \item{optimumSettings}{A list of optimal parameters are provided mostly when multiple species
 are examined.
  \itemize{
- \item{\code{optdf: }}{is the dataframe with species optimal values (min, max, or ecoparam). This dataset
+ \item{\code{optdf}: is the dataframe with species optimal values (min, max, or ecoparam). This dataset
  can be generated from literature for different species.
  }
-\item{\code{optspcol: }}{Is the column with species names in the \code{optdf} dataset. }
- \item{\code{mincol: }}{Is the column name in the \code{optdf} with minimum values. }
- \item{\code{maxcol: }}{Is the column name in the \code{optdf} with maximum values. }
- \item{\code{ecoparam: }}{If in the \code{optdf} the minimum and maximum values are not found, then the
+\item{\code{optspcol}: Is the column with species names in the \code{optdf} dataset. }
+ \item{\code{mincol}: Is the column name in the \code{optdf} with minimum values. }
+ \item{\code{maxcol}: Is the column name in the \code{optdf} with maximum values. }
+ \item{\code{ecoparam}: If in the \code{optdf} the minimum and maximum values are not found, then the
  the column with ecoparam should be provided.}
- \item{\code{direction: }}{If ecoparam is provided in the \code{optdf}, then column for direction should be provided.}
+ \item{\code{direction}: If ecoparam is provided in the \code{optdf}, then column for direction should be provided.}
  }}
 
 \item{minval, maxval}{Minimum  and maximum values (ranges) for a particular that are used to flag out
