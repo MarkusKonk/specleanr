@@ -437,7 +437,7 @@ detect <- function(x,
 #'         \item{\code{out}: \code{character}. Whether outliers where indicated by the user or no outlier data. }
 #'         \item{\code{methodsused}: \code{vector}. The different methods used the outlier detection process.}
 #'         \item{\code{dfname}: \code{character}. The dataset name for the species records.}
-#'         \item{\code{exclude}: \code{vector}. The columns which were excluded during outlier detection if any.}
+#'         \item{\code{exclude}: \code{vector}. The columns which were excluded during outlier detection, if any.}
 #'         }
 #'
 #' @export
@@ -588,7 +588,10 @@ multidetect <- function(data,
                        methods = dup_methods,
                        verbose = verbose,
                        spname = spname,warn=warn,
-                       missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
+                       missingness = missingness,
+                       showErrors = showErrors,
+                       sdm = sdm,
+                       na.inform = na.inform)
 
   }else {
 
@@ -625,7 +628,6 @@ multidetect <- function(data,
       if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',mdi,' are less than variables and some methods may not function properly.')
 
       if(length(var)>1) var1 = mdi else var1 = var
-      print(var1)
 
       d <-  detect(x = dfinal, var = var1, output = output,
                    exclude = exclude,optpar = optpar,
