@@ -1,36 +1,3 @@
-#' @title Data online class
-#'
-#' @slot output List of datasets from each database.
-#'
-#' @export
-#'
-setClass(Class = 'dataonline',
-         representation = list(output='list')
-)
-
-#Online df summary
-
-#' @title Method for viewing details of the downloaded data.
-
-#' @docType methods
-#' @param object The data online model for displaying data.
-#'
-#' @importFrom methods show
-#'
-#' @export
-#'
-setMethod(f='show', signature = 'dataonline', definition = function(object){
-            cat(" ======================================",'\n',
-                '      Data Online Summary','\n',
-                "======================================",'\n',
-                'Number of species        :',   length(object@output),'\n',
-                'Number of databases      :',   length(object@output[[1]]),'\n',
-                'Names of databases       :',   sapply(names(object@output[[1]]),
-                                                       paste0, collapse=' '),'\n',
-                "======================================")
-          }
-)
-
 #' @title Outlier detection class for multiple methods
 #'
 #' @slot result List of data sets with outliers detected.
@@ -60,36 +27,38 @@ setClass(Class = 'datacleaner',
 #'
 #' @param object The data model for outlier detection.
 #'
+#' @importFrom methods show
+#'
 #'
 #' @export
 #'
 setMethod(f='show', signature = 'datacleaner', definition = function(object){
 
   if(object@mode==FALSE){
-    cat("======================================",'\n',
-        ' Data cleaning summary','\n',
-        "======================================",'\n',
-        'Number of species        :',   1,'\n',
-        'Number of methods        :',   length(object@result),'\n',
-        'Methods used             :',   paste(object@methodsused, collapse = ','), '\n',
-        'Multiple                 :',   object@mode,'\n',
-        'Variable                 :',   noquote(object@varused),'\n',
-        'Output                   :',   noquote(object@out),'\n',
-        'Dataset Name             :',   noquote(object@dfname),'\n',
-        'Excluded columns         :',   paste(object@excluded, collapse = ','), '\n',
+    cat("======================================",'\\n',
+        ' Data cleaning summary','\\n',
+        "======================================",'\\n',
+        'Number of species        :',   1,'\\n',
+        'Number of methods        :',   length(object@result),'\\n',
+        'Methods used             :',   paste(object@methodsused, collapse = ','), '\\n',
+        'Multiple                 :',   object@mode,'\\n',
+        'Variable                 :',   noquote(object@varused),'\\n',
+        'Output                   :',   noquote(object@out),'\\n',
+        'Dataset Name             :',   noquote(object@dfname),'\\n',
+        'Excluded columns         :',   paste(object@excluded, collapse = ','), '\\n',
         "======================================")
   }else{
-    cat(" ======================================",'\n',
-        ' Data cleaning summary','\n',
-        "======================================",'\n',
-        'Number of species        :',   length(object@result),'\n',
-        'Number of methods        :',   length(object@result[[1]]),'\n',
-        'Methods used             :',   paste(object@methodsused, collapse = ','), '\n',
-        'Multiple                 :',   object@mode,'\n',
-        'Variable                 :',   noquote(object@varused),'\n',
-        'Output                   :',   noquote(object@out),'\n',
-        'Dataset Name             :',   noquote(object@dfname),'\n',
-        'Excluded columns         :',   paste(object@excluded, collapse = ','), '\n',
+    cat(" ======================================",'\\n',
+        ' Data cleaning summary','\\n',
+        "======================================",'\\n',
+        'Number of species        :',   length(object@result),'\\n',
+        'Number of methods        :',   length(object@result[[1]]),'\\n',
+        'Methods used             :',   paste(object@methodsused, collapse = ','), '\\n',
+        'Multiple                 :',   object@mode,'\\n',
+        'Variable                 :',   noquote(object@varused),'\\n',
+        'Output                   :',   noquote(object@out),'\\n',
+        'Dataset Name             :',   noquote(object@dfname),'\\n',
+        'Excluded columns         :',   paste(object@excluded, collapse = ','), '\\n',
         "======================================")
   }
 }

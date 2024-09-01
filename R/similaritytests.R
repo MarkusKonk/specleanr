@@ -582,7 +582,6 @@ multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, auto
           if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.', call. = FALSE)
           return(NULL)
         })
-      print(absx)
       if(length(absx)>0 ){
         splist[[di]] <- absprops
         splist[[di]]$threshold <- threshold

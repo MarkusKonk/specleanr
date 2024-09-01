@@ -18,11 +18,8 @@ fishbase <- function(tables){
 }
 
 
-
 #' @noRd
 clean_names <- function(sp){
-
-  suppressWarnings(specleanr::suggested.packages(c('stringr'), reason='Strings'))
 
   #convert all letters to lower
   tlw <- tolower(sp)
@@ -35,10 +32,15 @@ clean_names <- function(sp){
 
   spaces <- trimws(gsub("\\s+"," " ,spc), which = 'both')
 
-  spclean <- stringr::str_to_sentence(spaces)
+  str1 <- unlist(strsplit(spaces, " "))[1]
+
+  strother <- paste0(unlist(strsplit(spaces, " "))[-1], collapse = ' ')
+
+  spclean <- paste0(paste0(toupper(strtrim(str1, 1)), substring(str1, 2)),' ',strother)
 
   return(spclean)
 }
+
 
 #' @title obtain absolute path for the user
 #'

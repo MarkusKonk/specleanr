@@ -69,10 +69,7 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
   if(minpts<=5) stop('Minimum number of species records should be  atleast greater than ', minpts,'. Default is 10')
 
-  if(length((colnames(data)[colnames(data)==colsp]))<1){
-
-    stop('Species column name ', colsp, ' is  not found in the ', deparse(substitute(data)),
-         ' data provided')}
+  if(length((colnames(data)[colnames(data)==colsp]))<1) stop(colsp, ' is  not found in the ', deparse(substitute(data)),' data provided')
 
   #To ungroup data if tidyverse function were applied on it.
 

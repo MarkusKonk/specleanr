@@ -1,89 +1,4 @@
 
-#' @title standardize species names.
-#'
-#' @param spp \code{string} species name provided by the user.
-#' @param verbose \code{logical}. Default \code{TRUE} to show implementation messages.
-#' @param accept \code{logical}. The user can reject or accept the suggested name by changing the default \code{TRUE} to \code{FALSE}
-#' @param ... Other arguments are allowed. See \code{gnr_resolve} for details.
-#'
-#'
-#' @return species name standardized under taxize package
-#'
-#'
-#' @export
-#'
-check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
-
-  suggested.packages('taxize')
-
-  namesdf <- taxize::gnr_resolve(sci = spp,...)
-
- if(nrow(namesdf)>=1){
-
-    nmmatch <- namesdf$matched_name
-
-    scores <- namesdf$score
-
-    cleannames <- sapply(X= strsplit(nmmatch, split = " "), function(x){
-
-      xfinal <- paste0(x[1], " ", x[2])
-    })
-
-    if(mean(scores)>0.95 && length(unique(cleannames))==1){
-
-      spfinal <- cleannames[1]
-
-      if(isTRUE(verbose))message("The species name ", spfinal, " will be retained for ", spp, " provided.")
-    }else{
-
-      #check unique names in the match names
-      uniqnames <- unique(cleannames)
-
-      if(length(uniqnames)>1){
-
-        unifreq <- sapply(uniqnames, function(x){
-
-          tf <- cleannames%in%x
-
-          uqlen <- length(tf[which(tf==TRUE)])
-        })
-        #maximum number of occurrences
-        if(isTRUE(accept)){
-
-          spfinal <- names(unifreq)[which.max(unifreq)]
-
-          if(isTRUE(verbose)) message("Suggested name ", spfinal, " will used instead of ", spp)
-        }else{
-          spfinal <- spp
-
-          if(isTRUE(verbose)) message("Suggested name ", spfinal, " rejected by the user and original ", spp, " used.")
-        }
-
-
-      }else{
-        #since no unique names
-        #user can reject the suggested names to continue with the
-        if(isTRUE(accept)){
-
-          spfinal <- cleannames[1] #select the first name
-
-        }else{
-
-          spfinal <- spp
-        }
-
-      }
-    }
- }  else{
-
-   warning("The species names ", spp, " provided does not have any match in the taxonomic databases. For the databases checked see taxize package.", call. = FALSE)
-   spfinal <- spp
-
- }
-  return(spfinal)
-}
-
-
 #' @title Download species records from online database.
 #'
 #' @param data \code{dataframe}, \code{list}, \code{vector}, \code{string}. data to retrieve records from online
@@ -99,7 +14,7 @@ check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 #' @param vertlim \code{integer}. Limits on the records from VertNET.
 #' @param inatlim \code{integer}. Limits on the records from iNaturalist database.
 #' @param warn \code{logical}. To indicate if warning messages should be shown. Default \code{FALSE}.
-#' @param isFish \code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
+#' @param isfish \code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 #'      accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.
 #' @param verbose \code{logical}. \strong{TRUE} if detailed messages should be indicated and \strong{FALSE}
 #'      if download messages are not needed. Default \strong{TRUE}.
@@ -140,7 +55,7 @@ check_taxa_names <- function(spp, verbose = FALSE, accept =TRUE, ...){
 #' }
 #'
 #'
-getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
+getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
                      db = c("gbif", 'vertnet', 'inat'),
                      gbiflim = 1e6, vertlim = 1e3,
                      inatlim =3e3, verbose= FALSE, warn =FALSE, pct = 80, sn = F, ...){
@@ -174,7 +89,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
 
   sppdata <- sapply(data, function(spp){
 
-    if(isTRUE(isFish)){
+    if(isTRUE(isfish)){
 
       checkFB<- check_names(data = spp, verbose = verbose, pct = pct, sn = sn)
 
@@ -192,8 +107,10 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
       }
 
     }else{
-      checksppx <- check_taxa_names(spp = spp, verbose = verbose)
+      checksppx <- clean_names(spp)
     }
+
+    #loop through databases
 
     sapply(db, FUN = function(x) {
 
@@ -268,7 +185,20 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
           gbifx <- gbifsp$data
 
         }else{
-          gbifx = "NO DATA FOUND"
+          gbifx = "No data found"
+        }
+        #check if gbif dataset has coordinates decimalLatitude or decimalLongitude among column names
+        if(is(gbifx, 'data.frame')){
+
+          if("decimalLatitude"%in%colnames(gbifx) == TRUE){
+            gbifx
+          }else{
+            if(isTRUE(warn)) warning("The data for ", spp, " will be removed since no cordinates were found in GBIF database.", call. = FALSE)
+
+            gbifx <- NULL
+          }
+        }else{
+          gbifx = "No data found"
         }
 
       }else if(x=='vertnet'){
@@ -279,14 +209,14 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
                               limit = vertlim, messages = FALSE)
         if(is.null(vertx)){
 
-          if(isTRUE(verbose)) message('No records for ', spp, ' in VertNet')
+          if(isTRUE(verbose)) message('No records for ', spp, ' in vertnet were found')
 
           vertxdf <- NULL
 
         }else{
           vertxdf  <- vertx$data
 
-          if(isTRUE(verbose)) message(nrow(vertxdf), ' records for ', spp, ' in VertNet downloaded.')
+          if(isTRUE(verbose)) message(nrow(vertxdf), ' records for ', spp, ' in vertnet downloaded.')
           vertxdf
         }
 
@@ -299,7 +229,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
           },
           error= function(e){
 
-            if(isTRUE(verbose)) message('No data exist for species ', spp, ' in iNaturalist')
+            if(isTRUE(verbose)) message('No data exist for species ', spp, ' in inaturalist were found.')
 
             return(0)
           })
@@ -308,99 +238,69 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isFish= TRUE,
 
           inatx <-  sx
 
-          if(isTRUE(verbose))message(nrow(inatx), ' records for ', spp, ' in iNaturalist downloaded.')
+          if(isTRUE(verbose))message(nrow(inatx), ' records for ', spp, ' in inaturalist downloaded.')
 
           inatx
         }else{
           inatx <- NULL
         }
       }else{
-        stop('Database name not acceptable')
+        stop('Database name not acceptable. Use only gbif, vertnet, or inat')
       }
 
     }, simplify = FALSE)
 
   }, simplify = FALSE)
 
-  return(new('dataonline', output= sppdata))
-}
+  dfout <- sapply(seq_along(sppdata), function(spno){
 
+    sp <- names(sppdata)[spno]
 
-#Main function for merging all files
+    splistdb <- sppdata[[sp]]
 
-#' @title Extracts data from lists of files obtained from online databases.
-#'
-#' @param online List of online data sets, Only dataonline class accepted.
-#' @param verbose To show extraction messages. Default \code{FALSE}
-#'
-#' @return Extracts and arranges data from the online databases.
-#'
-#' @export
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' gbdata <- getdata(data= 'Gymnocephalus baloni', gbiflim = 100, inatlim = 100,vertlim = 100)
-#'
-#' extractdata <- extract_online(online = gbdata)
-#'
-#' }
-#'
-#'
-#'
-extract_online <- function(online, verbose=FALSE){
-
-  if(!is(online, 'dataonline')) stop('dataonline class created for online data accpeted')
-
-  if(missing(online)) stop('Use function to process data from online databases and/or match with local data merged in match_df function')
-
-  species <- list()
-
-  output <- online@output
-
-  for (bi in seq_along(output)) {
-
-    dfdata <- output[[bi]]
-
-    len <- sapply(dfdata, length)
-
+    len <- sapply(splistdb, length)
 
     if(all(len==0)==FALSE) {
 
-      if(any(len==0)) fdata <- dfdata[len !=0] else fdata <-  dfdata
+      if(any(len==0)) splistdb_check <- splistdb[len !=0] else splistdb_check <-  splistdb
 
       #check if the decimallatitude and decimallongitude exists in vertnet data for match_datasets to run
-      if(("vertnet" %in% names(fdata))==TRUE){
 
-        if(any(c("decimallatutide", "decimallongitude")%in%sapply(fdata, colnames)[["vertnet"]]) == FALSE){
+      if(("vertnet" %in% names(splistdb_check))==TRUE){
 
-          if(isTRUE(verbose)) message("Vertnet data for ", names(online@output)[bi], " has been removed because it lacks the coordinates columns.")
+        vertcoords <- c("decimallatutide", "decimallongitude")
 
-          fdata[["vertnet"]] <- NULL
+        if(any(vertcoords%in%sapply(splistdb_check, colnames, simplify = FALSE)[["vertnet"]]) == FALSE){
+
+          if(isTRUE(verbose)) message("vertnet data for ", sp, " has been removed because it lacks the coordinates columns.")
+
+          splistdb_check[["vertnet"]] <- NULL
         } else {
-          fdata
+          splistdb_check
         }
 
       }else{
-        fdata
+        splistdb_check
       }
-      species[[bi]] <- match_datasets(datasets = fdata,
-                                      lats = c('latitude','decimallatitude'),
-                                      lons = c('decimallongitude', 'longitude'),
-                                      species = c('scientificname','scientific_name'),
-                                      date = c('datetime', 'year','eventdate','dates'),
-                                      country = c('place_guess'))
-      dfinal <- do.call(rbind, species)
 
+      spdata <- match_datasets(datasets = splistdb_check,
+                               lats = c('latitude','decimallatitude'),
+                               lons = c('decimallongitude', 'longitude'),
+                               species = c('scientificname','scientific_name'),
+                               date = c('datetime', 'year','eventdate','dates'),
+                               country = c('place_guess'))
     }else{
-
       #handles if no data is returned by all repositories
-      if(isTRUE(verbose)) message("The species ", names(online@output)[bi], " has been removed because no data was returned from all repositories.")
+      if(isTRUE(verbose)) message("The species ", sp, " has been removed because no data was returned from all repositories.")
+
     }
+  }, simplify = FALSE)
 
-  }
+  lst <- dfout[!sapply(dfout, is.null)]
 
-  return(dfinal)
+  getidcols <- unique(Reduce(c, sapply(lst, FUN = function(dl) colnames(dl))))
+
+  finalmatch_df <- do.call(rbind, lapply(lst, function(x) x[, getidcols]))
+
+  return(finalmatch_df)
 }
-

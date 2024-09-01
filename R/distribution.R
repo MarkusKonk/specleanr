@@ -1,8 +1,4 @@
 
-
-
-
-
 #Species distribution checking with IUCN Red List
 
 #' @title NatureEarth data
@@ -71,6 +67,7 @@ check_iucn <- function(x, key){
 #'
 #' @importFrom stats na.omit
 #' @importFrom sf st_intersects st_make_valid st_join st_read
+#' @importFrom stringr str_extract
 #'
 #' @return \code{dataframe} Species records within the known distribution ranges of the species according to IUCN RedList database.
 #' @export
@@ -143,7 +140,7 @@ distr_ranges <- function(data, species, lat, lon, key =NULL, verbose=T){
 
       if(length(nmsd)>0){#use another string detect method to recheck if there any other country thta can be extracted
 
-        spsearch <- stringr::str_extract(nmsd, paste(countrydist, collapse="|") )
+        spsearch <- str_extract(nmsd, paste(countrydist, collapse="|") )
 
         idxt <- which(!is.na(spsearch))
 

@@ -401,7 +401,7 @@ detect <- function(x,
 #' @param kmpar \code{list}. Parameters for k-means clustering like method and number of clusters for tuning. For details, check \code{\link{xkmeans}}.
 #' @param lofpar \code{list}. Parameters for local outlier factor such as the distance matrix and mode of method implementation
 #'  such as robust and soft mode. For details \code{\link{xlof}}.
-#' @param jkpar \code{list}. Parameters for reverse jack knifing mainly the mode used. For details \code{\link{jknife}}.
+#' @param jkpar \code{list}. Parameters for reverse jackknifing mainly the mode used. For details \code{\link{jknife}}.
 #' @param gloshpar \code{list}. Parameters for global local outlier score from hierarchies such as distance metric used. For details \code{\link{xglosh}}.
 #' @param mahalpar \code{list}. Parameters for Malahanobis distance which includes varying the mode of output  \code{\link{mahal}}.
 #' @param knnpar \code{list}. Parameters for varying the distance matrix such as \code{Euclidean} or \code{Manhattan distance}. For details \code{\link{xknn}}

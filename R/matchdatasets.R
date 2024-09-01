@@ -1,7 +1,7 @@
 
 #When standard column names are NULL
 #' @noRd
-.null <- function(x, y, std) {
+ifnull <- function(x, y, std) {
 
   if(is.null(y)){
 
@@ -78,65 +78,53 @@
 #'
 #'
 match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, species = NULL,
-                           date=NULL, verbose=FALSE){
+                           date=NULL, verbose = FALSE){
 
-  if(missing(datasets))  stop('A list of datasets should be provided')
+  if(!is(datasets, 'list'))  stop('Only a named list of datasets should be provided.')
 
   #check if null columns in the different parameters have standard names across all data sets.
 
-  for (i in c('country', 'lats', 'lons', 'species')) {
+  ifnull(x=datasets, y=country, std = 'country')
 
-    if(i=='country'){
+  ifnull(x=datasets, y=lats, std='decimalLatitude')
 
-      .null(x=datasets, y=country, std = 'country')
+  ifnull(x=datasets, y=lons, std='decimalLongitude')
 
-    }else if(i=='lats'){
-      .null(x=datasets, y=lats, std='decimalLatitude')
+  ifnull(x=datasets, y=species, std='species')
 
-    }else if(i=='lons'){
-
-      #print(i)
-      .null(x=datasets, y=lons, std='decimalLongitude')
-
-    }else {
-      .null(x=datasets, y=species, std='species')
-    }
-
-  }
   datalists <- list()
 
   #standardize column names for main 4 columns (species, latitude, longitude, country, and dates columns)
-  for (ii in seq_along(datasets)){
 
-    datnames <- names(datasets)[ii]
+  xsdata <- sapply(seq_along(datasets), function(dnum){
 
-    dataset <- datasets[[datnames]]
+    datnames <- names(datasets)[dnum]
+
+    dataset <- datasets[[dnum]]
 
     if(is.null(dataset) || nrow(dataset)<0){
 
       stop('No records for species in dataset')
-    }
-    else{
-
+    }else{
       if('decimalLatitude'%in%colnames(dataset)){
 
         dataset
       }else{
-        latname <- intersect(lats, colnames(dataset))
+        latitude <- intersect(lats, colnames(dataset))
 
-        if(length(latname)==0)stop('check if latitude options provided  are in dataset ', datnames )
+        if(length(latitude)==0)stop('check if latitude options provided  are in dataset ', datnames )
 
-        colnames(dataset)[colnames(dataset)==latname] <- 'decimalLatitude'
+        colnames(dataset)[colnames(dataset)==latitude] <- 'decimalLatitude'
       }
       if('decimalLongitude'%in%colnames(dataset)){
 
         dataset
       }else{
-        lonword <- intersect(lons,colnames(dataset))
+        longitude <- intersect(lons,colnames(dataset))
 
-        if(length(lonword)==0) stop('check if longitude options provided  are in dataset ', datnames )
+        if(length(longitude)==0) stop('check if longitude options provided  are in dataset ', datnames )
 
-        colnames(dataset)[colnames(dataset)==lonword] <- 'decimalLongitude'
+        colnames(dataset)[colnames(dataset) == longitude] <- 'decimalLongitude'
       }
 
       if('species'%in%colnames(dataset)){
@@ -151,14 +139,15 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
       if('country'%in%colnames(dataset)){
         dataset
       }else{
-        ctry <- intersect(country, colnames(dataset))
+        countryname <- intersect(country, colnames(dataset))
 
-        if(length(ctry)==0)stop('check if species options provided  are in dataset ', datnames )
+        if(length(countryname)==0)stop('check if species options provided  are in dataset ', datnames )
 
-        colnames(dataset)[colnames(dataset)==ctry] <- 'country'
+        colnames(dataset)[colnames(dataset)==countryname] <- 'country'
       }
 
       if(!is.null(date)){
+
         dates <- intersect(date, colnames(dataset))
 
         if(length(dates)==0){
@@ -185,17 +174,34 @@ match_datasets <- function(datasets, country = NULL, lats=NULL, lons=NULL, speci
       dataset[,'datasetname'] <- datnames
       dataset[, 'decimalLatitude'] <- as.numeric(dataset$decimalLatitude)
       dataset[, 'decimalLongitude'] <- as.numeric(dataset$decimalLongitude)
+      dataset
     }
-    datalists[[ii]] <- dataset
+  }, simplify= FALSE)
+
+  if(length(xsdata)>1){
+
+    ident_colnames <- Reduce(intersect, sapply(xsdata, colnames))
+
+    datafinal <- do.call(rbind, lapply(xsdata, function(x) x[, ident_colnames]))
+  }else{
+    dfinal <- do.call(rbind, xsdata)
+
+    if(is(dfinal, 'data.frame')){
+
+      stdcols <- c("country", "species", 'decimalLatitude',
+                "decimalLongitude", 'dates',"quality_grade", "datasetname")
+
+      dfcols<- colnames(dfinal)
+
+      colsin <- dfcols[dfcols %in% stdcols ==TRUE]
+
+      datafinal <- dfinal[, colsin]
+    }
   }
-
-  #get column names which are identical in data sets
-
-  colind <- Reduce(intersect, sapply(datalists, colnames))
-
-  df <- do.call(rbind, lapply(datalists, function(x) x[, colind]))
-
-  return( df)
+  return(datafinal)
 }
+
+
+
 
 

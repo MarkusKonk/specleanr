@@ -1161,7 +1161,8 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #' @examples
 #'
 #' \dontrun{
-#'data("efidata")
+#'
+#' data("efidata")
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
@@ -1173,7 +1174,7 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'                        lat = 'decimalLatitude',
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
-#'                       bbox = db,
+#'                        bbox = db,
 #'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
@@ -1241,7 +1242,7 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #' @export
 #'
 #' @examples
-#'
+#'\dontrun{
 #' data("efidata")
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
@@ -1261,6 +1262,7 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #' gloshout <- xglosh(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
 #'                 output='outlier', metric ='manhattan', k = 3,
 #'                  mode = "soft")
+#'                  }
 #
 #' @references
 #' \enumerate{
