@@ -24,7 +24,7 @@
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download species records from online database.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/master/R/getdata.R" class="external-link"><code>R/getdata.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/R/getdata.R" class="external-link"><code>R/getdata.R</code></a></small>
       <div class="d-none name"><code>getdata.Rd</code></div>
     </div>
 
@@ -48,7 +48,7 @@
 <span>  <span class="va">data</span>,</span>
 <span>  colsp <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bbox <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  isFish <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  isfish <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gbif"</span>, <span class="st">"vertnet"</span>, <span class="st">"inat"</span><span class="op">)</span>,</span>
 <span>  gbiflim <span class="op">=</span> <span class="fl">1e+06</span>,</span>
 <span>  vertlim <span class="op">=</span> <span class="fl">1000</span>,</span>
@@ -82,7 +82,7 @@ either a shapefile <code>(sf)</code> class accepted or provide a list of
 <code>xmin</code>, <code>ymin</code>, <code>xmax</code>, and <code>ymax</code>.</p></dd>
 
 
-<dt id="arg-isfish">isFish<a class="anchor" aria-label="anchor" href="#arg-isfish"></a></dt>
+<dt id="arg-isfish">isfish<a class="anchor" aria-label="anchor" href="#arg-isfish"></a></dt>
 <dd><p><code>logical</code>. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 accordingly. For other taxa a different name checks is conducted. Default is <code>TRUE</code>.</p></dd>
 
@@ -163,7 +163,7 @@ See <code><a href="https://docs.ropensci.org/rgbif/reference/occ_data.html" clas
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by x x.</p>
+  <p>Developed by Anthony Basooma.</p>
 </div>
 
 <div class="pkgdown-footer-right">

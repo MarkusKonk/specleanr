@@ -43,7 +43,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/removedxx/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/AnthonyBasooma/specleanr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -60,7 +60,7 @@
       <h1>Detecting environmental outliers in species distribution models for plants.</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/removedxx/specleanr/blob/master/vignettes/Plants.Rmd" class="external-link"><code>vignettes/Plants.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/vignettes/Plants.Rmd" class="external-link"><code>vignettes/Plants.Rmd</code></a></small>
       <div class="d-none name"><code>Plants.Rmd</code></div>
     </div>
 
@@ -68,7 +68,7 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/removedxx/specleanr" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://AnthonyBasooma.github.io/specleanr/" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
 <p><strong><em>Detect environmental outliers for species occurrences in
 </em>Fagus sylvatica<em>, and </em>Populus nigra* records based on
 bioclimatic data</strong>*.</p>
@@ -96,7 +96,7 @@ rgbif, and rinat packages. We limited the occurrence records from GBIF
 to 700 and Inaturalist to 100. To extract data from the
 <strong><code>dataonline</code></strong> class returned by
 <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong>, we used the
-<strong><code><a href="../reference/extract_online.html">extract_online()</a></code></strong> function. *
+<strong><code>extract_online()</code></strong> function. *
 <strong>Note</strong>: If the user has locally saved data, then after
 extracting the online data, the
 <strong><code><a href="../reference/match_datasets.html">match_datasets()</a></code></strong> function can be used to
@@ -121,13 +121,10 @@ will return errors.</li>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">plantdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getdata.html">getdata</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"Populus nigra"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>, </span>
-<span>                    gbiflim <span class="op">=</span> <span class="fl">700</span>, inatlim <span class="op">=</span> <span class="fl">100</span>, isFish <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                    gbiflim <span class="op">=</span> <span class="fl">700</span>, inatlim <span class="op">=</span> <span class="fl">100</span>, isfish <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                     hasCoordinate <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                   bbox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">8.15250</span>, ymin <span class="op">=</span> <span class="fl">42.08333</span>, xmax<span class="op">=</span><span class="fl">29.73583</span>, ymax <span class="op">=</span> <span class="fl">50.24500</span><span class="op">)</span>,</span>
-<span>                   verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="va">extrdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_online.html">extract_online</a></span><span class="op">(</span><span class="va">plantdf</span><span class="op">)</span></span></code></pre></div>
+<span>                   verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li><strong>Data acquisition: b) Environmental predictors</strong></li>
 </ol>
@@ -201,13 +198,12 @@ FALSE</strong> to return a combined dataframe. The Danube basin was
 collated from the Hydrography90m basin files (<a href="https://hydrography.org/hydrography90m/hydrography90m_layers" class="external-link uri">https://hydrography.org/hydrography90m/hydrography90m_layers</a>).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">danube_basin</span>  <span class="op">&lt;-</span>     <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">danube</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">danube_basin</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span>, </span>
+<span>                            quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Environmental predictors extraction for multiple species (multiple = TRUE)</span></span>
 <span></span>
-<span><span class="va">plantcleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">extrdata</span>, </span>
+<span><span class="va">plantcleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">plantdf</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                             lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span>
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
@@ -218,7 +214,7 @@ collated from the Hydrography90m basin files (<a href="https://hydrography.org/h
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Environmental prediction extraction for a single species (multiple = FALSE)</span></span>
-<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">extrdata</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
+<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">plantdf</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1cleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">sp1df</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
@@ -226,9 +222,9 @@ collated from the Hydrography90m basin files (<a href="https://hydrography.org/h
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
 <span>                             colsp <span class="op">=</span> <span class="st">'species'</span>,  </span>
 <span>                             multiple <span class="op">=</span> <span class="cn">FALSE</span>, </span>
-<span>                             bbox <span class="op">=</span> <span class="va">danube_basin</span>,</span>
-<span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>                             bbox <span class="op">=</span> <span class="va">danube_basin</span>, </span>
+<span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li><strong>Detecting outliers using multiple outlier detection
 methods</strong></li>
@@ -258,8 +254,6 @@ or machine learning models</strong>: local outlier factor:
 <span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, </span>
 <span>                                   <span class="st">'lof'</span>, <span class="st">'jknife'</span>, <span class="st">'kmeans'</span>, <span class="st">'mahal'</span><span class="op">)</span>,</span>
 <span>                       showErrors  <span class="op">=</span> <span class="cn">TRUE</span>, warn <span class="op">=</span> <span class="cn">F</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "bio1"</span></span>
-<span><span class="co">#&gt; [1] "bio1"</span></span>
 <span></span>
 <span><span class="co">#Flag outlier in single species data (multiple = FALSE)</span></span>
 <span></span>
@@ -390,7 +384,7 @@ Accessed on 24 June 2024.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by x x.</p>
+  <p>Developed by Anthony Basooma.</p>
 </div>
 
 <div class="pkgdown-footer-right">
