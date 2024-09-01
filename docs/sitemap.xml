@@ -1,318 +1,95 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/404.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/articles/eOutlier.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/articles/Plants.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/index.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/adjustboxplots.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/basinranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/batch_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/bestmethod.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/boots.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/check.exclude.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/check_dates.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/check_names.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/check_natura.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/check_taxa_names.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/clean_data.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/clean_data_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/clean_date.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/clean_names.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/cosine.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/datacleaner-class.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dataonline-class.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dateformats.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dep.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/detect.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/distboxplot.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/distr_ranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dot-abspath.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dot-absx.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dot-cache.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dot-gbdownload.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/dot-nearthdownload.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/downloadnatura.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/ecological_ranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/efidata.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/endemicity.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/envextract.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/evaluate.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/exdata.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/extractMethods.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/extract_online.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/extract_outliers.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/fip_ranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/fishbase.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/geo_ranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/getdata.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/getdiff.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/get_iucn.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/get_performance.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/ggoutliers.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/ggperform.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/hamming.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/hampel.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/indep.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/interquartile.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/isoforest.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/jaccard.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/jdsdata.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/jknife.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/kdat.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/logboxplot.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mahal.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/match.argc.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/match_datasets.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mbasinranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mdistr_ranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/medianrule.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mixediqr.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/modelcomparison.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mth.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/multibestmethod.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/multidetect.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/mult_abs.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/naturalist.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/naturaranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/ndata.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/ocindex.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/onesvm.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/optimal_threshold.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/overlap.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/plot-datacleaner-ANY-method.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/pred_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/runMerger.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/sdmfit.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/semiIQR.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/seqfences.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/show-datacleaner-method.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/show-dataonline-method.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/smc.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/sorensen.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/sprange.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/suggested.packages.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/tcatch.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/thermal_ranges.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/thresh_search.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/xglosh.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/xkmeans.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/xkmedian.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/xkmedoid.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/xknn.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/xlof.html</loc>
-  </url>
-  <url>
-    <loc>https://anthonybasooma.github.io/specleanr/reference/zscore.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://anthonybasooma.github.io/specleanr/404.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/articles/eOutlier.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/articles/generaloutlier.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/articles/index.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/articles/Plants.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/authors.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/index.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/LICENSE.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/adjustboxplots.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/basinranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/batch_extract.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/bestmethod.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/boots.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/broad_classify.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/check.exclude.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/check_iucn.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/check_names.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/check_natura.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data_2.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/clean_data_extract.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/cosine.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/datacleaner-class.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/dep.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/distboxplot.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/distr_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/dot-abspath.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/dot-absx.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/dot-cache.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/dot-gbdownload.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/dot-nearthdownload.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/downloadnatura.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/ecological_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/efidata.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/envextract.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/evaluate.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/exdata.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/extractMethods.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/extract_outliers.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/geo_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/getdata.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/getdiff.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/get_performance.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/ggoutliers.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/ggperform.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/hamming.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/hampel.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/indep.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/index.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/interquartile.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/isoforest.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/jaccard.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/jdsdata.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/jknife.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/kdat.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/logboxplot.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/mahal.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/match.argc.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/match_datasets.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/mbasinranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/mdistr_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/medianrule.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/mixediqr.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/modelcomparison.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/mth.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/multiabsolute.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/multibestmethod.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/multidetect.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/naturalist.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/naturaranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/ocindex.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/onesvm.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/optimal_threshold.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/overlap.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/plot-datacleaner-ANY-method.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/pred_extract.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/runMerger.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/sdmfit.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/semiIQR.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/seqfences.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/show-datacleaner-method.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/smc.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/sorensen.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/suggested.packages.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/tcatch.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/thermal_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/thresh_search.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/xglosh.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/xkmeans.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/xknn.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/xlof.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/zscore.html</loc></url>
 </urlset>
+
