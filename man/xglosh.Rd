@@ -30,7 +30,7 @@ Dataframe with or with no outliers.
 Global-Local Outlier Score from Hierarchies
 }
 \examples{
-
+\dontrun{
 data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
@@ -50,6 +50,7 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
 gloshout <- xglosh(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
                 output='outlier', metric ='manhattan', k = 3,
                  mode = "soft")
+                 }
 }
 \references{
 \enumerate{

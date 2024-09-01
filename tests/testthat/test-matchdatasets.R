@@ -35,8 +35,8 @@ test_that(desc = 'Datasets not provided in a list with names',
 
 test_that(desc = 'The names provided are not in the merged data',
           code = {expect_error( match_datasets(datasets = list(jdsdata, efidata),
-                             lats = 'lat',#not found in any df
-                             lons = 'lon',
+                             lats = 'lat1',#not found in any df
+                             lons = 'lon1',
                              species = c('speciesname','scientificName'),
                              date = c('Date', 'sampling_date'),
                              country = c('JDS4_site_ID')))})

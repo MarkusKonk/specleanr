@@ -30,6 +30,7 @@ k-nearest neighbors for outlier detection
 \examples{
 
 \dontrun{
+
 data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
@@ -42,7 +43,7 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        lat = 'decimalLatitude',
                        lon= 'decimalLongitude',
                        colsp = 'speciescheck',
-                      bbox = db,
+                       bbox = db,
                        multiple = TRUE,
                        minpts = 10)
 

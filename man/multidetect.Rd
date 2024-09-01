@@ -59,7 +59,7 @@ the \strong{size} of data partitioning for training should be determined. For mo
 
 \item{mahalpar}{\code{list}. Parameters for Malahanobis distance which includes varying the mode of output  \code{\link{mahal}}.}
 
-\item{jkpar}{\code{list}. Parameters for reverse jack knifing mainly the mode used. For details \code{\link{jknife}}.}
+\item{jkpar}{\code{list}. Parameters for reverse jackknifing mainly the mode used. For details \code{\link{jknife}}.}
 
 \item{zpar}{\code{list}. Parameters for z-score such as \code{mode} and \code{x} parameter. For details \code{\link{zscore}}}
 
@@ -104,7 +104,7 @@ associated with the \code{datacleaner} class from \code{multidetect} function.
         \item{\code{out}: \code{character}. Whether outliers where indicated by the user or no outlier data. }
         \item{\code{methodsused}: \code{vector}. The different methods used the outlier detection process.}
         \item{\code{dfname}: \code{character}. The dataset name for the species records.}
-        \item{\code{exclude}: \code{vector}. The columns which were excluded during outlier detection if any.}
+        \item{\code{exclude}: \code{vector}. The columns which were excluded during outlier detection, if any.}
         }
 }
 \description{

@@ -8,7 +8,7 @@ getdata(
   data,
   colsp = NULL,
   bbox = NULL,
-  isFish = TRUE,
+  isfish = TRUE,
   db = c("gbif", "vertnet", "inat"),
   gbiflim = 1e+06,
   vertlim = 1000,
@@ -32,7 +32,7 @@ records from the GBIF will be downloaded. These can be provided in two forms,
 either a shapefile \code{(sf)} class accepted or provide a list of
 \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.}
 
-\item{isFish}{\code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
+\item{isfish}{\code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
 accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.}
 
 \item{db}{\code{vector}. The different databases allowed including \code{'gbif', 'vertnet', and 'inat'}.}

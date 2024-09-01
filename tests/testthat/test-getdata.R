@@ -1,32 +1,24 @@
 
-#check taxa names
-
-test_that(desc = "Errors and success in check taxa names",
-
-          code= {
-            #name output
-            expect_type(check_taxa_names(sp = "Lates niloticus"), 'character')
-
-            #expect warning as specie name is not found and spfinal is the original name
-
-            expect_warning(check_taxa_names(sp = "LLatess nilotus"))
-          }
-)
-
-
 test_that(desc = 'Return species data',
           code = {
-            ondata <- getdata(data = 'Gymnocephalus baloni', mode = 'all', gbiflim = 10, vertlim = 10,
+            ondata <- getdata(data = 'Gymnocephalus baloni', gbiflim = 10, vertlim = 10,
                               inatlim = 10, verbose = FALSE)
+            expect_s3_class(ondata, 'data.frame')
 
-            #test that the dataonline is printed out
+            expect_lt(nrow(ondata), 30)
 
-            expect_output(show(ondata))
-
-            extd <- extract_online(online = ondata)
-
-            expect_lt(nrow(extd), 30)
-
-            expect_contains(colnames(extd), c('country', 'species', 'dates', 'decimalLatitude','decimalLongitude'))
+            expect_contains(colnames(ondata), c('country', 'species', 'dates',
+                                                'decimalLatitude','decimalLongitude'))
 
           })
+test_that(desc = "Expect error when data is not provided",
+          code = {
+            expect_error(getdata(gbiflim = 10, vertlim = 10,inatlim = 10, verbose = FALSE))
+          })
+datasp <- data.frame(river= c("Danube"), species=c("Gymnocephalus baloni"))
+
+test_that(desc = "Dataframe with species column provided. if not an error is returned",
+          code = {
+            expect_error(getdata(data = datasp, vertlim = 10,inatlim = 10, verbose = FALSE ))
+          })
+

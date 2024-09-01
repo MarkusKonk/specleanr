@@ -36,13 +36,10 @@ Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Globa
 ```{r get species occurences}
 
 plantdf <- getdata(data = c( "Populus nigra", "Fagus sylvatica"), 
-                    gbiflim = 700, inatlim = 100, isFish = FALSE,
+                    gbiflim = 700, inatlim = 100, isfish = FALSE,
                      hasCoordinate = TRUE, 
                    bbox = c(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500),
                    verbose = FALSE, warn = FALSE)
-
-
-extrdata <- extract_online(plantdf)
 
 ```
 1. **Data acquisition: b) Environmental predictors**
@@ -85,13 +82,12 @@ The step involves removing missing coordinate values, setting the geographical r
 
 ```{r extract data and prelimianry analysis}
 
-danube <- system.file('extdata/danube/basinfinal.shp', package = 'specleanr')
-
-danube_basin  <-     sf::st_read(danube, quiet=TRUE)
+danube_basin <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), 
+                            quiet = TRUE)
 
 #Environmental predictors extraction for multiple species (multiple = TRUE)
 
-plantcleaned <-  pred_extract(data= extrdata, 
+plantcleaned <-  pred_extract(data= plantdf, 
                              raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
@@ -102,7 +98,7 @@ plantcleaned <-  pred_extract(data= extrdata,
                              minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
 
 #Environmental prediction extraction for a single species (multiple = FALSE)
-sp1df <- subset(extrdata, species=="Fagus sylvatica")
+sp1df <- subset(plantdf, species=="Fagus sylvatica")
 
 p1cleaned <-  pred_extract(data= sp1df, 
                              raster= worldclim, 
@@ -110,9 +106,9 @@ p1cleaned <-  pred_extract(data= sp1df,
                              lon = 'decimalLongitude',
                              colsp = 'species',  
                              multiple = FALSE, 
-                             bbox = danube_basin,
-                             list= TRUE, 
-                             minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
+                             bbox = danube_basin, 
+                             minpts = 10, merge = FALSE, 
+                           verbose = FALSE, warn = FALSE)
 
 ```
 

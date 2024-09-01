@@ -51,11 +51,7 @@ df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta',
                                 vertlim = 50, 
                      verbose = F)
 
-#extract online data from dataonline class
-
-onlinedf <- extract_online(online = df_online)
-
-dim(onlinedf)
+dim(df_online)
 
 ```
 
@@ -68,7 +64,7 @@ The online data sources from **`getdata()`** and local files are merged using th
 ```{r merging and harmonising species records handling, warning=FALSE}
 
 mergealldfs <- match_datasets(datasets = list(efi= efidata, jds = jdsdata, 
-                                        onlinedata = onlinedf),
+                                        onlinedata = df_online),
                 country = c('JDS4_sampling_ID'),
                 lats = 'lat', lons = 'lon',
                 species = c('speciesname', 'scientificName'))
@@ -260,7 +256,7 @@ multmodelper <- get_performance(modelcomp = multcomparion)
 
 ```
 
-**Vising the performance of models before and after removal of outliers.**
+**Visualizing the performance of models before and after removal of outliers.**
 
 The outlier removal in the species records of _Thymallus thymallus_ led to improved model performance in accuracy and Area under the curve (AUC). However, in the multiple species, the performance of the _Anguilla anguilla_ and_Squalius cephalus_ models remained the same. This is because there were no absolute outliers at the optimal threshold; therefore, the reference and clean datasets were the same. The performance in the Salmo trutta models was slightly higher for the reference dataset based on the Area Under the Curve. 
 

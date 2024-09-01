@@ -7,9 +7,7 @@ worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='speclean
 
 db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
 
-salmonline <- getdata(data = "Salmo trutta", gbiflim = 500, inatlim = 3, vertlim = 3, bbox = db)
-
-salextract <- extract_online(salmonline)
+salextract <- getdata(data = "Salmo trutta", gbiflim = 500, inatlim = 3, vertlim = 3, bbox = db)
 
 #merge both online and offline data and filter Salmo trutta
 

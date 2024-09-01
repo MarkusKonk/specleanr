@@ -3,8 +3,7 @@ data("jdsdata")
 data("efidata")
 
 #get records outside danube to test for extent warnings
-salmout <- getdata(data = "Salmo trutta", gbiflim = 5, vertlim = 5, inatlim = 5)
-salm_ext<- extract_online(salmout)
+salm_ext <- getdata(data = "Salmo trutta", gbiflim = 5, vertlim = 5, inatlim = 5)
 
 matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata, online = salm_ext),
                           lats = 'lat', lons = 'lon',
