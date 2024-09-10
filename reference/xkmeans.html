@@ -51,6 +51,7 @@
 <span>  <span class="va">output</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"soft"</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"silhouette"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1135</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -85,6 +86,10 @@ latitude/longitude or any column that the user doesn't want to consider.</p></dd
 <dd><p>The method to be used for the kmeans clustering. Default is <code>silhouette</code>.
 <code>Elbow method</code> can be used but user input is required, and therefore multiple outlier detection method
 is not possible.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>An integer to fix the maintain the iterations by during the kmeans method optimisation.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

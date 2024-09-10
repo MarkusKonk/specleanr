@@ -68,7 +68,7 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://AnthonyBasooma.github.io/specleanr/" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anthonybasooma.github.io/specleanr">specleanr</a></span><span class="op">)</span></span></code></pre></div>
 <p><strong><em>Detect environmental outliers for species occurrences in
 </em>Fagus sylvatica<em>, and </em>Populus nigra* records based on
 bioclimatic data</strong>*.</p>
@@ -305,13 +305,11 @@ method. The outlier flagged by the best method will be used to clean the
 data. For more information, check (B….2024).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
+<span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 3.</span></span>
-<span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span>
 <span></span>
 <span></span>
-<span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
+<span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
 <span>                         mode <span class="op">=</span> <span class="st">"best"</span>, threshold <span class="op">=</span> <span class="fl">0.4</span>, warn <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Criteria: Best method selected with majority votes of 4.</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
@@ -331,12 +329,18 @@ such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve
 <span><span class="va">multsppmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
 <span>                           lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GLM"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">'abs'</span>,</span>
 <span>                           thresholds <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
 <span></span>
 <span></span>
 <span></span>
 <span><span class="va">onesppmodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, raster <span class="op">=</span> <span class="va">worldclim</span>,</span>
 <span>                           lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GLM"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">'abs'</span>,  </span>
-<span>                           thresholds <span class="op">=</span> <span class="fl">0.8</span>, nboots <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code></pre></div>
+<span>                           thresholds <span class="op">=</span> <span class="fl">0.8</span>, nboots <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span></code></pre></div>
 <p><strong>Extract model performance</strong></p>
 <ul>
 <li>cutoff of 0.5, is to limit which threshold results the user whats to
