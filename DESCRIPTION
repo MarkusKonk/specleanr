@@ -4,14 +4,13 @@ Title: Detecting Environmental Outliers in Biogeographical Modeling Workflows
 Version: 0.1.0
 Authors@R: c(person('Anthony', 'Basooma', email='anthonybasooma@boku.ac.at', role =c('aut', 'cre'), 
     comment=c('0')))
-Maintainer: A <anthonybasooma@boku.ac.at>
 Description: A framework used to detect and remove environmental outliers in species distribution models across taxa 
     and environmental predictors. Also, data retrieval and preprocessing, model fitting to enable performance comparisions
     are allowed.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-URL: https://AnthonyBasooma.github.io/specleanr/
+URL: https://anthonybasooma.github.io/specleanr
 BugReports: https://github.com/AnthonyBasooma/specleanr/issues
 RoxygenNote: 7.3.2
 Suggests: 

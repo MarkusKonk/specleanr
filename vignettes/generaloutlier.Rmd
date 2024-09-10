@@ -76,7 +76,7 @@ ggoutliers(outlieriris_mult)
 
 ```{r clean data extraction}
 
-cleandata1 <- clean_data_extract(refdata = dfinal, outliers = outlieriris_univ, loess = TRUE)
+cleandata1 <- extract_clean_data(refdata = dfinal, outliers = outlieriris_univ, loess = TRUE)
 
 #clean dataset
 nrow(cleandata1)
@@ -85,7 +85,7 @@ nrow(cleandata1)
 nrow(dfinal)
 
 
-cleandata2 <- clean_data_extract(refdata = dfinal, outliers = outlieriris_mult, loess = TRUE)
+cleandata2 <- extract_clean_data(refdata = dfinal, outliers = outlieriris_mult, loess = TRUE)
 
 #clean dataset
 nrow(cleandata2)

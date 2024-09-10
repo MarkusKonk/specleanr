@@ -125,7 +125,7 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple', colsp= NULL){
 
   if(x@mode==FALSE){
 
-    OUTDF <- extract_outliers(x)
+    OUTDF <- extractoutliers(x)
 
     if(all(OUTDF$totaloutliers<1)==TRUE) stop("Nothing to plot. No outliers were flagged by all methods")
 
@@ -137,12 +137,13 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple', colsp= NULL){
 
     if(is.null(y)) stop("Provide the index or species to plot the outliers for a particular species.")
 
-    OUTDF <- extract_outliers(x, sp =y)
+    if(is.numeric(y) && y>length(x@result))stop("The index number provided for y is out of bounds, the index number sholud not exceed ", length(x@result), ".", call. = FALSE)
+
+    OUTDF <- extractoutliers(x, sp =y)
 
     if(all(OUTDF$totaloutliers<1)==TRUE) stop("Nothing to plot. No outliers were flagged by all methods")
 
-    if(is.numeric(y)) spnames <- names(x@result)[y] else spnames <- y
-
+     if(is.numeric(y)) spnames <- names(x@result)[y] else spnames <- y
 
     #the reference dataset is extracted from the dfname slot of multidetect function.
 
@@ -189,6 +190,7 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple', colsp= NULL){
     hjust <- 0.5
   }
   suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
+
   method = NULL; pct = NULL ; totaloutliers = NULL
   pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes(x=method, y= if(raw==TRUE) totaloutliers else pct))+
     ggplot2::geom_bar(stat = 'identity', fill=color)+

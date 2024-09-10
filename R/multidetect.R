@@ -124,31 +124,32 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
 }
 
 #' @noRd
+#'
 detect <- function(x,
-                   var,
-                   output,
-                   exclude,
-                   optpar,
-                   kmpar,
-                   ifpar,
-                   lofpar,
-                   jkpar,
-                   gloshpar,
-                   mahalpar,
-                   knnpar,
-                   zpar,
-                   methods,
-                   verbose,
-                   spname,
-                   warn,
-                   missingness,
-                   showErrors,
-                   sdm,
-                   na.inform){
+                     var,
+                     output,
+                     exclude,
+                     optpar,
+                     kmpar,
+                     ifpar,
+                     lofpar,
+                     jkpar,
+                     gloshpar,
+                     mahalpar,
+                     knnpar,
+                     zpar,
+                     methods,
+                     verbose,
+                     spname,
+                     warn,
+                     missingness,
+                     showErrors,
+                     sdm,
+                     na.inform){
 
   if(missing(x)) stop('Species data missing')
 
-  if(length((colnames(x)[colnames(x)==var]))<1) stop('Variable ', var, ' is  not found in the species data provided for species ', spname, ' .')
+  if(length((colnames(x)[colnames(x)==var]))<1) stop('variable ', var, ' is  not found in the species data provided for species ', spname, ' .')
 
   #check if the variable provided to check in outliers is numeric
 
@@ -158,49 +159,47 @@ detect <- function(x,
 
   if(isTRUE(sdm)){
 
-  #check if the variable parameter provided in var does not have NAs
+    #check if the variable parameter provided in var does not have NAs
 
-  if(any(is.na(unlist(varcheck)))==TRUE){
+    if(any(is.na(unlist(varcheck)))==TRUE){
 
-    if(isTRUE(verbose)) message("NAs found in the ", var, " parameter and removed successfully during computation.")
+      if(isTRUE(verbose)) message("NAs found in the ", var, " parameter and removed successfully during computation.")
 
-    vecNAs <- which(is.na(unlist(varcheck)==TRUE))
+      vecNAs <- which(is.na(unlist(varcheck)==TRUE))
 
-    #calculate the missingness in the var variable
+      #calculate the missingness in the var variable
 
-    lenvar_NA <- length(vecNAs)/length(varcheck)
+      lenvar_NA <- length(vecNAs)/length(varcheck)
 
-    if(lenvar_NA>missingness) stop(var, " will be removed from data due to NAs. Either increase missingness parameter > ", round(lenvar_NA, 3), " or use different var.")
+      if(lenvar_NA>missingness) stop(var, " will be removed from data due to NAs. Either increase missingness parameter > ", round(lenvar_NA, 3), " or use different var.")
 
-    x <- x[-vecNAs,]
+      x <- x[-vecNAs,]
 
-  }else{
-    x
-  }
+    }else{
+      x
+    }
 
-  #check if a particular column has unnecessarily high numbers of NAs
+    #check if a particular column has unnecessarily high numbers of NAs
 
-  mValues <- apply(x, 2, function(col)sum(is.na(col))/length(col))
-
-
-  #remove a column with high NAs instead of the rows if % missing values are greater than the user set %missingness. Default is 10%
-  if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>missingness)]
-
-  #exclude columns that are not needed in the computation like the coordinates mostly for multivariate methods
-
-  if(!is.null(exclude)) {
-    #check if the columns to be excluded are in the data.
-    check.exclude(x=x, exclude = exclude)
-
-    if(!is.null(optpar$mode)) x2data <- na.omit(xdata) else x2data <- na.omit(xdata[,!colnames(xdata) %in% exclude])
-
-  } else {
-    x2data <- na.omit(xdata)
-  }
-
-  #identify and remove non-numeric columns if sdm is TRUE
+    mValues <- apply(x, 2, function(col)sum(is.na(col))/length(col))
 
 
+    #remove a column with high NAs instead of the rows if % missing values are greater than the user set %missingness. Default is 10%
+    if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>missingness)]
+
+    #exclude columns that are not needed in the computation like the coordinates mostly for multivariate methods
+
+    if(!is.null(exclude)) {
+      #check if the columns to be excluded are in the data.
+      check.exclude(x=x, exclude = exclude)
+
+      if(!is.null(optpar$mode)) x2data <- na.omit(xdata) else x2data <- na.omit(xdata[,!colnames(xdata) %in% exclude])
+
+    } else { #end of sdm data cleaning
+      x2data <- na.omit(xdata)
+    }
+
+    #identify and remove non-numeric columns if sdm is TRUE
 
     df <- x2data[, which(sapply(x2data, class) =='numeric')]
 
@@ -214,7 +213,7 @@ detect <- function(x,
 
     } else if(ncol(df)==2) {
 
-      warning("Only ", ncol(df), " are remaining and may fial in detecting for SDMs.")
+      warning("Only ", ncol(df), " are remaining the dataset and may fail in runing for biogeographical models.")
     }
   }else{
     #remove NAs in the var
@@ -238,143 +237,144 @@ detect <- function(x,
     df <- xdata
   }
 
-  #run through each method
-  methodList <- list()
+  #run all methods
 
-  for (cii in methods) {
+  xmethods <- sapply(methods, function(imx){
 
-    if(cii=='reference'){
+    if(imx=='reference'){
 
-      methodList[[cii]] = df
+      methodout = df
 
-    }else if (cii=='optimal'){
+    }else if (imx=='optimal'){
 
-      methodList[[cii]] <-  tcatch(func = ecological_ranges(df, var = var, output= output, species = spname,
-                                                            optimumSettings = list(optdf = optpar$optdf, optspcol = optpar$optspcol,
-                                                                                   mincol = optpar$mincol, maxcol = optpar$maxcol,
-                                                                                   ecoparam = optpar$ecoparam, direction= optpar$direction),
-                                                            minval=optpar$minval, maxval=optpar$maxval, lat = optpar$lat, lon = optpar$lon,
-                                                            ecoparam=optpar$ecoparam, direction = optpar$direction,
-                                                            pct= optpar$par,
-                                                            checkfishbase = optpar$checkfishbase, mode=optpar$mode, warn=optpar$warn),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+      methodout <-  tcatch(func = ecological_ranges(df, var = var, output= output, species = spname,
+                                                    optimumSettings = list(optdf = optpar$optdf, optspcol = optpar$optspcol,
+                                                                           mincol = optpar$mincol, maxcol = optpar$maxcol,
+                                                                           ecoparam = optpar$ecoparam, direction= optpar$direction),
+                                                    minval=optpar$minval, maxval=optpar$maxval, lat = optpar$lat, lon = optpar$lon,
+                                                    ecoparam=optpar$ecoparam, direction = optpar$direction,
+                                                    pct= optpar$par,
+                                                    checkfishbase = optpar$checkfishbase, mode=optpar$mode, warn=optpar$warn),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-    }else if (cii=='adjbox'){
+    }else if (imx=='adjbox'){
 
-      methodList[[cii]]  <-  suppressMessages(tcatch(func =  adjustboxplots(data = df, var = var, output = output),
-                                                     fname = cii, verbose = verbose, spname = spname,
-                                                     warn=warn, showErrors = showErrors))
+      methodout  <-  suppressMessages(tcatch(func =  adjustboxplots(data = df, var = var, output = output),
+                                             fname = imx, verbose = verbose, spname = spname,
+                                             warn=warn, showErrors = showErrors))
 
-    }else if(cii=='zscore'){
+    }else if(imx=='zscore'){
 
-      methodList[[cii]] <-  tcatch(func = zscore(data = df, var = var, output = output, mode = zpar$mode, type = zpar$type),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+      methodout <-  tcatch(func = zscore(data = df, var = var, output = output, mode = zpar$mode, type = zpar$type),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-    }else if(cii=='iqr'){
+    }else if(imx=='iqr'){
 
-      methodList[[cii]] <-  tcatch(func =  interquartile(data = df, var = var, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+      methodout <-  tcatch(func =  interquartile(data = df, var = var, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-    }else if(cii=='semiqr'){
+    }else if(imx=='semiqr'){
 
-      methodList[[cii]] <-  tcatch(func =  semiIQR(data = df, var = var, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+      methodout <-  tcatch(func =  semiIQR(data = df, var = var, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-    }else if(cii=='hampel'){
+    }else if(imx=='hampel'){
 
-      methodList[[cii]] <-  tcatch(func = hampel(data = df, var = var, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+      methodout <-  tcatch(func = hampel(data = df, var = var, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-    }else if(cii=='jknife'){
+    }else if(imx=='jknife'){
 
-      methodList[[cii]] <-  tcatch(func = jknife(data = df, var = var, output = output, mode = jkpar$mode),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
 
-    }else if(cii=='mahal'){
+      methodout <-  tcatch(func = jknife(data = df, var = var, output = output, mode = jkpar$mode),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] = tcatch(func = mahal(data = df, exclude = exclude, output = output, mode=mahalpar$mode),
-                                 fname = cii, verbose = verbose, spname = spname,
-                                 warn=warn, showErrors = showErrors)
+    }else if(imx=='mahal'){
 
-    }else if(cii=='kmeans'){
+      methodout = tcatch(func = mahal(data = df, exclude = exclude, output = output, mode=mahalpar$mode),
+                         fname = imx, verbose = verbose, spname = spname,
+                         warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = xkmeans(data = df, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
-                                                  method = kmpar$method, verbose=verbose),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
-    }else if(cii=='iforest'){
+    }else if(imx=='kmeans'){
 
-      methodList[[cii]] <-  tcatch(func = isoforest(data = df, size = ifpar$size, output=output,
-                                                    cutoff = ifpar$cutoff, exclude = exclude),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+      methodout <-  tcatch(func = xkmeans(data = df, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
+                                          method = kmpar$method, verbose=verbose),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
+    }else if(imx=='iforest'){
 
-    }else if(cii=='onesvm'){
+      methodout <-  tcatch(func = isoforest(data = df, size = ifpar$size, output=output,
+                                            cutoff = ifpar$cutoff, exclude = exclude),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = onesvm(data = df,  exclude = exclude, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='onesvm'){
 
-    }else if(cii=='lof'){
+      methodout <-  tcatch(func = onesvm(data = df,  exclude = exclude, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = xlof(data = df, output =output, minPts = lofpar$minPts,
-                                               exclude = exclude, metric = lofpar$metric, mode=lofpar$mode),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='lof'){
 
-    }else if(cii=='logboxplot'){
+      methodout <-  tcatch(func = xlof(data = df, output =output, minPts = lofpar$minPts,
+                                       exclude = exclude, metric = lofpar$metric, mode=lofpar$mode),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = logboxplot(data = df,  var = var, output = output, x= 1.5),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='logboxplot'){
 
-    }else if(cii=='medianrule'){
+      methodout <-  tcatch(func = logboxplot(data = df,  var = var, output = output, x= 1.5),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = logboxplot(data = df,  var = var, output = output, x= 2.3),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='medianrule'){
 
-    }else if(cii=='distboxplot'){
+      methodout <-  tcatch(func = logboxplot(data = df,  var = var, output = output, x= 2.3),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = distboxplot(data = df,  var = var, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='distboxplot'){
 
-    }else if(cii=='seqfences'){
+      methodout <-  tcatch(func = distboxplot(data = df,  var = var, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = seqfences(data = df,  var = var, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='seqfences'){
 
-    }else if(cii=='mixediqr'){
+      methodout <-  tcatch(func = seqfences(data = df,  var = var, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = mixediqr(data = df,  var = var, output = output),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='mixediqr'){
 
-    }else if(cii=='glosh'){
+      methodout <-  tcatch(func = mixediqr(data = df,  var = var, output = output),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = xglosh(data = df, k = gloshpar$k,  output = output, metric = gloshpar$metric, mode=gloshpar$mode, exclude = exclude),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='glosh'){
 
-    }else if(cii=='knn'){
+      methodout <-  tcatch(func = xglosh(data = df, k = gloshpar$k,  output = output, metric = gloshpar$metric, mode=gloshpar$mode, exclude = exclude),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
-      methodList[[cii]] <-  tcatch(func = xknn(data = df, output = output, metric = knnpar$metric, mode=knnpar$mode, exclude = exclude),
-                                   fname = cii, verbose = verbose, spname = spname,
-                                   warn=warn, showErrors = showErrors)
+    }else if(imx=='knn'){
+
+      methodout <-  tcatch(func = xknn(data = df, output = output, metric = knnpar$metric, mode=knnpar$mode, exclude = exclude),
+                           fname = imx, verbose = verbose, spname = spname,
+                           warn=warn, showErrors = showErrors)
 
     }else{
       message('No outlier detection method selected.')
     }
-  }
-  return(methodList)
+  }, simplify = FALSE)
+
+  return(xmethods)
 }
 
 #' @title Ensemble multiple outlier detection methods.
@@ -522,26 +522,26 @@ detect <- function(x,
 #'
 
 multidetect <- function(data,
-                        var,
-                        output = "outlier",
-                        exclude = NULL,
-                        multiple,
-                        colsp = NULL,
-                        optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction =NULL,
-                                      maxcol = NULL, mincol = NULL, maxval = NULL, minval = NULL,
-                                      checkfishbase =FALSE, mode='geo', lat = NULL, lon = NULL, pct = 80,
-                                      warn = FALSE),
-                        kmpar =list(k=6, method='silhouette', mode='soft'),
-                        ifpar = list(cutoff = 0.5, size=0.7),
-                        mahalpar = list(mode='soft'),
-                        jkpar = list(mode='soft'),
-                        zpar = list(type='mild', mode='soft'),
-                        gloshpar = list(k= 3, metric='manhattan', mode='soft'),
-                        knnpar = list(metric='manhattan', mode='soft'),
-                        lofpar = list(metric='manhattan', mode='soft', minPts= 10),
-                        methods,
-                        verbose=FALSE, spname=NULL,warn=FALSE,
-                        missingness = 0.1, showErrors = TRUE, sdm = TRUE, na.inform = FALSE){
+                           var,
+                           output = "outlier",
+                           exclude = NULL,
+                           multiple,
+                           colsp = NULL,
+                           optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction =NULL,
+                                         maxcol = NULL, mincol = NULL, maxval = NULL, minval = NULL,
+                                         checkfishbase =FALSE, mode = NULL, lat = NULL, lon = NULL, pct = 80,
+                                         warn = FALSE),
+                           kmpar =list(k=6, method='silhouette', mode='soft'),
+                           ifpar = list(cutoff = 0.5, size=0.7),
+                           mahalpar = list(mode='soft'),
+                           jkpar = list(mode='soft'),
+                           zpar = list(type='mild', mode='soft'),
+                           gloshpar = list(k= 3, metric='manhattan', mode='soft'),
+                           knnpar = list(metric='manhattan', mode='soft'),
+                           lofpar = list(metric='manhattan', mode='soft', minPts= 10),
+                           methods,
+                           verbose=FALSE, spname=NULL,warn=FALSE,
+                           missingness = 0.1, showErrors = TRUE, sdm = TRUE, na.inform = FALSE){
 
   #check if var is the excluded strings
 
@@ -561,7 +561,7 @@ multidetect <- function(data,
                       'mixediqr', 'seqfences', 'mahal', 'medianrule', 'iqr','hampel',
                       'logboxplot', 'onesvm', 'jknife', 'semiqr', 'lof','glosh', 'knn')
 
-  tfcheck <- dup_methods%in%allowedmethods
+  tfcheck <- dup_methods %in% allowedmethods
 
   if(any(tfcheck==FALSE)){
 
@@ -569,6 +569,7 @@ multidetect <- function(data,
 
     stop('The methods -', paste(notsupported, collapse = ', '), '- are/is not accepted. Check extractMethods() for allowed methods.')
   }
+
   if(multiple ==FALSE & !is.null(colsp)) stop("For single species do not provide the colsp parameter.")
 
   #run for single dataframe
@@ -579,29 +580,35 @@ multidetect <- function(data,
 
     if(nrow(data)<ncol(data)) warning('Number of rows are less than variables and some methods may not function properly.')
 
-    outdata <-  detect(x = data, var = var, output = output,
-                       exclude = exclude,optpar = optpar,
-                       kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
-                       mahalpar = mahalpar, lofpar = lofpar,
-                       zpar = zpar, gloshpar = gloshpar,
-                       knnpar = knnpar,
-                       methods = dup_methods,
-                       verbose = verbose,
-                       spname = spname,warn=warn,
-                       missingness = missingness,
-                       showErrors = showErrors,
-                       sdm = sdm,
-                       na.inform = na.inform)
+    methodata <-  detect(x = data, var = var, output = output,
+                           exclude = exclude,optpar = optpar,
+                           kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
+                           mahalpar = mahalpar, lofpar = lofpar,
+                           zpar = zpar, gloshpar = gloshpar,
+                           knnpar = knnpar,
+                           methods = dup_methods,
+                           verbose = verbose,
+                           spname = spname,warn=warn,
+                           missingness = missingness,
+                           showErrors = showErrors,
+                           sdm = sdm,
+                           na.inform = na.inform)
 
   }else {
 
     if(is(data, 'list')){
 
-      df<- data
+      df <- data
 
     }else if(is(data, 'data.frame') ){
 
       if(length(var)>1){
+
+        #check if all variables are in the dataset provided
+
+        vartf <- var%in%colnames(data)
+
+        if(all(vartf)==FALSE) stop("The variables ", paste(var[which(vartf==FALSE)], collapse = ', '), " are not in the provided dataset. check and try again.", call. = FALSE)
 
         df <- sapply(var, function(x) x <-  data, simplify = FALSE)
 
@@ -619,35 +626,34 @@ multidetect <- function(data,
     }else{
       stop('Data format not recognised, Only lists of datasets or dataframe are accepted.')
     }
-    outdata <- list()
+    methodata <- sapply(names(df), function(xp){
 
-    for (mdi in names(df)) {
+      dfinal<- df[[xp]]
 
-      dfinal<- df[[mdi]]
+      if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',xp,' are less than variables and some methods may not function properly.')
 
-      if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',mdi,' are less than variables and some methods may not function properly.')
+      #if the variables are greater 1, then the data was partitioned by variables not species
 
-      if(length(var)>1) var1 = mdi else var1 = var
+      if(length(var)>1) var1 = xp else var1 = var
 
       d <-  detect(x = dfinal, var = var1, output = output,
-                   exclude = exclude,optpar = optpar,
-                   kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
-                   mahalpar = mahalpar, lofpar = lofpar,
-                   zpar = zpar, gloshpar = gloshpar, knnpar = knnpar,
-                   methods = dup_methods, verbose = verbose, spname = mdi,warn=warn,
-                   missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
-      outdata[[mdi]] <- d
-    }
+                     exclude = exclude,optpar = optpar,
+                     mahalpar = mahalpar, lofpar = lofpar,ifpar = ifpar, kmpar = kmpar,
+                     zpar = zpar, gloshpar = gloshpar, knnpar = knnpar, jkpar = jkpar,
+                     methods = dup_methods, verbose = verbose, spname = xp,warn=warn,
+                     missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
+    }, simplify = FALSE)
   }
   if(is.null(exclude)){
-    return(new('datacleaner', result = outdata, mode = multiple, varused = var,
+    return(new('datacleaner', result = methodata, mode = multiple, varused = var,
                out = output, methodsused = dup_methods, dfname = deparse(substitute(data)),
                excluded = NA))
   }else{
-    return(new('datacleaner', result = outdata, mode = multiple, varused = var,
+    return(new('datacleaner', result = methodata, mode = multiple, varused = var,
                out = output, methodsused = dup_methods, dfname = deparse(substitute(data)),
                excluded = exclude))
   }
 }
+
 
 

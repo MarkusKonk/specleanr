@@ -11,6 +11,7 @@ xkmeans(
   output,
   mode = "soft",
   method = "silhouette",
+  seed = 1135,
   verbose = FALSE
 )
 }
@@ -30,6 +31,8 @@ latitude/longitude or any column that the user doesn't want to consider.}
 \item{method}{The method to be used for the kmeans clustering. Default is \code{silhouette}.
 \code{Elbow method} can be used but user input is required, and therefore multiple outlier detection method
 is not possible.}
+
+\item{seed}{An integer to fix the maintain the iterations by during the kmeans method optimisation.}
 
 \item{verbose}{To indicate messages and the default is FALSE.}
 }

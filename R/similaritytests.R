@@ -39,6 +39,8 @@
 #'
 extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
 
+  .Deprecated("extractoutliers", msg = "extractoutliers() replaces extract_outliers to handle both single and multiple outlier detection outputs.")
+
   if(missing(x)) stop('List of species data with outliers is not provided')
 
   if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
@@ -67,7 +69,7 @@ extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
 
       methd[im] <- names(metds)[im]
 
-      mtdata <- data.frame( method=methd, totaloutliers = nlen)
+      mtdata <- data.frame(method=methd, totaloutliers = nlen)
     }
     #for multiple species
   }else{
@@ -133,6 +135,8 @@ extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
 #' }
 #'
 batch_extract <- function(x){
+
+  .Deprecated("extractoutliers", msg = "extractoutliers() replaces batch_extract to handle both single and multiple outlier detection outputs.")
 
   if(missing(x)) stop('List of species data with outliers is not provided')
 
@@ -334,7 +338,24 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
   #Get the variable used in outlier detection
 
   var <- x@varused
-  if(length(var)>1) var <- sp else var
+
+  if(length(var)>1) {
+
+  if(is.numeric(sp)) {
+
+    if(sp > length(var))stop("The index number provided for sp is out of bounds, the index number sholud not exceed ", length(x@result), ".", call. = FALSE)
+
+    var <- var[sp]
+
+  }else{
+    if(length(sp)>1 || !is.atomic(sp) || !is.character(sp))stop("Indicate only one variable and must character string selected from ", paste(var, collapse = ','))
+
+    if(isTRUE(sp%in%var)) var <- sp else stop("The ", sp, " is not among the variables used during outlier detection, select from ", paste(var, collapse = ','))
+  }
+}else {
+    var
+  }
+
 
   #For multiple species
 
@@ -545,10 +566,13 @@ multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, auto
           }else{
 
             abscount <- ocindex(x= x, sp = di, absolute = TRUE, threshold = threshold, props = FALSE, warn=warn, autothreshold = FALSE )
+
           }
         },
         error= function(e){
+
           if(isTRUE(warn))warning('No absolute outliers exist for species ', names(x@result)[di], '.')
+
           return(NULL)
         })
 

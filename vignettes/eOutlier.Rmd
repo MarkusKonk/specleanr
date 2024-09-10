@@ -218,10 +218,10 @@ The user sets a threshold ranging from 0.1 to 1 but its advisable to set a value
 
 ```{r extract clean dataset}
 
-multspecies_clean <- clean_data_extract(refdata = multipreclened, outliers = multioutliers, loess =  TRUE)
+multspecies_clean <- extract_clean_data(refdata = multipreclened, outliers = multioutliers, loess =  TRUE)
 head(multspecies_clean)
 
-ttclean<- clean_data_extract(refdata = ttrefdata, outliers = ttoutlier, loess = TRUE)
+ttclean<- extract_clean_data(refdata = ttrefdata, outliers = ttoutlier, loess = TRUE)
 dim(ttclean)
 
 ```
@@ -233,7 +233,7 @@ This is done to identify the suitable threshold that produces the highest model 
 * `minpts` parameters indicates the points that should be allowed in fitting a distribution model. Default is 10. error might appear if the records are not enough to fit the models.
 * `loessthreshold` set to TRUE to execute data cleaning data extraction using optimal threshold identified using the loess method.
 
-* Note: When using **`modelcomparison()`**, the function of **`sdmfit()`**, and **`clean_data_extract()`** are incorporated and therefore the user do not need to do these steps separately.
+* Note: When using **`modelcomparison()`**, the function of **`sdmfit()`**, and **`extract_clean_data()`** are incorporated and therefore the user do not need to do these steps separately.
 
 ```{r model comparison}
 

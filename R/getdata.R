@@ -99,8 +99,6 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
         checksppx <- spp
 
-        if(isTRUE(warn)) warning("The fish species name ", spp, " is not found in FishBase and the original name provider by the user will be used.",  call. = FALSE )
-
       } else{
 
         checksppx <- checkFB
@@ -116,11 +114,11 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
       if(x=='gbif'){
 
-        ndata <- occ_count(scientificName = spp)
+        ndata <- occ_count(scientificName = checksppx)
 
         if(ndata==0){
 
-          if(isTRUE(verbose)) message('No records for ', spp, ' in GBIF')
+          if(isTRUE(verbose)) message('No records found for ', checksppx, ' in GBIF')
 
           gbifx <- NULL
 
@@ -128,17 +126,17 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           if(gbiflim<50000){
 
-            gbifsp <-rgbif::occ_data(scientificName = spp, limit = gbiflim)
+            gbifsp <-rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
 
-            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', spp,' in GBIF were downloaded based on the gbiflimit of ', gbiflim)
+            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbiflimit of ', gbiflim)
 
             gbifx <- gbifsp$data
 
           }else{
 
-            gbifsp <- occ_data(scientificName = spp, limit = ndata)
+            gbifsp <- occ_data(scientificName = checksppx, limit = ndata)
 
-            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', spp,' in GBIF were download as they were the maximum records found.')
+            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were download as they were the maximum records found.')
 
             gbifx <- gbifsp$data
           }
@@ -159,19 +157,19 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           if(gbiflim<=50000){
 
-            gbifsp <- rgbif:: occ_data(scientificName = spp, limit = gbiflim,
+            gbifsp <- rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
                                        decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
                                        decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
 
-            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', spp,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
+            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
 
           }else{
 
-            gbifsp <- rgbif:: occ_data(scientificName = spp, limit = gbiflim,
+            gbifsp <- rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
                                        decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
                                        decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
 
-            if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', spp,' in GBIF were downloaded')
+            if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded')
           }
 
           gbifx <- gbifsp$data
@@ -180,12 +178,12 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           if(isTRUE(verbose)) message("Only ", gbiflim, " records will be downloaded.")
 
-          gbifsp <- occ_data(scientificName = spp, limit = gbiflim,...)
+          gbifsp <- occ_data(scientificName = checksppx, limit = gbiflim,...)
 
           gbifx <- gbifsp$data
 
         }else{
-          gbifx = "No data found"
+          gbifx = NULL
         }
         #check if gbif dataset has coordinates decimalLatitude or decimalLongitude among column names
         if(is(gbifx, 'data.frame')){
@@ -193,30 +191,30 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
           if("decimalLatitude"%in%colnames(gbifx) == TRUE){
             gbifx
           }else{
-            if(isTRUE(warn)) warning("The data for ", spp, " will be removed since no cordinates were found in GBIF database.", call. = FALSE)
+            if(isTRUE(warn)) warning("The data for ", checksppx, " will be removed since no cordinates were found in GBIF database.", call. = FALSE)
 
             gbifx <- NULL
           }
         }else{
-          gbifx = "No data found"
+          gbifx = NULL
         }
 
       }else if(x=='vertnet'){
 
-        sptx <- scan(text = spp, what = ' ', quiet = T)
+        sptx <- scan(text = checksppx, what = ' ', quiet = T)
 
         vertx <- searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
                               limit = vertlim, messages = FALSE)
         if(is.null(vertx)){
 
-          if(isTRUE(verbose)) message('No records for ', spp, ' in vertnet were found')
+          if(isTRUE(verbose)) message('No records for ', checksppx, ' in vertnet were found')
 
           vertxdf <- NULL
 
         }else{
           vertxdf  <- vertx$data
 
-          if(isTRUE(verbose)) message(nrow(vertxdf), ' records for ', spp, ' in vertnet downloaded.')
+          if(isTRUE(verbose)) message(nrow(vertxdf), ' records for ', checksppx, ' in vertnet downloaded.')
           vertxdf
         }
 
@@ -225,11 +223,11 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
         inatx <- tryCatch(
           expr = {
-            sx <- get_inat_obs(taxon_name= spp, maxresults = inatlim)
+            sx <- get_inat_obs(taxon_name= checksppx, maxresults = inatlim)
           },
           error= function(e){
 
-            if(isTRUE(verbose)) message('No data exist for species ', spp, ' in inaturalist were found.')
+            if(isTRUE(verbose)) message('No data exist for species ', checksppx, ' in inaturalist were found.')
 
             return(0)
           })
@@ -238,7 +236,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           inatx <-  sx
 
-          if(isTRUE(verbose))message(nrow(inatx), ' records for ', spp, ' in inaturalist downloaded.')
+          if(isTRUE(verbose))message(nrow(inatx), ' records for ', checksppx, ' in inaturalist downloaded.')
 
           inatx
         }else{
@@ -251,6 +249,8 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
     }, simplify = FALSE)
 
   }, simplify = FALSE)
+
+  #extracting online data
 
   dfout <- sapply(seq_along(sppdata), function(spno){
 

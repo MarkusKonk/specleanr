@@ -68,7 +68,7 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/AnthonyBasooma/specleanr" class="external-link">specleanr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anthonybasooma.github.io/specleanr">specleanr</a></span><span class="op">)</span></span></code></pre></div>
 <p><strong>Environmental outlier check for fish species from the Danube
 River Basin</strong></p>
 <p>The workflow for environmental outlier detection and removal is
@@ -268,7 +268,7 @@ Important in the next steps.</li>
 <span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttrefdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 70 21</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 73 21</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <strong>Outlier detection</strong> Multiple outlier detection are
@@ -354,33 +354,33 @@ during outlier detection in step 3. We used the loess method for
 identifying the optimal threshold.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">multspecies_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span>, loess <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">multspecies_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span>, loess <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7      bio8</span></span>
 <span><span class="co">#&gt; 1 6.293614 8.755938 31.96181 690.1050 20.90625 -6.48875 27.39500  7.375333</span></span>
-<span><span class="co">#&gt; 2 6.277937 9.805208 34.03463 713.7357 21.25975 -7.54975 28.80950 15.009750</span></span>
-<span><span class="co">#&gt; 3 4.414302 7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.899292</span></span>
-<span><span class="co">#&gt; 4 6.844615 8.234104 33.66596 620.3636 19.99575 -4.46250 24.45825 14.519917</span></span>
-<span><span class="co">#&gt; 5 6.505573 8.508604 33.53277 649.9034 19.95200 -5.42200 25.37400 14.466125</span></span>
-<span><span class="co">#&gt; 6 8.932917 9.629167 32.29259 767.9335 24.38050 -5.43800 29.81850 18.152624</span></span>
+<span><span class="co">#&gt; 2 7.285375 7.849375 30.75201 670.6682 21.14325 -4.38150 25.52475 13.902708</span></span>
+<span><span class="co">#&gt; 3 6.277937 9.805208 34.03463 713.7357 21.25975 -7.54975 28.80950 15.009750</span></span>
+<span><span class="co">#&gt; 4 4.414302 7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.899292</span></span>
+<span><span class="co">#&gt; 5 6.844615 8.234104 33.66596 620.3636 19.99575 -4.46250 24.45825 14.519917</span></span>
+<span><span class="co">#&gt; 6 6.505573 8.508604 33.53277 649.9034 19.95200 -5.42200 25.37400 14.466125</span></span>
 <span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
 <span><span class="co">#&gt; 1 -1.1756251 14.80313 -2.0642917  2118   241   105 21.73814   663   379   530</span></span>
-<span><span class="co">#&gt; 2 -2.5227084 15.00975 -2.5227084  1042   144    44 37.74431   403   152   403</span></span>
-<span><span class="co">#&gt; 3 -2.7298751 11.89929 -2.7298751  1289   169    67 33.19698   486   219   486</span></span>
-<span><span class="co">#&gt; 4 -0.5310833 14.51992 -0.5310833  1330   182    66 37.53233   523   213   523</span></span>
-<span><span class="co">#&gt; 5 -0.3784584 14.46612 -1.3513334  1380   188    75 32.60979   522   255   522</span></span>
-<span><span class="co">#&gt; 6 -0.7722917 18.15262 -0.7722917   885   121    28 43.18822   356   109   356</span></span>
+<span><span class="co">#&gt; 2  0.2236667 15.52933 -0.8936250   923   113    57 23.52207   308   175   306</span></span>
+<span><span class="co">#&gt; 3 -2.5227084 15.00975 -2.5227084  1042   144    44 37.74431   403   152   403</span></span>
+<span><span class="co">#&gt; 4 -2.7298751 11.89929 -2.7298751  1289   169    67 33.19698   486   219   486</span></span>
+<span><span class="co">#&gt; 5 -0.5310833 14.51992 -0.5310833  1330   182    66 37.53233   523   213   523</span></span>
+<span><span class="co">#&gt; 6 -0.3784584 14.46612 -1.3513334  1380   188    75 32.60979   522   255   522</span></span>
 <span><span class="co">#&gt;   bio19        x        y      species</span></span>
 <span><span class="co">#&gt; 1   412 13.91667 46.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 2   152 14.91667 47.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 3   219 11.08333 47.41667 Salmo trutta</span></span>
-<span><span class="co">#&gt; 4   213 11.25000 47.58333 Salmo trutta</span></span>
-<span><span class="co">#&gt; 5   261 13.25000 47.75000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 6   109 15.58333 46.91667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 2   183  9.75000 48.41667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 3   152 14.91667 47.25000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 4   219 11.08333 47.41667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 5   213 11.25000 47.58333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 6   261 13.25000 47.75000 Salmo trutta</span></span>
 <span></span>
-<span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_data_extract.html">clean_data_extract</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 68 21</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 73 22</span></span></code></pre></div>
 <p><strong>Model comparison</strong></p>
 <p>This is done to identify the suitable threshold that produces the
 highest model performance.</p>
@@ -393,7 +393,7 @@ data extraction using optimal threshold identified using the loess
 method.</p></li>
 <li><p>Note: When using <strong><code><a href="../reference/modelcomparison.html">modelcomparison()</a></code></strong>,
 the function of <strong><code><a href="../reference/sdmfit.html">sdmfit()</a></code></strong>, and
-<strong><code><a href="../reference/clean_data_extract.html">clean_data_extract()</a></code></strong> are incorporated and
+<strong><code><a href="../reference/extract_clean_data.html">extract_clean_data()</a></code></strong> are incorporated and
 therefore the user do not need to do these steps separately.</p></li>
 </ul>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -401,6 +401,8 @@ therefore the user do not need to do these steps separately.</p></li>
 <span><span class="va">ttcompare</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modelcomparison.html">modelcomparison</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, raster <span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                                lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, full <span class="op">=</span> <span class="cn">FALSE</span>, metrics <span class="op">=</span> <span class="st">'all'</span>, minpts <span class="op">=</span> <span class="fl">17</span>,</span>
 <span>                             loessthreshold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
 <span></span>
 <span></span>
 <span></span>
@@ -411,6 +413,14 @@ therefore the user do not need to do these steps separately.</p></li>
 <span>                                     raster <span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                                     lat <span class="op">=</span> <span class="st">'y'</span>, lon <span class="op">=</span> <span class="st">'x'</span>, full <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                                     metrics <span class="op">=</span> <span class="st">'all'</span>, minpts <span class="op">=</span> <span class="fl">18</span>,loessthreshold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
+<span><span class="co">#&gt; Warning in clean_data(data = dfsp, outliers = outliers, sp = spv, warn = warn,</span></span>
+<span><span class="co">#&gt; : Please use extract_clean_data instead of clean_data_extract.</span></span>
 <span></span>
 <span></span>
 <span><span class="va">multmodelper</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_performance.html">get_performance</a></span><span class="op">(</span>modelcomp <span class="op">=</span> <span class="va">multcomparion</span><span class="op">)</span></span></code></pre></div>

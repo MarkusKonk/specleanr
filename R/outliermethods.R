@@ -1769,6 +1769,7 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #' @param output Either clean: for a data set with no outliers or outlier: to output a data frame with outliers.
 #' @param mode Either robust, if a robust mode is used which uses median instead of mean and median absolute deviation from median.
 #' @param verbose To indicate messages and the default is FALSE.
+#' @param seed  An integer to fix the maintain the iterations by during the kmeans method optimisation.
 #' @param method The method to be used for the kmeans clustering. Default is \code{silhouette}.
 #' \code{Elbow method} can be used but user input is required, and therefore multiple outlier detection method
 #' is not possible.
@@ -1805,13 +1806,17 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #' }
 #'
 #'
-xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silhouette", verbose=FALSE){
+#'
+xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silhouette", seed = 1135, verbose=FALSE){
 
   match.argc(mode, choices = c('soft', 'robust'))
 
   match.argc(method, choices = c("silhouette", "elbow"))
 
   match.argc(output, choices = c("clean", "outlier"))
+
+  #set seed to fix the iteration in k-means tuning and optimization
+  set.seed(seed)
 
   if(!is.null(exclude)) df2 <- data[,!colnames(data) %in% exclude] else df2 <- data
 
@@ -1887,7 +1892,8 @@ xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silho
 
   eu_dist<- sqrt(rowSums(df_scaled - km_new$centers[km_new$cluster,])**2)#euclidean distances
 
-  meaneu <- base::mean(eu_dist)
+  meaneu <- mean(eu_dist)
+
   sdeu <- stats::sd(eu_dist)
 
   medianeu <- stats::median(eu_dist)

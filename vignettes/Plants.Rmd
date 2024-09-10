@@ -177,11 +177,11 @@ The mode can be set to **mode = abs** to discard only absolute outliers or **mod
 
 ```{r extract outliers from clean dataset}
 
-cleandf <- clean_data_extract(refdata = plantcleaned, outliers = outliersdata, 
+cleandf <- extract_clean_data(refdata = plantcleaned, outliers = outliersdata, 
                          mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
 
 
-cleandf1 <- clean_data_extract(refdata = p1cleaned, outliers = out1df, 
+cleandf1 <- extract_clean_data(refdata = p1cleaned, outliers = out1df, 
                          mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
 
 ```

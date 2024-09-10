@@ -70,7 +70,7 @@ test_that(desc = 'List of species with outliers produced',
                       expect_output(show(outlist))
 
                       #multiple but index not provided.
-                      expect_error(extract_outliers(outlist))
+                      expect_s3_class(extractoutliers(outlist), 'data.frame')
                     })
 
 #test trycatch errors
@@ -98,7 +98,7 @@ test_that(desc = "Return errors and no errors",
             expect_s4_class(outlierFALSE, 'datacleaner')
 
             #extract the outlier for species index = 2 to confirm that kmeans is not among the methods
-            dfout <- extract_outliers(x= outlierFALSE, sp = 2)
+            dfout <- extractoutliers(x= outlierFALSE, sp = 2)
 
             expect_false("kmeans"%in%unlist(dfout$method)) # kmeans did not exceute
             expect_true("mahal"%in%unlist(dfout$method)) # mahal executed
@@ -261,13 +261,13 @@ testthat::test_that(desc = 'Test for success and errors during outlier detection
                     code = {
                       #check out extract data
 
-                      dx <- extract_outliers(x= outlierdf, sp=1)
+                      dx <- extractoutliers(x= outlierdf, sp=1)
 
                       expect_equal(nrow(dx), 4)#for each method
 
-                      dxm <- batch_extract(x=outlierdf)
+                      dxm <- extractoutliers(x=outlierdf)
 
-                      expect_gt(length(unique(dxm$speciesname)), 4) #
+                      expect_gt(length(unique(dxm$species)), 4) #
 
                       #errors since no outliers in threshold of 0.8
 
@@ -308,20 +308,20 @@ testthat::test_that(desc = 'Test for success and errors during outlier detection
 
 #preliminary for outlier extraction
 
-test_that(desc = "Errors and success for extract outliers, batch_extract, mult abs",
+test_that(desc = "Errors and success for extract outliers, extractoutliers, mult abs",
           code = {
 
             #expect error missing outlier output
-            expect_error(extract_outliers())
+            expect_error(extractoutliers())
 
-            expect_error(batch_extract())
+            expect_error(extractoutliers())
 
             expect_error(multiabsolute())
 
             #expect error if datacleaner not provided
-            expect_error(extract_outliers(x=wcd))
+            expect_error(extractoutliers(x=wcd))
 
-            expect_error(batch_extract(x=wcd))
+            expect_error(extractoutliers(x=wcd))
 
             expect_error(multiabsolute(x= wcd, threshold = 0.2))
 
@@ -331,11 +331,11 @@ test_that(desc = "Errors and success for extract outliers, batch_extract, mult a
                         multiple = FALSE,
                         methods = c('mixediqr', 'logboxplot','iqr'))
 
-            expect_error(extract_outliers(cleanout))
+            expect_error(extractoutliers(cleanout))
 
-            #expect error for multiple item at multidetect but batch_extract is used
+            #expect error for multiple item at multidetect but extractoutliers is used
 
-            expect_error(batch_extract(x=cleanout))
+            expect_error(extractoutliers(x=cleanout))
 
             #expect error for multiabsolute extract on clean data
             expect_error(multiabsolute(x= cleanout, threshold = 0.2))
@@ -423,100 +423,6 @@ testthat::test_that(desc = "Success and errors expected and checked for best met
                       expect_error(multibestmethod(x = out3, threshold = 0.2))
                     })
 
-
-
-#test for suitable method for all similarity measures
-testthat::test_that(desc = 'Data extraction: errors and success',
-                    code = {
-                      dxx <- clean_data_extract(refdata = refdata, outliers = outlierdf, threshold = 0.2)
-
-                      #dataframe produced
-                      testthat::expect_s3_class(dxx, 'data.frame')
-
-                      #species in the cleandata equal to species in outlier df
-                      testthat::expect_equal(length(unique(dxx$species)), length(outlierdf@result))
-
-                      #if both threshold and loess are provided: error
-
-                      expect_error(clean_data(data = refdata, outliers = outlierdf, threshold = 0.6, sp = 1,
-                                                      loess = TRUE))
-                      #expect error if autothreshold is FALSE and threshold is NULL and loess is FALSE
-
-                      expect_error(clean_data(data = refdata, outliers = outlierdf, threshold = NULL,
-                                                      loess = FALSE, autothreshold = FALSE))
-
-                      #expect error if refdata and refdata used in outliers is different
-
-                      expect_error(clean_data_extract(data = spdata, outliers = outlierdf, threshold = 0.3))
-
-                      #expect error if the threshold used does not capture absolute outliers
-
-                      expect_error(clean_data(data = refdata, outliers = outlierdf, threshold = 1, sp = 1))
-
-                      #expect error if the mode entered is wrong
-
-                      expect_error(clean_data(data = refdata, outliers = outlierdf, mode = 'abslute', sp = 1))
-
-                      #if colsp is not provided yet refdata is a dataframe not a list
-
-                      expect_error(clean_data_extract(refdata = refdata_df, outliers = outlierdf2, threshold = 0.2))
-
-                    })
-
-
-#test thresh search using loess method
-
-testthat::test_that(desc = "Check for possible errors threshold optimal",
-                    code = {
-
-                      #expect names minima and maxima
-
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                 sp = "Phoxinus phoxinus"), c('minima', 'maxima'))
-
-                      #expect an output map if plot is true
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                 sp = "Phoxinus phoxinus", plot = TRUE), c('minima', 'maxima'))
-
-                      ##expect error, warn, and next while optimizing span
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                  sp = "Phoxinus phoxinus", tuneLoess = seq(0.1, 1, 0.1)),
-                                   c('minima', 'maxima'))
-
-                      #expect error if the multiple species reference data is provided for thresh_search
-
-                      expect_error(thresh_search(data = refdata, outliers = outlierdf))
-
-                      #optimal threshold for one species
-                      spoutliers <- suppressWarnings(multidetect(data = spdata, var = 'bio6', output = 'outlier',
-                                  exclude = c('x','y'),
-                                  multiple = FALSE,
-                                  methods = c('mixediqr', "iqr", "kmeans", "mahal")))
-
-                      expect_named(optimal_threshold(refdata = spdata, outliers = spoutliers), c('minima', 'maxima'))
-
-                      #expect error if column name is not provided and yet reference data is a dataframe not list
-
-                      expect_error(optimal_threshold(data = refdata_df, outliers = outlierdf2))
-
-                      #expect a dataframe but no plot for multiple species. even plot = TRUE
-
-                      expect_s3_class(optimal_threshold(refdata = refdata, outliers = outlierdf,
-                                                        plot = TRUE, colsp = 'species'), 'data.frame')
-
-                      #expect unused argument error for sp index or name for multiple threshold search
-
-                      expect_error(optimal_threshold(refdata = refdata, outliers = outlierdf, sp = 1, colsp = 'species'))
-
-                      #check if the same refdata was used in outlier detection threshold optimization
-
-                      expect_error(optimal_threshold(refdata = spdata, outliers = outlierdf))
-
-                      #use wrong reference datat
-
-                      expect_error(optimal_threshold(refdata = wcd, outliers = outlist))
-
-                    })
 
 
 

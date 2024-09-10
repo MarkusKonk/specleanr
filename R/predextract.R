@@ -157,7 +157,15 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
     bext<- as.data.frame(terra::extract(raster, spdfext , ID=FALSE,xy=TRUE))
 
-    if(isTRUE(merge)) biodata <- cbind(bext, spdfext |>  st_drop_geometry()) else biodata <- bext
+    if(isTRUE(merge)) {
+
+      biodata <- cbind(bext, spdfext |>  st_drop_geometry())
+
+      rownames(biodata) <- NULL
+
+      }else {
+        biodata <- bext
+      }
 
   }else if(length(unx)>1 && multiple==TRUE){
 
@@ -182,7 +190,6 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
         if(isTRUE(merge)) rastdata[[ci]]<- cbind(rastdata[[ci]], spdfext |>  st_drop_geometry()) else rastdata[[ci]][,'species'] <- spnames
 
         biodata <- do.call(rbind, rastdata)
-
 
       }else if (list==TRUE){
 

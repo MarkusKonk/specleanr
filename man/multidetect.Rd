@@ -13,7 +13,7 @@ multidetect(
   colsp = NULL,
   optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction = NULL, maxcol
     = NULL, mincol = NULL, maxval = NULL, minval = NULL, checkfishbase = FALSE, mode =
-    "geo", lat = NULL, lon = NULL, pct = 80, warn = FALSE),
+    NULL, lat = NULL, lon = NULL, pct = 80, warn = FALSE),
   kmpar = list(k = 6, method = "silhouette", mode = "soft"),
   ifpar = list(cutoff = 0.5, size = 0.7),
   mahalpar = list(mode = "soft"),
