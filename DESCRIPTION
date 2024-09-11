@@ -10,7 +10,7 @@ Description: A framework used to detect and remove environmental outliers in spe
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-URL: https://anthonybasooma.github.io/specleanr
+URL: https://anthonybasooma.github.io/specleanr/
 BugReports: https://github.com/AnthonyBasooma/specleanr/issues
 RoxygenNote: 7.3.2
 Suggests: 

@@ -123,13 +123,13 @@ After outlier removal, the threshold to classify a record as an absolute outlier
 
 * **Naive method**: where the user sets a value between 0.1 and 1. The process is subjective, but using this method, it is advisable to use a threshold beyond 0.6 to highlight records flagged in at least 50% of the methods.
 
-* **Autothreshold**: When the user sets **`autothreshold`** to TRUE in **`clean_data_extract()`**, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained. 
+* **Autothreshold**: When the user sets **`autothreshold`** to TRUE in **`extract_clean_data()`**, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained. 
 * **loess method**: we apply local regression (locally estimated/weighted scatterplot smoothing) to identify the optimal threshold, a non-parametric smoothing method that uses local variability in the data (Cleveland & Loader, 1996; Loader, 2004). 
 
 
 The **reference dataset** in **Step 2** and lists or outliers flagged by each method in **Step 3** are then used to retain the **clean dataset**. Under the hood, two approaches are implemented **1) absolute method**: where absolute outliers are removed at a particular threshold or **2) suitable or best outlier detection method** where a method with highest proportion of absolute outliers and has highest similarity with other methods (in terms of the outliers flagged) can be used. 
 
-* `clean_data_extract()` to extract clean data using the reference data and outliers for single species.
+* `extract_clean_data()` to extract clean data using the reference data and outliers for single species.
 
 5.  **Post-environmental outlier removal**
 

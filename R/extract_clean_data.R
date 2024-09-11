@@ -7,14 +7,21 @@ cleandata <- function(data, outliers,
                            warn = FALSE, verbose = FALSE,
                            autothreshold = FALSE,
                            pabs = 0.1, loess = FALSE ){
-  var <- outliers@varused
+  varc <- outliers@varused
 
-  if(length(var)>1) var <- sp else var
+  if(outliers@mode==FALSE){
+    var <- varc
+  }else{
+    if(length(varc)>1) var <- sp else var <- varc
+  }
 
   if(isTRUE(loess)){
     loess = TRUE
-    optthreshold <- thresh_search(data = data, outliers = outliers,warn = warn,verbose = verbose)
+    optthreshold <- thresh_search(data = data, outliers = outliers,warn = warn,
+                                  verbose = verbose)
+
     threshold = unname(optthreshold[2])
+
   }else if(!is.null(threshold)){
     threshold
   }else{
@@ -23,18 +30,22 @@ cleandata <- function(data, outliers,
     loess = FALSE
   }
   if(mode =='best'){
+
     bs <- bestmethod(x= outliers,
                      threshold =  threshold,
                      warn = warn,
+                     sp = sp,
                      verbose = verbose,
                      autothreshold = autothreshold)
 
-    if(outliers@mode==FALSE) dataOut <- outliers@result[[bs]][[var]] else datOut <- outliers@result[[sp]][[bs]][[var]]
+      if(outliers@mode==FALSE) datOut <- outliers@result[[bs]][[var]] else datOut <- outliers@result[[sp]][[bs]][[var]]
 
   }else{
+
     datOut <- ocindex(x= outliers,
                       absolute = TRUE,
                       threshold = threshold,
+                      sp = sp,
                       warn = warn,
                       autothreshold = autothreshold)
   }
@@ -46,7 +57,9 @@ cleandata <- function(data, outliers,
 
   if(pctabs >= pabs && mode=='best'){
 
-    datOut <- ocindex(x= outliers, absolute = TRUE, threshold = threshold, warn = warn,
+    datOut <- ocindex(x= outliers, absolute = TRUE,
+                      sp = sp,
+                      threshold = threshold, warn = warn,
                       autothreshold = autothreshold)
 
     if(isTRUE(verbose)) message('the number of rows removed exceed ', pabs, ', so only absolute outliers removed.' )
@@ -157,10 +170,22 @@ extract_clean_data <- function(refdata, outliers, mode ='best',colsp = NULL,
 
     for (ivar in var) {
       #try catch to handle parameters with no outliers
-      absout <- tryCatch(expr =  ocindex(x=outliers, sp = ivar, absolute = TRUE,
-                                         threshold = threshold,
-                                         warn = warn),
-                         error = function(e)return(NULL))
+      absout <- tryCatch(expr =  {if(mode=='abs'){
+        ocindex(x=outliers, sp = ivar, absolute = TRUE,
+                threshold = threshold,
+                warn = warn)
+      }else{
+        metd <- bestmethod(x= outliers,
+                         threshold =  threshold,
+                         warn = warn,
+                         sp = ivar,
+                         verbose = verbose,
+                         autothreshold = autothreshold)
+
+         datOut <- outliers@result[[ivar]][[metd]][[ivar]]
+
+      } }, error = function(e)return(NULL))
+
       if(!is.null(absout)){
 
         vals <- unlist(refdata[,ivar])
@@ -226,11 +251,14 @@ extract_clean_data <- function(refdata, outliers, mode ='best',colsp = NULL,
                         error=function(e) return(NULL))
 
       if(!is.null(cdata)) spdata <- cdata else spdata <- splist[[fd]]
-        spdata['species'] <- fd
+
+        if(outliers@mode==FALSE) spdata else spdata['species'] <- fd
+
         spdata
     }, simplify = FALSE)
 
     dfcleaned <- do.call(rbind, dfdata)
+
     rownames(dfcleaned) <- NULL
   }
   return(dfcleaned)

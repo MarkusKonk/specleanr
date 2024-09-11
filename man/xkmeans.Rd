@@ -67,4 +67,5 @@ kmeansout <- xkmeans(data = refdata[['Salmo trutta']],
 }
 
 
+
 }

@@ -153,7 +153,7 @@ optimal threshold.
   the methods.
 
 - **Autothreshold**: When the user sets **`autothreshold`** to TRUE in
-  **`clean_data_extract()`**, it automatically searches a threshold
+  **`extract_clean_data()`**, it automatically searches a threshold
   between 0.5 to 1 and identifies a threshold with the mean number of
   records retained.
 
@@ -170,7 +170,7 @@ suitable or best outlier detection method** where a method with highest
 proportion of absolute outliers and has highest similarity with other
 methods (in terms of the outliers flagged) can be used.
 
-- `clean_data_extract()` to extract clean data using the reference data
+- `extract_clean_data()` to extract clean data using the reference data
   and outliers for single species.
 
 5.  **Post-environmental outlier removal**
