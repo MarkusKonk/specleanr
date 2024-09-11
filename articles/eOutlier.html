@@ -68,7 +68,7 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anthonybasooma.github.io/specleanr">specleanr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anthonybasooma.github.io/specleanr/">specleanr</a></span><span class="op">)</span></span></code></pre></div>
 <p><strong>Environmental outlier check for fish species from the Danube
 River Basin</strong></p>
 <p>The workflow for environmental outlier detection and removal is
@@ -358,21 +358,21 @@ identifying the optimal threshold.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7      bio8</span></span>
 <span><span class="co">#&gt; 1 6.293614 8.755938 31.96181 690.1050 20.90625 -6.48875 27.39500  7.375333</span></span>
-<span><span class="co">#&gt; 2 7.285375 7.849375 30.75201 670.6682 21.14325 -4.38150 25.52475 13.902708</span></span>
+<span><span class="co">#&gt; 2 6.247167 9.176500 33.90228 681.9108 20.57975 -6.48775 27.06750 14.603666</span></span>
 <span><span class="co">#&gt; 3 6.277937 9.805208 34.03463 713.7357 21.25975 -7.54975 28.80950 15.009750</span></span>
 <span><span class="co">#&gt; 4 4.414302 7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.899292</span></span>
 <span><span class="co">#&gt; 5 6.844615 8.234104 33.66596 620.3636 19.99575 -4.46250 24.45825 14.519917</span></span>
 <span><span class="co">#&gt; 6 6.505573 8.508604 33.53277 649.9034 19.95200 -5.42200 25.37400 14.466125</span></span>
 <span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
 <span><span class="co">#&gt; 1 -1.1756251 14.80313 -2.0642917  2118   241   105 21.73814   663   379   530</span></span>
-<span><span class="co">#&gt; 2  0.2236667 15.52933 -0.8936250   923   113    57 23.52207   308   175   306</span></span>
+<span><span class="co">#&gt; 2 -2.0573750 14.60367 -2.0573750  1101   148    56 32.68990   403   180   403</span></span>
 <span><span class="co">#&gt; 3 -2.5227084 15.00975 -2.5227084  1042   144    44 37.74431   403   152   403</span></span>
 <span><span class="co">#&gt; 4 -2.7298751 11.89929 -2.7298751  1289   169    67 33.19698   486   219   486</span></span>
 <span><span class="co">#&gt; 5 -0.5310833 14.51992 -0.5310833  1330   182    66 37.53233   523   213   523</span></span>
 <span><span class="co">#&gt; 6 -0.3784584 14.46612 -1.3513334  1380   188    75 32.60979   522   255   522</span></span>
 <span><span class="co">#&gt;   bio19        x        y      species</span></span>
 <span><span class="co">#&gt; 1   412 13.91667 46.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 2   183  9.75000 48.41667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 2   180 15.58333 47.58333 Salmo trutta</span></span>
 <span><span class="co">#&gt; 3   152 14.91667 47.25000 Salmo trutta</span></span>
 <span><span class="co">#&gt; 4   219 11.08333 47.41667 Salmo trutta</span></span>
 <span><span class="co">#&gt; 5   213 11.25000 47.58333 Salmo trutta</span></span>
@@ -380,7 +380,7 @@ identifying the optimal threshold.</p>
 <span></span>
 <span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 73 22</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 71 21</span></span></code></pre></div>
 <p><strong>Model comparison</strong></p>
 <p>This is done to identify the suitable threshold that produces the
 highest model performance.</p>

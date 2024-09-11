@@ -228,13 +228,13 @@ Figure 1. Workflow for processing species occurrence data within the specleanr R
 <p>After outlier removal, the threshold to classify a record as an absolute outlier that necessitates the user to do so objectively is pivotal in this workflow. Therefore, we have developed three options for obtaining a threshold. A threshold is the proportion of methods that flagged a record as an outlier to the total number of techniques used. For example, if a user includes ten methods and sets a threshold of 0.7, it implies that an absolute outlier will be flagged in at least seven methods. In this package, we developed three ways to identify the optimal threshold.</p>
 <ul>
 <li><p><strong>Naive method</strong>: where the user sets a value between 0.1 and 1. The process is subjective, but using this method, it is advisable to use a threshold beyond 0.6 to highlight records flagged in at least 50% of the methods.</p></li>
-<li><p><strong>Autothreshold</strong>: When the user sets <strong><code>autothreshold</code></strong> to TRUE in <strong><code><a href="reference/clean_data_extract.html">clean_data_extract()</a></code></strong>, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained.</p></li>
+<li><p><strong>Autothreshold</strong>: When the user sets <strong><code>autothreshold</code></strong> to TRUE in <strong><code><a href="reference/extract_clean_data.html">extract_clean_data()</a></code></strong>, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained.</p></li>
 <li><p><strong>loess method</strong>: we apply local regression (locally estimated/weighted scatterplot smoothing) to identify the optimal threshold, a non-parametric smoothing method that uses local variability in the data (Cleveland &amp; Loader, 1996; Loader, 2004).</p></li>
 </ul>
 <p>The <strong>reference dataset</strong> in <strong>Step 2</strong> and lists or outliers flagged by each method in <strong>Step 3</strong> are then used to retain the <strong>clean dataset</strong>. Under the hood, two approaches are implemented <strong>1) absolute method</strong>: where absolute outliers are removed at a particular threshold or <strong>2) suitable or best outlier detection method</strong> where a method with highest proportion of absolute outliers and has highest similarity with other methods (in terms of the outliers flagged) can be used.</p>
 <ul>
 <li>
-<code><a href="reference/clean_data_extract.html">clean_data_extract()</a></code> to extract clean data using the reference data and outliers for single species.</li>
+<code><a href="reference/extract_clean_data.html">extract_clean_data()</a></code> to extract clean data using the reference data and outliers for single species.</li>
 </ul>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Post-environmental outlier removal</strong></li>
