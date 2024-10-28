@@ -74,7 +74,17 @@
             },
             "minOccurs": 1,
             "maxOccurs": 1,
-            "keywords": ["column"]
+            "keywords": []
+        },
+        "threshold": {
+            "title": "Outlier Threshold",
+            "description": "Value to consider whether the outlier is an absolute outlier or not. If set to \"null\", loess threshold optimization is used.",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
         }
     },
     "outputs": {
@@ -93,7 +103,8 @@
             "colname_variable": "Sepal.Length",
             "colname_exclude": "Species",
             "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-            "missingness": 0.1
+            "missingness": 0.1,
+            "threshold": 0.7
         }
     }
 }

@@ -15,7 +15,8 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "colname_variable": "Sepal.Length",
         "colname_exclude": "Species",
         "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-        "missingness": 0.1
+        "missingness": 0.1,
+        "threshold": 0.7
     }
 }'
 
@@ -57,6 +58,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_colname_exclude = data.get('colname_exclude')
         in_methods = data.get('methods')
         in_missingness = data.get('missingness')
+        in_threshold = data.get('threshold')
 
         # Checks
         if in_data_url is None:
@@ -69,6 +71,9 @@ class MultiDetectProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
         if in_missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
+        if in_threshold is None:
+            raise ProcessorExecuteError('Missing parameter "threshold". Please provide a value. Can be "null"')
+            # TODO: Maybe if we pass null, this is translated to "None" in Python?
 
         # Where to store output data
         downloadfilename = 'cleaned_data-%s.csv' % self.job_id
@@ -76,7 +81,7 @@ class MultiDetectProcessor(BaseProcessor):
 
         # Run the R script:
         r_file_name = 'multidetect.R'
-        r_args = [in_data_url, in_colname_var, in_colname_exclude, in_methods, str(in_missingness), downloadfilepath]
+        r_args = [in_data_url, in_colname_var, in_colname_exclude, in_methods, str(in_missingness), str(in_threshold), downloadfilepath]
         LOGGER.info('Run R script and store result to %s!' % downloadfilepath)
         LOGGER.debug('R args: %s' % r_args)
         returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, r_script_dir, r_args)

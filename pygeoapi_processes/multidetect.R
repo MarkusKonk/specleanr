@@ -22,8 +22,9 @@ in_colname_var = args[2] # e.g. "Sepal.Length
 in_colname_exclude = args[3] # e.g. "Species"
 in_methods = args[4] # e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
 in_missingness = as.numeric(args[5]) # eg. 0.1
-out_result_path = args[6]
-#out_summary_path = args[7]
+in_threshold = args[6] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
+out_result_path = args[7]
+#out_summary_path = args[8]
 
 
 # Note: I created the csv for testing (with artificial outliers) with this code:
@@ -40,7 +41,6 @@ out_result_path = args[6]
 #
 # Example taken from vignette:
 # https://github.com/AnthonyBasooma/specleanr/blob/master/vignettes/generaloutlier.Rmd
-
 
 
 # (1) Read data from CSV or from URL
@@ -71,11 +71,24 @@ outlieriris_mult <- multidetect(
 
 
 # (4) Run extract_clean_data
+if tolower(in_threshold) == 'null') {
+  # if loess=TRUE, then no threshold!
+  print('Threshold is null, using loess=TRUE...')
+  in_threshold <- NULL
+  in_bool_loess <- TRUE
+} else if (!(is.na(as.numeric(in_threshold)))) {
+  # if loess=FALSE, then set threshold!
+  in_threshold <- as.numeric(in_threshold)
+  print(paste('Threshold is a number:', in_threshold, 'using loess=FALSE...'))
+  in_bool_loess <- FALSE
+}
 print(paste('Run extract_clean_data'))
 cleandata2 <- extract_clean_data(
   refdata = dfinal,
   outliers = outlieriris_mult,
-  loess = TRUE)
+  loess = in_bool_loess,
+  threshold=in_threshold)
+
 
 
 # (5) Write summary to txt file
@@ -88,7 +101,7 @@ cleandata2 <- extract_clean_data(
 
 # (6) Write the result to csv file:
 print(paste0('Write result to csv file: ', out_result_path))
-data.table::fwrite(cleandata2 , file = out_result_path) 
+data.table::fwrite(cleandata2 , file = out_result_path)
 
 
 
