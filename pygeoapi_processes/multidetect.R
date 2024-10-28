@@ -19,12 +19,14 @@ args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path_or_url = args[1]
 in_colname_var = args[2] # e.g. "Sepal.Length
-in_colname_exclude = args[3] # e.g. "Species"
-in_methods = args[4] # e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
-in_missingness = as.numeric(args[5]) # eg. 0.1
-in_threshold = args[6] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
-out_result_path = args[7]
-#out_summary_path = args[8]
+in_bool_multiple_species = args[3] # e.g. "TRUE"
+in_colname_exclude = args[4] # e.g. "Species"
+in_methods = args[5] # e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
+in_bool_ignore_failing_methods = args[6] # e.g. "TRUE"
+in_missingness = as.numeric(args[7]) # e.g. 0.1
+in_threshold = args[8] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
+out_result_path = args[9]
+#out_summary_path = args[10]
 
 
 # Note: I created the csv for testing (with artificial outliers) with this code:
@@ -54,7 +56,12 @@ in_methods = gsub(" ", "", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
 
 
-# (3) Run multidetect
+# (3) Make string booleans boolean
+in_bool_multiple_species = tolower(in_bool_multiple_species) == 'true'
+in_bool_ignore_failing_methods = tolower(in_bool_ignore_failing_methods) == 'true'
+
+
+# (4) Run multidetect
 print(paste('Run multidetect...'))
 print(paste('Var:', in_colname_var))
 print(paste('Exclude:', in_colname_exclude))
@@ -63,14 +70,14 @@ print(paste0('Methods: ', paste0(in_methods, collapse=', ')))
 outlieriris_mult <- multidetect(
   data = dfinal,
   var = in_colname_var,
-  multiple = FALSE, # TODO Ask: Should we keep this fixed? -> Are we checking for one or several species! If true -> check vignette
-  exclude = in_colname_exclude, # remove columns that are not numeric.
-  methods = in_methods, # keep!
-  showErrors = FALSE, # some methods dont work with certain formats of datasets! ignore the ones that dont work. up to the user.
+  multiple = in_bool_multiple_species, # are we checking for one or several species!
+  exclude = in_colname_exclude, # removes columns that are not numeric.
+  methods = in_methods,
+  showErrors = in_bool_ignore_failing_methods, # some methods dont work with certain formats of datasets! ignore the ones that dont work
   missingness = in_missingness) # threshold for how many NAs...
 
 
-# (4) Run extract_clean_data
+# (5) Run extract_clean_data
 if tolower(in_threshold) == 'null') {
   # if loess=TRUE, then no threshold!
   print('Threshold is null, using loess=TRUE...')
@@ -90,8 +97,7 @@ cleandata2 <- extract_clean_data(
   threshold=in_threshold)
 
 
-
-# (5) Write summary to txt file
+# (6) Write summary to txt file
 # Note: I don't know how to get the string summary. The object is an S4 object, and I cannot access the string.
 #print(paste0('Write result to txt file: ', out_summary_path))
 #fileConn<-file(out_summary_path)
@@ -99,7 +105,7 @@ cleandata2 <- extract_clean_data(
 #close(fileConn)
 
 
-# (6) Write the result to csv file:
+# (7) Write the result to csv file:
 print(paste0('Write result to csv file: ', out_result_path))
 data.table::fwrite(cleandata2 , file = out_result_path)
 

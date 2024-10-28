@@ -13,8 +13,10 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
     "inputs": {
         "input_data": "https://testserver.com/download/boku_multidetect_testdata.csv",
         "colname_variable": "Sepal.Length",
+        "multiple_species": false,
         "colname_exclude": "Species",
         "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
+        "ignore_failing_methods": true,
         "missingness": 0.1,
         "threshold": 0.7
     }
@@ -55,8 +57,10 @@ class MultiDetectProcessor(BaseProcessor):
         # Get user inputs
         in_data_url = data.get('input_data')
         in_colname_var = data.get('colname_variable')
+        in_bool_multiple_species = data.get('multiple_species')
         in_colname_exclude = data.get('colname_exclude')
         in_methods = data.get('methods')
+        in_bool_ignore_failing_methods = data.get('ignore_failing_methods')
         in_missingness = data.get('missingness')
         in_threshold = data.get('threshold')
 
@@ -65,10 +69,14 @@ class MultiDetectProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input table.')
         if in_colname_var is None:
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
+        if in_bool_multiple_species is None:
+            raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide \"true\" or \"false\".')
         if in_colname_exclude is None:
             raise ProcessorExecuteError('Missing parameter "colname_exclude". Please provide a column name.')
         if in_methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
+        if in_bool_ignore_failing_methods is None:
+            raise ProcessorExecuteError('Missing parameter "ignore_failing_methods". Please provide \"true\" or \"false\".')
         if in_missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
         if in_threshold is None:
@@ -79,9 +87,15 @@ class MultiDetectProcessor(BaseProcessor):
         downloadfilename = 'cleaned_data-%s.csv' % self.job_id
         downloadfilepath = download_dir.rstrip('/')+os.sep+downloadfilename
 
+        # From booleans to string:
+        in_bool_multiple_species = 'true' if in_bool_multiple_species else 'false'
+        in_bool_ignore_failing_methods = 'true' if in_bool_ignore_failing_methods else 'false'
+
         # Run the R script:
         r_file_name = 'multidetect.R'
-        r_args = [in_data_url, in_colname_var, in_colname_exclude, in_methods, str(in_missingness), str(in_threshold), downloadfilepath]
+        r_args = [in_data_url, in_colname_var, in_bool_multiple_species,
+                  in_colname_exclude, in_methods, in_bool_ignore_failing_methods,
+                  str(in_missingness), str(in_threshold), downloadfilepath]
         LOGGER.info('Run R script and store result to %s!' % downloadfilepath)
         LOGGER.debug('R args: %s' % r_args)
         returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, r_script_dir, r_args)

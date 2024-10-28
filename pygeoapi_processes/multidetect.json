@@ -45,6 +45,16 @@
             "maxOccurs": 1,
             "keywords": ["column"]
         },
+        "multiple_species": {
+            "title": "True or False: Distinguish between multiple species?",
+            "description": "If \"true\", the method will distinguish species.... - for details ask Anthony/BOKU.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
         "colname_exclude": {
             "title": "Column name: Exclude",
             "description": "Column name identifying the column containing the variable to be exluded, e.g. \"Species\". TODO Ask Anthony: one or several?. Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or latitude/longitude or any column that the user doesn't want to consider.",
@@ -65,6 +75,16 @@
             "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": ["year", "column"]
+        },
+        "ignore_failing_methods": {
+            "title": "True or False: Ignore failing methods?",
+            "description": "If \"true\", the method will work with those methods that functioned - for details ask Anthony/BOKU.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
         },
         "missingness": {
             "title": "Missingness",
@@ -101,8 +121,10 @@
         "inputs": {
             "input_data": "bla.csv",
             "colname_variable": "Sepal.Length",
+            "multiple_species": false,
             "colname_exclude": "Species",
             "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
+            "ignore_failing_methods": true,
             "missingness": 0.1,
             "threshold": 0.7
         }
