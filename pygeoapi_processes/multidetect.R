@@ -64,8 +64,10 @@ in_bool_ignore_failing_methods = tolower(in_bool_ignore_failing_methods) == 'tru
 # (4) Run multidetect
 print(paste('Run multidetect...'))
 print(paste('Var:', in_colname_var))
+print(paste('Multiple:', in_bool_multiple_species))
 print(paste('Exclude:', in_colname_exclude))
 print(paste('Missingness:', in_missingness))
+print(paste('ShowErrors:', !in_bool_ignore_failing_methods))
 print(paste0('Methods: ', paste0(in_methods, collapse=', ')))
 outlieriris_mult <- multidetect(
   data = dfinal,
@@ -73,12 +75,12 @@ outlieriris_mult <- multidetect(
   multiple = in_bool_multiple_species, # are we checking for one or several species!
   exclude = in_colname_exclude, # removes columns that are not numeric.
   methods = in_methods,
-  showErrors = in_bool_ignore_failing_methods, # some methods dont work with certain formats of datasets! ignore the ones that dont work
+  showErrors = !in_bool_ignore_failing_methods, # some methods dont work with certain formats of datasets! ignore the ones that dont work
   missingness = in_missingness) # threshold for how many NAs...
 
 
 # (5) Run extract_clean_data
-if tolower(in_threshold) == 'null') {
+if (tolower(in_threshold) == 'null') {
   # if loess=TRUE, then no threshold!
   print('Threshold is null, using loess=TRUE...')
   in_threshold <- NULL

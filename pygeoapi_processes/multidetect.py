@@ -79,9 +79,6 @@ class MultiDetectProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "ignore_failing_methods". Please provide \"true\" or \"false\".')
         if in_missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
-        if in_threshold is None:
-            raise ProcessorExecuteError('Missing parameter "threshold". Please provide a value. Can be "null"')
-            # TODO: Maybe if we pass null, this is translated to "None" in Python?
 
         # Where to store output data
         downloadfilename = 'cleaned_data-%s.csv' % self.job_id
@@ -90,6 +87,8 @@ class MultiDetectProcessor(BaseProcessor):
         # From booleans to string:
         in_bool_multiple_species = 'true' if in_bool_multiple_species else 'false'
         in_bool_ignore_failing_methods = 'true' if in_bool_ignore_failing_methods else 'false'
+        if in_threshold is None:
+            in_threshold = 'null'
 
         # Run the R script:
         r_file_name = 'multidetect.R'
