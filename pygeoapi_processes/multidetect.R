@@ -12,7 +12,6 @@
 # To test, run this script in bash with:
 # Rscript multidetect.R "test_inputs_multidetect.csv" "Sepal.Length" "Species" "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal" 0.1 "data_out_cleandata.csv"
 
-library(jsonlite)
 library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)

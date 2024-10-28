@@ -173,7 +173,8 @@ def call_r_script(LOGGER, r_file_name, path_rscripts, r_args):
     if not p.returncode == 0:
         err_msg = 'R script "%s" failed.' % r_file_name
         for line in stderrtext.split('\n'):
-            if line.startswith('Error') or line.startswith('Fatal'):
+            line = line.strip().lower()
+            if line.startswith('error') or line.startswith('fatal') or 'error' in line:
                 LOGGER.error('FOUND R ERROR LINE: %s' % line)
                 err_msg += ' '+line.strip()
                 LOGGER.error('ENTIRE R ERROR MSG NOW: %s' % err_msg)
