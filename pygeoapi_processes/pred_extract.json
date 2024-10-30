@@ -1,0 +1,147 @@
+{
+    "version": "0.1.0",
+    "id": "pred-extract",
+    "use_case": "BOKU",
+    "title": {
+        "en": "pred extract"
+    },
+    "description": {
+        "en": "This process ..., pred_extract. For more details, please ask BOKU."
+    },
+    "jobControlOptions": ["sync-execute", "async-execute"],
+    "keywords": ["pan-european use case", "AquaINFRA", "R"],
+    "links": [{
+        "type": "text/html",
+        "rel": "about",
+        "title": "GitHub repo",
+        "href": "https://github.com/AnthonyBasooma/specleanr",
+        "hreflang": "en-US"
+    }],
+    "inputs": {
+        "input_data": {
+            "title": "Occurrences (any source)",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the checknames process.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["csv"]
+        },
+        "input_raster_name": {
+            "title": "Input raster (anem)",
+            "description": "Name of some raster... Need to think about how to get this from DDAS.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "study_area": {
+            "title": "Area of Interest",
+            "description": "URL to the input shapefile containing the study areas inside which you would like to retrieve occurrences",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["shapefile"]
+        },
+        "colname_lat": {
+            "title": "Column name: Latitude",
+            "description": "Column name lat. Example: \"decimalLatitude\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "colname_lon": {
+            "title": "Column name: Longitude",
+            "description": "Column name lon. Example: \"decimalLongitude\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "colname_species": {
+            "title": "Column name: Species",
+            "description": "Column name species. Example: \"speciescheck\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "min_pts": {
+            "title": "Min pts",
+            "description": "Something. Example: 10",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_multiple_species": {
+            "title": "True or False: Multiple species?",
+            "description": "Something. Example: true or false.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_merge": {
+            "title": "True or False: Merge something?",
+            "description": "Something. Example: true or false.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_list": {
+            "title": "True or False: List?",
+            "description": "Something. Example: true or false.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        }
+    },
+    "outputs": {
+        "multiprecleaned": {
+            "title": "multiprecleaned",
+            "description": "A table containing multiprecleaned....",
+            "schema": {
+                "type": "object",
+                "contentMediaType": "application/json"
+            }
+        }
+    },
+    "example": {
+        "inputs": {
+            "input_data": "https://aqua.igb-berlin.de/download/matched-biodiv-data-bdb09d5c-957f-11ef-aad4-8935a9f30073.csv",
+            "input_raster": "https://aqua.igb-berlin.de/referencedata/specleanr/worldclim.tiff",
+            "input_raster_name": "worldclim",
+            "study_area": "bla.shp",
+            "colname_lat": "decimalLatitude",
+            "colname_lon": "decimalLongitude",
+            "colname_species": "speciescheck",
+            "min_pts": 10,
+            "bool_multiple_species": true,
+            "bool_merge": false,
+            "bool_list": true
+        }
+    }
+}
