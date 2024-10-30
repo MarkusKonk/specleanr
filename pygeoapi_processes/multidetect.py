@@ -36,6 +36,12 @@ class MultiDetectProcessor(BaseProcessor):
         super().__init__(processor_def, PROCESS_METADATA)
         self.supports_outputs = True
         self.job_id = 'nnothing-yet'
+        self.config = None
+
+        # Set config:
+        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
+        with open(config_file_path, 'r') as config_file:
+            self.config = json.load(config_file)
 
     def set_job_id(self, job_id: str):
         self.job_id = job_id
@@ -87,6 +93,8 @@ class MultiDetectProcessor(BaseProcessor):
         # From booleans to string:
         in_bool_multiple_species = 'true' if in_bool_multiple_species else 'false'
         in_bool_ignore_failing_methods = 'true' if in_bool_ignore_failing_methods else 'false'
+
+        # Set null threshold:
         if in_threshold is None:
             in_threshold = 'null'
 

@@ -51,7 +51,8 @@ dfinal <- data.table::fread(in_data_path_or_url)
 
 # (2) Remove spaces and split:
 print(paste('Splitting input arg methods...'))
-in_methods = gsub(" ", "", in_methods, fixed = TRUE)
+in_methods = gsub(", ", ",", in_methods, fixed = TRUE)
+in_methods = gsub(" ,", ",", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
 
 
