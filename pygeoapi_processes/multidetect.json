@@ -36,8 +36,8 @@
             "keywords": ["table", "csv"]
         },
         "colname_variable": {
-            "title": "Column name: Variable.",
-            "description": "Column name identifying the column containing the variable to be used, e.g. \"Sepal.Length\". TODO Ask Anthony: one or several? A variable to check for outliers especially the one with directly affects species distribution such as maximum temperature of the coldest month for bioclimatic variables (IUCN Standards and Petitions Committee, 2022) or stream power index for hydromorphological parameters (Logez et al., 2012). This parameter is necessary for the univariate outlier detection methods such as Z-score.",
+            "title": "Variable of interest.",
+            "description": "Column name identifying the variable of interest where outliers will be checked from by the univariate outlier detection methods, Z-score, mixed interquantile range, reverse jackknifing etc... In species distribution modeling, the variable of interest to be used should have direct effects to the species such as maximum temperature of the coldest month for bioclimatic variables (IUCN Standards and Petitions Committee, 2022) or stream power index for hydromorphological parameters (Logez et al., 2012).",
             "schema": {
                 "type": "string"
             },
@@ -46,8 +46,8 @@
             "keywords": ["column"]
         },
         "multiple_species": {
-            "title": "True or False: Distinguish between multiple species",
-            "description": "If \"true\", the method will distinguish species.... - for details ask Anthony/BOKU.",
+            "title": ": Distinguish between multiple species",
+            "description": "If \"false\", then only a single species dataset is expected. However, if multiple species are considered, then the parameter must be set to \"true\". The \"colsp\" is also required to set the column with species names. If the data is a list of indivudual data, then \"colsp\" is not a required parameter.",
             "schema": {
                 "type": "boolean"
             },
@@ -57,7 +57,7 @@
         },
         "colname_exclude": {
             "title": "Column name: Exclude",
-            "description": "Column name identifying the column containing the variable to be exluded, e.g. \"Species\". TODO Ask Anthony: one or several?. Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or latitude/longitude or any column that the user doesn't want to consider.",
+            "description": "Exclude mainly numerical variables that are not necessary in the analysis, for example x and y columns or latitude/longitude, row numbers or serial IDs. Categorical variables are removed automatically in the data preparation.",
             "schema": {
                 "type": "string"
             },
@@ -77,8 +77,8 @@
             "keywords": ["year", "column"]
         },
         "ignore_failing_methods": {
-            "title": "True or False: Ignore failing methods?",
-            "description": "If \"true\", the method will work with those methods that functioned - for details ask Anthony/BOKU.",
+            "title": "True or False: ignores methods that have methodologically failed.",
+            "description": "If \"true\", .",
             "schema": {
                 "type": "boolean"
             },
@@ -109,8 +109,8 @@
     },
     "outputs": {
         "cleaned_data": {
-            "title": "Cleaned data (?)",
-            "description": "A table .",
+            "title": "Cleaned data",
+            "description": "A table with data extracted from the reference dataset set during outlier detection.",
             "schema": {
                 "type": "object",
                 "contentMediaType": "application/json"
