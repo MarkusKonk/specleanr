@@ -1,0 +1,99 @@
+{
+    "version": "0.1.0",
+    "id": "check-names",
+    "use_case": "BOKU",
+    "title": {
+        "en": "Check species names in biodiversity data from separate sources"
+    },
+    "description": {
+        "en": "This process ..., from the sources GBIF, iNaturalist and VertNet, with data provided by the user or other sources. For more details, please ask BOKU."
+    },
+    "jobControlOptions": ["sync-execute", "async-execute"],
+    "keywords": ["pan-european use case", "AquaINFRA", "R"],
+    "links": [{
+        "type": "text/html",
+        "rel": "about",
+        "title": "GitHub repo",
+        "href": "https://github.com/AnthonyBasooma/specleanr",
+        "hreflang": "en-US"
+    }],
+    "inputs": {
+        "input_data": {
+            "title": "Occurrences (any source)",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the matchdata process.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["csv"]
+        },
+        "colname_species": {
+            "title": "Column name: Species",
+            "description": "Column name that indicate the Species in the provided datases. Example: \"species\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "species_names": {
+            "title": "Species names",
+            "description": "List of species about which to retrieve data, as a comma-separated list. Example: \"Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "pct": {
+            "title": "pct number",
+            "description": "Some number. Example: 70",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_merge": {
+            "title": "True or False: Merge?",
+            "description": "Whether we should merge...",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        }
+    },
+    "outputs": {
+        "cleannames_df": {
+            "title": "cleannames_df",
+            "description": "A table containing cleannames_df....",
+            "schema": {
+                "type": "object",
+                "contentMediaType": "application/json"
+            }
+        },
+        "filtered_biodiversity_data": {
+            "title": "Filtered occurrences",
+            "description": "A table containing ....",
+            "schema": {
+                "type": "object",
+                "contentMediaType": "application/json"
+            }
+        }
+    },
+    "example": {
+        "inputs": {
+            "input_data": "https://aqua.igb-berlin.de/download/matched-biodiv-data-bdb09d5c-957f-11ef-aad4-8935a9f30073.csv",
+            "colname_species": "species",
+            "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+            "pct": 70,
+            "bool_merge": true
+        }
+    }
+}
