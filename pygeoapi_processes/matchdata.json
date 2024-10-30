@@ -1,0 +1,102 @@
+{
+    "version": "0.1.0",
+    "id": "match-data",
+    "use_case": "BOKU",
+    "title": {
+        "en": "Combine and match biodiversity data from separate sources"
+    },
+    "description": {
+        "en": "This process combines and matches biodiveryity data, i.e. occurrences for various species, from the sources GBIF, iNaturalist and VertNet, with data provided by the user or other sources. For more details, please ask BOKU."
+    },
+    "jobControlOptions": ["sync-execute", "async-execute"],
+    "keywords": ["pan-european use case", "AquaINFRA", "R"],
+    "links": [{
+        "type": "text/html",
+        "rel": "about",
+        "title": "GitHub repo",
+        "href": "https://github.com/AnthonyBasooma/specleanr",
+        "hreflang": "en-US"
+    }],
+    "inputs": {
+        "input_data_retrieved": {
+            "title": "Occurrences (GBIF, iNaturalist, VertNet)",
+            "description": "URL to the table containing the occurrences from GBIF, iNaturalist and VertNet. This can be the outcome of the getdata process.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["csv"]
+        },
+        "input_data_from_user": {
+            "title": "Occurrences (user-defined)",
+            "description": "URL to the table containing the occurrences from the users.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["csv"]
+        },
+        "colnames_species_names": {
+            "title": "Column name: Species names",
+            "description": "List of column name that indicate the Species Name in each of the provided datasets. Example: \"speciesname, scientificName\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "colnames_countries": {
+            "title": "Column name: Country",
+            "description": "List of column name that indicate the Country in each of the provided datasets. Example: \"JDS4_sampling_ID\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "colnames_lat": {
+            "title": "Column name: Latitude",
+            "description": "List of column name that indicate the Latitude in each of the provided datasets. Example: \"lat, latitude\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "colnames_lon": {
+            "title": "Column name: Longitude",
+            "description": "List of column name that indicate the Longitude in each of the provided datasets. Example: \"lon, long, longitude\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        }
+    },
+    "outputs": {
+        "matched_biodiversity_data": {
+            "title": "Combined occurrences",
+            "description": "A table containing the combined occurrences (user data and online data).",
+            "schema": {
+                "type": "object",
+                "contentMediaType": "application/json"
+            }
+        }
+    },
+    "example": {
+        "inputs": {
+            "input_data_retrieved": "https://aqua.igb-berlin.de/referencedata/specleanr/df_online.csv",
+            "input_data_from_user": "https://aqua.igb-berlin.de/referencedata/specleanr/efidata.csv",
+            "colnames_species_names": "speciesname, scientificName",
+            "colnames_countries": "JDS4_sampling_ID",
+            "colnames_lat": "lat, latitude",
+            "colnames_lon": "lon, long, longitude"
+        }
+    }
+}
