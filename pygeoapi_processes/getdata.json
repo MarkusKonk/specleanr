@@ -1,0 +1,91 @@
+{
+    "version": "0.1.0",
+    "id": "retrieve-biodiversity-data",
+    "use_case": "BOKU",
+    "title": {
+        "en": "Retrieve biodiversity data from the web"
+    },
+    "description": {
+        "en": "This process retrieves biodiveryity data, i.e. occurrences for various species, from the sources GBIF, iNaturalist and VertNet. For more details, please ask BOKU."
+    },
+    "jobControlOptions": ["sync-execute", "async-execute"],
+    "keywords": ["pan-european use case", "AquaINFRA", "R"],
+    "links": [{
+        "type": "text/html",
+        "rel": "about",
+        "title": "GitHub repo",
+        "href": "https://github.com/AnthonyBasooma/specleanr",
+        "hreflang": "en-US"
+    }],
+    "inputs": {
+        "study_area": {
+            "title": "Area of Interest",
+            "description": "URL to the input shapefile containing the study areas inside which you would like to retrieve occurrences",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["shapefile"]
+        },
+        "species_names": {
+            "title": "Species names",
+            "description": "List of species about which to retrieve data, as a comma-separated list. Example: \"Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["species"]
+        },
+        "gbif_limit": {
+            "title": "Max number (GBIF)",
+            "description": "The max number of data points that are being retrieved from GBIF??? For details ask Anthony/BOKU.",
+            "schema": {
+                "type": "integer"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "inaturalist_limit": {
+            "title": "Max number (iNaturalist)",
+            "description": "The max number of data points that are being retrieved from iNaturalist??? For details ask Anthony/BOKU.",
+            "schema": {
+                "type": "integer"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "vertnet_limit": {
+            "title": "Max number (VertNet)",
+            "description": "The max number of data points that are being retrieved from VertNet??? For details ask Anthony/BOKU.",
+            "schema": {
+                "type": "integer"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        }
+    },
+    "outputs": {
+        "biodiversity_data": {
+            "title": "Combined occurrences",
+            "description": "A table containing the combined occurrences inside the study area.",
+            "schema": {
+                "type": "object",
+                "contentMediaType": "application/json"
+            }
+        }
+    },
+    "example": {
+        "inputs": {
+            "study_area": "bla.shp",
+            "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+            "gbif_limit": 50,
+            "vertnet_limit": 50,
+            "inaturalist_limit": 50
+        }
+    }
+}
