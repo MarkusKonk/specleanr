@@ -19,11 +19,11 @@ args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path = args[1]
 in_colname_species = args[2] # e.g. "species"
-in_species_names = args[2] # e.g. "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla"
-in_pct = args[3] # e.g. "70"
-in_bool_merge = args[4] # e.g. "true"
-out_result_path_names = args[5]
-out_result_path_filtered = args[6]
+in_species_names = args[3] # e.g. "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla"
+in_pct = args[4] # e.g. "70"
+in_bool_merge = args[5] # e.g. "true"
+out_result_path_names = args[6]
+out_result_path_filtered = args[7]
 
 
 # (1) Read data from CSV or from URL
