@@ -46,7 +46,7 @@
             "keywords": ["column"]
         },
         "multiple_species": {
-            "title": "True or False: Distinguish between multiple species?",
+            "title": "True or False: Distinguish between multiple species",
             "description": "If \"true\", the method will distinguish species.... - for details ask Anthony/BOKU.",
             "schema": {
                 "type": "boolean"
