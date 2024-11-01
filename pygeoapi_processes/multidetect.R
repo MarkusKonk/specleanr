@@ -24,7 +24,8 @@ in_methods = args[5] # e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, sem
 in_bool_ignore_failing_methods = args[6] # e.g. "TRUE"
 in_missingness = as.numeric(args[7]) # e.g. 0.1
 in_threshold = args[8] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
-out_result_path = args[9]
+in_colname_species = args[9]
+out_result_path = args[10]
 #out_summary_path = args[10]
 
 
@@ -61,10 +62,17 @@ in_bool_multiple_species = tolower(in_bool_multiple_species) == 'true'
 in_bool_ignore_failing_methods = tolower(in_bool_ignore_failing_methods) == 'true'
 
 
+# Only provide column name for species if multiple = FALSE
+if (!in_bool_multiple_species) {
+  in_colname_species <- NULL
+}
+
+
 # (4) Run multidetect
 print(paste('Run multidetect...'))
 print(paste('Var:', in_colname_var))
 print(paste('Multiple:', in_bool_multiple_species))
+print(paste('Colname Species:', in_colname_species))
 print(paste('Exclude:', in_colname_exclude))
 print(paste('Missingness:', in_missingness))
 print(paste('ShowErrors:', !in_bool_ignore_failing_methods))
@@ -73,6 +81,7 @@ outlieriris_mult <- multidetect(
   data = dfinal,
   var = in_colname_var,
   multiple = in_bool_multiple_species, # are we checking for one or several species!
+  colsp = in_colname_species, # if multiple is true!
   exclude = in_colname_exclude, # removes columns that are not numeric.
   methods = in_methods,
   showErrors = !in_bool_ignore_failing_methods, # some methods dont work with certain formats of datasets! ignore the ones that dont work
@@ -96,7 +105,8 @@ cleandata2 <- extract_clean_data(
   refdata = dfinal,
   outliers = outlieriris_mult,
   loess = in_bool_loess,
-  threshold=in_threshold)
+  threshold = in_threshold,
+  colsp = in_colname_species)
 
 
 # (6) Write summary to txt file

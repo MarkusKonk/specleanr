@@ -64,6 +64,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_data_url = data.get('input_data')
         in_colname_var = data.get('colname_variable')
         in_bool_multiple_species = data.get('multiple_species')
+        in_colname_species = data.get('colname_species', 'not_provided')
         in_colname_exclude = data.get('colname_exclude')
         in_methods = data.get('methods')
         in_bool_ignore_failing_methods = data.get('ignore_failing_methods')
@@ -102,7 +103,7 @@ class MultiDetectProcessor(BaseProcessor):
         r_file_name = 'multidetect.R'
         r_args = [in_data_url, in_colname_var, in_bool_multiple_species,
                   in_colname_exclude, in_methods, in_bool_ignore_failing_methods,
-                  str(in_missingness), str(in_threshold), downloadfilepath]
+                  str(in_missingness), str(in_threshold), in_colname_species, downloadfilepath]
         LOGGER.info('Run R script and store result to %s!' % downloadfilepath)
         LOGGER.debug('R args: %s' % r_args)
         returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, r_script_dir, r_args)
