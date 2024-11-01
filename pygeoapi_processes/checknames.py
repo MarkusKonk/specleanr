@@ -33,7 +33,7 @@ class NameCheckProcessor(BaseProcessor):
     def __init__(self, processor_def):
         super().__init__(processor_def, PROCESS_METADATA)
         self.supports_outputs = True
-        self.job_id = 'nnothing-yet'
+        self.job_id = 'job-id-not-set'
         self.config = None
 
         # Set config:
