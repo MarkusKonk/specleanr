@@ -19,7 +19,7 @@ print(paste0('R Command line args: ', args))
 in_data_path_or_url = args[1]
 in_colname_var = args[2] # e.g. "Sepal.Length
 in_bool_multiple_species = args[3] # e.g. "TRUE"
-in_colname_exclude = args[4] # e.g. "Species"
+in_colnames_exclude = args[4] # e.g. "Species"
 in_methods = args[5] # e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
 in_bool_ignore_failing_methods = args[6] # e.g. "TRUE"
 in_missingness = as.numeric(args[7]) # e.g. 0.1
@@ -55,7 +55,9 @@ print(paste('Splitting input arg methods...'))
 in_methods = gsub(", ", ",", in_methods, fixed = TRUE)
 in_methods = gsub(" ,", ",", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
-
+in_colnames_exclude = gsub(", ", ",", in_colnames_exclude, fixed = TRUE)
+in_colnames_exclude = gsub(" ,", ",", in_colnames_exclude, fixed = TRUE)
+in_colnames_exclude = strsplit(in_colnames_exclude, ",")[[1]]
 
 # (3) Make string booleans boolean
 in_bool_multiple_species = tolower(in_bool_multiple_species) == 'true'
@@ -73,7 +75,7 @@ print(paste('Run multidetect...'))
 print(paste('Var:', in_colname_var))
 print(paste('Multiple:', in_bool_multiple_species))
 print(paste('Colname Species:', in_colname_species))
-print(paste('Exclude:', in_colname_exclude))
+print(paste0('Exclude: ', paste0(in_colnames_exclude, collapse=' + ')))
 print(paste('Missingness:', in_missingness))
 print(paste('ShowErrors:', !in_bool_ignore_failing_methods))
 print(paste0('Methods: ', paste0(in_methods, collapse=', ')))
@@ -82,7 +84,7 @@ outlieriris_mult <- multidetect(
   var = in_colname_var,
   multiple = in_bool_multiple_species, # are we checking for one or several species!
   colsp = in_colname_species, # if multiple is true!
-  exclude = in_colname_exclude, # removes columns that are not numeric.
+  exclude = in_colnames_exclude, # removes columns that are not numeric.
   methods = in_methods,
   showErrors = !in_bool_ignore_failing_methods, # some methods dont work with certain formats of datasets! ignore the ones that dont work
   missingness = in_missingness) # threshold for how many NAs...
