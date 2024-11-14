@@ -15,7 +15,7 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
 
 matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
 
-db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp',
+db <- sf::read_sf(system.file('extdata/danube.shp.zip',
                               package = "specleanr"), quiet = TRUE)
 
 

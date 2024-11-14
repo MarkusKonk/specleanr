@@ -1,7 +1,7 @@
 
 data("efidata")
 
-db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp', package = "specleanr"), quiet = TRUE)
+db <- sf::read_sf(system.file('extdata/danube.shp.zip', package = "specleanr"), quiet = TRUE)
 
 test_that(desc = "Latitudinal/Longitudinal range",
           code = {
