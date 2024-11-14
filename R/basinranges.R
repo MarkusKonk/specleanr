@@ -15,9 +15,6 @@
 
   xfp <- .absx(fp, var = 'basinfiles')
 
-  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("curl"),
-                                                       reason="To check if internet is connected for the user pc to download data.")))
-
   if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
 
   #Download the Tesedesco at al., 2017 basin data from figshare
