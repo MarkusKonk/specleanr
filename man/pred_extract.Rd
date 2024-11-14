@@ -14,6 +14,9 @@ pred_extract(
   colsp,
   minpts = 10,
   multiple = TRUE,
+  rm_duplicates = TRUE,
+  na.rm = TRUE,
+  na.inform = TRUE,
   list = TRUE,
   merge = FALSE,
   verbose = FALSE,
@@ -45,6 +48,8 @@ removing duplicates and those within a particular basin.}
 
 \item{multiple}{\code{logical}. TRUE if species are more than one and FALSE for one species
 in the data.}
+
+\item{rm_duplicates}{\code{logical} TRUE if the duplicates will removed based species coordinates and names. Default \code{TRUE}.}
 
 \item{list}{\code{logical}. If TRUE the a list of multiple species data frames will be
 generated and FALSE for a dataframe of species data sets. Default TRUE}

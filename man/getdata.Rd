@@ -81,7 +81,6 @@ sp_records <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),gbiflim = 10
                             inatlim = 100,
                             vertlim = 100)
 
-
 }
 
 

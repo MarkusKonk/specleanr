@@ -13,7 +13,7 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata, online = sa
 
 sp <- check_names(data = matchd, colsp = 'species', verbose = F, pct = 90, merge = T, sn = FALSE)
 
-db <- sf::st_read(dsn=system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+db <- sf::st_read(dsn=system.file('extdata/danube.shp.zip', package='specleanr'), quiet=TRUE)
 
 zz <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 

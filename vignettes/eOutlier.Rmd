@@ -71,7 +71,7 @@ mergealldfs <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
 
 #Species names are re-cleaned since the species names from vertnet are changed.
 
-cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE)
+cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE, verbose = TRUE)
 
 #Filter out species from cleannames df where the species names such as synonyms like Salmo trutta fario chnaged to Slamo trutta
 
@@ -169,7 +169,8 @@ multioutliers <- multidetect(data = multipreclened,
                       var = 'bio6',
                       output = 'outlier',
                      exclude = c('x','y'),
-                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans', 'mahal',
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr',
+                                  'hampel','kmeans', 'mahal',
                                   'logboxplot','jknife','lof'))
 #single species
 ttoutlier<- multidetect(data = ttrefdata,
@@ -189,7 +190,7 @@ ttoutlier<- multidetect(data = ttrefdata,
 
 ```{r visualisation, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
 #for multiple species
-ggoutliers(multioutliers, y=2, raw=TRUE)
+ggoutliers(multioutliers, y=1, raw=TRUE, color = 'purple')
 
 #for single species
 ggoutliers(ttoutlier, raw=TRUE)
@@ -223,6 +224,9 @@ head(multspecies_clean)
 
 ttclean<- extract_clean_data(refdata = ttrefdata, outliers = ttoutlier, loess = TRUE)
 dim(ttclean)
+
+
+labeldata <- extract_cleandata_label(refdata = multipreclened, outliers = multioutliers)
 
 ```
 

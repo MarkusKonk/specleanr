@@ -4,7 +4,7 @@ data(efidata)
 
 #Danube basin polygon
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+db <- sf::st_read(system.file('extdata/danube.shp.zip', package='specleanr'), quiet=TRUE)
 
 
 matchdata <- match_datasets(datasets = list(jds = jdsdata, efi = efidata),
