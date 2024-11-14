@@ -82,7 +82,7 @@ setMethod(f="plot", signature = signature(x= "datacleaner", y="ANY"),
               angle <- 0
               hjust <- 0.5
             }
-            suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
+            #suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
 
             method = NULL; pct = NULL ; totaloutliers = NULL
 
@@ -189,8 +189,6 @@ ggoutliers <-  function(x, y, raw=TRUE, color='purple', colsp= NULL){
     angle <- 0
     hjust <- 0.5
   }
-  suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="plotting outliers")))
-
   method = NULL; pct = NULL ; totaloutliers = NULL
   pltout <- ggplot2::ggplot(OUTDF, ggplot2::aes(x=method, y= if(raw==TRUE) totaloutliers else pct))+
     ggplot2::geom_bar(stat = 'identity', fill=color)+

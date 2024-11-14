@@ -709,7 +709,6 @@ jaccard <- function(x, sp = NULL, threshold = NULL, warn=FALSE, autothreshold=FA
 
   matj <- matrix(NA, nrow = length(y), ncol = length(y))
 
-
   for (cxii in seq_along(y)) {
     m1 <- y[[cxii]][[var]]
 

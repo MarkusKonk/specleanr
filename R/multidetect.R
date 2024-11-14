@@ -125,27 +125,28 @@ tcatch <- function(func, fname=NULL, spname=NULL, verbose=FALSE, warn=FALSE, sho
 
 #' @noRd
 #'
+
 detect <- function(x,
-                     var,
-                     output,
-                     exclude,
-                     optpar,
-                     kmpar,
-                     ifpar,
-                     lofpar,
-                     jkpar,
-                     gloshpar,
-                     mahalpar,
-                     knnpar,
-                     zpar,
-                     methods,
-                     verbose,
-                     spname,
-                     warn,
-                     missingness,
-                     showErrors,
-                     sdm,
-                     na.inform){
+                   var,
+                   output,
+                   exclude,
+                   optpar,
+                   kmpar,
+                   ifpar,
+                   lofpar,
+                   jkpar,
+                   gloshpar,
+                   mahalpar,
+                   knnpar,
+                   zpar,
+                   methods,
+                   verbose,
+                   spname,
+                   warn,
+                   missingness,
+                   showErrors,
+                   sdm,
+                   na.inform){
 
   if(missing(x)) stop('Species data missing')
 
@@ -442,6 +443,8 @@ detect <- function(x,
 #'
 #' @export
 #'
+#' @importFrom stats na.omit
+#'
 #' @examples
 #'
 #' \dontrun{
@@ -522,26 +525,27 @@ detect <- function(x,
 #'
 
 multidetect <- function(data,
-                           var,
-                           output = "outlier",
-                           exclude = NULL,
-                           multiple,
-                           colsp = NULL,
-                           optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction =NULL,
-                                         maxcol = NULL, mincol = NULL, maxval = NULL, minval = NULL,
-                                         checkfishbase =FALSE, mode = NULL, lat = NULL, lon = NULL, pct = 80,
-                                         warn = FALSE),
-                           kmpar =list(k=6, method='silhouette', mode='soft'),
-                           ifpar = list(cutoff = 0.5, size=0.7),
-                           mahalpar = list(mode='soft'),
-                           jkpar = list(mode='soft'),
-                           zpar = list(type='mild', mode='soft'),
-                           gloshpar = list(k= 3, metric='manhattan', mode='soft'),
-                           knnpar = list(metric='manhattan', mode='soft'),
-                           lofpar = list(metric='manhattan', mode='soft', minPts= 10),
-                           methods,
-                           verbose=FALSE, spname=NULL,warn=FALSE,
-                           missingness = 0.1, showErrors = TRUE, sdm = TRUE, na.inform = FALSE){
+                        var,
+                        select = NULL,
+                        output = "outlier",
+                        exclude = NULL,
+                        multiple,
+                        colsp = NULL,
+                        optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction =NULL,
+                                      maxcol = NULL, mincol = NULL, maxval = NULL, minval = NULL,
+                                      checkfishbase =FALSE, mode = NULL, lat = NULL, lon = NULL, pct = 80,
+                                      warn = FALSE),
+                        kmpar =list(k=6, method='silhouette', mode='soft'),
+                        ifpar = list(cutoff = 0.5, size=0.7),
+                        mahalpar = list(mode='soft'),
+                        jkpar = list(mode='soft'),
+                        zpar = list(type='mild', mode='soft'),
+                        gloshpar = list(k= 3, metric='manhattan', mode='soft'),
+                        knnpar = list(metric='manhattan', mode='soft'),
+                        lofpar = list(metric='manhattan', mode='soft', minPts= 10),
+                        methods,
+                        verbose=FALSE, spname=NULL,warn=FALSE,
+                        missingness = 0.1, showErrors = TRUE, sdm = TRUE, na.inform = FALSE){
 
   #check if var is the excluded strings
 
@@ -580,19 +584,21 @@ multidetect <- function(data,
 
     if(nrow(data)<ncol(data)) warning('Number of rows are less than variables and some methods may not function properly.')
 
-    methodata <-  detect(x = data, var = var, output = output,
-                           exclude = exclude,optpar = optpar,
-                           kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
-                           mahalpar = mahalpar, lofpar = lofpar,
-                           zpar = zpar, gloshpar = gloshpar,
-                           knnpar = knnpar,
-                           methods = dup_methods,
-                           verbose = verbose,
-                           spname = spname,warn=warn,
-                           missingness = missingness,
-                           showErrors = showErrors,
-                           sdm = sdm,
-                           na.inform = na.inform)
+    if(!is.null(select)) dsel <- subset(x = data, select = select) else dsel <- data
+
+    methodata <-  detect(x = dsel, var = var, output = output,
+                         exclude = exclude,optpar = optpar,
+                         kmpar = kmpar, ifpar = ifpar, jkpar = jkpar,
+                         mahalpar = mahalpar, lofpar = lofpar,
+                         zpar = zpar, gloshpar = gloshpar,
+                         knnpar = knnpar,
+                         methods = dup_methods,
+                         verbose = verbose,
+                         spname = spname,warn=warn,
+                         missingness = missingness,
+                         showErrors = showErrors,
+                         sdm = sdm,
+                         na.inform = na.inform)
 
   }else {
 
@@ -636,12 +642,14 @@ multidetect <- function(data,
 
       if(length(var)>1) var1 = xp else var1 = var
 
-      d <-  detect(x = dfinal, var = var1, output = output,
-                     exclude = exclude,optpar = optpar,
-                     mahalpar = mahalpar, lofpar = lofpar,ifpar = ifpar, kmpar = kmpar,
-                     zpar = zpar, gloshpar = gloshpar, knnpar = knnpar, jkpar = jkpar,
-                     methods = dup_methods, verbose = verbose, spname = xp,warn=warn,
-                     missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
+      if(!is.null(select)) dsel <- subset(x = dfinal, select = select) else dsel <- dfinal
+
+      d <-  detect(x = dsel, var = var1, output = output,
+                   exclude = exclude,optpar = optpar,
+                   mahalpar = mahalpar, lofpar = lofpar,ifpar = ifpar, kmpar = kmpar,
+                   zpar = zpar, gloshpar = gloshpar, knnpar = knnpar, jkpar = jkpar,
+                   methods = dup_methods, verbose = verbose, spname = xp,warn=warn,
+                   missingness = missingness, showErrors = showErrors, sdm = sdm, na.inform = na.inform)
     }, simplify = FALSE)
   }
   if(is.null(exclude)){

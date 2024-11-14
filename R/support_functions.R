@@ -129,44 +129,44 @@ clean_names <- function(sp){
 }
 
 
-#' @title Check for suggested packages.
-#'
-#' @param listpkgs A \code{list} of packages to be suggested.
-#' @param reason A \code{string} of character to describe the reason why packages are suggested.
-#' @param quiet \code{logical} Default TRUE, for no messages.
-#'
-#' @importFrom utils install.packages
-#'
-#' @return install suggested packages
-#'
-#' @export
-#'
-suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
-                               reason='open the R Shiny Application', quiet= TRUE){
+#@title Check for suggested packages.
 
-  #check if suggested packages are installed and prompt the user to install them or not continue
+#@param listpkgs A \code{list} of packages to be suggested.
+#@param reason A \code{string} of character to describe the reason why packages are suggested.
+#@param quiet \code{logical} Default TRUE, for no messages.
 
-  sgt <- sapply(listpkgs, require, character.only = TRUE, mask.ok =FALSE,
-                warn.conflicts=FALSE, quietly=TRUE)
+#@importFrom utils install.packages
 
-  if(all(sgt)==TRUE){
-    if(isFALSE(quiet))message('All required packages are installed')
-  }else{
-    fl <- sgt[which(sgt==FALSE)]
-      #trivial
-      if(length(fl)==1) {
-        pkg ="Package"
-        isare = 'is'
-      }else {
-        pkg ="Packages"
-        isare = "are"
-      }
-    if(isFALSE(quiet)) message(pkg, " ", paste(names(fl), collapse = ' ,'), " ", isare, " installed to ", reason, " .")
+#@return install suggested packages
 
-    sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE, repos = "http://cran.us.r-project.org")
-  }
-
-}
+#@export
+#'
+# suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
+#                                reason='open the R Shiny Application', quiet= TRUE){
+#
+#   #check if suggested packages are installed and prompt the user to install them or not continue
+#
+#   sgt <- sapply(listpkgs, require, character.only = TRUE, mask.ok =FALSE,
+#                 warn.conflicts=FALSE, quietly=TRUE)
+#
+#   if(all(sgt)==TRUE){
+#     if(isFALSE(quiet))message('All required packages are installed')
+#   }else{
+#     fl <- sgt[which(sgt==FALSE)]
+#       #trivial
+#       if(length(fl)==1) {
+#         pkg ="Package"
+#         isare = 'is'
+#       }else {
+#         pkg ="Packages"
+#         isare = "are"
+#       }
+#     if(isFALSE(quiet)) message(pkg, " ", paste(names(fl), collapse = ' ,'), " ", isare, " installed to ", reason, " .")
+#
+#     sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE, repos = "http://cran.us.r-project.org")
+#   }
+#
+# }
 
 
 

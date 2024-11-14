@@ -131,7 +131,7 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
       dodge = 100
     }
     #install suggested packages if not yet inatalled on user computer
-    suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="loess and acutal values")))
+    #suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="loess and acutal values")))
 
     thresholdvalues <- NULL; dataretained <- NULL
 
