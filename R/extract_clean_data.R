@@ -21,7 +21,6 @@ cleandata <- function(data, outliers,
                                   verbose = verbose)
 
     threshold = unname(optthreshold[2])
-    print(threshold)
 
   }else if(!is.null(threshold)){
     threshold
@@ -250,10 +249,8 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
                                         autothreshold = autothreshold,
                                         pabs = pabs, loess = loess ),
                         error=function(e) return(NULL))
-      print(nrow(df_out))
 
       if(nrow(df_out)==0 || is.null(df_out)) cdata <- NULL else cdata <- df_out
-      print(fd)
 
       if(!is.null(cdata)) spdata <- cdata else spdata <- splist[[fd]]
 
