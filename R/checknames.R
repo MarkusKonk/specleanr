@@ -61,39 +61,49 @@
 #'
 #'
 
-check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, sn=FALSE){
+check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, sn=FALSE, ecosystem = FALSE, rm_duplicates= FALSE){
 
   if(missing(data)) stop('Data is not provided', call. = FALSE)
 
-  if(is(data, 'data.frame') && nrow(data)<1)stop('Dataset provided has zero observations')
+  if(inherits(data, 'sf') ) {
 
-  if(is(data, 'data.frame') && is.null(colsp)) {
+    if(!requireNamespace('sf', quietly = TRUE))stop('Please install package sf to continue.')
+
+    xx <- data |> sf::st_drop_geometry()
+
+  }else{
+    xx <- data
+    }
+
+  if(is(xx, 'data.frame') && nrow(xx)<1)stop('Dataset provided has zero observations')
+
+  if(is(xx, 'data.frame') && is.null(colsp)) {
 
     stop('Species column names is not provided', call. = FALSE)
 
-  } else if(is(data, 'data.frame') && !is.null(colsp)){
+  } else if(is(xx, 'data.frame') && !is.null(colsp)){
 
-    if(length((colnames(data)[colnames(data)==colsp]))<1){
+    if(length((colnames(xx)[colnames(xx)==colsp]))<1){
 
       stop('Species column name ', colsp, ' is  not found in the ', deparse(substitute(data)), ' data provided')
 
     } else{
 
-      spls <- unlist(data[, colsp])
+      spls <- unlist(xx[, colsp])
 
     }
 
-  }else if(is(data, 'list')){
+  }else if(is(xx, 'list')){
 
-    spls <- unlist(data)
+    spls <- unlist(xx)
 
-  }else if(is(data, 'vector') && length(data>1)){
+  }else if(is(xx, 'vector') && length(xx>1)){
 
-    spls <- data
+    spls <- xx
 
-  }else if(is(data, 'vector') || is(data, 'atomic')) {
+  }else if(is(xx, 'vector') || is(xx, 'atomic')) {
 
-    spls <- data
+    spls <- xx
 
   }else{
     stop('No data provided for species to check and merge')
@@ -120,8 +130,11 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
   unx <- unique(spna)
 
   spl <- c()
+
   speciescheck <- c()
+
   species <- c()
+
   for (iii in seq_along(trimws(unx))) {
 
     species_clean = clean_names(sp = unx[iii])
@@ -131,6 +144,7 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
     if((species_clean%in%acceptednames_list)==TRUE){
 
       spp = species_clean
+
 
     }else if((species_clean%in%synoynm_list)==TRUE){ #handle synonyms
 
@@ -148,15 +162,41 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
 
         sx <- acceptednames_list[which((s2%in%s1)==TRUE)] #get species name or names that are accepted for a particular synonym
 
-        if(length(sx)>1){ # if more than one
+        if(length(sx)==0){
+
+          spp <- NA
+
+          if(isTRUE(verbose)) message("The species ", species_clean, " has no accepted name so it will return NA.")
+
+        }else if(length(sx)>1){ # if more than one
 
           s11 <- spcd[which(spnames == species_clean & status=='synonym')]
 
           s21 <- spcd[which(status %in% c('accepted name', 'provisionally accepted name'))] #species codes for accepted names
 
-          spp <- acceptednames_list[which((s21%in%s11)==TRUE)]
+          spaccepted <- acceptednames_list[which((s21%in%s11)==TRUE)] #sometimes the synoymn has more than one accepted name, we select one
 
-          if(isTRUE(verbose)) message('The synoynm ', species_clean, ' will be replaced with ',spp,' based on high synonym simialrity.')
+          if(length(spaccepted)==0){
+            spp <- NA
+
+            if(isTRUE(verbose)) message("The species ", species_clean, " has no accepted name so it will return NA.")
+
+          }else if(length(spaccepted)==1){
+
+            spp <- spaccepted
+
+            if(isTRUE(verbose)) message('The synoynm ', species_clean, ' will be replaced with ',spp,' based on high synonym simialrity.')
+          }else{
+            #consider for more accepted names, but still check for similarity
+
+            dst = utils::adist(species_clean, spaccepted)
+
+            sp_prob = spaccepted[which(dst==min(dst))]
+
+            if(length(sp_prob)>1) spp <- sp_prob[1] else spp <- sp_prob
+
+            if(isTRUE(verbose)) message('The synoynm ', species_clean, ' will be replaced with ', spp,' which is closely similar among the ', length(spaccepted),' accepted names.')
+          }
 
         }else{
 
@@ -204,7 +244,6 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
             s2v <- spcd[which(status %in% c('accepted name', 'provisionally accepted name'))] #species codes for accepted names
 
             spp <- acceptednames_list[which((s2v%in%siv)==TRUE)]
-
 
             if(isTRUE(verbose)) message('The synoynm ', sp_ex, ' will be replaced with ',spp,' based on high synonym simialrity.')
 
@@ -260,21 +299,53 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
 
       }
     }
+    if(length(spp)==0) spp <- NA
 
     spl[iii] <- species_clean
+
     species[iii] <- unx[iii]
+
     speciescheck[iii] <- spp
+
     df_sp <- data.frame(species = species, speciescheck = speciescheck)
   }
   #data output functions
   if(!is(data, 'data.frame') && isTRUE(merge)){
+
     stop('the parameter merge is only if the data is a dataframe not list or vector')
+
   }else if(is(data, 'data.frame') && isTRUE(merge)){
 
     #rename standard out df to include the user entered column name in the main dataset
     names(df_sp)[1] <- colsp
 
     dfinal <- merge(data, df_sp, by=colsp)
+
+    if(isTRUE(ecosystem) && isFALSE(merge)) stop('To get ecosytem types for each species turn merge to TRUE.')
+
+    if(isTRUE(ecosystem)){
+
+      #get species list
+
+      spdf <- fishbase('spnames')#to ecosystem types for the species
+
+      #merge based on speccode
+      mddata <- merge(fb_df, spdf,  by='SpecCode')
+
+      mdup <- as.data.frame(mddata[!duplicated(mddata[c("synonym")]),])
+
+      splistsel <- mdup[,c('synonym', 'Fresh', 'Brack', 'Saltwater')]
+
+      #rename the synonym column to speciescheck to match the harmonized column
+      names(splistsel)[1] <- 'speciescheck'
+
+      spnoNA <- dfinal[!is.na(dfinal$speciescheck),]
+
+      mddatafinal <- merge(spnoNA, splistsel, by= 'speciescheck')
+
+      #remove duplicates by species
+      if(isTRUE(rm_duplicates)) dfinal <- as.data.frame(mddatafinal[!duplicated(mddatafinal[c('speciescheck')]),]) else dfinal <- mddatafinal
+    }
 
     return(dfinal)
 

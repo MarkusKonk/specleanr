@@ -21,6 +21,7 @@ cleandata <- function(data, outliers,
                                   verbose = verbose)
 
     threshold = unname(optthreshold[2])
+    print(threshold)
 
   }else if(!is.null(threshold)){
     threshold
@@ -153,7 +154,7 @@ cleandata <- function(data, outliers,
 #'
 #'
 
-extract_clean_data <- function(refdata, outliers, mode ='best',colsp = NULL,
+extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
                                threshold =NULL, warn=FALSE, verbose=FALSE,
                                autothreshold =FALSE, pabs = 0.1, loess = FALSE,
                                outlier_to_NA  = FALSE){
@@ -241,7 +242,7 @@ extract_clean_data <- function(refdata, outliers, mode ='best',colsp = NULL,
 
       if(isFALSE(outliers@mode)) spnames <- NULL else spnames <- fd
 
-      cdata <- tryCatch(cleandata(data = splist[[fd]], outliers = outliers,
+      df_out <- tryCatch(cleandata(data = splist[[fd]], outliers = outliers,
                                         sp = spnames,
                                         mode = mode, threshold = threshold,
                                         colsp = colsp,
@@ -249,6 +250,10 @@ extract_clean_data <- function(refdata, outliers, mode ='best',colsp = NULL,
                                         autothreshold = autothreshold,
                                         pabs = pabs, loess = loess ),
                         error=function(e) return(NULL))
+      print(nrow(df_out))
+
+      if(nrow(df_out)==0 || is.null(df_out)) cdata <- NULL else cdata <- df_out
+      print(fd)
 
       if(!is.null(cdata)) spdata <- cdata else spdata <- splist[[fd]]
 

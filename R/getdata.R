@@ -28,12 +28,6 @@
 #'        Note always check the validity of the species name with standard database FishBase or World Register of Marine Species.
 #'        If the records are more than 50000 in GBIF, and extent can be provide to limit the download.
 #'
-#' @importFrom sf st_bbox
-#' @importFrom methods new
-#' @importFrom rvertnet searchbyterm
-#' @importFrom rinat get_inat_obs
-#' @importFrom rgbif occ_data occ_count
-#'
 #' @return Lists of species records from online databases
 #'
 #' @export
@@ -84,6 +78,16 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
     stop('Data either list or dataframe not provided for download.')
   }
 
+  pkgs <- c('curl', 'rgbif', 'rvertnet', 'rinat', 'sf')
+
+  #check if these packages are installed on user computer
+
+  pkginstall <- sapply(pkgs, requireNamespace, quietly = TRUE)
+
+  pkgout <- pkgs[which(pkginstall==FALSE)]
+
+  if(length(pkgout)>=1)stop('Please install these ', length(pkgout), ' packages', paste(pkgout, collapse = ', '), ' to continue.')
+
   if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
 
   sppdata <- sapply(data, function(spp){
@@ -113,7 +117,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
       if(x=='gbif'){
 
-        ndata <- occ_count(scientificName = checksppx)
+        ndata <- rgbif::occ_count(scientificName = checksppx)
 
         if(ndata==0){
 
@@ -125,7 +129,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           if(gbiflim<50000){
 
-            gbifsp <-rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
+            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
 
             if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbiflimit of ', gbiflim)
 
@@ -133,7 +137,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           }else{
 
-            gbifsp <- occ_data(scientificName = checksppx, limit = ndata)
+            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = ndata)
 
             if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were download as they were the maximum records found.')
 
@@ -164,7 +168,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           }else{
 
-            gbifsp <- rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
+            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,
                                        decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
                                        decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
 
@@ -177,7 +181,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           if(isTRUE(verbose)) message("Only ", gbiflim, " records will be downloaded.")
 
-          gbifsp <- occ_data(scientificName = checksppx, limit = gbiflim,...)
+          gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,...)
 
           gbifx <- gbifsp$data
 
@@ -202,7 +206,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
         sptx <- scan(text = checksppx, what = ' ', quiet = T)
 
-        vertx <- searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
+        vertx <- rvertnet::searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
                               limit = vertlim, messages = FALSE)
         if(is.null(vertx)){
 
@@ -222,7 +226,7 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
         inatx <- tryCatch(
           expr = {
-            sx <- get_inat_obs(taxon_name= checksppx, maxresults = inatlim)
+            sx <- rinat::get_inat_obs(taxon_name= checksppx, maxresults = inatlim)
           },
           error= function(e){
 

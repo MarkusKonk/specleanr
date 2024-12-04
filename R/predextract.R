@@ -29,10 +29,6 @@
 #' @param merge \code{logical}. To add the other columns in the species data after data
 #'   extraction. Default \strong{TRUE}.
 #'
-#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf
-#'   st_bbox st_set_crs st_as_sfc
-#' @importFrom terra extract ext
-#'
 #' @return \code{dataframe} or \code{list} of precleaned data sets for single or multiple species.
 #' @export
 #'
@@ -84,6 +80,12 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
 
   #check and removing missing coordinates
 
+  #check if sf is installed
+
+  if(!requireNamespace('sf', quietly = TRUE))stop('Please install the sf package to continue.', call. = FALSE)
+
+  if(!requireNamespace('terra', quietly = FALSE))stop('Please install package terra to continue.', call. = FALSE)
+
   species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
 
   #check if the species coordinates are within the bounding the bounding box of the raster layer
@@ -109,7 +111,7 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
   if(isTRUE(warn))  if(ymax12>ymax2)warning("Some species points are outside the raster layers provided. Please check ymax.", call. = FALSE)
 
   #change the object into sf file format to enable geographical filtering outside the bounding box using st_filter
-  spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = st_crs(4326))
+  spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = sf::st_crs(4326))
 
   #filter out records outside the bounding box if provided.
   if(!is.null(bbox)){
@@ -123,9 +125,9 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
       class(bbox) <- "bbox"
 
 
-      bb <- st_as_sfc(bbox) |> sf::st_set_crs(st_crs(spdata_new))
+      bb <- sf::st_as_sfc(bbox) |> sf::st_set_crs(sf::st_crs(spdata_new))
 
-      basin_df <- st_filter(spdata_new, bb)
+      basin_df <- sf::st_filter(spdata_new, bb)
     }else{
       stop("The bounding box provided is wrong.")
     }
@@ -145,7 +147,7 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
 
   #check there is enough species data after duplicate removal for at some species
 
-  zz <- as.data.frame(table(dupdata[,colsp] %>% st_drop_geometry()))$Freq
+  zz <- as.data.frame(table(dupdata[,colsp] |> sf::st_drop_geometry()))$Freq
 
   if(zz[which.max(zz)]<minpts) stop('All species do not have enough data after removing missing values and duplicates.')
 
@@ -158,13 +160,13 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
 
   if(length(unx)==1){
 
-    spdfext <- dupdata |>  st_as_sf()
+    spdfext <- dupdata |>  sf::st_as_sf()
 
     if(nrow(spdfext)<minpts) warning(unx, ' has less than ', minpts, 'records')
 
     #extract species environmental data where species were recorded
 
-    bout<- as.data.frame(extract(raster, spdfext , ID=FALSE, xy=TRUE, bind = merge))
+    bout<- as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy=TRUE, bind = merge))
 
     #remove NAs after data extract from the raster layer
 
@@ -186,7 +188,7 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
 
       spdfdata <- dupdata[dupdata[, colsp]==spnames,]
 
-      spdfext <- spdfdata|>st_as_sf()
+      spdfext <- spdfdata|> sf::st_as_sf()
 
       if(nrow(spdfext)<minpts) {
 
@@ -216,7 +218,7 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
 
       }else if (list==TRUE){
 
-        dextract <- as.data.frame(extract(raster, spdfext , ID=FALSE, xy=TRUE, bind = merge))
+        dextract <- as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy=TRUE, bind = merge))
 
         if(isTRUE(na.rm)){
 
@@ -230,7 +232,7 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
           rastdata[[ci]] <- dextract
         }
 
-        #if(isTRUE(merge)) rastdata[[ci]]<- cbind(rastdata[[ci]], spdfext |>  st_drop_geometry()) else rastdata[[ci]]
+        #if(isTRUE(merge)) rastdata[[ci]]<- cbind(rastdata[[ci]], spdfext |>  sf::st_drop_geometry()) else rastdata[[ci]]
 
         names(rastdata)[ci] <- spnames
 

@@ -12,12 +12,13 @@
 #' @export
 #'
 #'
-thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, warn=FALSE,
+thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, var_col = NULL, warn=FALSE,
                           verbose=FALSE,
                           colors = c('darkblue', 'orange'),
                           tuneLoess = seq(0.75, 1, 0.1)){
 
   #Extract the variable used from the datacleaner class for outliers.
+
 
   var <- outliers@varused
   if(length(var)>1) var <- sp else var
@@ -131,7 +132,7 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
       dodge = 100
     }
     #install suggested packages if not yet inatalled on user computer
-    #suppressMessages(suppressWarnings(suggested.packages(listpkgs=c("ggplot2"),reason="loess and acutal values")))
+    if(!requireNamespace("ggplot2", quietly = TRUE))stop('Please install ggplot2 to continue.')
 
     thresholdvalues <- NULL; dataretained <- NULL
 
@@ -226,10 +227,12 @@ thresh_search <- function(data, outliers,  sp = NULL, plot=FALSE, colsp = NULL, 
 #'
 #'
 
-optimal_threshold <- function(refdata, outliers, colsp = NULL, warn=FALSE, verbose=FALSE,
+optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, verbose=FALSE,
                           plot =FALSE){
 
   #for a single species: clean data extraction
+
+  if(deparse(substitute(refdata))!= outliers@dfname)stop('The reference dataset used in outlier detection and the output of outlier detection are different.')
 
   if(outliers@mode==FALSE){
 
@@ -245,14 +248,14 @@ optimal_threshold <- function(refdata, outliers, colsp = NULL, warn=FALSE, verbo
 
     } else if(is(refdata, 'data.frame')){
 
-      if(is.null(colsp)) stop('Provide the column with species names in parameter, colsp .')
+      if(is.null(var_col)) stop('Provide the column with species names in parameter, var_col .')
 
-      splist <- split(refdata, f= refdata[,colsp])
+      splist <- split(refdata, f= refdata[,var_col])
 
       if(length(splist)!= length(outliers@result)) stop('Number of species in in data and outlier detection are not equal')
 
     }else{
-      stop('Only list or dataframe of species occurences accepted or set the `colsp parameter`.')
+      stop('Only list or dataframe of species occurences accepted or set the `var_col parameter`.')
     }
     spdata <- list()
 
@@ -260,9 +263,9 @@ optimal_threshold <- function(refdata, outliers, colsp = NULL, warn=FALSE, verbo
 
       spnames <- names(splist)[opt]
 
-      if(is(refdata, 'data.frame'))  data2<- refdata[refdata[,colsp] == spnames, ] else  data2<- refdata[[spnames]]
+      if(is(refdata, 'data.frame'))  data2<- refdata[refdata[,var_col] == spnames, ] else  data2<- refdata[[spnames]]
 
-      minmax <- thresh_search(data = data2, outliers = outliers, sp = spnames, plot = FALSE, colsp = colsp,
+      minmax <- thresh_search(data = data2, outliers = outliers, sp = spnames, plot = FALSE, var_col = var_col,
                               warn=warn, verbose=verbose)
 
       spdata[[opt]] <- data.frame(minima = unname(minmax[1]), maxima= unname(minmax[2]))

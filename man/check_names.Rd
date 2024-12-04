@@ -10,7 +10,9 @@ check_names(
   verbose = FALSE,
   pct = 90,
   merge = F,
-  sn = FALSE
+  sn = FALSE,
+  ecosystem = FALSE,
+  rm_duplicates = FALSE
 )
 }
 \arguments{

@@ -1,165 +1,4 @@
-#' @title Extract outliers for a one species
-#'
-#' @param x \code{list}. Outlier outputs.
-#' @param sp \code{string}. Species name or index in the list from datacleaner output. NULL for a single species
-#'
-#' @return \code{data frame} Outliers for each method
-#'
-#' @export
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' data(efidata)
-#'
-#' db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp', package = "specleanr"), quiet = TRUE)
-#'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package = "specleanr"))
-#'
-#' checkname <- check_names(data=efidata, colsp ='scientificName', pct = 90, merge = T)
-#'
-#' extdf <- pred_extract(data = checkname, raster = wcd,
-#'                       lat = 'decimalLatitude', lon = 'decimalLongitude',
-#'                      colsp = 'speciescheck',
-#'                      list = TRUE,verbose = F,
-#'                      minpts = 6,merge = F)#basin removed
-#'
-#'  #outlier detection
-#'
-#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
-#'                          exclude = c('x','y'), multiple = TRUE,
-#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
-#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
-#'
-#' extractoutlier <- extract_outliers(x=outliersdf, sp = 8)
-#'
-#' }
-#'
-#'
-extract_outliers <- function(x, sp = NULL){ #species name in quotes or number
 
-  .Deprecated("extractoutliers", msg = "extractoutliers() replaces extract_outliers to handle both single and multiple outlier detection outputs.")
-
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class accpeted')
-
-  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
-
-  if(isTRUE(x@mode) && is.null(sp)) stop('Provide the species name or index')
-
-  #extract outliers for a single species
-
-  nlen <- c()
-
-  methd <- c()
-
-  if(isFALSE(x@mode)){
-
-    dx <- x@result
-
-    checkNA <- sapply(dx, nrow)
-
-    metds <- dx[!sapply(checkNA,is.null)]
-
-    for (im in 1:length(metds)) {
-
-      nlen[im] <- nrow(metds[[im]])
-
-      methd[im] <- names(metds)[im]
-
-      mtdata <- data.frame(method=methd, totaloutliers = nlen)
-    }
-    #for multiple species
-  }else{
-    dx <- x@result[[sp]]
-
-    checkNA <- sapply(dx, nrow)
-
-    metdata <- dx[!sapply(checkNA,is.null)]
-
-    for (im in 1:length(metdata) ) {
-
-      outm <- names(metdata)[im]
-
-      mdf <- metdata[[outm]]
-
-      nlen[im] <- nrow(mdf)
-
-      methd[im] <- outm
-
-      mtdata <- data.frame(method=methd, totaloutliers = nlen)
-
-    }
-  }
-  return(mtdata)
-}
-
-
-#' @title Extract outliers for multiple species
-#'
-#' @param x Species list
-#'
-#' @return \code{dataframe} Outliers for multiple species.
-#' @export
-#'
-#' @examples
-#'
-#' \dontrun{
-#'
-#' #mult data extract
-#'
-#' data(efidata)
-#'
-#' db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp', package = "specleanr"), quiet = TRUE)
-#'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package = "specleanr"))
-#'
-#' checkname <- check_names(data=efidata, colsp ='scientificName', pct = 90, merge = T)
-#'
-#' extdf <- pred_extract(data = checkname, raster = wcd,
-#'                       lat = 'decimalLatitude', lon = 'decimalLongitude',
-#'                      colsp = 'speciescheck',
-#'                      list = TRUE,verbose = F,
-#'                      minpts = 6,merge = F)#basin removed
-#'
-#'  #outlier detection
-#'
-#' outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
-#'                          exclude = c('x','y'), multiple = TRUE,
-#'                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
-#'                          showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
-#'
-#' extractbatch <- batch_extract(x=outliersdf)
-#' }
-#'
-batch_extract <- function(x){
-
-  .Deprecated("extractoutliers", msg = "extractoutliers() replaces batch_extract to handle both single and multiple outlier detection outputs.")
-
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
-  if(!is(x, 'datacleaner')) stop('Only datacleaner class is accpeted')
-
-  if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
-
-  if(x@mode == FALSE) stop('Only used if the species are more than 1 during outlier detection and multiple set to TRUE.')
-
-  getall <- list()
-
-  for (ispp in 1:length(x@result)) {
-
-    spname <- names(x@result)[ispp]
-
-    getall[[ispp]] <- extract_outliers(x=x, sp = spname)
-
-    getall[[ispp]]$speciesname <- spname
-  }
-  getdf <- do.call(rbind, getall)
-
-  return(getdf)
-}
 
 #identify absolute outliers, proportions and best methods.
 
@@ -323,8 +162,6 @@ oci <- function(absoluteoutliers, absolute_propn, threshold, listofmethods,
 #'
 ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE, warn = FALSE, autothreshold=FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
   if(!is(x, 'datacleaner')) stop('Datacleaner class accepted')
 
   if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
@@ -356,7 +193,6 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
     var
   }
 
-
   #For multiple species
 
   if(isTRUE(x@mode) == TRUE && !is.null(sp)){
@@ -373,11 +209,11 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
 
   #first check for null values for methods that were not successful
 
-  checkNA <- sapply(species, nrow)
+  checknull <- sapply(species, nrow)
 
   #remove methods that didn't execute
 
-  speciesNULL <- species[!sapply(checkNA,is.null)]
+  speciesNULL <- species[!sapply(checknull,is.null)]
 
   #check if any method returned no outliers but will be retained while computing absolute outliers.
   len <- sapply(speciesNULL, nrow)
@@ -535,8 +371,6 @@ ocindex <- function(x, sp = NULL, threshold = NULL, absolute=FALSE, props=FALSE,
 
 multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, autothreshold = FALSE){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
   if(!is(x, 'datacleaner')) stop('Only datacleaner class accepted')
 
   if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
@@ -586,9 +420,9 @@ multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, auto
       species[di]<- names(x@result)[di]
     }
 
-    dx <- data.frame(species = species, absoutliers = absoluteoutliers)
+    dx <- data.frame(groups = species, absoutliers = absoluteoutliers)
 
-    #to extract a dataframe of absolute outlier proportions for all the methods at a particualr threshold
+    #to extract a dataframe of absolute outlier proportions for all the methods at a particular threshold
   }else if(isTRUE(props)){
 
     splist <- list()
@@ -609,7 +443,7 @@ multiabsolute <- function(x, threshold = NULL, props = FALSE, warn = FALSE, auto
       if(length(absx)>0 ){
         splist[[di]] <- absprops
         splist[[di]]$threshold <- threshold
-        splist[[di]]$species <- names(x@result)[di]
+        splist[[di]]$groups <- names(x@result)[di]
         splist[[di]]$numabs <- nrow(absprops)
       }else{
         splist[[di]] <- NULL
