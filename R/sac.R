@@ -17,9 +17,11 @@ outliercurve <- function(x, boots = 100,select = NULL,  linecolor = 'purple', se
   #get outliers
   spout <- x@result
 
-  if(unique(length(spout)>20) && is.null(select)) {
+  if(length(unique(names(spout)))>=20) {
+
     stop("Provide a vector of maximum 20 group variables to display. Use the select parameter.")
-  }else{
+
+  }else if(!is.null(select)){
 
     inOut <- names(x@result)%in%select
 
@@ -31,6 +33,8 @@ outliercurve <- function(x, boots = 100,select = NULL,  linecolor = 'purple', se
 
     spout <- spout[ing]
 
+  }else{
+    spout
   }
 
   xs <- sapply(names(spout), function(yy){

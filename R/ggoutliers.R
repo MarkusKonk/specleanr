@@ -132,7 +132,7 @@ ggoutliers <-  function(x, select = NULL, color='purple', desc = TRUE){
     meanval <- mean(outdf$totaloutliers)
 
   }else{
-      if(unique(length(outdf$groups)>=10) && is.null(select)){
+      if(length(unique(outdf$groups))>=10 && is.null(select)){
 
         stop("Provide a vectors of particular groups to plot, use the select parameter to provide a vector of groups.")
 
@@ -184,7 +184,7 @@ ggoutliers <-  function(x, select = NULL, color='purple', desc = TRUE){
       ggplot2::geom_hline(yintercept = meanval, linetype='twodash', linewidth = 1)
 
     }else{
-      ggplot2::geom_hline(data = meanval, aes(yintercept = meanvalue),linetype='twodash', linewidth = 1)
+      ggplot2::geom_hline(data = meanval, ggplot2::aes(yintercept = meanvalue),linetype='twodash', linewidth = 1)
     }}+
 
     ggplot2::labs(x="Outlier detection methods", y ='Number of outliers')

@@ -24,7 +24,7 @@ cleandata_label <- function(refdata, outliers, sp = NULL,
   vardata <- unlist(refdata[, var])
 
   #put the categories in a list
-  labelval <- c('perfect', 'very strong', 'moderate', 'fair', 'poor')
+  labelval <- c('perfect outlier', 'very strong', 'moderate', 'fair', 'poor')
 
   labdata <- sapply(labelval, function(xlab){
 
@@ -74,7 +74,7 @@ cleandata_label <- function(refdata, outliers, sp = NULL,
 
     cleandf <- refdata[indxclean,]
 
-    cleandf["label"] <- "clean"
+    cleandf["label"] <- "not outlier"
 
     cleanoutdf <- rbind(cleandf, outdf)
   }else{
@@ -228,10 +228,10 @@ extract_cleandata_label <- function(refdata, outliers, colsp = NULL,
       spdata <- cdata
     } else {
       spdata <- splist[[fd]]
-      spdata['label'] <- 'clean'
+      spdata['label'] <- 'not outlier'
     }
 
-    if(outliers@mode==FALSE) spdata else spdata['species'] <- fd
+    if(outliers@mode==FALSE) spdata else spdata['groups'] <- fd
 
     spdata
   }, simplify = FALSE, USE.NAMES = FALSE)
