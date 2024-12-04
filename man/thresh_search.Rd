@@ -9,7 +9,7 @@ thresh_search(
   outliers,
   sp = NULL,
   plot = FALSE,
-  colsp = NULL,
+  var_col = NULL,
   warn = FALSE,
   verbose = FALSE,
   colors = c("darkblue", "orange"),
@@ -24,8 +24,6 @@ thresh_search(
 \item{sp}{\code{string}. species name. NULL if a single species is considered in outlier detection.}
 
 \item{plot}{\code{logical}. to show plot of loess fitted function with minima and maxima (optimal threshold and clean data).}
-
-\item{colsp}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
 
 \item{warn}{\code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 

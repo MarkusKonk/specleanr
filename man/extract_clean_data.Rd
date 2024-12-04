@@ -7,7 +7,7 @@
 extract_clean_data(
   refdata,
   outliers,
-  mode = "best",
+  mode = "abs",
   colsp = NULL,
   threshold = NULL,
   warn = FALSE,

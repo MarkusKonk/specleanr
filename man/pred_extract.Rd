@@ -13,10 +13,9 @@ pred_extract(
   bbox = NULL,
   colsp,
   minpts = 10,
-  multiple = TRUE,
   rm_duplicates = TRUE,
   na.rm = TRUE,
-  na.inform = TRUE,
+  na.inform = FALSE,
   list = TRUE,
   merge = FALSE,
   verbose = FALSE,
@@ -46,9 +45,6 @@ and \code{xmax} is the minimum latitude.}
 \item{minpts}{\code{numeric}. Minimum number of records for the species after
 removing duplicates and those within a particular basin.}
 
-\item{multiple}{\code{logical}. TRUE if species are more than one and FALSE for one species
-in the data.}
-
 \item{rm_duplicates}{\code{logical} TRUE if the duplicates will removed based species coordinates and names. Default \code{TRUE}.}
 
 \item{list}{\code{logical}. If TRUE the a list of multiple species data frames will be
@@ -61,6 +57,9 @@ extraction. Default \strong{TRUE}.}
 
 \item{warn}{\code{logical}. indicating to whether to show implementation warning or
 not. Default \code{FALSE}.}
+
+\item{multiple}{\code{logical}. TRUE if species are more than one and FALSE for one species
+in the data.}
 }
 \value{
 \code{dataframe} or \code{list} of precleaned data sets for single or multiple species.

@@ -4,7 +4,7 @@
 \alias{plot,datacleaner,ANY-method}
 \title{Visualize the outliers identified by each method}
 \usage{
-\S4method{plot}{datacleaner,ANY}(x, y, raw = TRUE, colsp = NULL)
+\S4method{plot}{datacleaner,ANY}(x, y, raw = TRUE, var_col = NULL)
 }
 \arguments{
 \item{x}{. the datacleaner object}
@@ -14,7 +14,7 @@
 \item{raw}{Whether total number of outlier flagged in each method are provided (\code{TRUE}) or
 \code{FALSE} to return the percentage outlier contribution for each method.}
 
-\item{colsp}{\code{string} If the reference dataset is a \code{dataframe} class,  \code{multiple = TRUE}, and
+\item{var_col}{\code{string} If the reference dataset is a \code{dataframe} class,  \code{multiple = TRUE}, and
 \code{raw = FALSE}, provide the column with species or parameter names.}
 }
 \value{

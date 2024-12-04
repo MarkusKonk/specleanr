@@ -7,7 +7,7 @@
 optimal_threshold(
   refdata,
   outliers,
-  colsp = NULL,
+  var_col = NULL,
   warn = FALSE,
   verbose = FALSE,
   plot = FALSE
@@ -17,8 +17,6 @@ optimal_threshold(
 \item{refdata}{\code{dataframe}. Species data frame from precleaned analysis.}
 
 \item{outliers}{\code{string}. Output from the outlier detection process.}
-
-\item{colsp}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
 
 \item{warn}{\code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 
