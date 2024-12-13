@@ -59,7 +59,7 @@
 #'
 #'
 
-pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10,
+pred_extract <- function(data, raster, lat = NULL, lon = NULL, bbox = NULL, colsp, minpts = 10,
                          rm_duplicates = TRUE,
                          na.rm = TRUE,
                          na.inform = FALSE,
@@ -86,32 +86,20 @@ pred_extract <- function(data, raster, lat, lon, bbox = NULL, colsp, minpts = 10
 
   if(!requireNamespace('terra', quietly = FALSE))stop('Please install package terra to continue.', call. = FALSE)
 
-  species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
-
-  #check if the species coordinates are within the bounding the bounding box of the raster layer
-
-  rasterbbox <- as.vector(terra::ext(raster))
-
-  xmin1 <- unname(rasterbbox[1])
-  ymin1 <- unname(rasterbbox[2])
-  xmax2 <- unname(rasterbbox[3])
-  ymax2 <- unname(rasterbbox[4])
-
-  xmin11 <- min(unlist(species_lon_df[, lon]))
-  ymin11 <- min(unlist(species_lon_df[, lat]))
-  xmax12 <- max(unlist(species_lon_df[, lon]))
-  ymax12 <- max(unlist(species_lon_df[, lat]))
-
-  if(isTRUE(warn)) if(xmin11<xmin1)warning("Some species points are outside the raster layers provided. Please check xmin.", call. = FALSE)
-
-  if(isTRUE(warn)) if(ymin11<ymin1)warning("Some species points are outside the raster layers provided. Please check ymin.", call. = FALSE)
-
-  if(isTRUE(warn))  if(xmax12>xmax2)warning("Some species points are outside the raster layers provided. Please check xmax.", call. = FALSE)
-
-  if(isTRUE(warn))  if(ymax12>ymax2)warning("Some species points are outside the raster layers provided. Please check ymax.", call. = FALSE)
-
   #change the object into sf file format to enable geographical filtering outside the bounding box using st_filter
-  spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = sf::st_crs(4326))
+  if(!is(data, 'sf')){
+
+    if(is.null(lat) | is.null(lon)) stop("Provide the latitude and longitude parameters.")
+
+    species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
+
+    spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = sf::st_crs(4326))
+
+  }else{
+
+    spdata_new <- dfnew[complete.cases(dfnew[ , c(colsp)]), ]
+
+  }
 
   #filter out records outside the bounding box if provided.
   if(!is.null(bbox)){

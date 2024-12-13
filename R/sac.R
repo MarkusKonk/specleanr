@@ -10,12 +10,15 @@
 #'
 #' @examples
 #'
-outliercurve <- function(x, boots = 100,select = NULL,  linecolor = 'purple', seed = 1134){
+outliercurve <- function(x, boots = 100, select = NULL,  linecolor = 'purple', seed = 1134){
 
   var <- x@varused
-
   #get outliers
-  spout <- x@result
+  spresult <- x@result
+
+  #for single species assign a pseudo name to enable processing downward
+
+  if(x@mode==FALSE) spout <- list(sp = spresult) else spout <- spresult
 
   if(length(unique(names(spout)))>=20) {
 
@@ -25,13 +28,13 @@ outliercurve <- function(x, boots = 100,select = NULL,  linecolor = 'purple', se
 
     inOut <- names(x@result)%in%select
 
-    ing <- names(x@result)[which(inOut==TRUE)]
+    inGroup <- names(x@result)[which(inOut==TRUE)]
 
-    if(length(ing)<=0) stop("Groups indicated in select parameter do not exist in the groups in the original data.", call. = FALSE)
+    if(length(inGroup)<=0) stop("Groups indicated in select parameter do not exist in the groups in the original data.", call. = FALSE)
 
-    if(length(ing)<length(select)) warning("Some groups were dropped as they were not in the dataset.", call. = FALSE)
+    if(length(inGroup)<length(select)) warning("Some groups were dropped as they were not in the dataset.", call. = FALSE)
 
-    spout <- spout[ing]
+    spout <- spout[inGroup]
 
   }else{
     spout

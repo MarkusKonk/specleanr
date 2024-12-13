@@ -1,7 +1,7 @@
 #' @noRd
 #'
 cleandata_label <- function(refdata, outliers, sp = NULL,
-                            threshold = 0.1, warn = FALSE){
+                            threshold = 0.1, warn = FALSE, classify = 'med'){
 
   #var of interest
   varc <- outliers@varused
@@ -23,47 +23,134 @@ cleandata_label <- function(refdata, outliers, sp = NULL,
   #get the column data
   vardata <- unlist(refdata[, var])
 
-  #put the categories in a list
-  labelval <- c('perfect outlier', 'very strong', 'moderate', 'fair', 'poor')
+  props <- absoutliers$absolute_propn
 
-  labdata <- sapply(labelval, function(xlab){
+  if(classify == 'med'){
 
-    props <- absoutliers$absolute_propn
+    labelval <- c('perfect outlier', 'very strong', 'moderate', 'fair', 'poor')
 
-    if(xlab == "poor"){
+    labdata <- sapply(labelval, function(xlab){
 
-      cvals <- which(props < 0.3 & props >= 0.1)
+      if(xlab == "poor"){
 
-    }else if(xlab =='fair'){
-      cvals <- which(props < 0.5 & props >= 0.3)
+        cvals <- which(props <= 0.2 & props >= 0.1)
 
-    }else if(xlab == "moderate"){
-      cvals <- which(props < 0.7 & props >= 0.6)
+      }else if(xlab =='fair'){
+        cvals <- which(props <= 0.5 & props >= 0.3)
 
-    }else if(xlab == "very strong"){
-      cvals <- which(props < 0.9 & props >= 0.8)
+      }else if(xlab == "moderate"){
+        cvals <- which(props <= 0.7 & props >= 0.6)
 
-    }else{
-      cvals <- which(props >= 1)
-    }
-    if(length(cvals)>=1){
+      }else if(xlab == "very strong"){
+        cvals <- which(props <= 0.9 & props >= 0.8)
 
-      outvect <- absoutliers[cvals,]$absoluteoutliers
+      }else{
+        cvals <- which(props >= 1)
+      }
+      if(length(cvals)>=1){
 
-      indxout <- which(vardata %in% outvect)
+        outvect <- absoutliers[cvals,]$absoluteoutliers
 
-      outdata <- refdata[indxout,]
+        indxout <- which(vardata %in% outvect)
 
-      outdata["label"] <- xlab
+        outdata <- refdata[indxout,]
 
-      return(outdata)
-    }else{
-      outdata <- NULL
-    }
-  },simplify = FALSE, USE.NAMES = FALSE)
+        outdata["label"] <- xlab
 
-  #extract list of outlier labeled data
-  outdf <- do.call(rbind, labdata)
+        return(outdata)
+      }else{
+        outdata <- NULL
+      }
+    },simplify = FALSE, USE.NAMES = FALSE)
+
+    #extract list of outlier labeled data
+    outdf <- do.call(rbind, labdata)
+
+  }else if(classify == 'ps'){
+
+    labelval <- c('perfect', 'strong', 'moderate', 'weak')
+
+    labdata <- sapply(labelval, function(xlab){
+
+      if(xlab == "weak"){
+
+        cvals <- which(props <= 0.3 & props >= 0.1)
+
+      }else if(xlab =='moderate'){
+        cvals <- which(props <= 0.4 & props >= 0.6)
+
+      }else if(xlab == "strong"){
+        cvals <- which(props <= 0.9 & props >= 0.7)
+
+      }else{
+        cvals <- which(props >= 1)
+      }
+      if(length(cvals)>=1){
+
+        outvect <- absoutliers[cvals,]$absoluteoutliers
+
+        indxout <- which(vardata %in% outvect)
+
+        outdata <- refdata[indxout,]
+
+        outdata["label"] <- xlab
+
+        return(outdata)
+      }else{
+        outdata <- NULL
+      }
+    },simplify = FALSE, USE.NAMES = FALSE)
+
+    #extract list of outlier labeled data
+    outdf <- do.call(rbind, labdata)
+
+  }else if(classify == 'po'){
+
+    labelval <- c('perfect', 'very strong', 'strong', 'moderate', 'weak', 'negligible')
+
+    labdata <- sapply(labelval, function(xlab){
+
+      if(xlab == "negligible"){
+
+        cvals <- which(props <= 0.1)
+
+      }else if(xlab =='weak'){
+        cvals <- which(props <= 0.2)
+
+      }else if(xlab == "moderate"){
+        cvals <- which(props <= 0.3)
+
+      }else if(xlab == "strong"){
+        cvals <- which(props <= 0.6 & props >= 0.4)
+
+      }else if(xlab == "very strong"){
+        cvals <- which(props <= 0.9 & props >= 0.7)
+
+      }else{
+        cvals <- which(props >= 1)
+      }
+      if(length(cvals)>=1){
+
+        outvect <- absoutliers[cvals,]$absoluteoutliers
+
+        indxout <- which(vardata %in% outvect)
+
+        outdata <- refdata[indxout,]
+
+        outdata["label"] <- xlab
+
+        return(outdata)
+      }else{
+        outdata <- NULL
+      }
+    },simplify = FALSE, USE.NAMES = FALSE)
+
+    #extract list of outlier labeled data
+    outdf <- do.call(rbind, labdata)
+
+  }else{
+    stop('Only me, po, or ps are allowed')
+  }
 
   #extract clean data
   indxclean <- which(!vardata %in% outdf[, var])
@@ -89,9 +176,15 @@ cleandata_label <- function(refdata, outliers, sp = NULL,
 #' @param refdata \code{dataframe}. The reference data for the species used in outlier detection.
 #' @param outliers \code{string}. Output from the outlier detection process.
 #' @param threshold \code{numeric}. Value to consider whether the outlier is an absolute outlier or not.
-#' @param colsp \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.
+#' @param colsp \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column with species names.
 #' @param warn \code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
 #' @param verbose \code{logical}. Produces messages or not. Default \strong{FALSE}.
+#'
+#' @details
+#'
+#' Outlier cluster weights were based on statistical classification of coefficients mostly for correlation based on \code{Akoglu 2018}.
+#' They are classified based on three naming standards, namely Dancey & Reidy (Physchology), Quinni piac University (Politics) and Chan YH medicine.
+#' All classifications have been used in the function and each affects the data clusters. The default is Chan YH (medicine).
 #'
 #' ###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.
 #'
@@ -145,11 +238,11 @@ cleandata_label <- function(refdata, outliers, sp = NULL,
 #'
 #' @export
 #'
-#'
+#' @references Akoglu, H. 2018. User’s guide to correlation coefficients. - Turk J Emerg Med 18: 91–93.
 
 extract_cleandata_label <- function(refdata, outliers, colsp = NULL,
                                     threshold = 0.1, warn=FALSE,
-                                    verbose = TRUE){
+                                    verbose = TRUE,classify = 'med'){
 
   if(deparse(substitute(refdata))!= outliers@dfname)stop('The reference dataset used in outlier detection and the output of outlier detection are different.')
 
@@ -198,17 +291,12 @@ extract_cleandata_label <- function(refdata, outliers, colsp = NULL,
 
     if(isFALSE(outliers@mode)) spnames <- NULL else spnames <- fd
 
-    cleandata_label(refdata = splist[[fd]],
-                    outliers = outliers,
-                    sp = spnames,
-                    threshold = threshold,
-                    warn = warn)
-
     cdata <- tryCatch(cleandata_label(refdata = splist[[fd]],
                                       outliers = outliers,
                                       sp = spnames,
                                       threshold = threshold,
-                                      warn = warn),
+                                      warn = warn,
+                                      classify = classify),
 
                       error=function(e){
 
