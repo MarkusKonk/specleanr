@@ -3,9 +3,7 @@
 #'
 fishbase <- function(tables){
 
-  if(!requireNamespace('rfishbase', quietly = TRUE))stop("Please install rfishbase package to continue.")
-
-  if(!requireNamespace('curl', quietly = TRUE))stop('Please install package curl to continue.')
+  check_packages(pkgs = c('rfishbase', 'curl'))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later to access FishBase.')
 
@@ -142,4 +140,167 @@ getdiff <- function(x, y, full=FALSE){
     out <- xx[[which(rws==min(rws))]]
   }
   return(out)
+}
+
+
+#' Check for packages to install and reposnd to use
+#'
+#' @param pkgs list of packages to install
+#'
+#' @return error message for packages to install
+#'
+check_packages <- function(pkgs){
+
+  pkginstall <- sapply(pkgs, requireNamespace, quietly = TRUE)
+
+  pkgout <- pkgs[which(pkginstall==FALSE)]
+
+  if(length(pkgout)>=1)stop('Please install ', length(pkgout), ' packages: ', paste(pkgout, collapse = ', '), ' to continue.', call. = FALSE)
+
+  invisible(pkgs)
+}
+
+
+
+#' To check for a bounding box
+#'
+#' @param x raster, shapefile or list of bounding box values.
+#' @param par indicate the database being queried to handing the issues of bounding box settings.
+#'
+#' @return extent values from raster, shapefile and bounding box
+#'
+extentvalues <- function(x, par= NULL){
+
+  if(inherits(x, what = 'sf')){
+
+    extout <- unname(sf::st_bbox(x))
+
+  }  else if(inherits(x, "SpatRaster")){
+
+    vc <- terra::ext(x)
+
+    extout <- unname(c(vc[1], vc[3], vc[2], vc[4]))
+
+  }else if(is(x, 'list')){
+
+    v <- unlist(x)
+
+    stdbox <- c("xmin", "ymin", "xmax", "ymax")
+
+    if(setequal(stdbox, names(v))==FALSE) stop("the labels provided in the bounding are not standard. Please use xmin, xmax, ymin, ymax")
+
+    extout <- as.vector(v)
+
+    }else{
+
+    stop('Either provide a raster layer or shapefile to extract the bounding box. If the extent is known, provide the xmin, xmax, ymin, ymax values in a list')
+    }
+
+  if(par=='inat') vf <- c(extout[2], extout[1], extout[4], extout[3]) else vf <- extout
+
+  return(vf)
+}
+
+
+#' Implement principal component analysis for dimension reduction
+#'
+#' @param data Environmental dataframe
+#' @param npc Number of principal components to be retained. Default is 2
+#' @param q To show the cumulative total variance explained by the \code{npc} selected.
+#'
+pca <- function(data, npc, q){
+
+  if(ncol(data)<=npc) stop('The number of columns or variabales are less than or equal to ', npc,' so either reduce the principal components needed or the data is not highly dimesional.',call. = FALSE)
+
+  xout <- prcomp(data, center = TRUE, scale. = TRUE)
+  sout <- xout$x
+
+  if(isFALSE(q)) message('The cummulative proprotion for PCs ', npc, ' is ',
+                         summary(xout)$importance[3,npc])
+
+  pc <- as.data.frame(sout[, 1:npc])
+
+  return(list(pcs = pc, od =data))
+}
+
+
+#' To implement bootstrapping procedures. Sampling with replacement.
+#'
+#' @param data Environmental data
+#' @param boots Number of bootstraps
+#' @param seed Random seed to ensure reproduciblity
+#' @param pca Whether bootstrapping is conducted on data after principal component analysis.
+#'
+boots <- function(data, boots, seed, pca){
+
+  if(isTRUE(pca)){
+
+    df <- data[[1]]
+
+    dfo <- data[[2]]
+  }else{
+    df <- data
+    dfo <- NULL
+  }
+  set.seed(seed = seed)
+  boot <- seq(1, boots, 1)
+  bout <- lapply(boot, function(bb){
+    indx <- sample(nrow(df), size = nrow(df), replace = TRUE)
+    pc <-  df[indx,]
+    dfo <- dfo[indx,]
+    attributes(pc)$OD <- dfo
+    pc
+  })
+}
+
+#' To package both principal component analysis and bootstrapping.
+#'
+#' @param pb the principal component or bootstrapped data
+#' @param var The variable of concern, which is vital for univariate outlier detection methods
+#' @param pc Whether principal component analysis will be computed. Default \code{FALSE}
+#' @param boot Whether bootstrapping will be computed. Default \code{FALSE}
+#' @param pcvar Principal component analysis to e used for outlier detection after PCA. Deafult \code{PC1}
+#'
+pcboot <- function(pb, var, pc, boot, pcvar){
+
+  if(isTRUE(pc)){
+
+    if(isTRUE(boot)){
+      #attach the original data to enable forward retraction.
+      varc <- (attributes(pb)$OD)[, var]
+
+      var <- unlist(pb[, pcvar])
+
+      data <- attributes(pb)$OD
+
+      pcdf <- pb
+    }else{
+
+      varc <- pb[[2]][, var]
+      var <- pb[[1]][, pcvar]
+      data <- pb[[2]]
+      pcdf <- pb[[1]] #principal component data
+    }
+  }else{
+
+    var <- unlist(pb[, var])
+    varc <- NULL
+    pcdf <- NULL
+    data <- pb
+
+  }
+  return(list(data = data, varc= varc, var = var, pcdf= pcdf))
+}
+
+
+#' Computes the empirical influence function for each values in the dataset
+#'
+#' @param x Outlier checked data
+#' @param var variable of interest
+#'
+eif <- function(x, var){
+  vvx <- unlist(x[,var])
+  eout<- sapply(1:nrow(x), function(vx){length(vvx) * (mean(vvx) - mean((vvx[-vx])))})
+  x[,'EIF'] <- eout
+  return(x)
 }
