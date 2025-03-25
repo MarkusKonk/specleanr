@@ -4,7 +4,17 @@
 \alias{isoforest}
 \title{Identify outliers using isolation forest model.}
 \usage{
-isoforest(data, size, cutoff = 0.5, output, exclude = NULL)
+isoforest(
+  data,
+  size,
+  cutoff = 0.5,
+  output,
+  exclude = NULL,
+  pc,
+  boot,
+  pcvar,
+  var
+)
 }
 \arguments{
 \item{data}{Dataframe of environmental variables extracted from where the species was recorded present or absent.}

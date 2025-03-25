@@ -16,11 +16,15 @@ optimal_threshold(
 \arguments{
 \item{refdata}{\code{dataframe}. Species data frame from precleaned analysis.}
 
-\item{outliers}{\code{string}. Output from the outlier detection process.}
+\item{outliers}{\code{datacleaner}. Datacleaner output with outliers flagged in \code{multidetect} function.}
 
-\item{warn}{\code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
+\item{var_col}{\code{string}. A column with species names if \code{dataset} for species is a dataframe not a list.
+See \code{\link{pred_extract}} for extracting environmental data.}
 
-\item{verbose}{\code{logical}. Produces messages or not. Default \strong{FALSE}.}
+\item{warn}{\code{logical}. If \strong{TRUE}, warning on whether absolute
+outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
+
+\item{verbose}{\code{logical}. If true, then messages about the outlier flagging will be displayed.}
 
 \item{plot}{\code{logical}. to show plot of loess fitted function with minima and maxima (optimal threshold and clean data).}
 }

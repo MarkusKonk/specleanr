@@ -4,7 +4,7 @@
 \alias{medianrule}
 \title{Median rule method}
 \usage{
-medianrule(data, var, output, x = 2.3)
+medianrule(data, var, output, x = 2.3, pc, pcvar, boot)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}

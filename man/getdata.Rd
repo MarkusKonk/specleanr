@@ -7,10 +7,9 @@
 getdata(
   data,
   colsp = NULL,
-  bbox = NULL,
-  isfish = TRUE,
+  extent = NULL,
   db = c("gbif", "vertnet", "inat"),
-  gbiflim = 1e+06,
+  gbiflim = 50000,
   vertlim = 1000,
   inatlim = 3000,
   verbose = FALSE,
@@ -27,13 +26,10 @@ databases (GBIF, VertNET, and iNaturalist).}
 \item{colsp}{\code{string}. A variable of species names. Provided if data is a data frame, so not
 required for lists and vector.}
 
-\item{bbox}{\code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
+\item{extent}{\code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
 records from the GBIF will be downloaded. These can be provided in two forms,
 either a shapefile \code{(sf)} class accepted or provide a list of
 \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.}
-
-\item{isfish}{\code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
-accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.}
 
 \item{db}{\code{vector}. The different databases allowed including \code{'gbif', 'vertnet', and 'inat'}.}
 
@@ -72,12 +68,17 @@ Note always check the validity of the species name with standard database FishBa
 
 \dontrun{
 
-gbaloni <- check_names(data = 'gymnocephalus baloni', pct=90)
-
-gbdata <- getdata(data=gbaloni, gbiflim = 100, inatlim = 100, vertlim = 100)
+gbdata <- getdata(data = 'Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
 
 #Get for two species
-sp_records <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),gbiflim = 100,
+sp_records <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),
+                            gbiflim = 100,
+                            inatlim = 100,
+                            vertlim = 100)
+#for only two databases
+sp_records_2db <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),
+                           db= c('gbif','inat'),
+                            gbiflim = 100,
                             inatlim = 100,
                             vertlim = 100)
 

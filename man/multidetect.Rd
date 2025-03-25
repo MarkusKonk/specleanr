@@ -24,6 +24,8 @@ multidetect(
   knnpar = list(metric = "manhattan", mode = "soft"),
   lofpar = list(metric = "manhattan", mode = "soft", minPts = 10),
   methods,
+  bootSettings = list(run = FALSE, nb = 5, maxrecords = 30, seed = 1135),
+  pc = list(exec = FALSE, npc = 2, q = T, pcvar = "PC1"),
   verbose = FALSE,
   spname = NULL,
   warn = FALSE,
@@ -40,6 +42,8 @@ multidetect(
 maximum temperature of the coldest month for bioclimatic variables \code{(IUCN Standards and Petitions Committee, 2022))} or
 stream power index for hydromorphological parameters \code{(Logez et al., 2012)}. This parameter is
 necessary for the univariate outlier detection methods such as Z-score.}
+
+\item{select}{\code{vector} The columns that will be used in outlier detection. Make sure only numeric columns are accepted.}
 
 \item{output}{\code{character}. Either \code{clean}: for a data set with no outliers, or \code{outlier}: to output a dataframe with outliers. Default \code{outlier}.}
 
@@ -116,7 +120,7 @@ by each method.
 This function computes different outlier detection methods including univariate, multivariate and species
      ecological ranges to enables seamless comparison and similarities in the outliers detected by each
      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-     and thereafter the outliers can be extracted using the \code{\link{clean_data_extract}} function.
+     and thereafter the outliers can be extracted using the \code{\link{extract_clean_data}} function.
 }
 \examples{
 
@@ -136,8 +140,9 @@ matchdata <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
 datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
 
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp',
-                            package='specleanr'), quiet=TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))

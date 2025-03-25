@@ -10,7 +10,11 @@ mahal(
   output = "outlier",
   mode = "soft",
   pdf = 0.95,
-  tol = 1e-20
+  tol = 1e-20,
+  pc,
+  boot,
+  var,
+  pcvar
 )
 }
 \arguments{
