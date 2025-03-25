@@ -27,19 +27,19 @@ To test the workflow on two plant species, namely the black poplar (*Populus nig
 
 1. **Data acquisition: a) species records**
 
-Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Global Biodiversity Information Facility-GBIF (https://www.gbif.org/). We use the **`getdata()`** function, built around rvertnet, rgbif, and rinat packages. We limited the occurrence records from GBIF to 700 and Inaturalist to 100. To extract data from the **`dataonline`** class returned by **`getdata()`**, we used the **`extract_online()`** function.
+Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Global Biodiversity Information Facility-GBIF (https://www.gbif.org/). We use the **`getdata()`** function, built around rvertnet, rgbif, and rinat packages. We limited the occurrence records from GBIF to 700 and iNaturalist to 100. 
 * **Note**: If the user has locally saved data, then after extracting the online data, the **`match_datasets()`** function can be used to merge all the data sets. 
 
-* We set the bounding box **`(bbox)`** parameter for **`getdata()`** to return only records within the Danube basin. However, the user can set this to suit the area of concern. If not set, the user data will download records globally, which is time-consuming and likely to break during the download. Therefore, it is strongly advisable to set the **`bounding box`**. Also, if a shapefile is available, the user can provide it instead of the bounding box, and the function will automatically extract the bounding box.
-* `isFish` is necessary to indicate whether it's a fish species since function cross-checks fish taxa names in FishBase for synonyms, name spelling, and other taxa names using the **`taxize`** package. Therefore, no fish taxa will return errors.
+* We set the bounding box **`(extent)`** parameter for **`getdata()`** to return only records within the Danube basin. However, the user can set this to suit the area of concern. If not set, the user data will download records globally, which is time-consuming and likely to break during the download. Therefore, it is strongly advisable to set the **`bounding box`**. Also, if a shapefile is available, the user can provide it instead of the bounding box, and the function will automatically extract the bounding box.
 
 ```{r get species occurences}
 
 plantdf <- getdata(data = c( "Populus nigra", "Fagus sylvatica"), 
-                    gbiflim = 700, inatlim = 100, isfish = FALSE,
+                    gbiflim = 700, inatlim = 100,
                      hasCoordinate = TRUE, 
-                   bbox = c(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500),
+                   extent = list(xmin = 8.15250, ymin = 42.08333, xmax=29.73583, ymax = 50.24500),
                    verbose = FALSE, warn = FALSE)
+
 
 ```
 1. **Data acquisition: b) Environmental predictors**
@@ -74,6 +74,7 @@ worldclim <- system.file('extdata/worldclim.tiff', package = 'specleanr')
 
 worldclim <- terra::rast(worldclim)
 
+
 ```
 
 2. **Preliminary analysis**
@@ -82,7 +83,7 @@ The step involves removing missing coordinate values, setting the geographical r
 
 ```{r extract data and prelimianry analysis}
 
-danube_basin <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), 
+danube_basin <- sf::st_read(system.file('extdata', "danube.shp.zip", package = 'specleanr'), 
                             quiet = TRUE)
 
 #Environmental predictors extraction for multiple species (multiple = TRUE)
@@ -92,7 +93,6 @@ plantcleaned <-  pred_extract(data= plantdf,
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'species',  
-                             multiple = TRUE, 
                              bbox = danube_basin,
                              list= TRUE, 
                              minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
@@ -105,7 +105,6 @@ p1cleaned <-  pred_extract(data= sp1df,
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'species',  
-                             multiple = FALSE, 
                              bbox = danube_basin, 
                              minpts = 10, merge = FALSE, 
                            verbose = FALSE, warn = FALSE)
@@ -126,7 +125,7 @@ outliersdata <- multidetect(data = plantcleaned,
                        exclude = c('x','y'), 
                        methods = c('adjbox', "hampel", 'zscore', 
                                    'lof', 'jknife', 'kmeans', 'mahal'),
-                       showErrors  = TRUE, warn = F, verbose = F)
+                       silence_true_errors = FALSE, warn = F, verbose = F)
 
 #Flag outlier in single species data (multiple = FALSE)
 
@@ -137,7 +136,7 @@ out1df <- multidetect(data = p1cleaned,
                        exclude = c('x','y'), 
                        methods = c('adjbox', "hampel", 'zscore', 
                                    'lof', 'jknife', 'kmeans', 'mahal'),
-                       showErrors  = TRUE, warn = F, verbose = F)
+                       silence_true_errors = FALSE, warn = F, verbose = F)
 
 ```
 **Visualizing outliers flagged by each method**
@@ -146,7 +145,7 @@ The plots are wrapped on a ggplot2 object and extensible with ggplot2 parameters
 
 ```{r visualize outliers, fig.width = 6, fig.height= 3.5, fig.align='center'}
 
-ggoutliers(x=outliersdata, y= 1, raw=FALSE)
+ggoutliers(x=outliersdata)
 
 #for one species: no index needed
 ggoutliers(x= out1df)
@@ -165,12 +164,6 @@ optimalthreshold <- optimal_threshold(refdata = plantcleaned, outliers = outlier
 
 *Indicate the best methods obtained for each species 
 
-```{r best methods}
-
-mbest <- multibestmethod(x = outliersdata, autothreshold = TRUE)
-
-```
-
 4. **Extracting clean data set after outlier detection**
 
 The mode can be set to **mode = abs** to discard only absolute outliers or **mode = best** to use the best method. The outlier flagged by the best method will be used to clean the data. For more information, check (B....2024).
@@ -178,61 +171,13 @@ The mode can be set to **mode = abs** to discard only absolute outliers or **mod
 ```{r extract outliers from clean dataset}
 
 cleandf <- extract_clean_data(refdata = plantcleaned, outliers = outliersdata, 
-                         mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
+                              threshold = 0.4, pabs = 0.1)
 
 
 cleandf1 <- extract_clean_data(refdata = p1cleaned, outliers = out1df, 
-                         mode = "best", threshold = 0.4, warn = FALSE, verbose = TRUE, pabs = 0.1)
+                          threshold = 0.4, pabs = 0.1)
 
 ```
-
-5. **Model comparison**
-
-We vary the different thresholds, which determine the number of outlier detection used to indicate that a record is an outlier. For example, a record flagged as an outlier at a threshold of 1 means that all the methods ensembled identified the record as an outlier. Therefore, based on that principle, we vary the threshold from 0.8 and predict and develop models at each step. Then, we evaluate the model performance using threshold-dependent and independent evaluation metrics such as TSS, accuracy, Kappa, Sensitivity, and Area Under the Curve (AUC).
-
-```{r data cleaning scenarios}
-
-multsppmodel <- modelcomparison(refdata = plantcleaned, outliers = outliersdata, raster = worldclim,
-                           lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',
-                           thresholds = 0.8)
-
-
-
-onesppmodel <- modelcomparison(refdata = p1cleaned, outliers = out1df, raster = worldclim,
-                           lat = 'y', lon = 'x', models = c("GLM"), mode = 'abs',  
-                           thresholds = 0.8, nboots = 50)
-
-```
-
-**Extract model performance**
-
-* cutoff of 0.5, is to limit which threshold results the user whats to plot.
-
-```{r extract performance}
-#for one species
-onespp <- get_performance(modelcomp  = onesppmodel)
-
-#for multiple species
-multspp <- get_performance(modelcomp = multsppmodel)
-
-
-```
-
-**Plotting to visualize comparisons**
-
-```{r visualisation, fig.width = 6, fig.height= 4, fig.align='center'}
-#one species 
-ggperform(modelout = onesppmodel, eval = c("auc", "Accuracy", "Sensitivity",
-                                                         "Kappa", "Specificity", "TSS"))
-
-```
-
-```{r visualisation2, fig.width = 10, fig.height= 4, fig.align='center'}
-ggperform(modelout = multsppmodel, eval = c("auc", "Accuracy", "Sensitivity",
-                                                         "Kappa", "Specificity", "TSS"))
-```
-
-
 
 ### References 
 

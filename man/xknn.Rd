@@ -4,7 +4,17 @@
 \alias{xknn}
 \title{k-nearest neighbors for outlier detection}
 \usage{
-xknn(data, output, exclude = NULL, metric = "manhattan", mode = "soft")
+xknn(
+  data,
+  output,
+  exclude = NULL,
+  metric = "manhattan",
+  mode = "soft",
+  pc,
+  boot,
+  var,
+  pcvar
+)
 }
 \arguments{
 \item{data}{Data frame of species records with environmental data.}
