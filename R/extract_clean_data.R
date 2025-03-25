@@ -17,10 +17,26 @@ cleandata <- function(data, outliers,
 
   if(isTRUE(loess)){
     loess = TRUE
-    optthreshold <- thresh_search(data = data, outliers = outliers,warn = warn,
-                                  verbose = verbose)
+    optthreshold <- search_threshold(data = data,
+                                     sp = sp,
+                                     outliers = outliers,
+                                     warn = warn,
+                                     verbose = verbose)
 
-    threshold = unname(optthreshold[2])
+    if(!is.null(optthreshold)){
+
+      maxima = unname(optthreshold[2])
+      #change maxima to 0.8 if less than 0.8
+      if(maxima<0.8){
+
+        threshold <- 0.8
+        }else {
+          threshold <- maxima
+        }
+    }else{
+      #return error and capture it during data retrieval
+      stop('The threshold could not be found because the data is not enough for varialble ', sp)
+    }
 
   }else if(!is.null(threshold)){
     threshold
@@ -97,7 +113,7 @@ cleandata <- function(data, outliers,
 #'
 #' @return Either a \code{list} or \code{dataframe} of cleaned records for multiple species.
 #'
-#' @seealso \code{\link{thresh_search}}
+#' @seealso \code{\link{search_threshold}}
 #'
 #' @examples
 #'
@@ -229,7 +245,7 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
 
           splist <- split(refdata, f= refdata[,colsp])
 
-          if(length(splist)!= length(outliers@result)) stop('Number of species in in data and outlier detection are not equal')
+          if(length(splist)!= length(outliers@result)) stop('Number of species in data and outlier detection are not equal')
         }
 
       }else{
@@ -248,8 +264,16 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
                                         warn = warn, verbose = verbose,
                                         autothreshold = autothreshold,
                                         pabs = pabs, loess = loess ),
-                        error=function(e) return(NULL))
+                        error=function(e){
+                          if(grepl('The threshold could not be found because', e$message)==TRUE){
 
+                           if(verbose==TRUE) message('The threshold could not be found because the data is not enough for variable ', spnames)
+
+                            return(NULL)
+                          }else{
+                          return(NULL)
+                        }}
+                         )
       if(nrow(df_out)==0 || is.null(df_out)) cdata <- NULL else cdata <- df_out
 
       if(!is.null(cdata)) spdata <- cdata else spdata <- splist[[fd]]

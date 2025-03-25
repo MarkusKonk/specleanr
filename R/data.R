@@ -159,7 +159,35 @@
 #"naturalist"
 
 
-
+#' @title Salmo trutta fario species data from GBIF and iNaturalist
+#'
+#' @description A \code{tibble} Data from GBIF (https://www.gbif.org/) and iNaturalist (https://www.inaturalist.org/)
+#'
+#' @docType data
+#'
+#' @details The species data was collated from the Global Biodiversity Information Facility and iNaturalist
+#'
+#' @usage data(troutdata)
+#'
+#' @keywords freshwater information platform datasets
+#'
+#' @format A \code{tibble} 1100 rows and 7 columns.
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("troutdata")
+#' troutdata
+#' }
+#'
+#'
+#'
+#'
+#' @references https://www.danubesurvey.org/jds4/about
+#'
+"jdsdata"
 
 
 

@@ -11,6 +11,8 @@
 #' @export
 #'
 
+setClassUnion("CharacterOrNULL", c("character", "NULL"))
+setClassUnion("vetcorOrNULL", c("vector", "NULL"))
 
 setClass(Class = 'datacleaner',
          representation = list(result='list',
@@ -19,7 +21,13 @@ setClass(Class = 'datacleaner',
                                out ='character',
                                methodsused='vector',
                                dfname='character',
-                               excluded ='vector')
+                               excluded ='vetcorOrNULL',
+                               pc='logical',
+                               bootstrap='logical',
+                               nboots = 'numeric',
+                               pcvariable ='CharacterOrNULL',
+                               pcretained = 'numeric',
+                               maxrecords = 'numeric')
 )
 
 
@@ -35,8 +43,8 @@ setClass(Class = 'datacleaner',
 setMethod(f='show', signature = 'datacleaner', definition = function(object){
 
   if(object@mode==FALSE){
-    cat("======================================",'\n',
-        ' Data cleaning summary','\n',
+    cat(" ======================================",'\n',
+        ' Outlier detection summary','\n',
         "======================================",'\n',
         'Number of variables      :',   1,'\n',
         'Number of methods        :',   length(object@result),'\n',
@@ -46,6 +54,18 @@ setMethod(f='show', signature = 'datacleaner', definition = function(object){
         'Output                   :',   noquote(object@out),'\n',
         'Dataset Name             :',   noquote(object@dfname),'\n',
         'Excluded columns         :',   paste(object@excluded, collapse = ','), '\n',
+        "--------------------------------------",'\n',
+        'Principal component settings','\n',
+        "--------------------------------------",'\n',
+        'Principal components     :',   object@pc,'\n',
+        'PCs retained             :',   if(isTRUE(object@pc)) object@pcretained else NA,'\n',
+        'PC variable used         :',   if(isTRUE(object@pc)) object@pcvariable else NA,'\n',
+        "--------------------------------------",'\n',
+        'Bootsrapping settings','\n',
+        "--------------------------------------",'\n',
+        'Bootstrapping            :',   object@bootstrap,'\n',
+        'Number of bootsraps      :',   if(isTRUE(object@bootstrap)) object@nboots else NA,'\n',
+        'Maximum sample records   :',   if(isTRUE(object@bootstrap)) object@maxrecords else NA,'\n',
         "======================================")
   }else{
     cat(" ======================================",'\n',
@@ -59,6 +79,18 @@ setMethod(f='show', signature = 'datacleaner', definition = function(object){
         'Output                   :',   noquote(object@out),'\n',
         'Dataset Name             :',   noquote(object@dfname),'\n',
         'Excluded columns         :',   paste(object@excluded, collapse = ','), '\n',
+        "--------------------------------------",'\n',
+        'Principal component settings','\n',
+        "--------------------------------------",'\n',
+        'Principal components     :',   object@pc,'\n',
+        'PCs retained             :',   if(isTRUE(object@pc)) object@pcretained else NA,'\n',
+        'PC variable used         :',   if(isTRUE(object@pc)) object@pcvariable else NA,'\n',
+        "--------------------------------------",'\n',
+        'Bootsrapping settings','\n',
+        "--------------------------------------",'\n',
+        'Bootstrapping            :',   object@bootstrap,'\n',
+        'Number of bootsraps      :',   if(isTRUE(object@bootstrap)) object@nboots else NA,'\n',
+        'Maximum sample records   :',   if(isTRUE(object@bootstrap)) object@maxrecords else NA,'\n',
         "======================================")
   }
 }

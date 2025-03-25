@@ -147,6 +147,8 @@ detect <- function(x,
                    missingness,
                    silence_true_errors,
                    sdm,
+                   pc,
+                   bootSettings,
                    na.inform){
 
   if(missing(x)) stop('Species data missing')
@@ -187,7 +189,7 @@ detect <- function(x,
 
 
     #remove a column with high NAs instead of the rows if % missing values are greater than the user set %missingness. Default is 10%
-    if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>missingness)]
+    if(all(mValues<missingness)) xdata <- x else xdata <- x[, -which(mValues>=missingness)]
 
     #exclude columns that are not needed in the computation like the coordinates mostly for multivariate methods
 
@@ -203,7 +205,7 @@ detect <- function(x,
 
     #identify and remove non-numeric columns if sdm is TRUE
 
-    df <- x2data[, which(sapply(x2data, class) =='numeric')]
+    df <- x2data[, which(sapply(x2data, is.numeric))]
 
     xd <- setdiff(colnames(x2data), y=colnames(df))
 
@@ -217,6 +219,74 @@ detect <- function(x,
 
       warning("Only ", ncol(df), " are remaining the dataset and may fail in runing for biogeographical models.")
     }
+
+    #compute principal component analysis to reduce dimensions
+
+    #pc and bootstrap parameters
+    defaults_pc <- list(exec=FALSE, q=T, npc = 3, pcvar = 'PC1')
+
+    pc <- modifyList(defaults_pc, pc)
+    pcs <- pc$exec
+    npc <- pc$npc
+    quiet <- pc$q
+    pcvar <- pc$pcvar
+    #boots
+    defaults_boot <- list(run=FALSE, nb= 100, maxrecords = 30,  seed=1135)
+
+    bootSettings <- modifyList(defaults_boot, bootSettings)
+
+    boot <- bootSettings$run
+    maxrecords <- bootSettings$maxrecords
+    nboots <- bootSettings$nb
+    nbootseed <- bootSettings$seed
+
+    if(isTRUE(pcs)){
+      #try catch pca errors
+      df <- tryCatch(pca(df, npc = npc, q= quiet),
+                     error=function(e){
+                       if(grepl("cannot rescale a constant/zero", e$message)==TRUE | grepl("subscript out of bounds", e$message)==TRUE) {
+                         if(isTRUE(warn))warning('PCA not computed due to cannot rescale a constant/zero error')
+
+                         df
+                         }
+                     }
+      )
+
+      if(isTRUE(boot)){
+        if(!is.data.frame(df)) {
+          NROWDF <- nrow(df[[1]])
+          } else{
+
+            NROWDF <- nrow(df)
+
+            pcs <- FALSE
+          }
+        if(NROWDF <= maxrecords){
+
+           df <- boots(df, boots = nboots, seed = nbootseed, pca = pcs)
+        }else{
+          df
+          boot <- FALSE
+          if(isTRUE(warn))warning('Increase the maxrecords ', maxrecords,' to be greater than the rows in data to run bootstrap.', call. = FALSE)
+        }
+      }
+
+    }else{
+
+      if(isTRUE(boot)){
+
+        if(nrow(df)  <= maxrecords){
+
+        df <- boots(df, boots = nboots, seed = nbootseed, pca = pcs)
+        }else{
+          df
+          warning('If bootstrapping is to be computed increase the maximum number records to be less than the numer of rows in a dataframe, otherwise bootsrapping is not implemnted.')
+        }
+      }else{
+        df
+      }
+    }
+
   }else{
     #remove NAs in the var
     vecNAs <- which(is.na(unlist(varcheck)==TRUE))
@@ -235,11 +305,7 @@ detect <- function(x,
     removemet <- methods[which(methods%in%multivarmethods==TRUE)]
 
     if(length(removemet)>=1) stop("Please remove ", paste(removemet, collapse = ','), " from the methods to continue. Use broad_classify() and pick only univariate method category", call. = FALSE)
-
-    df <- xdata
   }
-
-  #run all methods
 
   xmethods <- sapply(methods, function(imx){
 
@@ -262,119 +328,314 @@ detect <- function(x,
 
     }else if (imx=='adjbox'){
 
-      methodout  <-  suppressMessages(handle_true_errors(func =  adjustboxplots(data = df, var = var, output = output),
-                                             fname = imx, verbose = verbose, spname = spname,
-                                             warn=warn, silence_true_errors = silence_true_errors))
+      if(isTRUE(boot)){
+
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+
+          mout  <-  suppressMessages(handle_true_errors(func =  adjustboxplots(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                                             fname = imx, verbose = verbose, spname = spname,
+                                                             warn=warn, silence_true_errors = silence_true_errors))
+        }))
+
+      }else{
+        methodout  <-  suppressMessages(handle_true_errors(func =  adjustboxplots(data = df, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                                           fname = imx, verbose = verbose, spname = spname,
+                                                           warn=warn, silence_true_errors = silence_true_errors))
+      }
 
     }else if(imx=='zscore'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = zscore(data = df, var = var, output = output, mode = zpar$mode, type = zpar$type),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+
+          mout <-  handle_true_errors(func = zscore(data = bb, var = var, output = output, mode = zpar$mode, type = zpar$type, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = zscore(data = df, var = var, output = output, mode = zpar$mode, type = zpar$type, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='iqr'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func =  interquartile(data = df, var = var, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          mout <-  handle_true_errors(func =  interquartile(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func =  interquartile(data = df, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='semiqr'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func =  semiIQR(data = df, var = var, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func =  semiIQR(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func =  semiIQR(data = df, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='hampel'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = hampel(data = df, var = var, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+
+          out <-  handle_true_errors(func = hampel(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                     fname = imx, verbose = verbose, spname = spname,
+                                     warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = hampel(data = df, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='jknife'){
 
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = jknife(data = df, var = var, output = output, mode = jkpar$mode),
+        methodout  <- Reduce(rbind, lapply(df, function(bb){
+
+          out <-  handle_true_errors(func = jknife(data = bb, var = var, output = output, mode = jkpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+      methodout <-  handle_true_errors(func = jknife(data = df, var = var, output = output, mode = jkpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='mahal'){
+      if(isTRUE(boot)){
 
-      methodout = handle_true_errors(func = mahal(data = df, exclude = exclude, output = output, mode=mahalpar$mode),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          out = handle_true_errors(func = mahal(data = bb, exclude = exclude, output = output, mode=mahalpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
+                                         fname = imx, verbose = verbose, spname = spname,
+                                         warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout = handle_true_errors(func = mahal(data = df, exclude = exclude, output = output, mode=mahalpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
                          fname = imx, verbose = verbose, spname = spname,
                          warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='kmeans'){
+      if(isTRUE(boot)){
+
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+
+          out <-  handle_true_errors(func = xkmeans(data = bb, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
+                                                          method = kmpar$method, verbose=verbose, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
 
       methodout <-  handle_true_errors(func = xkmeans(data = df, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
-                                          method = kmpar$method, verbose=verbose),
+                                          method = kmpar$method, verbose=verbose, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
     }else if(imx=='iforest'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = isoforest(data = df, size = ifpar$size, output=output,
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          out <-  handle_true_errors(func = isoforest(data = bb, size = ifpar$size, output=output, pc=pcs, pcvar = pcvar, boot = boot,
+                                                      cutoff = ifpar$cutoff, exclude = exclude),
+                                     fname = imx, verbose = verbose, spname = spname,
+                                     warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = isoforest(data = df, size = ifpar$size, output=output, pc=pcs, pcvar = pcvar, boot = boot,
                                             cutoff = ifpar$cutoff, exclude = exclude),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='onesvm'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = onesvm(data = df,  exclude = exclude, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          out <-  handle_true_errors(func = onesvm(data = bb,  exclude = exclude, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                     fname = imx, verbose = verbose, spname = spname,
+                                     warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = onesvm(data = df,  exclude = exclude, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='lof'){
+      if(isTRUE(boot)){
+
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          out <-  handle_true_errors(func = xlof(data = bb, output =output, minPts = lofpar$minPts,
+                                                 exclude = exclude, metric = lofpar$metric, mode=lofpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
+                                     fname = imx, verbose = verbose, spname = spname,
+                                     warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
 
       methodout <-  handle_true_errors(func = xlof(data = df, output =output, minPts = lofpar$minPts,
-                                       exclude = exclude, metric = lofpar$metric, mode=lofpar$mode),
+                                       exclude = exclude, metric = lofpar$metric, mode=lofpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='logboxplot'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = logboxplot(data = df,  var = var, output = output, x= 1.5),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func = logboxplot(data = bb,  var = var, output = output, x= 1.5, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = logboxplot(data = df,  var = var, output = output, x= 1.5, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='medianrule'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = logboxplot(data = df,  var = var, output = output, x= 2.3),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func = logboxplot(data = bb,  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = logboxplot(data = df,  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='distboxplot'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = distboxplot(data = df,  var = var, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func = distboxplot(data = bb,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = distboxplot(data = df,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='seqfences'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = seqfences(data = df,  var = var, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func = seqfences(data = bb,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = seqfences(data = df,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='mixediqr'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = mixediqr(data = df,  var = var, output = output),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          ethodout <-  handle_true_errors(func = mixediqr(data = bb,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+                                          fname = imx, verbose = verbose, spname = spname,
+                                          warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = mixediqr(data = df,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='glosh'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = xglosh(data = df, k = gloshpar$k,  output = output, metric = gloshpar$metric, mode=gloshpar$mode, exclude = exclude),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func = xglosh(data = bb, k = gloshpar$k,  output = output, metric = gloshpar$metric,
+                                                         mode=gloshpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = xglosh(data = df, k = gloshpar$k,  output = output, metric = gloshpar$metric,
+                                                     mode=gloshpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else if(imx=='knn'){
+      if(isTRUE(boot)){
 
-      methodout <-  handle_true_errors(func = xknn(data = df, output = output, metric = knnpar$metric, mode=knnpar$mode, exclude = exclude),
+        methodout <- Reduce(rbind, lapply(df, function(bb){
+          methodout <-  handle_true_errors(func = xknn(data = bb, output = output, metric = knnpar$metric,
+                                                       mode=knnpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
+                                           fname = imx, verbose = verbose, spname = spname,
+                                           warn=warn, silence_true_errors = silence_true_errors)
+        }))
+
+      }else{
+
+      methodout <-  handle_true_errors(func = xknn(data = df, output = output, metric = knnpar$metric,
+                                                   mode=knnpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
                            fname = imx, verbose = verbose, spname = spname,
                            warn=warn, silence_true_errors = silence_true_errors)
+      }
 
     }else{
       message('No outlier detection method selected.')
     }
   }, simplify = FALSE)
+
+  listpars <- list(exec = pcs, npc=npc, q = quiet, pcvar =pcvar, run = boot, maxrecords = maxrecords, nboots = nboots, nbootseed = nbootseed )
+
+  attributes(xmethods)$parlist <- listpars
 
   return(xmethods)
 }
@@ -390,6 +651,7 @@ detect <- function(x,
 #' maximum temperature of the coldest month for bioclimatic variables \code{(IUCN Standards and Petitions Committee, 2022))} or
 #' stream power index for hydromorphological parameters \code{(Logez et al., 2012)}. This parameter is
 #' necessary for the univariate outlier detection methods such as Z-score.
+#' @param select \code{vector} The columns that will be used in outlier detection. Make sure only numeric columns are accepted.
 #' @param output \code{character}. Either \code{clean}: for a data set with no outliers, or \code{outlier}: to output a dataframe with outliers. Default \code{outlier}.
 #' @param exclude \code{vector}. Exclude variables that should not be considered in the fitting the one class model, for example \code{x} and \code{y} columns or
 #' latitude/longitude or any column that the user doesn't want to consider.
@@ -426,7 +688,7 @@ detect <- function(x,
 #' This function computes different outlier detection methods including univariate, multivariate and species
 #'      ecological ranges to enables seamless comparison and similarities in the outliers detected by each
 #'      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-#'      and thereafter the outliers can be extracted using the \code{\link{clean_data_extract}} function.
+#'      and thereafter the outliers can be extracted using the \code{\link{extract_clean_data}} function.
 #'
 #' @return A \code{list} of outliers or clean dataset of \code{datacleaner} class. The different attributes are
 #' associated with the \code{datacleaner} class from \code{multidetect} function.
@@ -444,8 +706,9 @@ detect <- function(x,
 #'
 #' @export
 #'
-#' @importFrom stats na.omit
+#' @importFrom stats na.omit prcomp
 #' @importFrom methods new
+#' @importFrom utils modifyList
 #'
 #' @examples
 #'
@@ -465,8 +728,9 @@ detect <- function(x,
 #'datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
 #'
 #'
-#'db <- sf::st_read(system.file('extdata/danube/basinfinal.shp',
-#'                             package='specleanr'), quiet=TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #'
 #'worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
@@ -547,6 +811,8 @@ multidetect <- function(data,
                         knnpar = list(metric='manhattan', mode='soft'),
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
+                        bootSettings = list(run=FALSE, nb=5, maxrecords = 30, seed=1135),
+                        pc = list(exec = FALSE, npc=2, q = T, pcvar = 'PC1'),
                         verbose=FALSE, spname=NULL,warn=FALSE,
                         missingness = 0.1, silence_true_errors = TRUE, sdm = TRUE, na.inform = FALSE){
 
@@ -595,7 +861,11 @@ multidetect <- function(data,
                          missingness = missingness,
                          silence_true_errors = silence_true_errors,
                          sdm = sdm,
+                         pc = pc,
+                         bootSettings = bootSettings,
                          na.inform = na.inform)
+
+    plist <- attributes(methodata)$parlist
 
   }else {
 
@@ -633,7 +903,7 @@ multidetect <- function(data,
 
       dfinal<- df[[xp]]
 
-      if(isTRUE(warn)) if(nrow(dfinal)<ncol(dfinal)) warning('Number of rows for ',xp,' are less than variables and some methods may not function properly.')
+      if(isTRUE(warn)) if(nrow(dfinal)<=ncol(dfinal)) warning('The ', nrow(dfinal),' rows for ',xp,' are less than variables and some methods may not function properly.')
 
       #if the variables are greater 1, then the data was partitioned by variables not species
 
@@ -646,17 +916,23 @@ multidetect <- function(data,
                    mahalpar = mahalpar, lofpar = lofpar,ifpar = ifpar, kmpar = kmpar,
                    zpar = zpar, gloshpar = gloshpar, knnpar = knnpar, jkpar = jkpar,
                    methods = unique(methods), verbose = verbose, spname = xp,warn=warn,
+                   pc = pc,bootSettings = bootSettings,
                    missingness = missingness, silence_true_errors = silence_true_errors, sdm = sdm, na.inform = na.inform)
     }, simplify = FALSE)
+    plist <- attributes(methodata[[1]])$parlist
   }
-  if(is.null(exclude)){
+  if(isFALSE(multiple)){
+
     return(new('datacleaner', result = methodata, mode = multiple, varused = var,
                out = output, methodsused = unique(methods), dfname = deparse(substitute(data)),
-               excluded = NA))
+               excluded = NA, pc= plist$exec, pcretained = plist$npc, pcvariable = plist$pcvar,
+               bootstrap = plist$run, nboots = plist$nboots, maxrecords= plist$maxrecords))
   }else{
     return(new('datacleaner', result = methodata, mode = multiple, varused = var,
                out = output, methodsused = unique(methods), dfname = deparse(substitute(data)),
-               excluded = exclude))
+               excluded = exclude, pc= plist$exec, pcretained = plist$npc, pcvariable = plist$pcvar,
+               bootstrap = plist$run, nboots = plist$nboots, maxrecords= plist$maxrecords))
+
   }
 }
 

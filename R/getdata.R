@@ -5,7 +5,7 @@
 #'      databases (GBIF, VertNET, and iNaturalist).
 #' @param colsp \code{string}. A variable of species names. Provided if data is a data frame, so not
 #'      required for lists and vector.
-#' @param bbox \code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
+#' @param extent \code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
 #'      records from the GBIF will be downloaded. These can be provided in two forms,
 #'      either a shapefile \code{(sf)} class accepted or provide a list of
 #'      \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.
@@ -14,8 +14,6 @@
 #' @param vertlim \code{integer}. Limits on the records from VertNET.
 #' @param inatlim \code{integer}. Limits on the records from iNaturalist database.
 #' @param warn \code{logical}. To indicate if warning messages should be shown. Default \code{FALSE}.
-#' @param isfish \code{logical}. To indicate if the occurrence records extracted are for fish taxa or not. This allows to clean the species names
-#'      accordingly. For other taxa a different name checks is conducted. Default is \code{TRUE}.
 #' @param verbose \code{logical}. \strong{TRUE} if detailed messages should be indicated and \strong{FALSE}
 #'      if download messages are not needed. Default \strong{TRUE}.
 #' @param ... More function for species data download can be used.
@@ -36,27 +34,27 @@
 #'
 #' \dontrun{
 #'
-#' gbaloni <- check_names(data = 'gymnocephalus baloni', pct=90)
-#'
-#' gbdata <- getdata(data=gbaloni, gbiflim = 100, inatlim = 100, vertlim = 100)
+#' gbdata <- getdata(data = 'Gymnocephalus baloni', gbiflim = 100, inatlim = 100, vertlim = 100)
 #'
 #' #Get for two species
-#' sp_records <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),gbiflim = 100,
+#' sp_records <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),
+#'                             gbiflim = 100,
+#'                             inatlim = 100,
+#'                             vertlim = 100)
+#' #for only two databases
+#' sp_records_2db <- getdata(data=c('Gymnocephalus baloni', 'Hucho hucho'),
+#'                            db= c('gbif','inat'),
+#'                             gbiflim = 100,
 #'                             inatlim = 100,
 #'                             vertlim = 100)
 #'
 #' }
 #'
 #'
-getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
+getdata <- function(data, colsp = NULL, extent = NULL,
                      db = c("gbif", 'vertnet', 'inat'),
-                     gbiflim = 1e6, vertlim = 1e3,
+                     gbiflim = 5e4, vertlim = 1e3,
                      inatlim =3e3, verbose= FALSE, warn =FALSE, pct = 80, sn = F, ...){
-
- if(missing(data)){
-
-    stop('Provide a list of species or at least one species.')
-  }
 
   if(is(data, 'data.frame') && is.null(colsp)){
 
@@ -77,22 +75,16 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
   } else{
     stop('Data either list or dataframe not provided for download.')
   }
+  if(isFALSE(gbiflim%%1==0) | isFALSE(vertlim%%1==0)| isFALSE(inatlim%%1==0)) stop("The vertlim, gblim, or inatlim parameters must be integers.")
 
   pkgs <- c('curl', 'rgbif', 'rvertnet', 'rinat', 'sf')
 
   #check if these packages are installed on user computer
-
-  pkginstall <- sapply(pkgs, requireNamespace, quietly = TRUE)
-
-  pkgout <- pkgs[which(pkginstall==FALSE)]
-
-  if(length(pkgout)>=1)stop('Please install these ', length(pkgout), ' packages', paste(pkgout, collapse = ', '), ' to continue.')
+  check_packages(pkgs)
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later.')
 
   sppdata <- sapply(data, function(spp){
-
-    if(isTRUE(isfish)){
 
       checkFB<- check_names(data = spp, verbose = verbose, pct = pct, sn = sn)
 
@@ -107,15 +99,11 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
         checksppx <- checkFB
       }
 
-    }else{
-      checksppx <- clean_names(spp)
-    }
-
     #loop through databases
 
-    sapply(db, FUN = function(x) {
+    sapply(db, FUN = function(xdb) {
 
-      if(x=='gbif'){
+      if(xdb=='gbif'){
 
         ndata <- rgbif::occ_count(scientificName = checksppx)
 
@@ -125,9 +113,9 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
           gbifx <- NULL
 
-        } else if(ndata<=50000){
+        } else if(ndata <= 50000 & is.null(extent)){
 
-          if(gbiflim<50000){
+          if(gbiflim <= 50000){
 
             gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
 
@@ -144,42 +132,32 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
             gbifx <- gbifsp$data
           }
 
-        }else if (ndata>50000 && !is.null(bbox)){
+        }else if (!is.null(extent)){
 
-          if(inherits(bbox, what = 'sf')){
+          extval <- extentvalues(extent, xdb)
 
-            ext2 <- unname(sf::st_bbox(bbox))
-
-          }  else{
-            ext2 <- bbox
-
-            stdbox <- c("xmin", "ymin", "xmax", "ymax")
-
-            if(setequal(stdbox, names(ext2))==FALSE) stop("the labels provided in the bounding are not standard. Please use xmin, xmax, ymin, ymax")
-          }
-
-          if(gbiflim<=50000){
+          if(gbiflim <= 50000){
 
             gbifsp <- rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
-                                       decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
-                                       decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
+                                       decimalLongitude = paste0(extval[1],',' ,extval[3]),
+                                       decimalLatitude = paste0(extval[2],',' ,extval[4]), ...)
 
             if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
 
           }else{
 
             gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,
-                                       decimalLongitude = paste0(ext2[1],',' ,ext2[3]),
-                                       decimalLatitude = paste0(ext2[2],',' ,ext2[4]), ...)
+                                       decimalLongitude = paste0(extval[1],',' ,extval[3]),
+                                       decimalLatitude = paste0(extval[2],',' ,extval[4]), ...)
 
             if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded')
           }
 
           gbifx <- gbifsp$data
-        }
-        else if (ndata>50000 && is.null(bbox)){
 
-          if(isTRUE(verbose)) message("Only ", gbiflim, " records will be downloaded.")
+        }else if (ndata>50000 && is.null(extent)){
+
+          message("Only ", gbiflim, " records will be downloaded.")
 
           gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,...)
 
@@ -188,7 +166,9 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
         }else{
           gbifx = NULL
         }
+
         #check if gbif dataset has coordinates decimalLatitude or decimalLongitude among column names
+
         if(is(gbifx, 'data.frame')){
 
           if("decimalLatitude"%in%colnames(gbifx) == TRUE){
@@ -202,12 +182,14 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
           gbifx = NULL
         }
 
-      }else if(x=='vertnet'){
+      }else if(xdb=='vertnet'){
 
         sptx <- scan(text = checksppx, what = ' ', quiet = T)
 
+        if(!is.null(extent)) vbbox <- extentvalues(extent, xdb) else vbbox <- NULL #vector of bbox values
+
         vertx <- rvertnet::searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
-                              limit = vertlim, messages = FALSE)
+                              limit = vertlim, messages = FALSE, bbox = vbbox)
         if(is.null(vertx)){
 
           if(isTRUE(verbose)) message('No records for ', checksppx, ' in vertnet were found')
@@ -222,11 +204,13 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
         }
 
         #handle iNaturalist data download using rinat::get_inat_obs
-      }else if(x=='inat'){
+      }else if(xdb=='inat'){
+
+        if(!is.null(extent)) vbbox <- extentvalues(extent, xdb) else vbbox <- NULL #vector of bbox values
 
         inatx <- tryCatch(
           expr = {
-            sx <- rinat::get_inat_obs(taxon_name= checksppx, maxresults = inatlim)
+            sx <- rinat::get_inat_obs(taxon_name= checksppx, maxresults = inatlim, bounds = vbbox)
           },
           error= function(e){
 
@@ -301,9 +285,9 @@ getdata <- function(data, colsp = NULL, bbox=NULL, isfish= TRUE,
 
   lst <- dfout[!sapply(dfout, is.null)]
 
-  getidcols <- unique(Reduce(c, sapply(lst, FUN = function(dl) colnames(dl))))
+  getsharedcols <- Reduce(intersect, lapply(lst, names))
 
-  finalmatch_df <- do.call(rbind, lapply(lst, function(x) x[, getidcols]))
+  finalmatch_df <- do.call(rbind, lapply(lst, function(x) x[, getsharedcols]))
 
   return(finalmatch_df)
 }

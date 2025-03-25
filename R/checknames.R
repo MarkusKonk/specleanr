@@ -7,12 +7,16 @@
 #' The higher the values, the higher percentage similarity are considered to replace a species name that is cheeked from Fishbase.
 #' @param merge \code{logical}. Default is \strong{FALSE}, not to merge the cleaned species column on to the data frame but rather only two columns
 #' returned.
+#' @param ecosystem \code{logical} Returns whether the species is freshwater, marine , or brackish or a combination for
+#'      for esturaine loving species.
+#'@param rm_duplicates \code{logical}. If TRUE, removes all duplicate species names especially when a dataframe is
+#'      is the output from the function.
 #' @param sn \code{logical}. Whether to consider synonyms. Default FALSE so accepted names will be considered from
 #' FishBase database.
 #'
 #' @details
 #' The function produces a data set with species names corresponding with
-#' \href{https://www.fishbase.se/}{Fishase}. If synoynm is provided in the data set, the function will by defualt
+#' \href{https://www.fishbase.se/}{Fishase}. If synonym is provided in the data set, the function will by defualt
 #' return the accepted name. However, if the synoymn is desired, then set the sn parameter to \strong{TRUE}.
 #' The function also check for spellings of species names and returns a name that is closer to the one in FishBase
 #' with a particular degree of similarity set with pct parameter. pct of 1 indicates the name must 100% similar.
