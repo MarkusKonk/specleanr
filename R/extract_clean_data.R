@@ -3,7 +3,7 @@
 cleandata <- function(data, outliers,
                            sp = NULL,
                            mode = 'best', threshold = NULL,
-                           colsp = NULL,
+                           var_col = NULL,
                            warn = FALSE, verbose = FALSE,
                            autothreshold = FALSE,
                            pabs = 0.1, loess = FALSE ){
@@ -99,7 +99,7 @@ cleandata <- function(data, outliers,
 #' @param threshold \code{numeric}. Value to consider whether the outlier is an absolute outlier or not.
 #' @param autothreshold \code{vector}. Identifies the threshold with mean number of absolute outliers.The search is limited within 0.51 to 1 since thresholds less than
 #'        are deemed inappropriate for identifying absolute outliers. The autothreshold is used when \code{threshold} is set to \code{NULL}.
-#' @param colsp \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.
+#' @param var_col \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.
 #' @param warn \code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
 #' @param pabs \code{numeric}. Percentage of outliers allowed to be extracted from the data. If \code{best} is used to extract outliers and the \code{pabs} is exceeded,
 #'      the absolute outliers are removed instead. This because some records  in the best methods are repeated and they will likely to remove true values as outliers.
@@ -128,7 +128,7 @@ cleandata <- function(data, outliers,
 #'                             country= c('JDS4_site_ID'),
 #'                             date=c('sampling_date', 'Date'))
 #'
-#' datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
+#' datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
 #'
 #'
 #' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
@@ -140,7 +140,7 @@ cleandata <- function(data, outliers,
 #'                       raster= worldclim ,
 #'                       lat = 'decimalLatitude',
 #'                       lon= 'decimalLongitude',
-#'                       colsp = 'speciescheck',
+#'                       var_col = 'speciescheck',
 #'                       bbox = db,
 #'                       multiple = TRUE,
 #'                       minpts = 10,
@@ -169,7 +169,7 @@ cleandata <- function(data, outliers,
 #'
 #'
 
-extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
+extract_clean_data <- function(refdata, outliers, mode ='abs',var_col = NULL,
                                threshold =NULL, warn=FALSE, verbose=FALSE,
                                autothreshold =FALSE, pabs = 0.1, loess = FALSE,
                                outlier_to_NA  = FALSE){
@@ -241,9 +241,9 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
 
         }else{
 
-          if(is.null(colsp)) stop('Provide the column with species names in parameter, colsp .')
+          if(is.null(var_col)) stop('Provide the column with species names in parameter, var_col .')
 
-          splist <- split(refdata, f= refdata[,colsp])
+          splist <- split(refdata, f= refdata[,var_col])
 
           if(length(splist)!= length(outliers@result)) stop('Number of species in data and outlier detection are not equal')
         }
@@ -260,7 +260,7 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',colsp = NULL,
       df_out <- tryCatch(cleandata(data = splist[[fd]], outliers = outliers,
                                         sp = spnames,
                                         mode = mode, threshold = threshold,
-                                        colsp = colsp,
+                                        var_col = var_col,
                                         warn = warn, verbose = verbose,
                                         autothreshold = autothreshold,
                                         pabs = pabs, loess = loess ),

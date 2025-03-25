@@ -289,6 +289,16 @@ detect <- function(x,
 
   }else{
     #remove NAs in the var
+
+    boot <- FALSE
+    pcs <- FALSE
+    quiet <- FALSE
+    maxrecords <- 10
+    nboots <- 1
+    nbootseed <- NULL
+    pcvar <- NULL
+    npc <- 3
+
     vecNAs <- which(is.na(unlist(varcheck)==TRUE))
 
     totNA <- length(vecNAs)
@@ -305,7 +315,9 @@ detect <- function(x,
     removemet <- methods[which(methods%in%multivarmethods==TRUE)]
 
     if(length(removemet)>=1) stop("Please remove ", paste(removemet, collapse = ','), " from the methods to continue. Use broad_classify() and pick only univariate method category", call. = FALSE)
-  }
+
+    df <- xdata
+    }
 
   xmethods <- sapply(methods, function(imx){
 

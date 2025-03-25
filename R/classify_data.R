@@ -178,7 +178,7 @@ classify <- function(refdata, outliers, sp = NULL,
 #' @param refdata \code{dataframe}. The reference data for the species used in outlier detection.
 #' @param outliers \code{string}. Output from the outlier detection process.
 #' @param threshold \code{numeric}. Value to consider whether the outlier is an absolute outlier or not.
-#' @param colsp \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column with species names.
+#' @param var_col \code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column with species names.
 #' @param warn \code{logical}. If \strong{FALSE}, warning on whether absolute outliers obtained at a low threshold is indicated. Default \strong{TRUE}.
 #' @param verbose \code{logical}. Produces messages or not. Default \strong{FALSE}.
 #' @param classify \code{string}. Categorize data base on the correlation coefficient manner based on \code{Akoglu 2018}. For
@@ -208,7 +208,7 @@ classify <- function(refdata, outliers, sp = NULL,
 #'                             country= c('JDS4_site_ID'),
 #'                             date=c('sampling_date', 'Date'))
 #'
-#' datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
+#' datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
 #'
 #'
 #' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
@@ -220,7 +220,7 @@ classify <- function(refdata, outliers, sp = NULL,
 #'                       raster= worldclim ,
 #'                       lat = 'decimalLatitude',
 #'                       lon= 'decimalLongitude',
-#'                       colsp = 'speciescheck',
+#'                       var_col = 'speciescheck',
 #'                       bbox = db,
 #'                       multiple = TRUE,
 #'                       minpts = 10,
@@ -243,7 +243,7 @@ classify <- function(refdata, outliers, sp = NULL,
 #'
 #' @references Akoglu, H. 2018. User’s guide to correlation coefficients. - Turk J Emerg Med 18: 91–93.
 
-classify_data <- function(refdata, outliers, colsp = NULL,
+classify_data <- function(refdata, outliers, var_col = NULL,
                                     threshold = 0.1, warn=FALSE,
                                     verbose = TRUE,classify = 'med',
                           EIF = FALSE){
@@ -282,9 +282,9 @@ classify_data <- function(refdata, outliers, colsp = NULL,
 
       }else{
 
-        if(is.null(colsp)) stop('Provide the column with group or variable names in parameter, colsp .')
+        if(is.null(var_col)) stop('Provide the column with group or variable names in parameter, var_col .')
 
-        splist <- split(refdata, f= refdata[,colsp])
+        splist <- split(refdata, f= refdata[,var_col])
 
         if(length(splist)!= length(outliers@result)) stop('Number of species in in data and outlier detection are not equal')
       }
