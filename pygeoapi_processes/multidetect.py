@@ -22,6 +22,41 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
     }
 }'
 
+curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aqua.igb-berlin.de/download/multiprecleaned-9290ba98-958f-11ef-aad4-8935a9f30073.csv",
+        "colname_variable": "bio6",
+        "colname_species": "dummy",
+        "multiple_species": true,
+        "colname_exclude": "x,y",
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
+        "ignore_failing_methods": true,
+        "missingness": 0.1,
+        "threshold": 0.7
+    }
+}'
+
+
+curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aqua.igb-berlin.de/download/boku_multidetect_testdata.csv",
+        "colname_variable": "Sepal.Length",
+        "colname_species": "dummy",
+        "multiple_species": false,
+        "colname_exclude": "Species",
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
+        "ignore_failing_methods": true,
+        "missingness": 0.1,
+        "threshold": 0.7
+    }
+}'
+
+
+
 '''
 
 LOGGER = logging.getLogger(__name__)
