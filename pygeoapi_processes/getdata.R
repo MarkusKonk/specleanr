@@ -25,7 +25,8 @@ out_result_path = args[6]
 
 
 # (1) Read data from shapefile
-print(paste('Reading input data from shapefile...'))
+# TODO Test, can st_read also read GeoJSON? It should?
+print(paste('Reading input data from shapefile or GeoJSON...'))
 study_area <- sf::st_read(in_data_path, quiet=TRUE)
 #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 

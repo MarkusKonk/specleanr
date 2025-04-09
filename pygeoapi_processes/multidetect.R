@@ -78,7 +78,7 @@ print(paste('Colname Species:', in_colname_species))
 print(paste0('Exclude: ', paste0(in_colnames_exclude, collapse=' + ')))
 print(paste('Missingness:', in_missingness))
 print(paste('ShowErrors:', !in_bool_ignore_failing_methods))
-print(paste0('Methods: ', paste0(in_methods, collapse=', ')))
+print(paste0('Methods: ', paste0(in_methods, collapse=' + ')))
 outlieriris_mult <- multidetect(
   data = dfinal,
   var = in_colname_var,
@@ -99,7 +99,7 @@ if (tolower(in_threshold) == 'null') {
 } else if (!(is.na(as.numeric(in_threshold)))) {
   # if loess=FALSE, then set threshold!
   in_threshold <- as.numeric(in_threshold)
-  print(paste('Threshold is a number:', in_threshold, 'using loess=FALSE...'))
+  print(paste0('Threshold is a number (', in_threshold, '), using loess=FALSE...'))
   in_bool_loess <- FALSE
 }
 print(paste('Run extract_clean_data'))
