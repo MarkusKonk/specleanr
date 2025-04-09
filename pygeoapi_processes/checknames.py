@@ -37,9 +37,14 @@ class NameCheckProcessor(BaseProcessor):
         self.config = None
 
         # Set config:
-        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
+        config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
         with open(config_file_path, 'r') as config_file:
             self.config = json.load(config_file)
+
+        # Those config items that we need:
+        self.download_dir = self.config["download_dir"]
+        self.own_url = self.config["own_url"]
+        self.r_script_dir = self.config["boku"]["r_script_dir"]
 
     def set_job_id(self, job_id: str):
         self.job_id = job_id
@@ -48,15 +53,6 @@ class NameCheckProcessor(BaseProcessor):
         return f'<NameCheckProcessor> {self.name}'
 
     def execute(self, data, outputs=None):
-
-        # Get config
-        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
-        with open(config_file_path) as configFile:
-            configJSON = json.load(configFile)
-
-        download_dir = configJSON["download_dir"]
-        own_url = configJSON["own_url"]
-        r_script_dir = configJSON["boku"]["r_script_dir"]
 
         # Get user inputs
         input_data = data.get('input_data')
@@ -82,9 +78,9 @@ class NameCheckProcessor(BaseProcessor):
 
         # Where to store output data
         downloadfilename1 = 'dunno-biodiv-data-%s.csv' % self.job_id
-        downloadfilepath1 = download_dir.rstrip('/')+os.sep+downloadfilename1
+        downloadfilepath1 = self.download_dir.rstrip('/')+os.sep+downloadfilename1
         downloadfilename2 = 'filtered-biodiv-data-%s.csv' % self.job_id
-        downloadfilepath2 = download_dir.rstrip('/')+os.sep+downloadfilename2
+        downloadfilepath2 = self.download_dir.rstrip('/')+os.sep+downloadfilename2
 
         # Run the R script:
         r_file_name = 'checknames.R'
@@ -93,7 +89,7 @@ class NameCheckProcessor(BaseProcessor):
                   downloadfilepath1, downloadfilepath2]
         LOGGER.info('Run R script and store result to %s and %s!' % (downloadfilepath1, downloadfilepath2))
         LOGGER.debug('R args: %s' % r_args)
-        returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, r_script_dir, r_args)
+        returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, self.r_script_dir, r_args)
         LOGGER.info('Running R script done: Exit code %s' % returncode)
 
         if not returncode == 0:
@@ -101,8 +97,8 @@ class NameCheckProcessor(BaseProcessor):
 
         else:
             # Create download link:
-            downloadlink1 = own_url.rstrip('/')+os.sep+downloadfilename1
-            downloadlink2 = own_url.rstrip('/')+os.sep+downloadfilename2
+            downloadlink1 = self.own_url.rstrip('/')+os.sep+downloadfilename1
+            downloadlink2 = self.own_url.rstrip('/')+os.sep+downloadfilename2
 
             # Return link to file:
             response_object = {
