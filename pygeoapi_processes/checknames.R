@@ -57,3 +57,4 @@ print(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names
 data.table::fwrite(cleannames_df , file = out_result_path_names)
 print(paste0('Write result (speciesfiltered) to csv file: ', out_result_path_filtered))
 data.table::fwrite(speciesfiltered , file = out_result_path_filtered)
+

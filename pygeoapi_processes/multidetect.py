@@ -189,3 +189,4 @@ def call_r_script(LOGGER, r_file_name, path_rscripts, r_args):
                 LOGGER.error('ENTIRE R ERROR MSG NOW: %s' % err_msg)
 
     return p.returncode, stdouttext, stderrtext, err_msg
+
