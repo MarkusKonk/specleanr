@@ -11,8 +11,10 @@
 
 # To test, run this script in bash with:
 # Rscript getdata.R "studyarea.shp" "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla" "50" "50" "50" "data_gbif_vert_inat.csv"
-
+print('Starting wrapper script: getdata.R.')
+#print(paste('DEBUG: R package sources: libPaths()', .libPaths()))
 library(specleanr)
+#print('DEBUG: Successfully imported library specleanr')
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
@@ -26,7 +28,8 @@ out_result_path = args[6]
 
 # (1) Read data from shapefile
 # TODO Test, can st_read also read GeoJSON? It should?
-print(paste('Reading input data from shapefile or GeoJSON...'))
+print(paste('Reading input data from shapefile or GeoJSON:', in_data_path))
+#print(paste('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", ")))
 study_area <- sf::st_read(in_data_path, quiet=TRUE)
 #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
@@ -45,6 +48,7 @@ in_vert_lim = as.numeric(in_vert_lim)
 
 
 # (3) Run getdata:
+print('Running specleanr::getdata...')
 df_online <- getdata(
   data = in_species_names, 
   extent = study_area,
@@ -52,6 +56,7 @@ df_online <- getdata(
   inatlim = in_inat_lim,
   vertlim = in_vert_lim,
   verbose = F)
+print('Running specleanr::getdata... DONE.')
 
 
 # (4) Write the result to csv file:

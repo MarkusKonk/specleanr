@@ -12,7 +12,7 @@
 
 # To test, run this script in bash with:
 # Rscript checknames.R "matched-biodiv-data.csv" "species" "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla" "70" "true"  "data_checked1.csv" "data_checked2.csv"
-
+print('Starting wrapper script: checknames.R.')
 library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -43,8 +43,10 @@ in_species_names = strsplit(in_species_names, ",")[[1]]
 
 
 # (4) Run check_names:
+print('Running specleanr::check_names...')
 cleannames_df <- check_names(data = mergealldfs, colsp = in_colname_species, pct = as.numeric(in_pct), merge = in_bool_merge)
 #cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE)
+print('Running specleanr::check_names... DONE.')
 
 
 # (5) Filter result:

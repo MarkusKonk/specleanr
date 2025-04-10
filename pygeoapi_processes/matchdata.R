@@ -11,7 +11,7 @@
 
 # To test, run this script in bash with:
 # Rscript matchdata.R "some_inputs.csv" "some_more_inputs.csv" "speciesname, scientificName" "JDS4_sampling_ID" "lat, lati" "lon, long" "data_matched.csv"
-
+print('Starting wrapper script: matchdata.R')
 library(specleanr)
 
 
@@ -61,6 +61,7 @@ data_from_user <- data.table::fread(in_data_path_or_url_user)
 
 
 # (3) Run match_datasets:
+print('Running specleanr:match_datasets...')
 mergealldfs <- match_datasets(
   datasets = list(
     user = data_from_user,
@@ -69,6 +70,7 @@ mergealldfs <- match_datasets(
   lats = in_colnames_lat,
   lons = in_colnames_lon,
   species = in_colnames_species_names)
+print('Running specleanr:match_datasets... DONE.')
 
 # mergealldfs <- match_datasets(
 #  datasets = list(

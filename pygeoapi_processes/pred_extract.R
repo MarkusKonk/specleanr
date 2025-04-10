@@ -12,6 +12,7 @@
 # To test, run this script in bash with:
 # Rscript pred_extract.R "bla.csv" "bla.tiff" "decimalLatitude" "decimalLongitude" "speciescheck" "10" "true" "false" "true" "bladata.csv"
 
+print('Starting wrapper script: pred_extract.R.')
 library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -30,18 +31,19 @@ out_result_path = args[10]
 
 
 # (1) Read data from CSV or from URL
-print(paste('Reading input data from CSV...'))
+print(paste('Reading input data from CSV, from:', in_data_path_or_url))
 speciesfiltered <- data.table::fread(in_data_path_or_url)
 
 
 # (2) Read raster from ...
+print(paste('Reading input raster, from:', in_raster_path))
 worldclim <- terra::rast(in_raster_path)
 #worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package = 'specleanr'))
 
 
 # (3) Read bbox from shapefile
 # TODO: Whole shapefile just for bbox? Better?
-print(paste('Reading input data from shapefile...'))
+print(paste('Reading input data from shapefile, from:', in_shape_path))
 study_area <- sf::st_read(in_shape_path, quiet=TRUE)
 #danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
@@ -59,6 +61,7 @@ print(paste('in_colname_species:', in_colname_species))
 print(paste('in_min_pts:', in_min_pts))
 print(paste('in_bool_list:', in_bool_list))
 print(paste('in_bool_merge:', in_bool_merge))
+print('Running specleanr::pred_extract...')
 multiprecleaned <- pred_extract(
   data = speciesfiltered, 
   raster = worldclim, 
@@ -69,6 +72,7 @@ multiprecleaned <- pred_extract(
   list = in_bool_list, 
   minpts = as.numeric(in_min_pts),
   merge = in_bool_merge)
+print('Running specleanr::pred_extract... DONE.')
 
 #multipreclened <- pred_extract(
 #  data= speciesfiltered, 

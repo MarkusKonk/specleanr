@@ -11,7 +11,7 @@
 
 # To test, run this script in bash with:
 # Rscript multidetect.R "test_inputs_multidetect.csv" "Sepal.Length" "Species" "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal" 0.1 "data_out_cleandata.csv"
-
+print('Starting wrapper script: multidetect.R.')
 library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -71,14 +71,14 @@ if (!in_bool_multiple_species) {
 
 
 # (4) Run multidetect
-print(paste('Run multidetect...'))
+print(paste('Running specleanr::multidetect...'))
 print(paste('Var:', in_colname_var))
 print(paste('Multiple:', in_bool_multiple_species))
 print(paste('Colname Species:', in_colname_species))
-print(paste0('Exclude: ', paste0(in_colnames_exclude, collapse=' + ')))
+print(paste('Exclude columns:', paste0(in_colnames_exclude, collapse=' + ')))
 print(paste('Missingness:', in_missingness))
 print(paste('SilenceErrors:', in_silence_true_errors))
-print(paste0('Methods: ', paste0(in_methods, collapse=' + ')))
+print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 outlieriris_mult <- multidetect(
   data = dfinal,
   var = in_colname_var,
@@ -88,6 +88,7 @@ outlieriris_mult <- multidetect(
   methods = in_methods,
   silence_true_errors = in_silence_true_errors, # show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.
   missingness = in_missingness) # threshold for how many NAs...
+print(paste('Running specleanr::multidetect... DONE.'))
 
 
 # (5) Run extract_clean_data
@@ -102,13 +103,14 @@ if (tolower(in_threshold) == 'null') {
   print(paste0('Threshold is a number (', in_threshold, '), using loess=FALSE...'))
   in_bool_loess <- FALSE
 }
-print(paste('Run extract_clean_data'))
+print(paste('Running specleanr::extract_clean_data...'))
 cleandata2 <- extract_clean_data(
   refdata = dfinal,
   outliers = outlieriris_mult,
   loess = in_bool_loess,
   threshold = in_threshold,
   var = in_colname_species)
+print(paste('Running specleanr::extract_clean_data... DONE.'))
 
 
 # (6) Write summary to txt file
