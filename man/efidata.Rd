@@ -3,7 +3,7 @@
 \docType{data}
 \name{efidata}
 \alias{efidata}
-\title{Efiplus data used to develop ecological sensitivity parameters for riverine species in European streams and rivers.}
+\title{EFIPLUS data used to develop ecological sensitivity parameters for riverine species in European streams and rivers.}
 \format{
 A \code{tibble} 99 rows and 23 columns.
 }

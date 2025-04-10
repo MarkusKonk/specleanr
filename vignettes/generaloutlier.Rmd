@@ -46,15 +46,16 @@ We can only use univariate methods to detect only in in variable such as Sepal.L
 
 ```{r}
 outlieriris_univ <- multidetect(data = dfinal, var = 'Sepal.Length', multiple = FALSE,
-                       methods = c('mixediqr', 'logboxplot','iqr', 'distboxplot', 'jknife', 'semiqr',
-                                   'hampel'),
-                       showErrors = T, missingness = 0.1)
+                       methods = c('mixediqr', 'logboxplot','iqr', 'distboxplot',
+                                   'jknife', 'semiqr', 'hampel'),
+                       silence_true_errors = FALSE, missingness = 0.1)
 
 outlieriris_mult <- multidetect(data = dfinal, var = 'Sepal.Length', multiple = FALSE,
                        exclude = "Species",
-                       methods = c('mixediqr', 'logboxplot','iqr', 'distboxplot', 'jknife', 'semiqr',
-                                   'hampel', 'iforest', 'lof', 'mahal'),
-                       showErrors = FALSE, missingness = 0.1)
+                       methods = c('mixediqr', 'logboxplot','iqr', 'distboxplot', 
+                                   'jknife', 'semiqr','hampel', 'iforest', 
+                                   'lof', 'mahal'),
+                       silence_true_errors = TRUE, missingness = 0.1)
 
 ```
 

@@ -12,6 +12,9 @@
 #' @param coef \code{numeric}. Constant for adjusted boxplots.
 #'
 #' @importFrom robustbase adjboxStats
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return \code{dataframe}. Dataframe with or with no outliers.
 #' @export
@@ -42,39 +45,23 @@
 #' Computational Statistics and Data Analysis 52:5186-5201.
 #'
 #'
-adjustboxplots <- function(data, var = NULL, output = 'outlier', a=-4, b=3, coef=1.5){
+adjustboxplots <- function(data, var, output = 'outlier', a=-4, b=3, coef=1.5,pc, pcvar, boot){
 
   options(mc_doScale_quiet=TRUE)
 
-  if(is(data, 'atomic') || is(data,'vector')|| is(data,'list')){
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
-    data <- unlist(data)
+  outdata <- robustbase::adjboxStats(var, coef = coef,a = a, b = b, do.conf = TRUE,
+                                     do.out = TRUE)$out
+  datIn <- which(!var%in%outdata)
 
-    if(!is.null(var)) message(var, ' is not required for vector or list data')
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
-    if(!is(data, 'numeric')) stop('Only numeric data accepeted')
+  switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 
-    outdata <- robustbase::adjboxStats(data, coef = coef,a = a, b = b, do.conf = TRUE,
-                                       do.out = TRUE)$out
-    datIn <- which(!var%in%outdata)
-
-    switch(output, clean=return(data[-datIn]), outlier= return(data[datIn]))
-
-  }else if(is(data, 'data.frame') && !is.null(var)){
-
-    var <- unlist(data[, var])
-
-    outdata <- robustbase::adjboxStats(var, coef = coef,a = a, b = b, do.conf = TRUE,
-                                       do.out = TRUE)$out
-    datIn <- which(!var%in%outdata)
-
-    switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
-
-  }else{
-
-    stop('Data input is neither a dataframe neither a vector or list')
-
-  }
 }
 
 #' @title Computes interquartile range to flag environmental outliers
@@ -98,6 +85,9 @@ adjustboxplots <- function(data, var = NULL, output = 'outlier', a=-4, b=3, coef
 #'
 #'
 #' @importFrom stats quantile IQR
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #'
@@ -128,17 +118,23 @@ adjustboxplots <- function(data, var = NULL, output = 'outlier', a=-4, b=3, coef
 #'  Data Mining and Knowledge Discovery 1:73-79.
 #'
 #'
-interquartile <- function(data, var, output, x=1.5){
+interquartile <- function(data, var, output, x=1.5, pc, pcvar, boot){
 
-  var <- unlist(data[, var])
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   iqrcal <- stats::IQR(var)
 
-  lowbound = quantile(var, 0.25) - x * iqrcal
+  lowbound = quantile(var, 0.25) - x* iqrcal
 
   upbound = quantile(var, 0.75) + x * iqrcal
 
   datIn <- which(var<upbound & var>lowbound)
+
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
@@ -158,6 +154,10 @@ interquartile <- function(data, var, output, x=1.5){
 #' However, SIQR introduced the same constant values for bounding fences
 #' for the lower and upper quartiles \code{(Rousseeuw & Hubert 2011)}, which leads to
 #' outlier swamping and masking.
+#'
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #' @export
@@ -188,9 +188,12 @@ interquartile <- function(data, var, output, x=1.5){
 #' Kimber AC. 1990. Exploratory Data Analysis for Possibly Censored Data From Skewed Distributions.
 #' Page Source: Journal of the Royal Statistical Society. Series C (Applied Statistics).
 #'
-semiIQR <- function(data, var, output, x=3){
+semiIQR <- function(data, var, output, x=3, pc, pcvar, boot){
 
-  var <- unlist(data[,var])
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   semiQL=  stats::quantile(var, 0.5)- stats::quantile(var, 0.25)
 
@@ -204,6 +207,8 @@ semiIQR <- function(data, var, output, x=3){
   upbound = quantile(var, 0.75) + x*semiQU
 
   datIn <- which(var<upbound & var>lowbound)
+
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
@@ -225,6 +230,9 @@ semiIQR <- function(data, var, output, x=3){
 #'
 #'
 #' @importFrom stats median mad
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Data frame with or with no outliers.
 #' @export
@@ -257,41 +265,22 @@ semiIQR <- function(data, var, output, x=3){
 #'
 #'
 #'
-hampel <- function(data, var=NULL, output ='outlier', x=3){
+hampel <- function(data, var, output, x=3, pc, pcvar, boot){
 
-  if(is(data, 'atomic') || is(data,'vector')|| is(data,'list')){
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
-    data <- unlist(data)
+  lowbound = stats::median(var) - x * stats::mad(var)
 
-    if(!is.null(var)) message(var, ' is not required for vector or list data')
+  upbound = stats::median(var) + x * stats::mad(var)
 
-    if(!is(data, 'numeric')) stop('Only numeric data accepeted')
+  datIn <- which(var<upbound & var>lowbound)
 
-    lowbound = stats::median(data) - x * stats::mad(data)
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
-    upbound = stats::median(data) + x * stats::mad(data)
-
-    datIn <- which(data<upbound & data>lowbound)
-
-    switch(output, clean=return(data[datIn]), outlier= return(data[-datIn]))
-
-  }else if(is(data, 'data.frame') & !is.null(var)){
-
-    var <- unlist(data[,var])
-
-    lowbound = stats::median(var) - x * stats::mad(var)
-
-    upbound = stats::median(var) + x * stats::mad(var)
-
-    datIn <- which(var<upbound & var>lowbound)
-
-    switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
-
-  }else{
-
-    stop('Data input is neither a dataframe neither a vector or list')
-
-  }
+  switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
 
 #Reverse jackknifing
@@ -350,20 +339,13 @@ hampel <- function(data, var=NULL, output ='outlier', x=3){
 #' }
 #'
 #'
-jknife <- function(data, var, output ='outlier', mode='soft'){
+jknife <- function(data, var, output ='outlier', mode='soft', pc, pcvar, boot){
 
-  match.argc(mode, choices = c('robust', 'soft'))
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
 
-  match.argc(output, choices = c('outlier', 'clean'))
-
-
-  if(missing(data)) stop('Provide the enviromental data', call. = FALSE)
-
-  if(missing(var)) stop('Provide the variable to use for calcualting outliers', call. = FALSE)
-
-  if(length(var)>1 || length(var)<1) stop('Provide only one parameters for detecting outleirs', call. = FALSE)
-
-  var <- unlist(data[,var])
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   sort_ls <- sort(unique(var))
 
@@ -372,7 +354,7 @@ jknife <- function(data, var, output ='outlier', mode='soft'){
   totnum <- length(sort_ls)-1
 
   if(mode=='soft'){
-    xbar <- base::mean(var)
+    xbar <- mean(var)
 
     y <- c()
     xc <- c()
@@ -420,6 +402,8 @@ jknife <- function(data, var, output ='outlier', mode='soft'){
 
     datIn <- which(var%in%xvar)
   }
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
+
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
 
@@ -469,13 +453,16 @@ jknife <- function(data, var, output ='outlier', mode='soft'){
 #'
 #' }
 #'
-zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft'){
+zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft', pc, pcvar, boot){
 
   match.argc(output, choices = c('clean','outlier'))
   match.argc(type, choices = c('extreme','mild'))
   match.argc(mode, choices = c('robust', 'soft'))
 
-  var <- unlist(data[,var])
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   if(mode=='robust'){
 
@@ -490,9 +477,10 @@ zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft'){
                    extreme= which(zscores< 3 & zscores > (-3)))
   }
 
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
+
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
-
 
 #Boxplot modifications
 
@@ -555,9 +543,13 @@ zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft'){
 #'
 #'
 #'
-logboxplot <- function(data, var, output, x=1.5){
+logboxplot <- function(data, var, output, x=1.5, pc, pcvar, boot){
 
-  var <- unlist(data[, var])
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   iqrcal <- stats::IQR(var)
 
@@ -568,6 +560,8 @@ logboxplot <- function(data, var, output, x=1.5){
   upbound = quantile(var, 0.75) + x * iqrcal*correction
 
   datIn <- which(var<upbound & var>lowbound)
+
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
@@ -609,9 +603,13 @@ logboxplot <- function(data, var, output, x=1.5){
 #' Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data.
 #'  American Statistician 72:348-353. American Statistical Association.
 #'
-mixediqr <- function(data, var, output, x=3){
+mixediqr <- function(data, var, output, x=3, pc, pcvar, boot){
 
-  var <- unlist(data[,var])
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   #semiintequantile range component
   semiQRl=  stats::quantile(var, 0.5)- stats::quantile(var, 0.25)
@@ -639,6 +637,8 @@ mixediqr <- function(data, var, output, x=3){
   upbound = quantile(var, 0.75) + x*(iqr*frac)
 
   datIn <- which(var<upbound & var>lowbound)
+
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
@@ -677,9 +677,13 @@ mixediqr <- function(data, var, output, x=3){
 #'  medout <- medianrule(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #' }
 #'
-medianrule <- function(data, var, output, x=2.3){
+medianrule <- function(data, var, output, x=2.3, pc, pcvar, boot){
 
-  var <- unlist(data[, var])
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
 
   iqrcal <- stats::IQR(var)
 
@@ -688,6 +692,8 @@ medianrule <- function(data, var, output, x=2.3){
   upbound = quantile(var, 0.5) + x * iqrcal
 
   datIn <- which(var<upbound & var>lowbound)
+
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
   switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
 }
@@ -726,20 +732,17 @@ medianrule <- function(data, var, output, x=2.3){
 #'  bxout <- distboxplot(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #' }
 
-distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
+distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975, boot, pc, pcvar){
 
   kndata <- specleanr::kdat
 
-  if(is(data, 'data.frame')){
-    nd <- nrow(data)
-    var <- unlist(data[,var])
-  } else if(is(data, 'vector') || is(data, 'atomic')){
-    nd <- length(data)
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
 
-    var <- data
-  } else{
-    stop('Only data frame or vector of values are accepted.')
-  }
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  nd <- nrow(data)
 
   if(nd>400){
     nd = 0
@@ -774,13 +777,10 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 
   datIn <- which(var<upbound & var>lowbound)
 
-  if(is(data, 'data.frame')){
-    switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
-  }else{
-    switch(output, clean=return(data[datIn]), outlier= return(data[-datIn]))
-  }
-}
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
 
+  switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
+}
 
 #' @title Sequential fences method
 #'
@@ -842,7 +842,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975){
 #' }
 #'
 
-seqfences <- function(data, var = NULL, output, gamma=0.95, mode='eo'){
+seqfences_vec <- function(data, var, output, gamma=0.95, mode='eo'){
 
   if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
 
@@ -922,6 +922,139 @@ seqfences <- function(data, var = NULL, output, gamma=0.95, mode='eo'){
   }
 }
 
+
+
+#' @title Sequential fences method
+#'
+#' @param data Dataframe or vector where to check outliers.
+#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
+#' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
+#'     for outlier data frame or vectors.
+#' @param gamma \code{numeric}. the p-values used to classify a record as an outlier. The lower the p-value,
+#'      the extremeness is the outlier \code{Schwertman & de Silva 2007}.
+#' @param mode \code{string}. Indicates the extremeness of the outlier.
+#'
+#'
+#' @details
+#' Sequential fences is a modification of the TUKEY boxplot, where the data is divided into groups each with its own
+#' fences \code{Schwertman & de Silva 2007}. The groups can range from 1, which flags mild outliers to 6 for extreme outliers ()
+#'
+#'
+#' @return Dataframe or vector with or without outliers
+#'
+#' @importFrom stats qnorm qt
+#'
+#' @export
+#'
+#' @examples
+#'
+#'\dontrun{
+#'
+#' data("efidata")
+#'
+#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'
+#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'
+#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'
+#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+#'                           colsp = 'speciescheck',
+#'                           bbox = db,
+#'                           multiple = TRUE,
+#'                           minpts = 10)
+#'
+#'  sqout <- seqfences(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
+#' }
+#'
+#'
+#' @references
+#'
+#' \enumerate{
+#'
+#' \item Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
+#' Computational Statistics and Data Analysis 51:3800-3810.
+#'
+#' \item Schwertman NC, Owens MA, Adnan R. 2004. A simple more general boxplot method for identifying outliers.
+#' Computational Statistics and Data Analysis 47:165-174.
+#'
+#' \item Dastjerdy B, Saeidi A, Heidarzadeh S. 2023.
+#' Review of Applicable Outlier Detection Methods to Treat Geomechanical Data. Geotechnics 3:375-396. MDPI AG.
+#'
+#' }
+#'
+
+seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc, pcvar, boot){
+
+  if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
+
+    stop('Only 0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995 are allowed values for gamma.')
+  }
+
+  #standard table 1 from (Schwertman NC, de Silva R. 2007)
+
+  kndata <- specleanr::kdat
+
+  #standard table 2 from (Schwertman NC, de Silva R. 2007)
+  mth <- specleanr::mth
+
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  nd <- nrow(data)
+
+  if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
+
+  kn <- kndata$kn[which(as.numeric(kndata$n) == nd)]
+
+  #get confidence coefficients
+  df <- as.integer(7.6809524 + .5294156*nd - .00237*nd^2)
+
+  confs <- c('m1', 'm2', 'm3', 'm4', 'm5', 'm6')
+
+  lf <- c(); uf <- c(); tv <- c()
+  for (si in seq_along(confs)) {
+    m <- confs[si]
+
+    mc <- mth[,m][which(mth$p== gamma)]
+
+    tv <- qt(mc/length(var), df, lower.tail = F)
+
+    lf[si] <- unname(quantile(var, 0.5)) - (tv/kn)*IQR(var)
+    uf[si] <- unname(quantile(var, 0.5)) + (tv/kn)*IQR(var)
+  }
+
+  indx <- c()
+  for (sii in seq_along(var)){
+    vals <- var[sii]
+    if(mode=='eo'){
+      ev <- 1
+    }else if(mode=='meo'){
+      ev <- 2
+    }else if(mode=='leo'){
+      ev <- 3
+    }else if (mode == 'ao'){
+      ev <- 4
+    }else if(mode=='wo'){
+      ev <- 5
+    }else{
+      ev <- 6
+    }
+    lv <- vals < lf[ev] | vals > uf[ev]
+    if(any(lv)==TRUE)  tf <- TRUE else tf <- FALSE
+    indx[sii] <- tf
+  }
+
+  datIn <- which(indx==FALSE)
+
+  if(isTRUE(pc)) datIn <- which(varc %in% unique(varc[datIn])==TRUE) else datIn
+
+  switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
+}
+
 #' @title Identify outliers using isolation forest model.
 #'
 #' @param data Dataframe of environmental variables extracted from where the species was recorded present or absent.
@@ -969,7 +1102,7 @@ seqfences <- function(data, var = NULL, output, gamma=0.95, mode='eo'){
 #' Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
 #' }
 #'
-isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
+isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc, boot, pcvar, var){
 
   match.argc(output, choices = c('clean', 'outlier'))
 
@@ -977,7 +1110,13 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
 
   if(size<0 | size>1)stop('size should range from 0 to 1')
 
-  if(!is.null(exclude))  df<- data[!colnames(data)%in%exclude] else df <- data
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  if(!is.null(exclude))  df<- pcdf[!colnames(pcdf)%in%exclude] else df <- pcdf
 
   isomodel <- isolation.forest(data= df, sample_size = size, ntrees = 100, 1)
 
@@ -1031,12 +1170,20 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL){
 #'}
 #'
 onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
-                   tpar = list(gamma = 1^(-1:1), epislon =seq(0, 1, 0.1),
-                               cost =2^2:4, nu = seq(0.05, 1, 0.1))){
+                    tpar = list(gamma = 1^(-1:1), epislon =seq(0, 1, 0.1),
+                                cost =2^2:4, nu = seq(0.05, 1, 0.1)),
+                    boot, pc, var, pcvar){
 
   match.argc(kernel, choices = c('radial', 'linear')) #radial set to defualt, works well for high dimensional data
 
-  if(!is.null(exclude))  df<- data[!colnames(data)%in%exclude] else df <- data
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  if(!is.null(exclude))  df<- pcdf[!colnames(pcdf)%in%exclude] else df <- pcdf
 
   if(isFALSE(tune)){
 
@@ -1103,14 +1250,20 @@ onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
 #'                 minPts = 10, mode = "soft")
 #' }
 #'
-xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mode='soft'){
+xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mode='soft', pc, boot, var, pcvar){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
   match.argc(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
 
 
-  if(!is.null(exclude)) df<- data[!colnames(data)%in%exclude] else df <- data
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  if(!is.null(exclude)) df<- pcdf[!colnames(pcdf)%in%exclude] else df <- pcdf
 
   dxl <- dist(x=df, method = metric)
 
@@ -1140,7 +1293,6 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 
   switch (output, clean= return(data[datIn,]), outlier= return(data[-datIn,]))
 }
-
 
 #' @title k-nearest neighbors for outlier detection
 #'
@@ -1183,13 +1335,20 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'                  mode = "soft")
 #'}
 #'
-xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'){
+xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft', pc, boot, var, pcvar){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
   match.argc(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
 
-  if(!is.null(exclude)) df<- data[!colnames(data)%in%exclude] else df <- data
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  if(!is.null(exclude)) df<- pcdf[!colnames(pcdf)%in%exclude] else df <- pcdf
 
   dx <- dist(x=df, method = metric)
 
@@ -1273,13 +1432,20 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #' package version 1.1-11, <https://CRAN.R-project.org/package=dbscan>
 #' }
 #'
-xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='soft'){
+xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='soft', pc, boot, var, pcvar){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
   match.argc(metric, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary"))
 
-  if(!is.null(exclude)) df<- data[!colnames(data)%in%exclude] else df <- data
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  if(!is.null(exclude)) df<- pcdf[!colnames(pcdf)%in%exclude] else df <- pcdf
 
   dx <- dist(x=df, method = metric)
 
@@ -1437,7 +1603,7 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 #'                                                    optspcol = "species",
 #'                                                    direction= "direction"))
 #' }
-ecological_ranges <- function(data, var = NULL, output= "outlier", species = NULL,
+ecological_ranges <- function(data, var, output= "outlier", species = NULL,
                               optimumSettings = list(optdf =NULL, optspcol = NULL,
                                                      mincol = NULL, maxcol = NULL,
                                                      ecoparam = NULL, direction= NULL),
@@ -1586,7 +1752,7 @@ ecological_ranges <- function(data, var = NULL, output= "outlier", species = NUL
 
 
 #' @noRd
-sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = NULL, lat =NULL, lon=NULL,
+sprange <- function(data, var, minval = NULL, maxval = NULL, ecoparam = NULL, lat =NULL, lon=NULL,
                     direction = NULL, geo=NULL){
 
   if(!is.null(geo)){
@@ -1696,7 +1862,7 @@ sprange <- function(data, var = NULL, minval = NULL, maxval = NULL, ecoparam = N
 #' Use a robust variant of the Mahalanobis distance. Journal of Experimental
 #' Social Psychology 74:150-156.
 #'
-mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95, tol= 1e-20){
+mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95, tol= 1e-20, pc, boot, var, pcvar){
 
   if(missing(data)) stop('Data not provided.')
 
@@ -1704,7 +1870,14 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 
   match.argc(output, choices = c('clean', 'outlier'))
 
-  dfna <- data[complete.cases(data),]
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  dfna <- pcdf[complete.cases(pcdf),]
 
   if(!is.null(exclude))  df <- dfna[,!colnames(dfna) %in% exclude] else df <- dfna
 
@@ -1807,7 +1980,8 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #'
 #'
 #'
-xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silhouette", seed = 1135, verbose=FALSE){
+xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silhouette",
+                    seed = 1135, verbose=FALSE, pc, boot, var, pcvar){
 
   match.argc(mode, choices = c('soft', 'robust'))
 
@@ -1818,7 +1992,14 @@ xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silho
   #set seed to fix the iteration in k-means tuning and optimization
   set.seed(seed)
 
-  if(!is.null(exclude)) df2 <- data[,!colnames(data) %in% exclude] else df2 <- data
+  pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+  var <-  pars[["var"]]
+  data <- pars[['data']]
+  varc <- pars[['varc']]
+
+  if(isTRUE(pc)) pcdf <- pars[['pcdf']] else pcdf <- pars[['data']]
+
+  if(!is.null(exclude)) df2 <- pcdf[,!colnames(pcdf) %in% exclude] else df2 <- pcdf
 
   df_scaled <- scale(df2)
 

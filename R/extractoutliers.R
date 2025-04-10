@@ -39,8 +39,6 @@
 #'
 extractoutliers <- function(x, sp = NULL){
 
-  if(missing(x)) stop('List of species data with outliers is not provided')
-
   if(!is(x, 'datacleaner')) stop('Only datacleaner class is accpeted')
 
   if(x@out!='outlier') stop('Only extracts outliers yet clean data has been produced.')
@@ -49,9 +47,9 @@ extractoutliers <- function(x, sp = NULL){
 
     dx <- x@result
 
-    checkNA <- sapply(dx, nrow)
+    checknull <- sapply(dx, nrow) #methods which genuinely failed to implement
 
-    metds <- dx[!sapply(checkNA,is.null)]
+    metds <- dx[!sapply(checknull,is.null)]
 
     dxlists <- sapply(names(metds), function(xx){
 
@@ -72,7 +70,7 @@ extractoutliers <- function(x, sp = NULL){
 
       dx <- x@result[sp]
 
-      if(is.null(unlist(dx))) stop("Either index ", sp, " is out of bounds or the name was not considered in the outlier detection.", call. = FALSE)
+      if(is.null(unlist(dx))) stop("Either index ", sp, " is out of bounds or the variable was not considered in the outlier detection.", call. = FALSE)
 
     } else {
 
@@ -84,9 +82,9 @@ extractoutliers <- function(x, sp = NULL){
 
       spdf <- dx[[spnames]]
 
-      checkNA <- sapply(spdf, nrow)
+      checknull <- sapply(spdf, nrow)
 
-      metds <- spdf[!sapply(checkNA,is.null)]
+      metds <- spdf[!sapply(checknull,is.null)]
 
       dxlists <- sapply(names(metds), function(xx){
 
@@ -98,7 +96,7 @@ extractoutliers <- function(x, sp = NULL){
 
       dfout <- do.call(rbind, dxlists)
 
-      dfout["species"] <- spnames
+      dfout["groups"] <- spnames
 
       return(dfout)
 

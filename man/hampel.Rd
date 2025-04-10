@@ -4,7 +4,7 @@
 \alias{hampel}
 \title{Flag suspicious outliers based on the Hampel filter method..}
 \usage{
-hampel(data, var = NULL, output = "outlier", x = 3)
+hampel(data, var, output, x = 3, pc, pcvar, boot)
 }
 \arguments{
 \item{data}{Data frame to check for outliers}
@@ -14,6 +14,12 @@ hampel(data, var = NULL, output = "outlier", x = 3)
 \item{output}{Either clean: for dataframe with no suspicious outliers or outlier: to retrun dataframe with only outliers}
 
 \item{x}{A constant to create a fence or boundary to detect outliers.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Deafult \code{PC1}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
 }
 \value{
 Data frame with or with no outliers.

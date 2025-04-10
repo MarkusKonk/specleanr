@@ -15,16 +15,20 @@ BugReports: https://github.com/AnthonyBasooma/specleanr/issues
 RoxygenNote: 7.3.2
 Suggests: 
     dplyr,
-    DT,
     knitr,
     rmarkdown,
-    shiny,
-    shinydashboard,
     testthat (>= 3.0.0),
     ggplot2,
     ggpmisc,
     tibble,
-    rredlist
+    rinat,
+    rvertnet,
+    rgbif,
+    curl,
+    rfishbase,
+    sf,
+    terra,
+    tidytext
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
@@ -33,20 +37,10 @@ Imports:
     e1071,
     isotree,
     methods,
-    sf,
     utils,
     robust,
     robustbase,
-    terra,
     usdm,
-    memoise,
-    ranger,
-    randomForest,
-    rfishbase,
-    rvertnet,
-    curl,
-    rgbif,
-    rinat,
-    stringr
+    mgcv
 Depends: 
     R (>= 3.5.0)

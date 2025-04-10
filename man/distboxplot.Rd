@@ -4,7 +4,7 @@
 \alias{distboxplot}
 \title{Distribution boxplot}
 \usage{
-distboxplot(data, var, output, p1 = 0.025, p2 = 0.975)
+distboxplot(data, var, output, p1 = 0.025, p2 = 0.975, boot, pc, pcvar)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}

@@ -1,4 +1,4 @@
-#' @title Efiplus data used to develop ecological sensitivity parameters for riverine species in European streams and rivers.
+#' @title EFIPLUS data used to develop ecological sensitivity parameters for riverine species in European streams and rivers.
 #'
 #' @description A \code{tibble}
 #'
@@ -66,7 +66,7 @@
 "jdsdata"
 
 
-#' @title Sequental fences constants
+#' @title Sequential fences constants
 #'
 #' @description A \code{tibble} data with k constants for sequential fences method.
 #'
@@ -129,38 +129,65 @@
 "mth"
 
 
-#' @title Dataset with species NATURA2000 categories.
+#@title Dataset with species NATURA2000 categories.
+#
+#@description A \code{tibble} The data consist of 388303 rows and 19 columns which represents the
+#       different species on the list. The list was downloaded from the EEA website and manually
+#       archived in the package for use. For more information and citation
+#
+#@docType data
+#
+#@details The data is extracted from \code{(https://www.eea.europa.eu/themes/biodiversity/natura-2000)}.
+#
+#@usage data(naturalist)
+#
+#@keywords NATURA2000 NATURA2000 fish.
+#
+#@format A \code{tibble} 388303 rows and 5 columns.
+#
+#
+#@examples
+#
+#\dontrun{
+#
+#data("naturalist")
+#naturalist
+#}
+#
+#@references https://www.eea.europa.eu/themes/biodiversity/natura-2000.
+
+#"naturalist"
+
+
+#' @title Salmo trutta fario species data from GBIF and iNaturalist
 #'
-#' @description A \code{tibble} The data consist of 388303 rows and 19 columns which represents the
-#'        different species on the list. The list was downloaded from the EEA website and manually
-#'        archived in the package for use. For more information and citation
+#' @description A \code{tibble} Data from GBIF (https://www.gbif.org/) and iNaturalist (https://www.inaturalist.org/)
 #'
 #' @docType data
 #'
-#' @details The data is extracted from \code{(https://www.eea.europa.eu/themes/biodiversity/natura-2000)}.
+#' @details The species data was collated from the Global Biodiversity Information Facility and iNaturalist
 #'
-#' @usage data(naturalist)
+#' @usage data(troutdata)
 #'
-#' @keywords NATURA2000 NATURA2000 fish.
+#' @keywords freshwater information platform datasets
 #'
-#' @format A \code{tibble} 388303 rows and i9 columns.
+#' @format A \code{tibble} 1100 rows and 7 columns.
 #'
 #'
 #' @examples
 #'
 #' \dontrun{
 #'
-#' data("naturalist")
-#' naturalist
+#' data("troutdata")
+#' troutdata
 #' }
-#
 #'
-#' @references https://www.eea.europa.eu/themes/biodiversity/natura-2000.
 #'
-"naturalist"
-
-
-
+#'
+#'
+#' @references https://www.danubesurvey.org/jds4/about
+#'
+"jdsdata"
 
 
 

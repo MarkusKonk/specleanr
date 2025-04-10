@@ -7,7 +7,7 @@
 extract_clean_data(
   refdata,
   outliers,
-  mode = "best",
+  mode = "abs",
   colsp = NULL,
   threshold = NULL,
   warn = FALSE,
@@ -105,5 +105,5 @@ bestmout_bm <- extract_clean_data(refdata = rdata, outliers = out_df,
 
 }
 \seealso{
-\code{\link{thresh_search}}
+\code{\link{search_threshold}}
 }

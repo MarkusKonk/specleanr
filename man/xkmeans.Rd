@@ -12,7 +12,11 @@ xkmeans(
   mode = "soft",
   method = "silhouette",
   seed = 1135,
-  verbose = FALSE
+  verbose = FALSE,
+  pc,
+  boot,
+  var,
+  pcvar
 )
 }
 \arguments{

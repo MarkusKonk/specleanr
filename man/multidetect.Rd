@@ -7,10 +7,11 @@
 multidetect(
   data,
   var,
+  select = NULL,
   output = "outlier",
   exclude = NULL,
   multiple,
-  colsp = NULL,
+  var_col = NULL,
   optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction = NULL, maxcol
     = NULL, mincol = NULL, maxval = NULL, minval = NULL, checkfishbase = FALSE, mode =
     NULL, lat = NULL, lon = NULL, pct = 80, warn = FALSE),
@@ -23,11 +24,13 @@ multidetect(
   knnpar = list(metric = "manhattan", mode = "soft"),
   lofpar = list(metric = "manhattan", mode = "soft", minPts = 10),
   methods,
+  bootSettings = list(run = FALSE, nb = 5, maxrecords = 30, seed = 1135),
+  pc = list(exec = FALSE, npc = 2, q = T, pcvar = "PC1"),
   verbose = FALSE,
   spname = NULL,
   warn = FALSE,
   missingness = 0.1,
-  showErrors = TRUE,
+  silence_true_errors = TRUE,
   sdm = TRUE,
   na.inform = FALSE
 )
@@ -40,6 +43,8 @@ maximum temperature of the coldest month for bioclimatic variables \code{(IUCN S
 stream power index for hydromorphological parameters \code{(Logez et al., 2012)}. This parameter is
 necessary for the univariate outlier detection methods such as Z-score.}
 
+\item{select}{\code{vector} The columns that will be used in outlier detection. Make sure only numeric columns are accepted.}
+
 \item{output}{\code{character}. Either \code{clean}: for a data set with no outliers, or \code{outlier}: to output a dataframe with outliers. Default \code{outlier}.}
 
 \item{exclude}{\code{vector}. Exclude variables that should not be considered in the fitting the one class model, for example \code{x} and \code{y} columns or
@@ -47,7 +52,7 @@ latitude/longitude or any column that the user doesn't want to consider.}
 
 \item{multiple}{\code{logical}. If the multiple species are considered, then multiple must be set to \code{TRUE} and \code{FALSE} for single species.}
 
-\item{colsp}{\code{string}. A column with species names if \code{dataset} for species is a dataframe not a list. See \code{\link{pred_extract}} for extracting environmental data.}
+\item{var_col}{\code{string}. A column with species names if \code{dataset} for species is a dataframe not a list. See \code{\link{pred_extract}} for extracting environmental data.}
 
 \item{optpar}{\code{list}. Parameters for species optimal ranges like temperatures ranges. For details check \code{\link{ecological_ranges}}.}
 
@@ -82,7 +87,7 @@ such as robust and soft mode. For details \code{\link{xlof}}.}
 columns or rows from the data sets. Default 0.1. Therefore,
      if a column has more than 10\% missing values, then it will be removed from the dataset rather than the rows.}
 
-\item{showErrors}{\code{logical}. Show execution errors and therefore for multiple species the code will break if one of the
+\item{silence_true_errors}{\code{logical}. Show execution errors and therefore for multiple species the code will break if one of the
 methods fails to execute.}
 
 \item{sdm}{{logical} If the user sets \code{TRUE}, strict data checks will be done including removing all non-numeric
@@ -115,7 +120,7 @@ by each method.
 This function computes different outlier detection methods including univariate, multivariate and species
      ecological ranges to enables seamless comparison and similarities in the outliers detected by each
      method. This can be done for multiple species or a single species in a dataframe or lists or dataframes
-     and thereafter the outliers can be extracted using the \code{\link{clean_data_extract}} function.
+     and thereafter the outliers can be extracted using the \code{\link{extract_clean_data}} function.
 }
 \examples{
 
@@ -132,10 +137,12 @@ matchdata <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
                             country = c('JDS4_site_ID'))
 
 
-datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
+datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
 
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))

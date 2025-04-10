@@ -10,7 +10,9 @@ check_names(
   verbose = FALSE,
   pct = 90,
   merge = F,
-  sn = FALSE
+  sn = FALSE,
+  ecosystem = FALSE,
+  rm_duplicates = FALSE
 )
 }
 \arguments{
@@ -28,6 +30,12 @@ returned.}
 
 \item{sn}{\code{logical}. Whether to consider synonyms. Default FALSE so accepted names will be considered from
 FishBase database.}
+
+\item{ecosystem}{\code{logical} Returns whether the species is freshwater, marine , or brackish or a combination for
+for esturaine loving species.}
+
+\item{rm_duplicates}{\code{logical}. If TRUE, removes all duplicate species names especially when a dataframe is
+is the output from the function.}
 }
 \value{
 Data frame or names of corrected or cleaned species names.
@@ -37,7 +45,7 @@ Check species names for inconsistencies
 }
 \details{
 The function produces a data set with species names corresponding with
-\href{https://www.fishbase.se/}{Fishase}. If synoynm is provided in the data set, the function will by defualt
+\href{https://www.fishbase.se/}{Fishase}. If synonym is provided in the data set, the function will by defualt
 return the accepted name. However, if the synoymn is desired, then set the sn parameter to \strong{TRUE}.
 The function also check for spellings of species names and returns a name that is closer to the one in FishBase
 with a particular degree of similarity set with pct parameter. pct of 1 indicates the name must 100% similar.

@@ -40,12 +40,13 @@ data(jdsdata) #Data extract from JDS4 data
 #===================================
 #Step 1aii: Retrieve online data for the species: polygon to limit the extent to get records.
 #=====================================
-danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
+danube <- sf::st_read(system.file('extdata', "danube.shp.zip",
+                                  package = 'specleanr'), quiet=TRUE)
 
 
 df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta', 
                               "Thymallus thymallus","Anguilla anguilla"), 
-                                bbox = danube,
+                                extent = danube,
                                 gbiflim = 50, 
                                 inatlim = 50, 
                                 vertlim = 50, 
@@ -71,11 +72,14 @@ mergealldfs <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
 
 #Species names are re-cleaned since the species names from vertnet are changed.
 
-cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE)
+cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, 
+                             merge = TRUE, verbose = TRUE)
 
 #Filter out species from cleannames df where the species names such as synonyms like Salmo trutta fario chnaged to Slamo trutta
 
-speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in% c("Squalius cephalus", 'Salmo trutta', "Thymallus thymallus","Anguilla anguilla"),]
+speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in%
+                                   c("Squalius cephalus", 'Salmo trutta', 
+                                     "Thymallus thymallus","Anguilla anguilla"),]
 
 ```
 
@@ -124,7 +128,8 @@ Here,
 
 #Get basin shapefile to delineate the study region: optional
 
-danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
+danube <- sf::st_read(system.file('extdata', 'danube.shp.zip', 
+                                  package = 'specleanr'), quiet=TRUE)
 
 #For multiple species indicate multiple TRUE
 multipreclened <-  pred_extract(data= speciesfiltered, 
@@ -133,7 +138,6 @@ multipreclened <-  pred_extract(data= speciesfiltered,
                              lon = 'decimalLongitude',
                              colsp = 'speciescheck',
                              bbox  = danube,  
-                             multiple = TRUE, 
                              list= TRUE, 
                              minpts = 10, merge = FALSE)
 names(multipreclened)
@@ -147,8 +151,7 @@ ttrefdata<-  pred_extract(data= ttdata, raster= worldclim,
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'speciescheck',
-                             bbox  = danube,  
-                             multiple = FALSE, 
+                             bbox  = danube,
                              list= TRUE, 
                              minpts = 10)
 dim(ttrefdata)
@@ -169,7 +172,8 @@ multioutliers <- multidetect(data = multipreclened,
                       var = 'bio6',
                       output = 'outlier',
                      exclude = c('x','y'),
-                      methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel','kmeans', 'mahal',
+                      methods = c('zscore', 'adjbox','iqr', 'semiqr',
+                                  'hampel','kmeans', 'mahal',
                                   'logboxplot','jknife','lof'))
 #single species
 ttoutlier<- multidetect(data = ttrefdata,
@@ -189,10 +193,10 @@ ttoutlier<- multidetect(data = ttrefdata,
 
 ```{r visualisation, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
 #for multiple species
-ggoutliers(multioutliers, y=2, raw=TRUE)
+ggoutliers(multioutliers)
 
 #for single species
-ggoutliers(ttoutlier, raw=TRUE)
+ggoutliers(ttoutlier)
 
 
 ```
@@ -207,7 +211,7 @@ ttoptimal <- optimal_threshold(refdata = ttrefdata, outliers = ttoutlier, plot =
 #obtain the optimal thresholds for multiple species 
 #plotting is not allowed for multiple species.
 
-multioptimal <- optimal_threshold(refdata = multipreclened, outliers = multioutliers, plot = FALSE)
+multioptimal <- optimal_threshold(refdata = multipreclened, outliers = multioutliers)
 
 ```
 
@@ -218,57 +222,17 @@ The user sets a threshold ranging from 0.1 to 1 but its advisable to set a value
 
 ```{r extract clean dataset}
 
-multspecies_clean <- extract_clean_data(refdata = multipreclened, outliers = multioutliers, loess =  TRUE)
+multspecies_clean <- extract_clean_data(refdata = multipreclened, outliers = multioutliers, 
+                                        loess =  TRUE)
 head(multspecies_clean)
 
 ttclean<- extract_clean_data(refdata = ttrefdata, outliers = ttoutlier, loess = TRUE)
 dim(ttclean)
-
-```
-
-**Model comparison**
-
-This is done to identify the suitable threshold that produces the highest model performance. 
-
-* `minpts` parameters indicates the points that should be allowed in fitting a distribution model. Default is 10. error might appear if the records are not enough to fit the models.
-* `loessthreshold` set to TRUE to execute data cleaning data extraction using optimal threshold identified using the loess method.
-
-* Note: When using **`modelcomparison()`**, the function of **`sdmfit()`**, and **`extract_clean_data()`** are incorporated and therefore the user do not need to do these steps separately.
-
-```{r model comparison}
-
-ttcompare <- modelcomparison(refdata = ttrefdata, outliers = ttoutlier, raster = worldclim, 
-                                lat = 'y', lon = 'x', full = FALSE, metrics = 'all', minpts = 17,
-                             loessthreshold = TRUE)
+head(ttclean)
 
 
-
-ttmodper <- get_performance(modelcomp  = ttcompare)
-
-
-multcomparion <- modelcomparison(refdata = multipreclened, outliers = multioutliers, 
-                                     raster = worldclim, 
-                                     lat = 'y', lon = 'x', full = FALSE, 
-                                     metrics = 'all', minpts = 18,loessthreshold = TRUE)
-
-
-multmodelper <- get_performance(modelcomp = multcomparion)
-
-```
-
-**Visualizing the performance of models before and after removal of outliers.**
-
-The outlier removal in the species records of _Thymallus thymallus_ led to improved model performance in accuracy and Area under the curve (AUC). However, in the multiple species, the performance of the _Anguilla anguilla_ and_Squalius cephalus_ models remained the same. This is because there were no absolute outliers at the optimal threshold; therefore, the reference and clean datasets were the same. The performance in the Salmo trutta models was slightly higher for the reference dataset based on the Area Under the Curve. 
-
-```{r, fig.width = 6, fig.height= 5, fig.align='center'}
-
-#, Thymallus thymallus alone
-
-ggperform(ttcompare, scolor = c("grey40", "orange"))
-
-#For multiple species Squalius cephalus, Salmo trutta, Thymallus thymallus,Anguilla anguilla
-
-ggperform(multcomparion, scolor = c("grey40", "orange"))
+labeldata <- classify_data(refdata = multipreclened, outliers = multioutliers)
+head(labeldata)
 
 ```
 

@@ -10,11 +10,13 @@
 #'   such as WORLDCLIM (), Hydrogaphy90m (), CHELSA, Copernicus ().
 #' @param lat,lon \code{coordinates}. variable for latitude and longitude column
 #'   names.
-#' @param colsp \code{string}. variable already in the data.
+#' @param colsp \code{string}. variable already in the data that determine the groups to
+#'        considered when extracting data.
+#' @param mp \code{logical}. If \code{TRUE}, then number of minimum records \code{minpts} should be provided to allow dropping groups
+#'        with less records. This is significant if species distribution are going to be fitted.
 #' @param minpts \code{numeric}. Minimum number of records for the species after
 #'   removing duplicates and those within a particular basin.
-#' @param multiple \code{logical}. TRUE if species are more than one and FALSE for one species
-#'   in the data.
+#' @param rm_duplicates \code{logical} TRUE if the duplicates will removed based species coordinates and names. Default \code{TRUE}.
 #' @param list \code{logical}. If TRUE the a list of multiple species data frames will be
 #'   generated and FALSE for a dataframe of species data sets. Default TRUE
 #' @param bbox \code{sf} or \code{vector}. Object of class 'shapefile' If only a particular basin is
@@ -27,10 +29,11 @@
 #'   not. Default \code{FALSE}.
 #' @param merge \code{logical}. To add the other columns in the species data after data
 #'   extraction. Default \strong{TRUE}.
-#'
-#' @importFrom sf st_drop_geometry st_crs st_coordinates st_filter st_as_sf
-#'   st_bbox st_set_crs st_as_sfc
-#' @importFrom terra extract ext
+#' @param na.rm \code{logical} If TRUE, the missing values will be discarded after data extracted.
+#' DEFAULT TRUE.
+#' @param na.inform \code{logical} If TRUE, the missing values will be discarded after data extracted and message will
+#'    be returned. DEFAULT FALSE.
+#'  @param coords \code{logical}. If TRUE, the original coordinates are also returned attached on the extracted dataset. Default FALSE.
 #'
 #' @return \code{dataframe} or \code{list} of precleaned data sets for single or multiple species.
 #' @export
@@ -41,7 +44,7 @@
 #'
 #' data("efidata")
 #'
-#' danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
 #'
 #' danubebasin <- sf::st_read(danube, quiet=TRUE)
 #'
@@ -55,19 +58,25 @@
 #'                           lon = 'decimalLongitude',
 #'                           colsp = 'scientificName',
 #'                           bbox = danubebasin,
-#'                           multiple = TRUE,
 #'                           list= TRUE, #list will be generated for all species
 #'                           minpts = 7, merge=T)
 #' }
 #'
 #'
 
-pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
-                         multiple=TRUE, list=TRUE, merge=FALSE, verbose= FALSE, warn = FALSE){
+pred_extract <- function(data, raster, lat = NULL, lon = NULL, bbox = NULL, colsp, minpts = 10, mp = TRUE,
+                         rm_duplicates = TRUE,
+                         na.rm = TRUE,
+                         na.inform = FALSE,
+                         list=TRUE,
+                         merge=FALSE,
+                         verbose= FALSE,
+                         warn = FALSE,
+                         coords = FALSE){
 
   if(missing(data)) stop('Data frame with species record missing')
 
-  if(minpts<=5) stop('Minimum number of species records should be  atleast greater than ', minpts,'. Default is 10')
+  if(isTRUE(mp))if(minpts<=2) stop('Minimum number of species records should be  atleast greater than ', minpts,'. Default is 10')
 
   if(length((colnames(data)[colnames(data)==colsp]))<1) stop(colsp, ' is  not found in the ', deparse(substitute(data)),' data provided')
 
@@ -77,32 +86,26 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
   #check and removing missing coordinates
 
-  species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
+  #check if sf is installed
 
-  #check if the species coordinates are within the bounding the bounding box of the raster layer
-
-  rasterbbox <- as.vector(terra::ext(raster))
-
-  xmin1 <- unname(rasterbbox[1])
-  ymin1 <- unname(rasterbbox[2])
-  xmax2 <- unname(rasterbbox[3])
-  ymax2 <- unname(rasterbbox[4])
-
-  xmin11 <- min(unlist(species_lon_df[, lon]))
-  ymin11 <- min(unlist(species_lon_df[, lat]))
-  xmax12 <- max(unlist(species_lon_df[, lon]))
-  ymax12 <- max(unlist(species_lon_df[, lat]))
-
-  if(isTRUE(warn)) if(xmin11<xmin1)warning("Some species points are outside the raster layers provided. Please check xmin.", call. = FALSE)
-
-  if(isTRUE(warn)) if(ymin11<ymin1)warning("Some species points are outside the raster layers provided. Please check ymin.", call. = FALSE)
-
-  if(isTRUE(warn))  if(xmax12>xmax2)warning("Some species points are outside the raster layers provided. Please check xmax.", call. = FALSE)
-
-  if(isTRUE(warn))  if(ymax12>ymax2)warning("Some species points are outside the raster layers provided. Please check ymax.", call. = FALSE)
+  check_packages(pkgs = c('terra', 'sf'))
 
   #change the object into sf file format to enable geographical filtering outside the bounding box using st_filter
-  spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = st_crs(4326))
+  if(!is(data, 'sf')){
+
+    if(is.null(lat) | is.null(lon)) stop("Provide the latitude and longitude parameters.")
+
+    species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
+
+    spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = sf::st_crs(4326))
+
+  }else{
+    #no need to indicate the geometry since the geometry already has no NA,
+    #otherwise it can not be converted# drop geometry for complete cases to work well
+
+    spdata_new <- dfnew[complete.cases(as.data.frame(dfnew)[ , c(colsp)]), ]
+
+  }
 
   #filter out records outside the bounding box if provided.
   if(!is.null(bbox)){
@@ -113,12 +116,12 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
     }else if(inherits(bbox, 'numeric') && length(bbox) == 4){
 
-        class(bbox) <- "bbox"
+      class(bbox) <- "bbox"
 
 
-        bb <- st_as_sfc(bbox) |> sf::st_set_crs(st_crs(spdata_new))
+      bb <- sf::st_as_sfc(bbox) |> sf::st_set_crs(sf::st_crs(spdata_new))
 
-        basin_df <- sf::st_filter(spdata_new, bb)
+      basin_df <- sf::st_filter(spdata_new, bb)
     }else{
       stop("The bounding box provided is wrong.")
     }
@@ -126,48 +129,61 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
     basin_df <- spdata_new
   }
 
-  #remove duplicate data for coordinates and each species
+  #remove duplicate data for coordinates and each species if TRUE
 
-  dupdata <- as.data.frame(basin_df[!duplicated(basin_df[c('geometry',colsp)]),])
+  if(isTRUE(rm_duplicates)){
+
+    dupdata <- as.data.frame(basin_df[!duplicated(basin_df[c('geometry',colsp)]),])
+
+  }else{
+    dupdata <- as.data.frame(basin_df)
+  }
 
   #check there is enough species data after duplicate removal for at some species
 
-  zz <- as.data.frame(table(dupdata[,colsp]))$Freq
+  zz <- as.data.frame(table(dupdata[,colsp] |> sf::st_drop_geometry()))$Freq
 
-  if(zz[which.max(zz)]<minpts) stop('All species do not have enough data after removing missing values and duplicates.')
+  if(isTRUE(mp))if(zz[which.max(zz)]<minpts) stop('All species do not have enough data after removing missing values and duplicates.')
 
   #run through each species
   unx <- unique(unlist(dupdata[, colsp]))
 
   rastdata <- list()
 
-  if(length(unx)<1){
+  if(length(unx)<1) stop('Species column ', colsp ,' provided must have species names.')
 
-    stop('Species column provided should atleast have one species name')
+  if(length(unx)==1){
 
-  }else if(length(unx)==1 && multiple==TRUE){
+    spdfext <- dupdata |>  sf::st_as_sf()
 
-    stop('multiple is set to TRUE yet the data has only one species name. Change multiple to FALSE')
+    if(isTRUE(mp))if(nrow(spdfext)<minpts) warning(unx, ' has less than ', minpts, 'records')
 
-  }else if(length(unx)==1 && multiple==FALSE){
+    #extract species environmental data where species were recorded
 
-    spdfext <- dupdata |>  st_as_sf()
+    if(isTRUE(coords)){
 
-    if(nrow(spdfext)<minpts) warning(unx, ' has less than ', minpts, 'records')
+      coordcols <- sf::st_coordinates(spdfext)
 
-    bext<- as.data.frame(terra::extract(raster, spdfext , ID=FALSE,xy=TRUE))
+      colnames(coordcols) <- c(lon, lat)
 
-    if(isTRUE(merge)) {
+      bout<- cbind(as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy=TRUE, bind = merge)), coordcols)
 
-      biodata <- cbind(bext, spdfext |>  st_drop_geometry())
+    }else{
+      bout<- as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy=TRUE, bind = merge))
+    }
+    #remove NAs after data extract from the raster layer
 
-      rownames(biodata) <- NULL
+    if(isTRUE(na.rm)){
+      biodata <- bout[complete.cases(bout[ , names(raster)]), ]
 
-      }else {
-        biodata <- bext
-      }
+      NROWS <- nrow(bout[!complete.cases(bout[ , names(raster)]), ])
 
-  }else if(length(unx)>1 && multiple==TRUE){
+      if(isTRUE(na.inform) && NROWS>0) message(NROWS, " rows removed. Returned NAs in extracting environmental predictors from rasters.")
+    } else{
+      biodata <- bout
+    }
+
+  }else{
 
     for (ci in seq_along(unx)) {
 
@@ -175,9 +191,9 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
       spdfdata <- dupdata[dupdata[, colsp]==spnames,]
 
-      spdfext <- spdfdata|>st_as_sf()
+      spdfext <- spdfdata|> sf::st_as_sf()
 
-      if(nrow(spdfext)<minpts) {
+      if(isTRUE(mp))if(nrow(spdfext)<minpts) {
 
         if(isTRUE(verbose)==TRUE) message(spnames, ' will be removed because the records are less than  ', minpts, '.')
         next
@@ -185,17 +201,61 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
 
       if(list==FALSE){
 
-        rastdata[[ci]] <- as.data.frame(terra::extract(raster, spdfext , ID=FALSE,xy=TRUE))
+        if(isTRUE(coords)){
 
-        if(isTRUE(merge)) rastdata[[ci]]<- cbind(rastdata[[ci]], spdfext |>  st_drop_geometry()) else rastdata[[ci]][,'species'] <- spnames
+          coordcols <- sf::st_coordinates(spdfext)
+
+          colnames(coordcols) <- c(lon, lat)
+
+          dextract <- cbind(as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy = TRUE, bind = merge)), coordcols)
+
+        }else{
+          dextract <- as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy = TRUE, bind = merge))
+        }
+
+        if(isTRUE(na.rm)){
+
+          rastdata[[ci]] <- dextract[complete.cases(dextract[ , names(raster)]), ]
+
+          NROWS <- nrow(dextract[!complete.cases(dextract[ , names(raster)]), ])
+
+          if(isTRUE(na.inform) && NROWS>0) message(NROWS, " rows removed. Returned NAs in extracting environmental predictors from rasters for ", spnames, ".")
+
+        } else{
+          rastdata[[ci]] <- dextract
+        }
+
+        rastdata[[ci]][,'species'] <- spnames
 
         biodata <- do.call(rbind, rastdata)
 
       }else if (list==TRUE){
 
-        rastdata[[ci]] <- as.data.frame(terra::extract(raster, spdfext , ID=FALSE,xy=TRUE))
+        if(isTRUE(coords)){
 
-        if(isTRUE(merge)) rastdata[[ci]]<- cbind(rastdata[[ci]], spdfext |>  st_drop_geometry()) else rastdata[[ci]]
+          coordcols <- sf::st_coordinates(spdfext)
+
+          colnames(coordcols) <- c(lon, lat)
+
+          dextract <- cbind(as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy = TRUE, bind = merge)), coordcols)
+
+        }else{
+          dextract <- as.data.frame(terra::extract(raster, spdfext , ID=FALSE, xy = TRUE, bind = merge))
+        }
+
+        if(isTRUE(na.rm)){
+
+          rastdata[[ci]] <- dextract[complete.cases(dextract[ , names(raster)]), ]
+
+          NROWS <- nrow(dextract[!complete.cases(dextract[ , names(raster)]), ])
+
+          if(isTRUE(na.inform)&& NROWS>0) message(NROWS, " rows removed. Returned NAs in extracting environmental predictors from rasters for ", spnames, ".")
+
+        } else{
+          rastdata[[ci]] <- dextract
+        }
+
+        #if(isTRUE(merge)) rastdata[[ci]]<- cbind(rastdata[[ci]], spdfext |>  sf::st_drop_geometry()) else rastdata[[ci]]
 
         names(rastdata)[ci] <- spnames
 
@@ -212,8 +272,6 @@ pred_extract <- function(data, raster, lat, lon, bbox =NULL, colsp, minpts =10,
       }
     }
 
-  }else{
-    stop('Either the species column is invalid or the multiple attribute is set to FALSE for more than one species')
   }
   return(biodata)
 }

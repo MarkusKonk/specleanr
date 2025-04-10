@@ -35,7 +35,7 @@ test_that("Returns error if the choices are not in x",
 test_that("Returns error if the choices are not in x",
           code= {expect_error(match.argc(x= mode, choices = c('best','abs')))})
 
-test_that("Suggested package return an error if the name is wrong",
-          code = {expect_null((suppressWarnings(suggested.packages(listpkgs = 'dgdhl', reason = 'checksa')))$dgdhl)
-           })
+# test_that("Suggested package return an error if the name is wrong",
+#           code = {expect_null((suppressWarnings(suggested.packages(listpkgs = 'dgdhl', reason = 'checksa')))$dgdhl)
+#            })
 

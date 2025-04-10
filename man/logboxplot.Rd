@@ -4,7 +4,7 @@
 \alias{logboxplot}
 \title{Log boxplot based for outlier detection.}
 \usage{
-logboxplot(data, var, output, x = 1.5)
+logboxplot(data, var, output, x = 1.5, pc, pcvar, boot)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}

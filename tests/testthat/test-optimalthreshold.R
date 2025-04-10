@@ -4,7 +4,7 @@ data(efidata)
 
 #Danube basin polygon
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+db <- sf::st_read(system.file('extdata/danube.shp.zip', package='specleanr'), quiet=TRUE)
 
 
 matchdata <- match_datasets(datasets = list(jds = jdsdata, efi = efidata),
@@ -25,7 +25,6 @@ rdata <- pred_extract(data = datacheck,
                       lon= 'decimalLongitude',
                       colsp = 'speciescheck',
                       bbox = db,
-                      multiple = TRUE,
                       minpts = 10,
                       list=TRUE,
                       merge=F)
@@ -57,12 +56,11 @@ rdata1 <- pred_extract(data = thymallus,
                       lon= 'decimalLongitude',
                       bbox = db,
                       colsp = 'speciescheck',
-                      multiple = FALSE,
                       minpts = 10,
                       list=TRUE,
                       merge=F)
 
-#supress warning of not enough data
+#suppress warning of not enough data
 toutliers1 <- suppressWarnings(multidetect(data = rdata1, multiple = FALSE,
                                            var = 'bio6',
                                            output = 'outlier',
@@ -72,7 +70,7 @@ toutliers1 <- suppressWarnings(multidetect(data = rdata1, multiple = FALSE,
 
 test_that(desc = "One species optimal threshold checks.",
           code = {
-            minmax <- thresh_search(data = rdata1, outliers = toutliers1)
+            minmax <- search_threshold(data = rdata1, outliers = toutliers1)
             expect_equal(length(minmax), 2)
             expect_type(class(toutliers1), 'character')
             expect_s3_class(rdata1, 'data.frame')

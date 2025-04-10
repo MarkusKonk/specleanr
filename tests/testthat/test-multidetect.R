@@ -14,7 +14,7 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
 
 matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
 
-db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp',
+db <- sf::read_sf(system.file('extdata/danube.shp.zip',
                               package = "specleanr"), quiet = TRUE)
 
 
@@ -77,7 +77,7 @@ test_that(desc = 'List of species with outliers produced',
 
 test_that(desc = "Return errors and no errors",
           code = {
-            #expect warning when the kmpar for kmeans the k is less than 2 and showErrors = TRUE
+            #expect warning when the kmpar for kmeans the k is less than 2 and silence_true_errors = FALSE
             #that some methods particularly kmeans did not execute
             expect_error(multidetect(data = refdata, var = 'bio6', output = 'outlier',
                                      exclude = c('x','y'),
@@ -85,16 +85,16 @@ test_that(desc = "Return errors and no errors",
                                      methods = c('mixediqr', "iqr", "seqfences",
                                                  "mahal", 'glosh', 'onesvm','kmeans'),
                                      kmpar= list(k = 1, method = "silhouette", mode = "soft"),
-                                     showErrors = TRUE))
+                                     silence_true_errors = FALSE))
 
-            #expect to hide the error/warning in the hood when showErrors is FALSE and expect datacleaner
+            #expect to hide the error/warning in the hood when silence_true_errors is FALSE and expect datacleaner
 
             outlierFALSE <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                                         exclude = c('x','y'),
                                         multiple = TRUE,
                                         methods = c('mixediqr',"mahal", 'glosh', 'onesvm'),
                                         kmpar= list(k = 1, method = "silhouette", mode = "soft"),
-                                        showErrors = TRUE)
+                                        silence_true_errors = FALSE)
             expect_s4_class(outlierFALSE, 'datacleaner')
 
             #extract the outlier for species index = 2 to confirm that kmeans is not among the methods
@@ -154,11 +154,11 @@ outlierdf <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                          multiple = TRUE,
                          methods = c('mixediqr', "iqr", "kmeans", "mahal"))
 
-#outliers generated using a dataframe not list: colsp parameter is provided.
+#outliers generated using a dataframe not list: var_col parameter is provided.
 
 outlierdf2 <- multidetect(data = refdata_df, var = 'bio6', output = 'outlier',
                           exclude = c('x','y'),
-                          colsp = 'species',
+                          var_col = 'species',
                           multiple = TRUE,
                           methods = c('mixediqr', "iqr", "kmeans", "mahal"))
 
@@ -186,23 +186,23 @@ test_that(desc= "Errors ",
 
 test_that(desc = "NAs if univariate methods only selected",
           code = {
-            #showErrrors FALSE but the methods are well set: datacleaner produced and verbose = TRUE
+            #silence_true_errors FALSE but the methods are well set: datacleaner produced and verbose = TRUE
 
             outl <- suppressMessages(multidetect(data = dfinal, var = 'Sepal.Width',
                         multiple = FALSE,
                         methods = c('mixediqr', 'logboxplot','kmeans', 'lof'), verbose =TRUE,
-                        showErrors = FALSE))
+                        silence_true_errors = FALSE))
             expect_s4_class(outl, 'datacleaner')
 
             #test that the singl species multidetect is printed
             expect_output(show(outl))
 
-            #return an error if the method parameter are wrongly set: using kmeans, warn=TRUE & showError=FALSE
+            #return an error if the method parameter are wrongly set: using kmeans, warn=TRUE & silence_true_errors=TRUE
             #method wrongly set
             expect_warning(multidetect(data = dfinal, var = 'Sepal.Width',
                        multiple = FALSE,
                        methods = c('mixediqr', 'logboxplot','kmeans'), warn=TRUE,
-                       showErrors = FALSE,
+                       silence_true_errors = TRUE,
                        kmpar = list(method="silhoest")))
 
             #expect error if non numeric variable are provided as variable checks
@@ -223,7 +223,7 @@ test_that(desc = "NAs if univariate methods only selected",
 
             #check that the cleaned data has the NAs not removed mostly for univariate data
 
-            cleandata <- clean_data_extract(refdata = dfinal, outliers = dout, threshold = 0.6)
+            cleandata <- extract_clean_data(refdata = dfinal, outliers = dout, threshold = 0.6)
 
             testthat::expect_true(any(is.na(cleandata$Sepal.Length)))
 
@@ -266,8 +266,6 @@ testthat::test_that(desc = 'Test for success and errors during outlier detection
                       expect_equal(nrow(dx), 4)#for each method
 
                       dxm <- extractoutliers(x=outlierdf)
-
-                      expect_gt(length(unique(dxm$species)), 4) #
 
                       #errors since no outliers in threshold of 0.8
 

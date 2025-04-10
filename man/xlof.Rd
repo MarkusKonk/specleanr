@@ -4,7 +4,18 @@
 \alias{xlof}
 \title{Flags suspicious using the local outlier factor or Density-Based Spatial Clustering of Applications with Noise.}
 \usage{
-xlof(data, output, minPts, exclude = NULL, metric = "manhattan", mode = "soft")
+xlof(
+  data,
+  output,
+  minPts,
+  exclude = NULL,
+  metric = "manhattan",
+  mode = "soft",
+  pc,
+  boot,
+  var,
+  pcvar
+)
 }
 \arguments{
 \item{data}{Data frame of species records with environmental data}

@@ -6,7 +6,7 @@
 \usage{
 ecological_ranges(
   data,
-  var = NULL,
+  var,
   output = "outlier",
   species = NULL,
   optimumSettings = list(optdf = NULL, optspcol = NULL, mincol = NULL, maxcol = NULL,

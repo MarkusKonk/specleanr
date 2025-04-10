@@ -4,7 +4,17 @@
 \alias{adjustboxplots}
 \title{Adjust the boxplots bounding fences using medcouple to flag suspicious outliers.}
 \usage{
-adjustboxplots(data, var = NULL, output = "outlier", a = -4, b = 3, coef = 1.5)
+adjustboxplots(
+  data,
+  var,
+  output = "outlier",
+  a = -4,
+  b = 3,
+  coef = 1.5,
+  pc,
+  pcvar,
+  boot
+)
 }
 \arguments{
 \item{data}{\code{dataframe}. Dataframe to check for outliers.}
@@ -19,6 +29,12 @@ outlier: to return dataframe with only outliers.}
 \item{b}{\code{numeric}. Constant for adjusted boxplots.}
 
 \item{coef}{\code{numeric}. Constant for adjusted boxplots.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Deafult \code{PC1}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
 }
 \value{
 \code{dataframe}. Dataframe with or with no outliers.

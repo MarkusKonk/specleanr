@@ -4,7 +4,7 @@
 \alias{seqfences}
 \title{Sequential fences method}
 \usage{
-seqfences(data, var = NULL, output, gamma = 0.95, mode = "eo")
+seqfences(data, var, output, gamma = 0.95, mode = "eo", pc, pcvar, boot)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}

@@ -8,12 +8,15 @@
 pred_extract(
   data,
   raster,
-  lat,
-  lon,
+  lat = NULL,
+  lon = NULL,
   bbox = NULL,
   colsp,
   minpts = 10,
-  multiple = TRUE,
+  mp = TRUE,
+  rm_duplicates = TRUE,
+  na.rm = TRUE,
+  na.inform = FALSE,
   list = TRUE,
   merge = FALSE,
   verbose = FALSE,
@@ -38,13 +41,22 @@ considered. Bounding box vector points can also be provided in the form
 \code{ymin} is the minimum latitude, \code{xmax} is the maximum longitude
 and \code{xmax} is the minimum latitude.}
 
-\item{colsp}{\code{string}. variable already in the data.}
+\item{colsp}{\code{string}. variable already in the data that determine the groups to
+considered when extracting data.}
 
 \item{minpts}{\code{numeric}. Minimum number of records for the species after
 removing duplicates and those within a particular basin.}
 
-\item{multiple}{\code{logical}. TRUE if species are more than one and FALSE for one species
-in the data.}
+\item{mp}{\code{logical}. If \code{TRUE}, then number of minimum records \code{minpts} should be provided to allow dropping groups
+with less records. This is significant if species distribution are going to be fitted.}
+
+\item{rm_duplicates}{\code{logical} TRUE if the duplicates will removed based species coordinates and names. Default \code{TRUE}.}
+
+\item{na.rm}{\code{logical} If TRUE, the missing values will be discarded after data extracted.
+DEFAULT TRUE.}
+
+\item{na.inform}{\code{logical} If TRUE, the missing values will be discarded after data extracted and message will
+be returned. DEFAULT FALSE.}
 
 \item{list}{\code{logical}. If TRUE the a list of multiple species data frames will be
 generated and FALSE for a dataframe of species data sets. Default TRUE}
@@ -70,7 +82,7 @@ Preliminary data cleaning including removing duplicates, records
 
 data("efidata")
 
-danube <- system.file('extdata/danube/basinfinal.shp', package='specleanr')
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
 
 danubebasin <- sf::st_read(danube, quiet=TRUE)
 

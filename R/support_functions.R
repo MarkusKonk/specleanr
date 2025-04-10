@@ -1,8 +1,9 @@
 
 #' @noRd
-#' @importFrom rfishbase synonyms stocks
 #'
 fishbase <- function(tables){
+
+  check_packages(pkgs = c('rfishbase', 'curl'))
 
   if (!curl::has_internet()) stop('No internet connection, connect and try again later to access FishBase.')
 
@@ -14,7 +15,11 @@ fishbase <- function(tables){
 
   if(nrow(fb_ranges)<0) stop('The stocks table from rfishbase has not successfully loaded and temperature/geogrpahical ranges and  cannot be determined.')
 
-  switch(tables, synonym = return(fb_sy), ranges = return(fb_ranges))
+  fb_species <- suppressMessages(rfishbase::species())
+
+  if(nrow(fb_species)<0)stop('The species table didnot load properly and species ecosystem cannot be extracted from fishbase.')
+
+  switch(tables, synonym = return(fb_sy), ranges = return(fb_ranges), spnames = return(fb_species))
 }
 
 
@@ -42,135 +47,7 @@ clean_names <- function(sp){
 }
 
 
-#' @title obtain absolute path for the user
-#'
-#' @param dir to user the user directory to save data for future use.
-#' @param verbose to show messages during implementation or not. Default \code{FALSE}.
-#'
-#' @return absolute path
-#'
-.abspath <- function(dir, verbose=TRUE){
-
-  gwd <- getwd()
-
-  folder <- paste0(gwd,'/',dir)
-
-  if(dir.exists(folder)==FALSE){
-
-    if(isTRUE(verbose)==TRUE) message('New directory ', dir, ' formed')
-
-    dir.create(dir)
-
-    pathabs= paste0(gwd, '/', dir)
-
-  }else{
-    if(isTRUE(verbose)==TRUE)message(dir, ' already present')
-    pathabs= folder
-  }
-
-  return(pathabs)
-}
-
-
-#' @title create sub folders in the absolute path folder
-#'
-#' @param x is the absolute path set in .abspath
-#' @param var is the name of the folder with specific variables.
-#'
-#' @return subfolder in the absolute path
-
-.absx <- function(x, var){#x is the absolute path from .abspath function
-
-  folder <- paste0(x,'/',var)
-
-  #if the folder doesn't exist, then a new one will be created to store data.
-
-  if(dir.exists(folder)==FALSE){
-
-    dir.create(folder)
-
-    px= paste0(x,'/',var)
-  }else{
-    px= folder
-  }
-
-  return(px)
-}
-
-#' @title  caching data
-#'
-#' @param x to indicate absolute path.
-#'
-#' @importFrom memoise memoise cache_filesystem
-#'
-#'
-.cache <- function(x){
-
-  #to allow caching the data in the particular folder.
-
-  abpath <- .abspath(x, verbose = F)
-
-  d <- memoise::cache_filesystem(abpath)
-
-  return(d)
-}
-
-#' @noRd
-.mem_files <- function(fn, path){
-
-  cdx <- .cache(x=path)
-
-  #to keep the data from the particular function in the user pc to avoid multiple downloads.
-  mfn <- memoise::memoise(f = fn, cache = cdx) # memoise
-
-  outdata <- mfn(x = path)#takes the input of the function
-
-  return(outdata)
-}
-
-
-#' @title Check for suggested packages.
-#'
-#' @param listpkgs A \code{list} of packages to be suggested.
-#' @param reason A \code{string} of character to describe the reason why packages are suggested.
-#' @param quiet \code{logical} Default TRUE, for no messages.
-#'
-#' @importFrom utils install.packages
-#'
-#' @return install suggested packages
-#'
-#' @export
-#'
-suggested.packages <- function(listpkgs=c("shiny", "shinydashboard", "DT", "dplyr"),
-                               reason='open the R Shiny Application', quiet= TRUE){
-
-  #check if suggested packages are installed and prompt the user to install them or not continue
-
-  sgt <- sapply(listpkgs, require, character.only = TRUE, mask.ok =FALSE,
-                warn.conflicts=FALSE, quietly=TRUE)
-
-  if(all(sgt)==TRUE){
-    if(isFALSE(quiet))message('All required packages are installed')
-  }else{
-    fl <- sgt[which(sgt==FALSE)]
-      #trivial
-      if(length(fl)==1) {
-        pkg ="Package"
-        isare = 'is'
-      }else {
-        pkg ="Packages"
-        isare = "are"
-      }
-    if(isFALSE(quiet)) message(pkg, " ", paste(names(fl), collapse = ' ,'), " ", isare, " installed to ", reason, " .")
-
-    sapply(names(fl), install.packages, quiet=TRUE, verbose=FALSE, repos = "http://cran.us.r-project.org")
-  }
-
-}
-
-
-
-#' @title Customised match function
+#' @title Customized match function
 #'
 #' @param x The category with words to match
 #' @param choices The different options or choices in a particular category that are allowed.
@@ -263,4 +140,167 @@ getdiff <- function(x, y, full=FALSE){
     out <- xx[[which(rws==min(rws))]]
   }
   return(out)
+}
+
+
+#' Check for packages to install and reposnd to use
+#'
+#' @param pkgs list of packages to install
+#'
+#' @return error message for packages to install
+#'
+check_packages <- function(pkgs){
+
+  pkginstall <- sapply(pkgs, requireNamespace, quietly = TRUE)
+
+  pkgout <- pkgs[which(pkginstall==FALSE)]
+
+  if(length(pkgout)>=1)stop('Please install ', length(pkgout), ' packages: ', paste(pkgout, collapse = ', '), ' to continue.', call. = FALSE)
+
+  invisible(pkgs)
+}
+
+
+
+#' To check for a bounding box
+#'
+#' @param x raster, shapefile or list of bounding box values.
+#' @param par indicate the database being queried to handing the issues of bounding box settings.
+#'
+#' @return extent values from raster, shapefile and bounding box
+#'
+extentvalues <- function(x, par= NULL){
+
+  if(inherits(x, what = 'sf')){
+
+    extout <- unname(sf::st_bbox(x))
+
+  }  else if(inherits(x, "SpatRaster")){
+
+    vc <- terra::ext(x)
+
+    extout <- unname(c(vc[1], vc[3], vc[2], vc[4]))
+
+  }else if(is(x, 'list')){
+
+    v <- unlist(x)
+
+    stdbox <- c("xmin", "ymin", "xmax", "ymax")
+
+    if(setequal(stdbox, names(v))==FALSE) stop("the labels provided in the bounding are not standard. Please use xmin, xmax, ymin, ymax")
+
+    extout <- as.vector(v)
+
+    }else{
+
+    stop('Either provide a raster layer or shapefile to extract the bounding box. If the extent is known, provide the xmin, xmax, ymin, ymax values in a list')
+    }
+
+  if(par=='inat') vf <- c(extout[2], extout[1], extout[4], extout[3]) else vf <- extout
+
+  return(vf)
+}
+
+
+#' Implement principal component analysis for dimension reduction
+#'
+#' @param data Environmental dataframe
+#' @param npc Number of principal components to be retained. Default is 2
+#' @param q To show the cumulative total variance explained by the \code{npc} selected.
+#'
+pca <- function(data, npc, q){
+
+  if(ncol(data)<=npc) stop('The number of columns or variabales are less than or equal to ', npc,' so either reduce the principal components needed or the data is not highly dimesional.',call. = FALSE)
+
+  xout <- prcomp(data, center = TRUE, scale. = TRUE)
+  sout <- xout$x
+
+  if(isFALSE(q)) message('The cummulative proprotion for PCs ', npc, ' is ',
+                         summary(xout)$importance[3,npc])
+
+  pc <- as.data.frame(sout[, 1:npc])
+
+  return(list(pcs = pc, od =data))
+}
+
+
+#' To implement bootstrapping procedures. Sampling with replacement.
+#'
+#' @param data Environmental data
+#' @param boots Number of bootstraps
+#' @param seed Random seed to ensure reproduciblity
+#' @param pca Whether bootstrapping is conducted on data after principal component analysis.
+#'
+boots <- function(data, boots, seed, pca){
+
+  if(isTRUE(pca)){
+
+    df <- data[[1]]
+
+    dfo <- data[[2]]
+  }else{
+    df <- data
+    dfo <- NULL
+  }
+  set.seed(seed = seed)
+  boot <- seq(1, boots, 1)
+  bout <- lapply(boot, function(bb){
+    indx <- sample(nrow(df), size = nrow(df), replace = TRUE)
+    pc <-  df[indx,]
+    dfo <- dfo[indx,]
+    attributes(pc)$OD <- dfo
+    pc
+  })
+}
+
+#' To package both principal component analysis and bootstrapping.
+#'
+#' @param pb the principal component or bootstrapped data
+#' @param var The variable of concern, which is vital for univariate outlier detection methods
+#' @param pc Whether principal component analysis will be computed. Default \code{FALSE}
+#' @param boot Whether bootstrapping will be computed. Default \code{FALSE}
+#' @param pcvar Principal component analysis to e used for outlier detection after PCA. Deafult \code{PC1}
+#'
+pcboot <- function(pb, var, pc, boot, pcvar){
+
+  if(isTRUE(pc)){
+
+    if(isTRUE(boot)){
+      #attach the original data to enable forward retraction.
+      varc <- (attributes(pb)$OD)[, var]
+
+      var <- unlist(pb[, pcvar])
+
+      data <- attributes(pb)$OD
+
+      pcdf <- pb
+    }else{
+
+      varc <- pb[[2]][, var]
+      var <- pb[[1]][, pcvar]
+      data <- pb[[2]]
+      pcdf <- pb[[1]] #principal component data
+    }
+  }else{
+
+    var <- unlist(pb[, var])
+    varc <- NULL
+    pcdf <- NULL
+    data <- pb
+
+  }
+  return(list(data = data, varc= varc, var = var, pcdf= pcdf))
+}
+
+
+#' Computes the empirical influence function for each values in the dataset
+#'
+#' @param x Outlier checked data
+#' @param var variable of interest
+#'
+eif <- function(x, var){
+  vvx <- unlist(x[,var])
+  eout<- sapply(1:nrow(x), function(vx){length(vvx) * (mean(vvx) - mean((vvx[-vx])))})
+  x[,'EIF'] <- eout
+  return(x)
 }

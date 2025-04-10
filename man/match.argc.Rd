@@ -2,7 +2,7 @@
 % Please edit documentation in R/support_functions.R
 \name{match.argc}
 \alias{match.argc}
-\title{Customised match function}
+\title{Customized match function}
 \usage{
 match.argc(x, choices, quiet = TRUE)
 }
@@ -17,5 +17,5 @@ match.argc(x, choices, quiet = TRUE)
 choices
 }
 \description{
-Customised match function
+Customized match function
 }

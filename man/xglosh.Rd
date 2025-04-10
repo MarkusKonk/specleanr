@@ -4,7 +4,18 @@
 \alias{xglosh}
 \title{Global-Local Outlier Score from Hierarchies}
 \usage{
-xglosh(data, k, output, exclude = NULL, metric = "manhattan", mode = "soft")
+xglosh(
+  data,
+  k,
+  output,
+  exclude = NULL,
+  metric = "manhattan",
+  mode = "soft",
+  pc,
+  boot,
+  var,
+  pcvar
+)
 }
 \arguments{
 \item{data}{Data frame of species records with environmental data.}

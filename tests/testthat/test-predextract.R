@@ -13,7 +13,7 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata, online = sa
 
 sp <- check_names(data = matchd, colsp = 'species', verbose = F, pct = 90, merge = T, sn = FALSE)
 
-db <- sf::st_read(dsn=system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+db <- sf::st_read(dsn=system.file('extdata/danube.shp.zip', package='specleanr'), quiet=TRUE)
 
 zz <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
@@ -23,40 +23,30 @@ test_that(desc = 'Less number of records after discarding duplicates and missing
 
             expect_error(
               pred_extract(data = jdsdata,raster= zz , lat ='lat',lon = 'lon',
-                           colsp = 'speciesname', bbox  = db, multiple = TRUE, verbose = F,
+                           colsp = 'speciesname', bbox  = db, verbose = F,
                            list= TRUE, minpts = 10, merge=T))
             #expect error when minpts is less than 5
 
             expect_error(
               pred_extract(data = sp,raster= zz , lat ='decimalLatitude',lon = 'decimalLongitude',
-                           colsp = 'species', bbox  = db, multiple = TRUE, verbose = F,
+                           colsp = 'species', bbox  = db,  verbose = F,
                            list= TRUE, minpts = 4))
           }
 )
 
-testthat::test_that(desc = 'error if multiple is set to FALSE for more than one species.',
-                    code = {
 
-                      testthat::expect_error(
-                        pred_extract(data = sp,raster= zz ,
-                                     lat ='decimalLatitude',lon = 'decimalLongitude',colsp = 'species',
-                                     bbox  = db, multiple = FALSE, verbose = F,
-                                     list= TRUE, minpts = 10, merge=T))
-
-                    }
-)
 
 testthat::test_that(desc = "Check if merge increase the number of columns on the reference dataset.",
                     code = {
                       #return other original columns on the dataset
                       mergedf <- pred_extract(data = sp,raster= zz ,
                                    lat ='decimalLatitude',lon = 'decimalLongitude',colsp = 'species',
-                                   bbox  = db, multiple = TRUE, verbose = F,
+                                   bbox  = db, verbose = F,
                                    list= FALSE,minpts = 10, merge=T)
 
                       nomergedf <- pred_extract(data = sp,raster= zz ,
                                               lat ='decimalLatitude',lon = 'decimalLongitude',colsp = 'species',
-                                              bbox  = db, multiple = TRUE, verbose = F,
+                                              bbox  = db, verbose = F,
                                               list= FALSE,minpts = 10, merge=F)
 
                       testthat::expect_gt(ncol(mergedf), ncol(nomergedf))
@@ -68,13 +58,13 @@ test_that(desc = "Errors and success",
             expect_error(pred_extract(raster= zz ,
                                       lat ='decimalLatitude',
                                       lon = 'decimalLongitude',colsp = 'species',
-                                      bbox  = db, multiple = TRUE, verbose = F,
+                                      bbox  = db, verbose = F,
                                       list= FALSE,minpts = 10, merge=F))
             #expect error if colsp is not in the data
 
             expect_error(pred_extract(data = sp,raster= zz ,
                          lat ='decimalLatitude',lon = 'decimalLongitude',colsp = 'speciesnotindf',
-                         bbox  = db, multiple = TRUE, verbose = F,
+                         bbox  = db, verbose = F,
                          list= FALSE,minpts = 10, merge=F))
           })
 
@@ -86,7 +76,7 @@ test_that(desc = "Expect wanring records oustide raster layer",
                                                           raster= zz,
                                         lat ='decimalLatitude',
                                         lon = 'decimalLongitude',colsp = 'species',
-                                        bbox  = db, multiple = TRUE, verbose = F,
+                                        bbox  = db, verbose = F,
                                         list= FALSE,minpts = 10, warn=TRUE)), 'list')
           })
 
@@ -96,15 +86,14 @@ test_that(desc = "Use numeric bbox instead of sf format",
                          lat ='decimalLatitude',
                          lon = 'decimalLongitude',
                          colsp = 'species', bbox  = c(8.15250, 42.08333, 29.73583, 50.24500),
-                         multiple = TRUE, verbose = F,
+                         verbose = F,
                          list= TRUE, minpts = 10), 'list')
 
             #don't use bounding box
             expect_type(pred_extract(data = sp,raster= zz ,
                          lat ='decimalLatitude',
                          lon = 'decimalLongitude',
-                         colsp = 'species',
-                         multiple = TRUE, verbose = F,
+                         colsp = 'species',verbose = F,
                          list= TRUE, minpts = 10), 'list')
 
           })

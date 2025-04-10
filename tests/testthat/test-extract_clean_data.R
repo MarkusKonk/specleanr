@@ -15,7 +15,7 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
 
 matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
 
-db <- sf::read_sf(system.file('extdata/danube/basinfinal.shp',
+db <- sf::read_sf(system.file('extdata/danube.shp.zip',
                               package = "specleanr"), quiet = TRUE)
 
 
@@ -98,21 +98,21 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
 
                       #expect names minima and maxima
 
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                      expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
                                                  sp = "Phoxinus phoxinus"), c('minima', 'maxima'))
 
                       #expect an output map if plot is true
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                      expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
                                                  sp = "Phoxinus phoxinus", plot = TRUE), c('minima', 'maxima'))
 
                       ##expect error, warn, and next while optimizing span
-                      expect_named(thresh_search(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                      expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
                                                  sp = "Phoxinus phoxinus", tuneLoess = seq(0.1, 1, 0.1)),
                                    c('minima', 'maxima'))
 
-                      #expect error if the multiple species reference data is provided for thresh_search
+                      #expect error if the multiple species reference data is provided for search_threshold
 
-                      expect_error(thresh_search(data = refdata, outliers = outlierdf))
+                      expect_error(search_threshold (data = refdata, outliers = outlierdf))
 
                       #optimal threshold for one species
                       spoutliers <- suppressWarnings(multidetect(data = spdata, var = 'bio6', output = 'outlier',
@@ -129,7 +129,7 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
                       #expect a dataframe but no plot for multiple species. even plot = TRUE
 
                       expect_s3_class(optimal_threshold(refdata = refdata, outliers = outlierdf,
-                                                        plot = TRUE, colsp = 'species'), 'data.frame')
+                                                        plot = TRUE, var_col = 'species'), 'data.frame')
 
                       #expect unused argument error for sp index or name for multiple threshold search
 

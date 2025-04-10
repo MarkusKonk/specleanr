@@ -4,7 +4,7 @@
 \alias{mixediqr}
 \title{Mixed Interquartile range and semiInterquartile range \code{Walker et al., 2018}}
 \usage{
-mixediqr(data, var, output, x = 3)
+mixediqr(data, var, output, x = 3, pc, pcvar, boot)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}
