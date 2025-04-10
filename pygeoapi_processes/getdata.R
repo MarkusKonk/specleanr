@@ -47,7 +47,7 @@ in_vert_lim = as.numeric(in_vert_lim)
 # (3) Run getdata:
 df_online <- getdata(
   data = in_species_names, 
-  bbox = study_area,
+  extent = study_area,
   gbiflim = in_gbif_lim,
   inatlim = in_inat_lim,
   vertlim = in_vert_lim,
