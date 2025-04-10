@@ -21,7 +21,7 @@ in_colname_var = args[2] # e.g. "Sepal.Length
 in_bool_multiple_species = args[3] # e.g. "TRUE"
 in_colnames_exclude = args[4] # e.g. "Species"
 in_methods = args[5] # e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
-in_bool_ignore_failing_methods = args[6] # e.g. "TRUE"
+in_silence_true_errors = args[6] # e.g. "TRUE"
 in_missingness = as.numeric(args[7]) # e.g. 0.1
 in_threshold = args[8] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
 in_colname_species = args[9]
@@ -61,7 +61,7 @@ in_colnames_exclude = strsplit(in_colnames_exclude, ",")[[1]]
 
 # (3) Make string booleans boolean
 in_bool_multiple_species = tolower(in_bool_multiple_species) == 'true'
-in_bool_ignore_failing_methods = tolower(in_bool_ignore_failing_methods) == 'true'
+in_silence_true_errors = tolower(in_silence_true_errors) == 'true'
 
 
 # Only provide column name for species if multiple = FALSE
@@ -77,16 +77,16 @@ print(paste('Multiple:', in_bool_multiple_species))
 print(paste('Colname Species:', in_colname_species))
 print(paste0('Exclude: ', paste0(in_colnames_exclude, collapse=' + ')))
 print(paste('Missingness:', in_missingness))
-print(paste('ShowErrors:', !in_bool_ignore_failing_methods))
+print(paste('SilenceErrors:', in_silence_true_errors))
 print(paste0('Methods: ', paste0(in_methods, collapse=' + ')))
 outlieriris_mult <- multidetect(
   data = dfinal,
   var = in_colname_var,
   multiple = in_bool_multiple_species, # are we checking for one or several species!
-  colsp = in_colname_species, # if multiple is true!
+  var_col = in_colname_species, # if multiple is true!
   exclude = in_colnames_exclude, # removes columns that are not numeric.
   methods = in_methods,
-  showErrors = !in_bool_ignore_failing_methods, # some methods dont work with certain formats of datasets! ignore the ones that dont work
+  silence_true_errors = in_silence_true_errors, # show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.
   missingness = in_missingness) # threshold for how many NAs...
 
 
@@ -108,7 +108,7 @@ cleandata2 <- extract_clean_data(
   outliers = outlieriris_mult,
   loess = in_bool_loess,
   threshold = in_threshold,
-  colsp = in_colname_species)
+  var = in_colname_species)
 
 
 # (6) Write summary to txt file

@@ -23,10 +23,9 @@ in_colname_lat = args[4] # e.g. "decimalLatitude"
 in_colname_lon = args[5] # e.g. "decimalLongitude"
 in_colname_species = args[6] # e.g. "speciescheck"
 in_min_pts = args[7] # e.g. "10"
-in_bool_multiple_species = args[8] # e.g. "TRUE"
-in_bool_merge = args[9] # e.g. "FALSE"
-in_bool_list = args[10] # e.g. "TRUE"
-out_result_path = args[11]
+in_bool_merge = args[8] # e.g. "FALSE"
+in_bool_list = args[9] # e.g. "TRUE"
+out_result_path = args[10]
 
 
 
@@ -48,7 +47,6 @@ study_area <- sf::st_read(in_shape_path, quiet=TRUE)
 
 
 # (4) Make string booleans boolean
-in_bool_multiple_species = tolower(in_bool_multiple_species) == 'true'
 in_bool_merge = tolower(in_bool_merge) == 'true'
 in_bool_list = tolower(in_bool_list) == 'true'
 
@@ -59,7 +57,6 @@ print(paste('in_colname_lat:', in_colname_lat))
 print(paste('in_colname_lon:', in_colname_lon))
 print(paste('in_colname_species:', in_colname_species))
 print(paste('in_min_pts:', in_min_pts))
-print(paste('in_bool_multiple_species:', in_bool_multiple_species))
 print(paste('in_bool_list:', in_bool_list))
 print(paste('in_bool_merge:', in_bool_merge))
 multiprecleaned <- pred_extract(
@@ -69,7 +66,6 @@ multiprecleaned <- pred_extract(
   lon = in_colname_lon,
   colsp = in_colname_species,
   bbox  = study_area,  
-  multiple = in_bool_multiple_species, 
   list = in_bool_list, 
   minpts = as.numeric(in_min_pts),
   merge = in_bool_merge)
