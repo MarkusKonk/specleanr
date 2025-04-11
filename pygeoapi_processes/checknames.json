@@ -3,7 +3,7 @@
     "id": "check-names",
     "use_case": "BOKU",
     "title": {
-        "en": "Check species names in biodiversity data from separate sources"
+        "en": "Check species names in biodiversity data from separate sources (3/5)"
     },
     "description": {
         "en": "This process ..., from the sources GBIF, iNaturalist and VertNet, with data provided by the user or other sources. For more details, please ask BOKU."
@@ -89,7 +89,7 @@
     },
     "example": {
         "inputs": {
-            "input_data": "https://aqua.igb-berlin.de/download/matched-biodiv-data-bdb09d5c-957f-11ef-aad4-8935a9f30073.csv",
+            "input_data": "https://localhost:5000/download/out/matched-biodiv-data.csv",
             "colname_species": "species",
             "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
             "pct": 70,

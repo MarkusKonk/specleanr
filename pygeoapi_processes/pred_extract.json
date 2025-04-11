@@ -6,7 +6,7 @@
         "en": "pred extract"
     },
     "description": {
-        "en": "This process ..., pred_extract. For more details, please ask BOKU."
+        "en": "pred_extract (4/5). For more details, please ask BOKU."
     },
     "jobControlOptions": ["sync-execute", "async-execute"],
     "keywords": ["pan-european use case", "AquaINFRA", "R"],
@@ -131,17 +131,16 @@
     },
     "example": {
         "inputs": {
-            "input_data": "https://aqua.igb-berlin.de/download/matched-biodiv-data-bdb09d5c-957f-11ef-aad4-8935a9f30073.csv",
-            "input_raster": "https://aqua.igb-berlin.de/referencedata/specleanr/worldclim.tiff",
+            "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
             "input_raster_name": "worldclim",
-            "study_area": "bla.shp",
+            "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
             "colname_lat": "decimalLatitude",
             "colname_lon": "decimalLongitude",
             "colname_species": "speciescheck",
             "min_pts": 10,
             "bool_multiple_species": true,
             "bool_merge": false,
-            "bool_list": true
+            "bool_list": false
         }
     }
 }

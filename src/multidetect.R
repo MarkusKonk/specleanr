@@ -66,6 +66,7 @@ in_silence_true_errors = tolower(in_silence_true_errors) == 'true'
 
 # Only provide column name for species if multiple = FALSE
 if (!in_bool_multiple_species) {
+  print('Setting species column name to NULL (only needed in case of multiple species).')
   in_colname_species <- NULL
 }
 

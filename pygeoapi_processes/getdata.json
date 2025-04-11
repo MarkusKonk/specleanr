@@ -3,7 +3,7 @@
     "id": "retrieve-biodiversity-data",
     "use_case": "BOKU",
     "title": {
-        "en": "Retrieve biodiversity data from the web"
+        "en": "Retrieve biodiversity data from the web (1/5)"
     },
     "description": {
         "en": "This process retrieves biodiveryity data, i.e. occurrences for various species, from the sources GBIF, iNaturalist and VertNet. For more details, please ask BOKU."
@@ -81,7 +81,7 @@
     },
     "example": {
         "inputs": {
-            "study_area": "bla.shp",
+            "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
             "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
             "gbif_limit": 50,
             "vertnet_limit": 50,

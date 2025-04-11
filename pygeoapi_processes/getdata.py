@@ -7,17 +7,18 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{ 
     "inputs": {
-        "study_area": "https://testserver/download/basinfinal.zip",
+        "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
         "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "gbif_limit": 50,
         "vertnet_limit": 50,
         "inaturalist_limit": 50
     }
 }'
+
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -32,12 +33,17 @@ class DataRetrievalProcessor(BaseProcessor):
         super().__init__(processor_def, PROCESS_METADATA)
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
-        self.config = None
+        self.r_script = 'getdata.R'
+        self.image_name = 'specleanr:20250410'
 
         # Set config:
-        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
+        config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
         with open(config_file_path, 'r') as config_file:
-            self.config = json.load(config_file)
+            config = json.load(config_file)
+            self.download_dir = config["download_dir"].rstrip('/')
+            self.download_url = config["download_url"].rstrip('/')
+            self.docker_executable = config["docker_executable"]
+
 
     def set_job_id(self, job_id: str):
         self.job_id = job_id
@@ -47,161 +53,207 @@ class DataRetrievalProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
-        # Get config
-        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
-        with open(config_file_path) as configFile:
-            configJSON = json.load(configFile)
-
-        download_dir = configJSON["download_dir"]
-        download_url = configJSON["download_url"]
-        r_script_dir = configJSON["boku"]["r_script_dir"]
-
         # Get user inputs
-        study_area = data.get('study_area')
+        study_area_url = data.get('study_area')
         species_names = data.get('species_names')
         gbif_limit = data.get('gbif_limit', 50)
         inaturalist_limit = data.get('inaturalist_limit', 50)
         vertnet_limit = data.get('vertnet_limit', 50)
 
         # Checks
-        if study_area is None:
+        if study_area_url is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input shapefile.')
         if species_names is None:
             raise ProcessorExecuteError('Missing parameter "species_names". Please provide a list of species.')
 
-        # User defined inputs:
-        # Where will they be stored:
-        input_polygons_dir = self.config['boku']['input_temp_dir']
-        input_polygons_dir = input_polygons_dir.rstrip('/')+'/inputs_%s' % self.job_id
-        if not os.path.exists(input_polygons_dir):
-            os.makedirs(input_polygons_dir)
-
+        # Input files passed by user:
         # Download and unzip shapefile:
-        input_polygons_path = download_zipped_shapefile(study_area, input_polygons_dir)
+        input_dir = self.download_dir+'/in/job_%s' % self.job_id
+        # TODO: Come up with a good plan to have unique dirs for the jobs, so we separate
+        # users' inputs properly! But the /in has to be there I guess to be mounted...
+        # Maybe /in will not be exposed publicly, while /out will??? Do we need to separate /in and /out?
+        input_polygons_path = download_zipped_shapefile(study_area_url, input_dir)
 
         # Where to store output data
-        downloadfilename = 'biodiv-data-%s.csv' % self.job_id
-        downloadfilepath = download_dir.rstrip('/')+os.sep+downloadfilename
+        result_filename = 'biodiv-data-%s.csv' % self.job_id
+        result_filepath     = self.download_dir+'/out/'+result_filename
+        result_downloadlink = self.download_url+'/out/'+result_filename
 
-        # Run the R script:
-        r_file_name = 'getdata.R'
-        r_args = [input_polygons_path, species_names,
-                  str(gbif_limit), str(inaturalist_limit), str(vertnet_limit),
-                  downloadfilepath]
-        LOGGER.info('Run R script and store result to %s!' % downloadfilepath)
-        LOGGER.debug('R args: %s' % r_args)
-        returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, r_script_dir, r_args)
-        LOGGER.info('Running R script done: Exit code %s' % returncode)
+        # Assemble args for R script:
+        r_args = [
+            input_polygons_path,
+            species_names,
+            str(gbif_limit),
+            str(inaturalist_limit),
+            str(vertnet_limit),
+            result_filepath
+        ]
+
+        ## Run the docker:
+        returncode, stdout, stderr = run_docker_container(
+            self.docker_executable,
+            self.image_name,
+            self.r_script,
+            self.download_dir,
+            r_args
+        )
 
         if not returncode == 0:
+            err_msg = 'Running docker container failed.'
             raise ProcessorExecuteError(user_msg = err_msg)
 
-        else:
-            # Create download link:
-            downloadlink = download_url.rstrip('/')+os.sep+downloadfilename
-
-            # Return link to file:
-            response_object = {
-                "outputs": {
-                    "cleaned_data": {
-                        "title": self.metadata['outputs']['biodiversity_data']['title'],
-                        "description": self.metadata['outputs']['biodiversity_data']['description'],
-                        "href": downloadlink
-                    }
+        # Return link to file:
+        response_object = {
+            "outputs": {
+                "cleaned_data": {
+                    "title": self.metadata['outputs']['biodiversity_data']['title'],
+                    "description": self.metadata['outputs']['biodiversity_data']['description'],
+                    "href": result_downloadlink
                 }
             }
+        }
 
-            return 'application/json', response_object
-
-def download_zipped_shapefile(input_url_shapefile, input_polygons_dir):
-    # TODO test
-
-    # Download file:
-    LOGGER.info('Downloading input data file: %s' % input_url_shapefile)
-    input_zipped_shp_path = '%s/downloaded.zip' % input_polygons_dir
-    resp = requests.get(input_url_shapefile)
-    if resp.status_code == 200:
-        LOGGER.debug('Writing input shape file to: %s' % input_zipped_shp_path)
-        with open(input_zipped_shp_path, 'wb') as myfile:
-            for chunk in resp.iter_content(chunk_size=1024):
-                if chunk:
-                    myfile.write(chunk)
-        
-        LOGGER.info('Unzipping file "%s" to "%s"' % (input_zipped_shp_path, input_polygons_dir))
-        with zipfile.ZipFile(input_zipped_shp_path, 'r') as zip_ref:
-            zip_ref.extractall(input_polygons_dir)
-            print('Unzipped file to "%s"' % input_polygons_dir)
-            LOGGER.info('Unzipped file to "%s"' % input_polygons_dir)
-            
-            # Find name of shapefile, which we dont control:
-            # TODO I am sure there is a better way!
-            for filename in os.listdir(input_polygons_dir):
-                if filename.endswith('shp'):
-                    input_polygons_path = '%s/%s' % (input_polygons_dir, filename)
-                    return input_polygons_path
-
-    else:
-        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url_shapefile))
+        return 'application/json', response_object
 
 
-def call_r_script(LOGGER, r_file_name, path_rscripts, r_args):
-    # TODO: Move function to some module, same in all processes
+def download_zipped_shapefile(input_url, input_dir):
 
-    # Call R script:
-    r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-    cmd = ["/usr/bin/Rscript", "--vanilla", r_file] + r_args
-    LOGGER.debug('Running command %s ... (Output will be shown once finished)' % r_file_name)
-    LOGGER.info(cmd)
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdoutdata, stderrdata = p.communicate()
-    LOGGER.debug("Done running command! Exit code from bash: %s" % p.returncode)
+    # Create a unique dir just for this download.
+    # Why? We do not control what is in the unzipped zip, so we cannot
+    # return the correct name if various files are mixed in the same dir!
+    randomstring = os.urandom(5).hex()
+    input_shp_dir = input_dir.rstrip('/')+'/zippedshp%s' % randomstring
 
-    # Retrieve stdout and stderr
-    stdouttext = stdoutdata.decode()
-    stderrtext = stderrdata.decode()
+    input_zipped_shp_path = download_any_file(input_url, input_shp_dir, '.zip')
+    unzip_file(input_zipped_shp_path, input_shp_dir)
 
-    # Remove empty lines:
-    stderrtext_new = ''
-    for line in stderrtext.split('\n'):
-        if len(line.strip())==0:
-            LOGGER.debug('Empty line!')
-        else:
-            LOGGER.debug('Non-empty line: %s' % line)
-            stderrtext_new += line+'\n'
-
-    # Remove empty lines:
-    stdouttext_new = ''
-    for line in stdouttext.split('\n'):
-        if len(line.strip())==0:
-            LOGGER.debug('Empty line!')
-        else:
-            LOGGER.debug('Non-empty line: %s' % line)
-            stdouttext_new += line+'\n'
-
-    stderrtext = stderrtext_new
-    stdouttext = stdouttext_new
-
-    # Format stderr/stdout for logging:
-    if len(stderrdata) > 0:
-        err_and_out = 'R stdout and stderr:\n___PROCESS OUTPUT {name} ___\n___stdout___\n{stdout}\n___stderr___\n{stderr}\n___END PROCESS OUTPUT {name} ___\n______________________'.format(
-            name=r_file_name, stdout=stdouttext, stderr=stderrtext)
-        LOGGER.error(err_and_out)
-    else:
-        err_and_out = 'R stdour:\n___PROCESS OUTPUT {name} ___\n___stdout___\n{stdout}\n___stderr___\n___(Nothing written to stderr)___\n___END PROCESS OUTPUT {name} ___\n______________________'.format(
-            name=r_file_name, stdout=stdouttext)
-        LOGGER.info(err_and_out)
-
-    # Extract error message from R output, if applicable:
-    err_msg = None
-    if not p.returncode == 0:
-        err_msg = 'R script "%s" failed.' % r_file_name
-        for line in stderrtext.split('\n'):
-            line = line.strip().lower()
-            if line.startswith('error') or line.startswith('fatal') or 'error' in line:
-                LOGGER.error('FOUND R ERROR LINE: %s' % line)
-                err_msg += ' '+line.strip()
-                LOGGER.error('ENTIRE R ERROR MSG NOW: %s' % err_msg)
-
-    return p.returncode, stdouttext, stderrtext, err_msg
+    # Find name of shapefile, which we dont control, as it is defined by whoever
+    # zipped the zipfile:
+    input_unzipped_shp_path = retrieve_file_name_by_ending(input_shp_dir, '.shp')
+    return input_unzipped_shp_path
 
 
+def retrieve_file_name_by_ending(input_dir, ending):
+
+    # If user passed zipped inputs, we don't know the filename, so we can extract
+    # it by its ending, if there are only one file with this ending (e.g. zipped shape).
+    # DANGER: If there are several, we may return the wrong one!
+    # TODO I am sure there is a better way!
+    for filename in os.listdir(input_dir):
+        if filename.endswith(ending):
+            filepath = '%s/%s' % (input_dir, filename)
+            LOGGER.debug('Name of %s file: %s' % (ending, filepath))
+            return filepath
+
+
+def download_any_file(input_url, input_dir, ending=None):
+
+    # Make sure the dir exists:
+    if not os.path.exists(input_dir):
+        os.makedirs(input_dir)
+
+    # Download file into given dir:
+    LOGGER.debug('Downloading input file: %s' % input_url)
+    resp = requests.get(input_url)
+    if not resp.status_code == 200:
+        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url))
+
+    # How should the downloaded file be named?
+    # If the URL includes a name: TODO can we trust this name?
+    #filename = os.path.basename(input_url)
+    filename = "download%s" % os.urandom(5).hex()
+    filename = filename if ending is None else filename+ending
+    input_file_path = '%s/%s' % (input_dir, filename)
+    LOGGER.debug('Storing input file to: %s' % input_file_path)
+    
+    with open(input_file_path, 'wb') as myfile:
+        for chunk in resp.iter_content(chunk_size=1024):
+            if chunk:
+                myfile.write(chunk)
+
+    return input_file_path
+
+
+def unzip_file(input_zipped_file_path, unzip_dir):
+    # TODO: See important secutiry warning here: https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile.extractall
+
+    # Note: Make sure unzip_dir is a custom dir just for this zipfile!
+    # Why? We do not control what is in the unzipped zip, so we cannot
+    # return the correct name if various files are mixed in the same dir!
+
+    LOGGER.debug('Unzipping file "%s" to "%s"' % (input_zipped_file_path, unzip_dir))
+    with zipfile.ZipFile(input_zipped_file_path, 'r') as zip_ref:
+        zip_ref.extractall(unzip_dir)
+        LOGGER.debug('Unzipping file... DONE.')
+
+
+def run_docker_container(
+        docker_executable,
+        image_name,
+        script_name,
+        download_dir,
+        script_args
+    ):
+    LOGGER.debug('Prepare running docker container')
+
+    # Create container name
+    # Note: Only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed
+    # TODO: Use job-id?
+    container_name = "%s_%s" % (image_name.split(':')[0], os.urandom(5).hex())
+
+    # Define paths inside the container
+    container_in = '/in'
+    container_out = '/out'
+
+    # Define local paths
+    local_in = os.path.join(download_dir, "in")
+    local_out = os.path.join(download_dir, "out")
+
+    # Ensure directories exist
+    os.makedirs(local_in, exist_ok=True)
+    os.makedirs(local_out, exist_ok=True)
+
+    # Replace paths in args:
+    sanitized_args = []
+    for arg in script_args:
+        newarg = arg
+        if local_in in arg:
+            newarg = arg.replace(local_in, container_in)
+            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        elif local_out in arg:
+            newarg = arg.replace(local_out, container_out)
+            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        sanitized_args.append(newarg)
+
+    # Prepare container command
+    # (mount volumes etc.)
+    docker_args = [
+        docker_executable, "run",
+        "--rm",
+        "--name", container_name,
+        "-v", f"{local_in}:{container_in}",
+        "-v", f"{local_out}:{container_out}",
+        "-e", f"R_SCRIPT={script_name}",
+        image_name,
+    ]
+    docker_command = docker_args + sanitized_args
+    LOGGER.debug('Docker command: %s' % docker_command)
+    
+    # Run container
+    try:
+        LOGGER.debug('Start running docker container')
+        result = subprocess.run(docker_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout = result.stdout.decode()
+        stderr = result.stderr.decode()
+        LOGGER.debug('Finished running docker container')
+        return result.returncode, stdout, stderr
+
+    except subprocess.CalledProcessError as e:
+        returncode = e.returncode
+        stdout = e.stdout.decode()
+        stderr = e.stderr.decode()
+        LOGGER.error('Failed running docker container (exit code %s)' % returncode)
+        for line in stderr.split('\n'):
+            if line:
+                LOGGER.error('Docker stderr: %s' % line)
+        return returncode, stdout, stderr

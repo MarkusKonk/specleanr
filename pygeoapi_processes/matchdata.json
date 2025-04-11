@@ -3,7 +3,7 @@
     "id": "match-data",
     "use_case": "BOKU",
     "title": {
-        "en": "Combine and match biodiversity data from separate sources"
+        "en": "Combine and match biodiversity data from separate sources (2/5)"
     },
     "description": {
         "en": "This process combines and matches biodiveryity data, i.e. occurrences for various species, from the sources GBIF, iNaturalist and VertNet, with data provided by the user or other sources. For more details, please ask BOKU."
@@ -91,8 +91,8 @@
     },
     "example": {
         "inputs": {
-            "input_data_retrieved": "https://aqua.igb-berlin.de/referencedata/specleanr/df_online.csv",
-            "input_data_from_user": "https://aqua.igb-berlin.de/referencedata/specleanr/efidata.csv",
+            "input_data_retrieved": "https://localhost/download/out/biodiv-data.csv",
+            "input_data_from_user": "https://localhost/referencedata/specleanr/efidata.csv",
             "colnames_species_names": "speciesname, scientificName",
             "colnames_countries": "JDS4_sampling_ID",
             "colnames_lat": "lat, latitude",

@@ -7,56 +7,22 @@ from urllib.parse import urlparse
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
---header 'Content-Type: application/json' \
---data '{ 
-    "inputs": {
-        "input_data": "https://testserver.com/download/boku_multidetect_testdata.csv",
-        "colname_variable": "Sepal.Length",
-        "multiple_species": false,
-        "colname_exclude": "Species",
-        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-        "ignore_failing_methods": true,
-        "missingness": 0.1,
-        "threshold": 0.7
-    }
-}'
 
 curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://aqua.igb-berlin.de/download/multiprecleaned-9290ba98-958f-11ef-aad4-8935a9f30073.csv",
+        "input_data": "https://localhost/download/out/multiprecleaned.csv",
         "colname_variable": "bio6",
-        "colname_species": "dummy",
         "multiple_species": true,
         "colname_exclude": "x,y",
         "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-        "ignore_failing_methods": true,
+        "silence_true_errors": true,
         "missingness": 0.1,
-        "threshold": 0.7
+        "threshold": 0.7,
+        "colname_species": "species"
     }
 }'
-
-
-curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
---header 'Content-Type: application/json' \
---data '{
-    "inputs": {
-        "input_data": "https://aqua.igb-berlin.de/download/boku_multidetect_testdata.csv",
-        "colname_variable": "Sepal.Length",
-        "colname_species": "dummy",
-        "multiple_species": false,
-        "colname_exclude": "Species",
-        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-        "ignore_failing_methods": true,
-        "missingness": 0.1,
-        "threshold": 0.7
-    }
-}'
-
-
-
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -71,12 +37,17 @@ class MultiDetectProcessor(BaseProcessor):
         super().__init__(processor_def, PROCESS_METADATA)
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
-        self.config = None
+        self.r_script = 'multidetect.R'
+        self.image_name = 'specleanr:20250410'
 
         # Set config:
-        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
+        config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
         with open(config_file_path, 'r') as config_file:
-            self.config = json.load(config_file)
+            config = json.load(config_file)
+            self.download_dir = config["download_dir"].rstrip('/')
+            self.download_url = config["download_url"].rstrip('/')
+            self.docker_executable = config["docker_executable"]
+
 
     def set_job_id(self, job_id: str):
         self.job_id = job_id
@@ -86,15 +57,6 @@ class MultiDetectProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
-        # Get config
-        config_file_path = os.environ.get('BOKU_CONFIG_FILE', "./config.json")
-        with open(config_file_path) as configFile:
-            configJSON = json.load(configFile)
-
-        download_dir = configJSON["download_dir"]
-        own_url = configJSON["own_url"]
-        r_script_dir = configJSON["boku"]["r_script_dir"]
-
         # Get user inputs
         in_data_url = data.get('input_data')
         in_colname_var = data.get('colname_variable')
@@ -102,7 +64,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_colname_species = data.get('colname_species', 'not_provided')
         in_colname_exclude = data.get('colname_exclude')
         in_methods = data.get('methods')
-        in_bool_ignore_failing_methods = data.get('ignore_failing_methods')
+        in_silence_true_errors = data.get('silence_true_errors')
         in_missingness = data.get('missingness')
         in_threshold = data.get('threshold')
 
@@ -117,111 +79,164 @@ class MultiDetectProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "colname_exclude". Please provide a column name.')
         if in_methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
-        if in_bool_ignore_failing_methods is None:
-            raise ProcessorExecuteError('Missing parameter "ignore_failing_methods". Please provide \"true\" or \"false\".')
+        if in_silence_true_errors is None:
+            raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".')
         if in_missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
 
-        # Where to store output data
-        downloadfilename = 'cleaned_data-%s.csv' % self.job_id
-        downloadfilepath = download_dir.rstrip('/')+os.sep+downloadfilename
-
         # From booleans to string:
         in_bool_multiple_species = 'true' if in_bool_multiple_species else 'false'
-        in_bool_ignore_failing_methods = 'true' if in_bool_ignore_failing_methods else 'false'
+        in_silence_true_errors = 'true' if in_silence_true_errors else 'false'
 
         # Set null threshold:
         if in_threshold is None:
             in_threshold = 'null'
 
-        # Run the R script:
-        r_file_name = 'multidetect.R'
-        r_args = [in_data_url, in_colname_var, in_bool_multiple_species,
-                  in_colname_exclude, in_methods, in_bool_ignore_failing_methods,
-                  str(in_missingness), str(in_threshold), in_colname_species, downloadfilepath]
-        LOGGER.info('Run R script and store result to %s!' % downloadfilepath)
-        LOGGER.debug('R args: %s' % r_args)
-        returncode, stdout, stderr, err_msg = call_r_script(LOGGER, r_file_name, r_script_dir, r_args)
-        LOGGER.info('Running R script done: Exit code %s' % returncode)
+        # Input files passed by user:
+        input_dir = self.download_dir+'/in/job_%s' % self.job_id
+        input_csv_path = download_any_file(in_data_url, input_dir, ".csv")
+
+        # Where to store output data
+        result_filename = 'cleaned_data-%s.csv' % self.job_id
+        result_filepath     = self.download_dir+'/out/'+result_filename
+        result_downloadlink = self.download_url+'/out/'+result_filename
+
+        # Assemble args for R script:
+        r_args = [
+            input_csv_path,
+            in_colname_var,
+            in_bool_multiple_species,
+            in_colname_exclude,
+            in_methods,
+            in_silence_true_errors,
+            str(in_missingness),
+            str(in_threshold),
+            in_colname_species,
+            result_filepath
+        ]
+
+        # Run the docker:
+        returncode, stdout, stderr = run_docker_container(
+            self.docker_executable,
+            self.image_name,
+            self.r_script,
+            self.download_dir,
+            r_args
+        )
 
         if not returncode == 0:
+            err_msg = 'Running docker container failed.'
             raise ProcessorExecuteError(user_msg = err_msg)
 
-        else:
-            # Create download link:
-            downloadlink = own_url.rstrip('/')+os.sep+downloadfilename
-
-            # Return link to file:
-            response_object = {
-                "outputs": {
-                    "cleaned_data": {
-                        "title": self.metadata['outputs']['cleaned_data']['title'],
-                        "description": self.metadata['outputs']['cleaned_data']['description'],
-                        "href": downloadlink
-                    }
+        # Return link to file:
+        response_object = {
+            "outputs": {
+                "cleaned_data": {
+                    "title": self.metadata['outputs']['cleaned_data']['title'],
+                    "description": self.metadata['outputs']['cleaned_data']['description'],
+                    "href": result_downloadlink
                 }
             }
+        }
 
-            return 'application/json', response_object
+        return 'application/json', response_object
 
 
-def call_r_script(LOGGER, r_file_name, path_rscripts, r_args):
-    # TODO: Move function to some module, same in all processes
+def download_any_file(input_url, input_dir, ending=None):
 
-    # Call R script:
-    r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-    cmd = ["/usr/bin/Rscript", "--vanilla", r_file] + r_args
-    LOGGER.debug('Running command %s ... (Output will be shown once finished)' % r_file_name)
-    LOGGER.info(cmd)
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdoutdata, stderrdata = p.communicate()
-    LOGGER.debug("Done running command! Exit code from bash: %s" % p.returncode)
+    # Make sure the dir exists:
+    if not os.path.exists(input_dir):
+        os.makedirs(input_dir)
 
-    # Retrieve stdout and stderr
-    stdouttext = stdoutdata.decode()
-    stderrtext = stderrdata.decode()
+    # Download file into given dir:
+    LOGGER.debug('Downloading input file: %s' % input_url)
+    resp = requests.get(input_url)
+    if not resp.status_code == 200:
+        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url))
 
-    # Remove empty lines:
-    stderrtext_new = ''
-    for line in stderrtext.split('\n'):
-        if len(line.strip())==0:
-            LOGGER.debug('Empty line!')
-        else:
-            LOGGER.debug('Non-empty line: %s' % line)
-            stderrtext_new += line+'\n'
+    # How should the downloaded file be named?
+    # If the URL includes a name: TODO can we trust this name?
+    #filename = os.path.basename(input_url)
+    filename = "download%s" % os.urandom(5).hex()
+    filename = filename if ending is None else filename+ending
+    input_file_path = '%s/%s' % (input_dir, filename)
+    LOGGER.debug('Storing input file to: %s' % input_file_path)
+    
+    with open(input_file_path, 'wb') as myfile:
+        for chunk in resp.iter_content(chunk_size=1024):
+            if chunk:
+                myfile.write(chunk)
 
-    # Remove empty lines:
-    stdouttext_new = ''
-    for line in stdouttext.split('\n'):
-        if len(line.strip())==0:
-            LOGGER.debug('Empty line!')
-        else:
-            LOGGER.debug('Non-empty line: %s' % line)
-            stdouttext_new += line+'\n'
+    return input_file_path
 
-    stderrtext = stderrtext_new
-    stdouttext = stdouttext_new
 
-    # Format stderr/stdout for logging:
-    if len(stderrdata) > 0:
-        err_and_out = 'R stdout and stderr:\n___PROCESS OUTPUT {name} ___\n___stdout___\n{stdout}\n___stderr___\n{stderr}\n___END PROCESS OUTPUT {name} ___\n______________________'.format(
-            name=r_file_name, stdout=stdouttext, stderr=stderrtext)
-        LOGGER.error(err_and_out)
-    else:
-        err_and_out = 'R stdour:\n___PROCESS OUTPUT {name} ___\n___stdout___\n{stdout}\n___stderr___\n___(Nothing written to stderr)___\n___END PROCESS OUTPUT {name} ___\n______________________'.format(
-            name=r_file_name, stdout=stdouttext)
-        LOGGER.info(err_and_out)
+def run_docker_container(
+        docker_executable,
+        image_name,
+        script_name,
+        download_dir,
+        script_args
+    ):
+    LOGGER.debug('Prepare running docker container')
 
-    # Extract error message from R output, if applicable:
-    err_msg = None
-    if not p.returncode == 0:
-        err_msg = 'R script "%s" failed.' % r_file_name
-        for line in stderrtext.split('\n'):
-            line = line.strip().lower()
-            if line.startswith('error') or line.startswith('fatal') or 'error' in line:
-                LOGGER.error('FOUND R ERROR LINE: %s' % line)
-                err_msg += ' '+line.strip()
-                LOGGER.error('ENTIRE R ERROR MSG NOW: %s' % err_msg)
+    # Create container name
+    # Note: Only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed
+    # TODO: Use job-id?
+    container_name = "%s_%s" % (image_name.split(':')[0], os.urandom(5).hex())
 
-    return p.returncode, stdouttext, stderrtext, err_msg
+    # Define paths inside the container
+    container_in = '/in'
+    container_out = '/out'
 
+    # Define local paths
+    local_in = os.path.join(download_dir, "in")
+    local_out = os.path.join(download_dir, "out")
+
+    # Ensure directories exist
+    os.makedirs(local_in, exist_ok=True)
+    os.makedirs(local_out, exist_ok=True)
+
+    # Replace paths in args:
+    sanitized_args = []
+    for arg in script_args:
+        newarg = arg
+        if local_in in arg:
+            newarg = arg.replace(local_in, container_in)
+            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        elif local_out in arg:
+            newarg = arg.replace(local_out, container_out)
+            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        sanitized_args.append(newarg)
+
+    # Prepare container command
+    # (mount volumes etc.)
+    docker_args = [
+        docker_executable, "run",
+        "--rm",
+        "--name", container_name,
+        "-v", f"{local_in}:{container_in}",
+        "-v", f"{local_out}:{container_out}",
+        "-e", f"R_SCRIPT={script_name}",
+        image_name,
+    ]
+    docker_command = docker_args + sanitized_args
+    LOGGER.debug('Docker command: %s' % docker_command)
+    
+    # Run container
+    try:
+        LOGGER.debug('Start running docker container')
+        result = subprocess.run(docker_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout = result.stdout.decode()
+        stderr = result.stderr.decode()
+        LOGGER.debug('Finished running docker container')
+        return result.returncode, stdout, stderr
+
+    except subprocess.CalledProcessError as e:
+        returncode = e.returncode
+        stdout = e.stdout.decode()
+        stderr = e.stderr.decode()
+        LOGGER.error('Failed running docker container (exit code %s)' % returncode)
+        for line in stderr.split('\n'):
+            if line:
+                LOGGER.error('Docker stderr: %s' % line)
+        return returncode, stdout, stderr

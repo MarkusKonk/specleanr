@@ -3,7 +3,7 @@
     "id": "multidetect-and-clean",
     "use_case": "BOKU",
     "title": {
-        "en": "Run multidetect and clean the data"
+        "en": "Run multidetect and clean the data (5/5)"
     },
     "description": {
         "en": "This process detects outliers using various methods and cleans the data: Ensemble multiple outlier detection methods to ably compare the outliers flagged by each method; then extract final clean data using either absolute or best method generated outliers. For more details, please ask BOKU."
@@ -76,8 +76,8 @@
             "maxOccurs": 1,
             "keywords": ["year", "column"]
         },
-        "ignore_failing_methods": {
-            "title": "True or False: ignores methods that have methodologically failed.",
+        "silence_true_errors": {
+            "title": "True or False: Show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.",
             "description": "If \"true\", .",
             "schema": {
                 "type": "boolean"
@@ -105,7 +105,17 @@
             "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": []
-        }
+        },
+        "colname_species": {
+            "title": "Column name: Species",
+            "description": "A column with species names if the dataset for species is a dataframe not a list.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["column"]
+        },
     },
     "outputs": {
         "cleaned_data": {
@@ -119,14 +129,15 @@
     },
     "example": {
         "inputs": {
-            "input_data": "bla.csv",
-            "colname_variable": "Sepal.Length",
-            "multiple_species": false,
-            "colname_exclude": "Species",
+            "input_data": "https://localhost/download/out/multiprecleaned.csv",
+            "colname_variable": "bio6",
+            "multiple_species": true,
+            "colname_exclude": "x,y",
             "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-            "ignore_failing_methods": true,
+            "silence_true_errors": true,
             "missingness": 0.1,
-            "threshold": 0.7
+            "threshold": 0.7,
+            "colname_species": "species"
         }
     }
 }
