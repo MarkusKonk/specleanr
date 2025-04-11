@@ -9,9 +9,52 @@ from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 '''
 curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
---data '{ 
+--data '{
     "inputs": {
         "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
+        "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "gbif_limit": 50,
+        "vertnet_limit": 50,
+        "inaturalist_limit": 50
+    }
+}'
+
+### Same request, but with GeoJSON study area, instead of shapefile.
+curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "study_area_geojson_url": "https://vm4072.kaj.pouta.csc.fi/ddas/oapif/collections/hydro90-basin/items?f=json&basin_id=1293067",
+        "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "gbif_limit": 50,
+        "vertnet_limit": 50,
+        "inaturalist_limit": 50
+    }
+}'
+
+### Same request, but with GeoJSON study area directly posted in the HTTP POST payload.
+### Note: This area is too small to yield meaningful results!
+curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "study_area_geojson": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "coordinates": [[
+                        [ 15.067916439922868, 48.71725768072221],
+                        [ 15.067916439922868, 48.09522635300115],
+                        [ 16.295486613797266, 48.09522635300115],
+                        [ 16.295486613797266, 48.71725768072221],
+                        [ 15.067916439922868, 48.71725768072221]
+                    ]],
+                    "type": "Polygon"
+                }
+            }]
+        },
         "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "gbif_limit": 50,
         "vertnet_limit": 50,
@@ -54,15 +97,17 @@ class DataRetrievalProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        study_area_url = data.get('study_area')
+        study_area_shp_url = data.get('study_area')
+        study_area_geojson_url = data.get('study_area_geojson_url')
+        study_area_geojson = data.get('study_area_geojson')
         species_names = data.get('species_names')
         gbif_limit = data.get('gbif_limit', 50)
         inaturalist_limit = data.get('inaturalist_limit', 50)
         vertnet_limit = data.get('vertnet_limit', 50)
 
         # Checks
-        if study_area_url is None:
-            raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input shapefile.')
+        if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
+            raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
         if species_names is None:
             raise ProcessorExecuteError('Missing parameter "species_names". Please provide a list of species.')
 
@@ -72,7 +117,20 @@ class DataRetrievalProcessor(BaseProcessor):
         # TODO: Come up with a good plan to have unique dirs for the jobs, so we separate
         # users' inputs properly! But the /in has to be there I guess to be mounted...
         # Maybe /in will not be exposed publicly, while /out will??? Do we need to separate /in and /out?
-        input_polygons_path = download_zipped_shapefile(study_area_url, input_dir)
+
+        # Download and unzip shapefile:
+        if study_area_shp_url is not None:
+            input_polygons_path = download_zipped_shapefile(study_area_shp_url, input_dir)
+
+        # OR download and store GeoJSON:
+        # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
+        elif study_area_geojson_url is not None:
+            input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
+
+        # OR receive and store GeoJSON:
+        # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
+        elif study_area_geojson is not None:
+            input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
 
         # Where to store output data
         result_filename = 'biodiv-data-%s.csv' % self.job_id
@@ -114,6 +172,36 @@ class DataRetrievalProcessor(BaseProcessor):
         }
 
         return 'application/json', response_object
+
+
+def store_geojson(geojson, input_dir, ending=None):
+
+    # Make sure the dir exists:
+    if not os.path.exists(input_dir):
+        os.makedirs(input_dir)
+
+    # How should the downloaded file be named?
+    # If the URL includes a name: TODO can we trust this name?
+    #filename = os.path.basename(input_url_geojson)
+    filename = "geojson%s" % os.urandom(5).hex()
+    filename = filename if ending is None else filename+ending
+    input_file_path = '%s/%s' % (input_dir, filename)
+    LOGGER.debug('Storing input geojson file to: %s' % input_file_path)
+
+    with open(input_file_path, 'w') as myfile:
+        json.dump(geojson, myfile)
+
+    return input_file_path
+
+def download_geojson(input_url_geojson, input_dir, ending=None):
+
+    # Download file into given dir:
+    LOGGER.debug('Downloading input geojson file: %s' % input_url_geojson)
+    resp = requests.get(input_url_geojson)
+    if not resp.status_code == 200:
+        raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
+
+    return store_geojson(resp.json(), input_dir, ending=ending)
 
 
 def download_zipped_shapefile(input_url, input_dir):

@@ -19,14 +19,34 @@
     }],
     "inputs": {
         "study_area": {
-            "title": "Area of Interest",
+            "title": "Area of Interest (Shapefile)",
             "description": "URL to the input shapefile containing the study areas inside which you would like to retrieve occurrences",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": ["shapefile"]
+        },
+        "study_area_geojson_url": {
+            "title": "Area of Interest (GeoJSON)",
+            "description": "URL to the input GeoJSON file containing the study areas inside which you would like to retrieve occurrences",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": ["JSON", "GeoJSON"]
+        },
+        "study_area_geojson": {
+            "title": "Area of Interest (GeoJSON, directly)",
+            "description": "Directly post the GeoJSON containing the study areas inside which you would like to retrieve occurrences",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": ["JSON", "GeoJSON"]
         },
         "species_names": {
             "title": "Species names",
