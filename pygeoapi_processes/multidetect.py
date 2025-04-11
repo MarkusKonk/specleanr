@@ -97,7 +97,7 @@ class MultiDetectProcessor(BaseProcessor):
         input_csv_path = download_any_file(in_data_url, input_dir, ".csv")
 
         # Where to store output data
-        result_filename = 'cleaned_data-%s.csv' % self.job_id
+        result_filename = 'cleaned-data-%s.csv' % self.job_id
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
 
