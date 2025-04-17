@@ -12,7 +12,7 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
 --data '{ 
     "inputs": {
         "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-        "input_raster_name": "worldclim",
+        "input_raster_url_or_name": "worldclim",
         "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
         "colname_lat": "decimalLatitude",
         "colname_lon": "decimalLongitude",
@@ -30,7 +30,7 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
 --data '{
     "inputs": {
         "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-        "input_raster_name": "worldclim",
+        "input_raster_url_or_name": "worldclim",
         "study_area_geojson_url": "https://vm4072.kaj.pouta.csc.fi/ddas/oapif/collections/hydro90-basin/items?f=json&basin_id=1293067",
         "colname_lat": "decimalLatitude",
         "colname_lon": "decimalLongitude",
@@ -50,7 +50,7 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
 --data '{
     "inputs": {
         "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-        "input_raster_name": "worldclim",
+        "input_raster_url_or_name": "worldclim",
         "study_area_geojson": {
             "type": "FeatureCollection",
             "features": [{
