@@ -1,14 +1,13 @@
 print("install.R: Start...")
 
 # Define required packages.
-# TODO: Fix versions, ask Anthony.
 required_packages_versions <- list(
-  "sf" = NULL,
-  "curl" = NULL,
-  "rgbif" = NULL,
-  "rvertnet" = NULL,
-  "rinat" = NULL,
-  "rfishbase" = NULL
+  "sf" = "1.0-20",
+  "curl" = "6.2.2",
+  "rgbif" = "3.8.1",
+  "rvertnet" = "0.8.4",
+  "rinat" = "0.1.9",
+  "rfishbase" = "5.0.1"
 )
 
 if (!requireNamespace("remotes", quietly = TRUE)) {
