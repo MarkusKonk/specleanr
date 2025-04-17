@@ -28,9 +28,9 @@
             "maxOccurs": 1,
             "keywords": ["csv"]
         },
-        "input_raster_name": {
+        "input_raster_url_or_name": {
             "title": "Input raster (anem)",
-            "description": "Name of some raster... Need to think about how to get this from DDAS.",
+            "description": "URL of a cloud-optimized raster to be used (will not be downloaded but accessed remotely), or the name of one of the static rasters on the server. Currently only worldclim is available, for testing purposes.",
             "schema": {
                 "type": "string"
             },
@@ -56,7 +56,7 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "keywords": ["shapefile"]
+            "keywords": ["JSON", "GeoJSON"]
         },
         "study_area_geojson": {
             "title": "Area of Interest (GeoJSON, directly)",
@@ -66,7 +66,7 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "keywords": ["shapefile"]
+            "keywords": ["JSON", "GeoJSON"]
         },
         "colname_lat": {
             "title": "Column name: Latitude",

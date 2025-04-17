@@ -115,7 +115,7 @@ class PredExtractProcessor(BaseProcessor):
 
         # Get user inputs
         input_data_url = data.get('input_data')
-        input_raster_name = data.get('input_raster_name') # TODO: Get from data lake?
+        input_raster_url_or_name = data.get('input_raster_url_or_name') # TODO: Get from data lake?
         study_area_shp_url = data.get('study_area')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
@@ -133,8 +133,8 @@ class PredExtractProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input csv.')
         if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
-        if input_raster_name is None:
-            raise ProcessorExecuteError('Missing parameter "input_raster_name". Please provide a name of your input raster.')
+        if input_raster_url_or_name is None:
+            raise ProcessorExecuteError('Missing parameter "input_raster_url_or_name". Please provide a name or URL of your input raster.')
         if colname_lat is None:
             raise ProcessorExecuteError('Missing parameter "colname_lat". Please provide a column name.')
         if colname_lon is None:
@@ -174,14 +174,22 @@ class PredExtractProcessor(BaseProcessor):
         elif study_area_geojson is not None:
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
 
-        # Input raster: TODO Data lake!
-        if input_raster_name == 'worldclim':
-            input_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
-            LOGGER.debug('Using static raster: %s' % input_raster_path)
+        # Input raster:
+        input_raster_path = None
+        if input_raster_url_or_name.startswith('http'):
+            LOGGER.debug('Using the raster provided by the user. It will not be downloaded, but accessed as-is.')
+            input_raster_path = input_raster_url_or_name
         else:
-            err_msg = "Other rasters are currently not allowed! Try with worldclim."
-            LOGGER.error(err_msg)
-            raise NotImplementedError(err_msg) # TODO: Not implemented!
+            LOGGER.debug('Using static raster on the server...')
+            # TODO: Maybe remove this option at some point?
+            if input_raster_url_or_name == 'worldclim':
+                input_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
+            else:
+                err_msg = "Providing other rasters (than worldclim) by name is currently not possible! Try with worldclim, or provide the URL to a cloud-optimized raster."
+                LOGGER.error(err_msg)
+                raise NotImplementedError(err_msg)
+        LOGGER.debug('Using raster: %s' % input_raster_path)
+
 
         # Where to store output data
         result_filename = 'multiprecleaned-%s.csv' % self.job_id

@@ -115,7 +115,7 @@
             "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": ["column"]
-        },
+        }
     },
     "outputs": {
         "cleaned_data": {
