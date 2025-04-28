@@ -66,7 +66,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_methods = data.get('methods')
         in_silence_true_errors = data.get('silence_true_errors')
         in_missingness = data.get('missingness')
-        in_threshold = data.get('threshold')
+        in_threshold = data.get('threshold', 0.1)
 
         # Checks
         if in_data_url is None:

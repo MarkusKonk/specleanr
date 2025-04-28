@@ -67,10 +67,9 @@
         },
         "methods": {
             "title": "Methods",
-            "description": "The name of methods for Outlier detection to be used, as a comma-separated string. Outlier detection methods considered. Use extractMethods (TODO how to link to that) to get outlier detection methods implemented in this package. Example = \"mixediqr, logboxplot,iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal\" (TODO: Any others? Complete set?)",
+            "description": "The name of methods for Outlier detection to be used, as a comma-separated string. Outlier detection methods considered. Use extractMethods (TODO how to link to that) to get outlier detection methods implemented in this package. Example = \"mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal\" (TODO: Any others? Complete set?)",
             "schema": {
-                "type": "string",
-                "enum": ["mixediqr", "logboxplot", "iqr", "distboxplot", "jknife", "semiqr", "hampel", "iforest", "lof", "mahal"]
+                "type": "string"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -94,15 +93,16 @@
             },
             "minOccurs": 1,
             "maxOccurs": 1,
+            "default": 0.1,
             "keywords": []
         },
         "threshold": {
             "title": "Outlier Threshold",
-            "description": "Value to consider whether the outlier is an absolute outlier or not. If set to \"null\", loess threshold optimization is used.",
+            "description": "Value to consider whether the outlier is an absolute outlier or not. If no threshold is specified, loess threshold optimization is used.",
             "schema": {
                 "type": "number"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
