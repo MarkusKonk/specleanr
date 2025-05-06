@@ -1,3 +1,6 @@
+setClassUnion("CharacterOrNULL", c("character", "NULL"))
+setClassUnion("vetcorOrNULL", c("vector", "NULL"))
+
 #' @title Outlier detection class for multiple methods
 #'
 #' @slot result List of data sets with outliers detected.
@@ -7,24 +10,27 @@
 #' @slot methodsused The methods used in outlier detection.
 #' @slot dfname the dataframe name to aid tracking it during clean data extraction.
 #' @slot excluded whether some columns were excluded during outlier detection. useful for multivariate methods where coordinates are removed from the data.
+#' @slot pc parameters for principal component analysis.
+#' @slot bootstrap parameters for bootstrapping for small data sets.
+#' @slot nboots the number of bootstraps during bootstrapping.
+#' @slot pcvariable variable to be considered during PCA.
+#' @slot pcretained the number data columns retained. the default is 3.
+#' @slot maxrecords the maximum number of records used for bootstrapping.
 #'
+#'
+
 #' @export
-#'
-
-setClassUnion("CharacterOrNULL", c("character", "NULL"))
-setClassUnion("vetcorOrNULL", c("vector", "NULL"))
-
 setClass(Class = 'datacleaner',
-         representation = list(result='list',
-                               mode = 'logical',
-                               varused = 'character',
-                               out ='character',
+         representation = list(result     ='list',
+                               mode       = 'logical',
+                               varused    = 'character',
+                               out        ='character',
                                methodsused='vector',
-                               dfname='character',
-                               excluded ='vetcorOrNULL',
-                               pc='logical',
-                               bootstrap='logical',
-                               nboots = 'numeric',
+                               dfname     ='character',
+                               excluded   ='vetcorOrNULL',
+                               pc         ='logical',
+                               bootstrap  ='logical',
+                               nboots     = 'numeric',
                                pcvariable ='CharacterOrNULL',
                                pcretained = 'numeric',
                                maxrecords = 'numeric')

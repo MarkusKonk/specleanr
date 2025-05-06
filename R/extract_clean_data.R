@@ -128,10 +128,12 @@ cleandata <- function(data, outliers,
 #'                             country= c('JDS4_site_ID'),
 #'                             date=c('sampling_date', 'Date'))
 #'
-#' datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
+#' datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
 #'
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #'
 #' worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
@@ -140,9 +142,8 @@ cleandata <- function(data, outliers,
 #'                       raster= worldclim ,
 #'                       lat = 'decimalLatitude',
 #'                       lon= 'decimalLongitude',
-#'                       var_col = 'speciescheck',
+#'                       colsp = 'speciescheck',
 #'                       bbox = db,
-#'                       multiple = TRUE,
 #'                       minpts = 10,
 #'                       list=TRUE,
 #'                       merge=F)

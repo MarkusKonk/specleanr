@@ -24,15 +24,11 @@
 #' }
 #'
 #'
-#'
-#'
 #' @references Logez M, Belliard J, Melcher A, Kremser H, Pletterbauer F, Schmutz S, Gorges G, Delaigue O, Pont D. 2012.
 #' Deliverable D5.1-3: BQEs sensitivity to global/climate change in European rivers: implications for reference conditions
 #' and pressure-impact-recovery chains.
 #'
 "efidata"
-
-
 
 #' @title Joint Danube Survey Data
 #'
@@ -57,8 +53,6 @@
 #' data("jdsdata")
 #' jdsdata
 #' }
-#'
-#'
 #'
 #'
 #' @references https://www.danubesurvey.org/jds4/about
@@ -88,9 +82,6 @@
 #' data("kdat")
 #' kdat
 #' }
-#'
-#'
-#'
 #'
 #' @references Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
 #' Computational Statistics and Data Analysis 51:3800–3810.
@@ -183,11 +174,7 @@
 #' }
 #'
 #'
-#'
-#'
-#' @references https://www.danubesurvey.org/jds4/about
-#'
-"jdsdata"
+"troutdata"
 
 
 

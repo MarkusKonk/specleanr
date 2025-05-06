@@ -123,7 +123,6 @@ After outlier removal, the threshold to classify a record as an absolute outlier
 
 * **Naive method**: where the user sets a value between 0.1 and 1. The process is subjective, but using this method, it is advisable to use a threshold beyond 0.6 to highlight records flagged in at least 50% of the methods.
 
-* **Autothreshold**: When the user sets **`autothreshold`** to TRUE in **`extract_clean_data()`**, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained. 
 * **loess method**: we apply local regression (locally estimated/weighted scatterplot smoothing) to identify the optimal threshold, a non-parametric smoothing method that uses local variability in the data (Cleveland & Loader, 1996; Loader, 2004). 
 
 
@@ -136,13 +135,8 @@ The **reference dataset** in **Step 2** and lists or outliers flagged by each me
 * `ggoutliers()` to visualize the outliers flagged by each method. If multiple species are considered, then the index or species name should be provided. 
 <p>After environmental outlier removal, the user can examine the improvement in the model performance before and after environmental outlier removal. The following function can be used.</p>
 
-* `sdmfit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
-* `modelcomparison()` to compare model performance before and outlier removal using threshold-dependent and independent metrics such as Area Under the Curve, true skill statistics, specificity, sensitivity, kappa, and accuracy.
-* `get_performance()` to obtain the dataset with the performance values for both scenarios.
-* `ggperform()` for ploting the threshold results from **`modelcomparison()`** output.
-
 **Package website**
-To access the details of this package, please check it website on https://AnthonyBasooma.github.io/specleanr/
+To access the details of this package, please check it website on [specleanr](https://AnthonyBasooma.github.io/specleanr/)
 
 ### Package citation
 Under review

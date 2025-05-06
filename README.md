@@ -152,11 +152,6 @@ optimal threshold.
   threshold beyond 0.6 to highlight records flagged in at least 50% of
   the methods.
 
-- **Autothreshold**: When the user sets **`autothreshold`** to TRUE in
-  **`extract_clean_data()`**, it automatically searches a threshold
-  between 0.5 to 1 and identifies a threshold with the mean number of
-  records retained.
-
 - **loess method**: we apply local regression (locally
   estimated/weighted scatterplot smoothing) to identify the optimal
   threshold, a non-parametric smoothing method that uses local
@@ -183,18 +178,9 @@ methods (in terms of the outliers flagged) can be used.
   improvement in the model performance before and after environmental
   outlier removal. The following function can be used.
   </p>
-- `sdmfit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
-- `modelcomparison()` to compare model performance before and outlier
-  removal using threshold-dependent and independent metrics such as Area
-  Under the Curve, true skill statistics, specificity, sensitivity,
-  kappa, and accuracy.
-- `get_performance()` to obtain the dataset with the performance values
-  for both scenarios.
-- `ggperform()` for ploting the threshold results from
-  **`modelcomparison()`** output.
 
 **Package website** To access the details of this package, please check
-it website on <https://AnthonyBasooma.github.io/specleanr/>
+it website on [specleanr](https://AnthonyBasooma.github.io/specleanr/)
 
 ### Package citation
 
