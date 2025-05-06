@@ -23,21 +23,22 @@
 #'
 #' \dontrun{
 #'
-#' data("efidata")
+#'data("efidata")
 #'
-#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
+#'gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'danube <- system.file('extdata/danube.shp.zip', package='specleanr')
 #'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
+#'db <- sf::st_read(danube, quiet=TRUE)
 #'
-#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           bbox = db,
-#'                           multiple = TRUE,
-#'                           minpts = 10)
+#'wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#'  adout <- adjustboxplots(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
+#'refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+#'                        colsp = 'speciescheck',
+#'                        bbox = db,
+#'                        minpts = 10)
+#'
+#'adout <- adjustboxplots(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #'
 #' }
 #'
@@ -45,7 +46,7 @@
 #' Computational Statistics and Data Analysis 52:5186-5201.
 #'
 #'
-adjustboxplots <- function(data, var, output = 'outlier', a=-4, b=3, coef=1.5,pc, pcvar, boot){
+adjustboxplots <- function(data, var, output = 'outlier', a=-4, b=3, coef=1.5,pc = FALSE, pcvar = NULL, boot = FALSE){
 
   options(mc_doScale_quiet=TRUE)
 
@@ -100,7 +101,9 @@ adjustboxplots <- function(data, var, output = 'outlier', a=-4, b=3, coef=1.5,pc
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#'danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#'db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -108,7 +111,6 @@ adjustboxplots <- function(data, var, output = 'outlier', a=-4, b=3, coef=1.5,pc
 #'                           lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  iqrout <- interquartile(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -118,7 +120,7 @@ adjustboxplots <- function(data, var, output = 'outlier', a=-4, b=3, coef=1.5,pc
 #'  Data Mining and Knowledge Discovery 1:73-79.
 #'
 #'
-interquartile <- function(data, var, output, x=1.5, pc, pcvar, boot){
+interquartile <- function(data, var, output, x=1.5, pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
 
@@ -170,14 +172,15 @@ interquartile <- function(data, var, output, x=1.5, pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  semiout <- semiIQR(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -188,7 +191,7 @@ interquartile <- function(data, var, output, x=1.5, pc, pcvar, boot){
 #' Kimber AC. 1990. Exploratory Data Analysis for Possibly Censored Data From Skewed Distributions.
 #' Page Source: Journal of the Royal Statistical Society. Series C (Applied Statistics).
 #'
-semiIQR <- function(data, var, output, x=3, pc, pcvar, boot){
+semiIQR <- function(data, var, output, x=3, pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
   var <-  pars[["var"]]
@@ -245,14 +248,16 @@ semiIQR <- function(data, var, output, x=3, pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
-#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
+#' refdata <- pred_extract(data = gbd, raster= wcd ,
+#'                           lat = 'decimalLatitude',
+#'                           lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  hampout <- hampel(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -265,7 +270,7 @@ semiIQR <- function(data, var, output, x=3, pc, pcvar, boot){
 #'
 #'
 #'
-hampel <- function(data, var, output, x=3, pc, pcvar, boot){
+hampel <- function(data, var, output, x=3, pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
   var <-  pars[["var"]]
@@ -292,6 +297,9 @@ hampel <- function(data, var, output, x=3, pc, pcvar, boot){
 #' @param output Either clean: for data frame with no suspicious outliers or outlier: to return data frame with only outliers
 #' @param mode Either robust, if a robust mode is used which uses median instead of mean and median absolute deviation from median
 #' or mad instead of standard deviation.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @details
 #' Reverse jackknifing was specifically developed to detect error climate profiles \code{(Chapman 1991, 1999)}.
@@ -310,7 +318,9 @@ hampel <- function(data, var, output, x=3, pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -319,7 +329,6 @@ hampel <- function(data, var, output, x=3, pc, pcvar, boot){
 #'                         lon= 'decimalLongitude',
 #'                         colsp = 'speciescheck',
 #'                         bbox = db,
-#'                        multiple = TRUE,
 #'                         minpts = 10)
 #'
 #' jkout <- jknife(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -339,9 +348,10 @@ hampel <- function(data, var, output, x=3, pc, pcvar, boot){
 #' }
 #'
 #'
-jknife <- function(data, var, output ='outlier', mode='soft', pc, pcvar, boot){
+jknife <- function(data, var, output ='outlier', mode='soft', pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
+
 
   var <-  pars[["var"]]
   data <- pars[['data']]
@@ -416,6 +426,10 @@ jknife <- function(data, var, output ='outlier', mode='soft', pc, pcvar, boot){
 #' @param mode Either robust, if a \strong{robust} mode is used which uses median instead of
 #' mean and median absolute deviation from median.
 #'
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
+#'
 #' @details
 #' The method uses mean as an estimator of location and standard deviation for scale
 #'     \code{(Rousseeuw & Hubert 2011)}, which both have zero breakdown point,
@@ -439,21 +453,22 @@ jknife <- function(data, var, output ='outlier', mode='soft', pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  zout <- zscore(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #'
 #' }
 #'
-zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft', pc, pcvar, boot){
+zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft', pc = FALSE, pcvar = NULL, boot = FALSE){
 
   match.argc(output, choices = c('clean','outlier'))
   match.argc(type, choices = c('extreme','mild'))
@@ -491,6 +506,9 @@ zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft', 
 #' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 #'     for outlier data frame or vectors.
 #' @param x The constant for creating lower and upper fences. Extreme is 3, but default is 1.5.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @details
 #' The loxplot for outlier detection \strong{Barbato et al. (2011)} modifies the
@@ -527,14 +545,15 @@ zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft', 
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  logout <- logboxplot(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -543,7 +562,7 @@ zscore <- function(data, var, output = 'outlier', type = 'mild', mode = 'soft', 
 #'
 #'
 #'
-logboxplot <- function(data, var, output, x=1.5, pc, pcvar, boot){
+logboxplot <- function(data, var, output, x=1.5, pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
 
@@ -574,6 +593,9 @@ logboxplot <- function(data, var, output, x=1.5, pc, pcvar, boot){
 #' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 #'     for outlier data frame or vectors.
 #' @param x A constant for flagging outliers \code{Walker et al., 2018)}.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Either clean our outliers
 #' @export
@@ -585,14 +607,15 @@ logboxplot <- function(data, var, output, x=1.5, pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  logout <- mixediqr(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -603,7 +626,7 @@ logboxplot <- function(data, var, output, x=1.5, pc, pcvar, boot){
 #' Walker ML, Dovoedo YH, Chakraborti S, Hilton CW. 2018. An Improved Boxplot for Univariate Data.
 #'  American Statistician 72:348-353. American Statistical Association.
 #'
-mixediqr <- function(data, var, output, x=3, pc, pcvar, boot){
+mixediqr <- function(data, var, output, x=3, pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
 
@@ -650,6 +673,9 @@ mixediqr <- function(data, var, output, x=3, pc, pcvar, boot){
 #' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 #'     for outlier data frame or vectors.
 #' @param x A constant for flagging outliers.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Either clean or outliers.
 #' @export
@@ -662,7 +688,9 @@ mixediqr <- function(data, var, output, x=3, pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -671,13 +699,12 @@ mixediqr <- function(data, var, output, x=3, pc, pcvar, boot){
 #'                           lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  medout <- medianrule(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #' }
 #'
-medianrule <- function(data, var, output, x=2.3, pc, pcvar, boot){
+medianrule <- function(data, var, output, x=2.3, pc = FALSE, pcvar = NULL, boot = FALSE){
 
   pars <- pcboot(pb = data, var = var, pc = pc, boot = boot, pcvar = pcvar)
 
@@ -706,6 +733,9 @@ medianrule <- function(data, var, output, x=2.3, pc, pcvar, boot){
 #' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
 #'     for outlier data frame or vectors.
 #' @param p1,p2 Different pvalues for outlier detection \code{Schwertman et al. 2004)}.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Either clean or outliers.
 #'
@@ -719,20 +749,21 @@ medianrule <- function(data, var, output, x=2.3, pc, pcvar, boot){
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  bxout <- distboxplot(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 #' }
 
-distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975, boot, pc, pcvar){
+distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975, boot = FALSE, pc = FALSE, pcvar = NULL){
 
   kndata <- specleanr::kdat
 
@@ -791,6 +822,9 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975, boot, pc, pcvar
 #' @param gamma \code{numeric}. the p-values used to classify a record as an outlier. The lower the p-value,
 #'      the extremeness is the outlier \code{Schwertman & de Silva 2007}.
 #' @param mode \code{string}. Indicates the extremeness of the outlier.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #'
 #' @details
@@ -812,14 +846,15 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975, boot, pc, pcvar
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                           colsp = 'speciescheck',
 #'                           bbox = db,
-#'                           multiple = TRUE,
 #'                           minpts = 10)
 #'
 #'  sqout <- seqfences(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
@@ -842,149 +877,7 @@ distboxplot <- function(data, var, output, p1=0.025, p2 = 0.975, boot, pc, pcvar
 #' }
 #'
 
-seqfences_vec <- function(data, var, output, gamma=0.95, mode='eo'){
-
-  if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
-
-    stop('Only 0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995 are allowed values for gamma.')
-  }
-
-  #standard table 1 from (Schwertman NC, de Silva R. 2007)
-
-  kndata <- specleanr::kdat
-
-  #standard table 2 from (Schwertman NC, de Silva R. 2007)
-  mth <- specleanr::mth
-
-  if(is(data, 'data.frame')){
-    nd <- nrow(data)
-    if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
-    var <- unlist(data[,var])
-
-  } else if(is(data, 'vector') || is(data, 'atomic') ){
-    nd <- length(data)
-
-    if(nd>100) stop('Sequence fence is only computed for sample size less than 100.') else nd
-
-    var <- data
-  } else{
-    stop('Only data frame or vector of values are accepted.')
-  }
-
-
-  kn <- kndata$kn[which(as.numeric(kndata$n) == nd)]
-
-  #get confidence coefficients
-  df <- as.integer(7.6809524 + .5294156*nd - .00237*nd^2)
-
-
-  confs <- c('m1', 'm2', 'm3', 'm4', 'm5', 'm6')
-
-  lf <- c(); uf <- c(); tv <- c()
-  for (si in seq_along(confs)) {
-    m <- confs[si]
-
-    mc <- mth[,m][which(mth$p== gamma)]
-
-    tv <- qt(mc/length(var), df, lower.tail = F)
-
-    lf[si] <- unname(quantile(var, 0.5)) - (tv/kn)*IQR(var)
-    uf[si] <- unname(quantile(var, 0.5)) + (tv/kn)*IQR(var)
-  }
-
-  indx <- c()
-  for (sii in seq_along(var)){
-    vals <- var[sii]
-    if(mode=='eo'){
-      ev <- 1
-    }else if(mode=='meo'){
-      ev <- 2
-    }else if(mode=='leo'){
-      ev <- 3
-    }else if (mode == 'ao'){
-      ev <- 4
-    }else if(mode=='wo'){
-      ev <- 5
-    }else{
-      ev <- 6
-    }
-    lv <- vals < lf[ev] | vals > uf[ev]
-    if(any(lv)==TRUE)  tf <- TRUE else tf <- FALSE
-    indx[sii] <- tf
-  }
-
-  datIn <- which(indx==FALSE)
-
-  if(is(data, 'data.frame')){
-    switch(output, clean=return(data[datIn,]), outlier= return(data[-datIn,]))
-  }else{
-    switch(output, clean=return(data[datIn]), outlier= return(data[-datIn]))
-  }
-}
-
-
-
-#' @title Sequential fences method
-#'
-#' @param data Dataframe or vector where to check outliers.
-#' @param var Variable to be used for outlier detection if \strong{data} is not a vector file.
-#' @param output Either \strong{clean}: for clean data output without outliers; \strong{outliers}:
-#'     for outlier data frame or vectors.
-#' @param gamma \code{numeric}. the p-values used to classify a record as an outlier. The lower the p-value,
-#'      the extremeness is the outlier \code{Schwertman & de Silva 2007}.
-#' @param mode \code{string}. Indicates the extremeness of the outlier.
-#'
-#'
-#' @details
-#' Sequential fences is a modification of the TUKEY boxplot, where the data is divided into groups each with its own
-#' fences \code{Schwertman & de Silva 2007}. The groups can range from 1, which flags mild outliers to 6 for extreme outliers ()
-#'
-#'
-#' @return Dataframe or vector with or without outliers
-#'
-#' @importFrom stats qnorm qt
-#'
-#' @export
-#'
-#' @examples
-#'
-#'\dontrun{
-#'
-#' data("efidata")
-#'
-#' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
-#'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
-#'
-#' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
-#'
-#' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
-#'                           colsp = 'speciescheck',
-#'                           bbox = db,
-#'                           multiple = TRUE,
-#'                           minpts = 10)
-#'
-#'  sqout <- seqfences(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
-#' }
-#'
-#'
-#' @references
-#'
-#' \enumerate{
-#'
-#' \item Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
-#' Computational Statistics and Data Analysis 51:3800-3810.
-#'
-#' \item Schwertman NC, Owens MA, Adnan R. 2004. A simple more general boxplot method for identifying outliers.
-#' Computational Statistics and Data Analysis 47:165-174.
-#'
-#' \item Dastjerdy B, Saeidi A, Heidarzadeh S. 2023.
-#' Review of Applicable Outlier Detection Methods to Treat Geomechanical Data. Geotechnics 3:375-396. MDPI AG.
-#'
-#' }
-#'
-
-seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc, pcvar, boot){
+seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc = FALSE, pcvar = NULL, boot = FALSE){
 
   if(!gamma%in%c(0.75, 0.80, 0.90, 0.95, 0.975, 0.99, 0.995)){
 
@@ -1067,6 +960,9 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc, pcvar, boot)
 #'
 #' @importFrom isotree isolation.forest
 #' @importFrom stats predict
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #'
@@ -1080,7 +976,9 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc, pcvar, boot)
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1089,7 +987,6 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc, pcvar, boot)
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
 #'                       bbox = db,
-#'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
 #' iosd <- isoforest(data = refdata[['Salmo trutta']], size = 0.7,  output='outlier',
@@ -1102,7 +999,7 @@ seqfences <- function(data, var, output, gamma=0.95, mode='eo', pc, pcvar, boot)
 #' Available from https://ieeexplore.ieee.org/abstract/document/4781136 (accessed November 18, 2023).
 #' }
 #'
-isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc, boot, pcvar, var){
+isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc = FALSE, boot = FALSE, pcvar = NULL, var){
 
   match.argc(output, choices = c('clean', 'outlier'))
 
@@ -1141,6 +1038,9 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc, boot,
 #' @param tpar A list of parameters to be varied during tunning from the normal model.
 #'
 #' @importFrom  e1071 svm tune.svm
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #'
@@ -1154,7 +1054,9 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc, boot,
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1163,7 +1065,6 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc, boot,
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
 #'                       bbox = db,
-#'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
 #' nedata <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),  output='outlier')
@@ -1172,7 +1073,7 @@ isoforest <- function(data, size, cutoff =0.5, output, exclude = NULL, pc, boot,
 onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
                     tpar = list(gamma = 1^(-1:1), epislon =seq(0, 1, 0.1),
                                 cost =2^2:4, nu = seq(0.05, 1, 0.1)),
-                    boot, pc, var, pcvar){
+                    boot = FALSE, pc = FALSE, var, pcvar = NULL){
 
   match.argc(kernel, choices = c('radial', 'linear')) #radial set to defualt, works well for high dimensional data
 
@@ -1220,6 +1121,9 @@ onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
 #'
 #'
 #' @importFrom dbscan lof kNN glosh
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #'
@@ -1233,7 +1137,9 @@ onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1242,7 +1148,6 @@ onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
 #'                       bbox = db,
-#'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
 #' lofout <- xlof(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
@@ -1250,7 +1155,7 @@ onesvm <- function(data, kernel='radial', tune=FALSE, exclude = NULL, output,
 #'                 minPts = 10, mode = "soft")
 #' }
 #'
-xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mode='soft', pc, boot, var, pcvar){
+xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mode='soft', pc = FALSE, boot = FALSE, var, pcvar = NULL){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
@@ -1306,6 +1211,10 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #' @param mode This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
 #'      median absolute deviation.
 #'
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
+#'
 #' @return Dataframe with or with no outliers.
 #'
 #' @export
@@ -1318,7 +1227,9 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1327,7 +1238,6 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
 #'                        bbox = db,
-#'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
 #' lofout <- xknn(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
@@ -1335,7 +1245,7 @@ xlof <- function(data, output, minPts, exclude = NULL, metric = 'manhattan', mod
 #'                  mode = "soft")
 #'}
 #'
-xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft', pc, boot, var, pcvar){
+xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft', pc = FALSE, boot = FALSE, var, pcvar = NULL){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
@@ -1395,6 +1305,9 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #'        \code{"euclidean", "maximum", "manhattan", "canberra", "binary"}.
 #' @param mode This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
 #'      median absolute deviation.
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #'
@@ -1406,7 +1319,9 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1415,7 +1330,6 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
 #'                        bbox = db,
-#'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
 #' gloshout <- xglosh(data = refdata[['Salmo trutta']], exclude = c("x", "y"),
@@ -1432,7 +1346,7 @@ xknn <- function(data, output, exclude = NULL, metric = 'manhattan', mode='soft'
 #' package version 1.1-11, <https://CRAN.R-project.org/package=dbscan>
 #' }
 #'
-xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='soft', pc, boot, var, pcvar){
+xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='soft', pc = FALSE, boot = FALSE, var, pcvar = NULL){
 
   match.argc(mode, choices = c('robust', 'soft'))
 
@@ -1539,14 +1453,15 @@ xglosh <- function(data, k, output, exclude = NULL, metric = 'manhattan', mode='
 #'
 #' gbd <- check_names(data = datafinal, colsp='species', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
 #' refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
 #'                         colsp = 'speciescheck',
 #'                        bbox = db,
-#'                         multiple = TRUE,
 #'                         minpts = 10)
 #'
 #' saldata <- refdata[['Salmo trutta']]
@@ -1826,6 +1741,9 @@ sprange <- function(data, var, minval = NULL, maxval = NULL, ecoparam = NULL, la
 #' @importFrom stats mahalanobis qchisq cov complete.cases
 #' @importFrom usdm vifcor vifstep exclude
 #' @importFrom robust covRob
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Either clean or outliers dataset
 #'
@@ -1839,7 +1757,9 @@ sprange <- function(data, var, minval = NULL, maxval = NULL, ecoparam = NULL, la
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1848,7 +1768,6 @@ sprange <- function(data, var, minval = NULL, maxval = NULL, ecoparam = NULL, la
 #'                        lon= 'decimalLongitude',
 #'                        colsp = 'speciescheck',
 #'                       bbox = db,
-#'                        multiple = TRUE,
 #'                        minpts = 10)
 #'
 #' #outliers
@@ -1862,7 +1781,7 @@ sprange <- function(data, var, minval = NULL, maxval = NULL, ecoparam = NULL, la
 #' Use a robust variant of the Mahalanobis distance. Journal of Experimental
 #' Social Psychology 74:150-156.
 #'
-mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95, tol= 1e-20, pc, boot, var, pcvar){
+mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf = 0.95, tol= 1e-20, pc = FALSE, boot = FALSE, var, pcvar = NULL){
 
   if(missing(data)) stop('Data not provided.')
 
@@ -1949,6 +1868,9 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #'
 #' @importFrom stats kmeans sd dist
 #' @importFrom cluster silhouette
+#' @inheritParams pcboot
+#' @inheritParams boots
+#' @inheritParams pca
 #'
 #' @return Dataframe with or with no outliers.
 #'
@@ -1962,7 +1884,9 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #'
 #' gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 #'
-#' db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+#' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+#'
+#' db <- sf::st_read(danube, quiet=TRUE)
 #'
 #' wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 #'
@@ -1971,7 +1895,6 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #'                         lon= 'decimalLongitude',
 #'                         colsp = 'speciescheck',
 #'                         bbox = db,
-#'                         multiple = TRUE,
 #'                         minpts = 10)
 #'
 #' kmeansout <- xkmeans(data = refdata[['Salmo trutta']],
@@ -1981,7 +1904,7 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 #'
 #'
 xkmeans <- function(data, k, exclude = NULL, output, mode ="soft", method="silhouette",
-                    seed = 1135, verbose=FALSE, pc, boot, var, pcvar){
+                    seed = 1135, verbose=FALSE, pc = FALSE, boot = FALSE, var, pcvar = NULL){
 
   match.argc(mode, choices = c('soft', 'robust'))
 

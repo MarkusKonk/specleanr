@@ -7,11 +7,12 @@
 classify_data(
   refdata,
   outliers,
-  colsp = NULL,
+  var_col = NULL,
   threshold = 0.1,
   warn = FALSE,
   verbose = TRUE,
-  classify = "med"
+  classify = "med",
+  EIF = FALSE
 )
 }
 \arguments{
@@ -19,7 +20,7 @@ classify_data(
 
 \item{outliers}{\code{string}. Output from the outlier detection process.}
 
-\item{colsp}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column with species names.}
+\item{var_col}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column with species names.}
 
 \item{threshold}{\code{numeric}. Value to consider whether the outlier is an absolute outlier or not.}
 
@@ -29,6 +30,8 @@ classify_data(
 
 \item{classify}{\code{string}. Categorize data base on the correlation coefficient manner based on \code{Akoglu 2018}. For
 more information check in the details section.}
+
+\item{EIF}{\code{logical} To calculate the empirical influence function for each value.}
 }
 \value{
 Either a \code{list} or \code{dataframe} of cleaned records for multiple species.
@@ -54,7 +57,7 @@ matchdata <- match_datasets(datasets = list(jds = jdsdata, efi = efidata),
                             country= c('JDS4_site_ID'),
                             date=c('sampling_date', 'Date'))
 
-datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
+datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
 
 
 db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
@@ -66,7 +69,7 @@ rdata <- pred_extract(data = datacheck,
                       raster= worldclim ,
                       lat = 'decimalLatitude',
                       lon= 'decimalLongitude',
-                      colsp = 'speciescheck',
+                      var_col = 'speciescheck',
                       bbox = db,
                       multiple = TRUE,
                       minpts = 10,

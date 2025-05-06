@@ -11,9 +11,9 @@ adjustboxplots(
   a = -4,
   b = 3,
   coef = 1.5,
-  pc,
-  pcvar,
-  boot
+  pc = FALSE,
+  pcvar = NULL,
+  boot = FALSE
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ outlier: to return dataframe with only outliers.}
 
 \item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
 
-\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Deafult \code{PC1}}
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
 
 \item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
 }
@@ -50,17 +50,18 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
-                          colsp = 'speciescheck',
-                          bbox = db,
-                          multiple = TRUE,
-                          minpts = 10)
+                       colsp = 'speciescheck',
+                       bbox = db,
+                       minpts = 10)
 
- adout <- adjustboxplots(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
+adout <- adjustboxplots(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')
 
 }
 
