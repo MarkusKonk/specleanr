@@ -50,9 +50,9 @@
 <span>  output <span class="op">=</span> <span class="st">"outlier"</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"mild"</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"soft"</span>,</span>
-<span>  <span class="va">pc</span>,</span>
-<span>  <span class="va">pcvar</span>,</span>
-<span>  <span class="va">boot</span></span>
+<span>  pc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pcvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  boot <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -80,6 +80,18 @@
 <dd><p>Either robust, if a <strong>robust</strong> mode is used which uses median instead of
 mean and median absolute deviation from median.</p></dd>
 
+
+<dt id="arg-pc">pc<a class="anchor" aria-label="anchor" href="#arg-pc"></a></dt>
+<dd><p>Whether principal component analysis will be computed. Default <code>FALSE</code></p></dd>
+
+
+<dt id="arg-pcvar">pcvar<a class="anchor" aria-label="anchor" href="#arg-pcvar"></a></dt>
+<dd><p>Principal component analysis to e used for outlier detection after PCA. Default <code>PC1</code></p></dd>
+
+
+<dt id="arg-boot">boot<a class="anchor" aria-label="anchor" href="#arg-boot"></a></dt>
+<dd><p>Whether bootstrapping will be computed. Default <code>FALSE</code></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -105,14 +117,15 @@ mean and median absolute deviation from median.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">gbd</span> <span class="op">&lt;-</span> <span class="fu"><a href="check_names.html">check_names</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">efidata</span>, colsp<span class="op">=</span><span class="st">'scientificName'</span>, pct<span class="op">=</span><span class="fl">90</span>, merge<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube.shp.zip'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">danube</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">wcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">refdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="pred_extract.html">pred_extract</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">gbd</span>, raster<span class="op">=</span> <span class="va">wcd</span> , lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>, lon<span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span></span>
 <span class="r-in"><span>                          colsp <span class="op">=</span> <span class="st">'speciescheck'</span>,</span></span>
 <span class="r-in"><span>                          bbox <span class="op">=</span> <span class="va">db</span>,</span></span>
-<span class="r-in"><span>                          multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                          minpts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span> <span class="va">zout</span> <span class="op">&lt;-</span> <span class="fu">zscore</span><span class="op">(</span>data <span class="op">=</span> <span class="va">refdata</span><span class="op">[[</span><span class="st">'Salmo trutta'</span><span class="op">]</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">'bio6'</span>, output<span class="op">=</span><span class="st">'outlier'</span><span class="op">)</span></span></span>
@@ -130,7 +143,7 @@ mean and median absolute deviation from median.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

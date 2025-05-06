@@ -52,7 +52,8 @@
 <span>  var_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"darkblue"</span>, <span class="st">"orange"</span><span class="op">)</span></span>
+<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"darkblue"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
+<span>  useropt <span class="op">=</span> <span class="fl">0.8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,6 +95,11 @@ outliers obtained at a low threshold is indicated. Default <strong>TRUE</strong>
 <dt id="arg-colors">colors<a class="anchor" aria-label="anchor" href="#arg-colors"></a></dt>
 <dd><p><code>vector</code>. Colors for both the true data and the loess fitted data lines.</p></dd>
 
+
+<dt id="arg-useropt">useropt<a class="anchor" aria-label="anchor" href="#arg-useropt"></a></dt>
+<dd><p><code>numeric</code> The default is 0.8, to ensure that the loess maximum does not fall below user optima if it is not properly searched
+using the loess model.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -109,7 +115,7 @@ outliers obtained at a low threshold is indicated. Default <strong>TRUE</strong>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

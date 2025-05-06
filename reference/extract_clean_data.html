@@ -48,7 +48,7 @@
 <span>  <span class="va">refdata</span>,</span>
 <span>  <span class="va">outliers</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"abs"</span>,</span>
-<span>  colsp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  var_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -75,7 +75,7 @@
 <dd><p><code>character</code>. Either <code>abs</code> to use absolute outliers to filter data or <code>best</code> to outliers from best method.</p></dd>
 
 
-<dt id="arg-colsp">colsp<a class="anchor" aria-label="anchor" href="#arg-colsp"></a></dt>
+<dt id="arg-var-col">var_col<a class="anchor" aria-label="anchor" href="#arg-var-col"></a></dt>
 <dd><p><code>string</code>. A parameter to be used if the <code>data</code> is a data frame and the user must indicate the column wih species names.</p></dd>
 
 
@@ -138,7 +138,9 @@ the absolute outliers are removed instead. This because some records  in the bes
 <span class="r-in"><span><span class="va">datacheck</span> <span class="op">&lt;-</span> <span class="fu"><a href="check_names.html">check_names</a></span><span class="op">(</span><span class="va">matchdata</span>, colsp<span class="op">=</span> <span class="st">'species'</span>, pct <span class="op">=</span> <span class="fl">90</span>, merge <span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube/basinfinal.shp'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">danube</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/danube.shp.zip'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">danube</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package<span class="op">=</span><span class="st">'specleanr'</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -149,7 +151,6 @@ the absolute outliers are removed instead. This because some records  in the bes
 <span class="r-in"><span>                      lon<span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span></span>
 <span class="r-in"><span>                      colsp <span class="op">=</span> <span class="st">'speciescheck'</span>,</span></span>
 <span class="r-in"><span>                      bbox <span class="op">=</span> <span class="va">db</span>,</span></span>
-<span class="r-in"><span>                      multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                      minpts <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>                      list<span class="op">=</span><span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                      merge<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span></span>
@@ -183,7 +184,7 @@ the absolute outliers are removed instead. This because some records  in the bes
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

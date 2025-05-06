@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   eOutlier: eOutlier.html
   generaloutlier: generaloutlier.html
   Plants: Plants.html
-last_built: 2025-03-25T16:14Z
+last_built: 2025-05-06T19:30Z
 urls:
   reference: https://anthonybasooma.github.io/specleanr/reference
   article: https://anthonybasooma.github.io/specleanr/articles

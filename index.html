@@ -228,7 +228,6 @@ Figure 1. Workflow for processing species occurrence data within the specleanr R
 <p>After outlier removal, the threshold to classify a record as an absolute outlier that necessitates the user to do so objectively is pivotal in this workflow. Therefore, we have developed three options for obtaining a threshold. A threshold is the proportion of methods that flagged a record as an outlier to the total number of techniques used. For example, if a user includes ten methods and sets a threshold of 0.7, it implies that an absolute outlier will be flagged in at least seven methods. In this package, we developed three ways to identify the optimal threshold.</p>
 <ul>
 <li><p><strong>Naive method</strong>: where the user sets a value between 0.1 and 1. The process is subjective, but using this method, it is advisable to use a threshold beyond 0.6 to highlight records flagged in at least 50% of the methods.</p></li>
-<li><p><strong>Autothreshold</strong>: When the user sets <strong><code>autothreshold</code></strong> to TRUE in <strong><code><a href="reference/extract_clean_data.html">extract_clean_data()</a></code></strong>, it automatically searches a threshold between 0.5 to 1 and identifies a threshold with the mean number of records retained.</p></li>
 <li><p><strong>loess method</strong>: we apply local regression (locally estimated/weighted scatterplot smoothing) to identify the optimal threshold, a non-parametric smoothing method that uses local variability in the data (Cleveland &amp; Loader, 1996; Loader, 2004).</p></li>
 </ul>
 <p>The <strong>reference dataset</strong> in <strong>Step 2</strong> and lists or outliers flagged by each method in <strong>Step 3</strong> are then used to retain the <strong>clean dataset</strong>. Under the hood, two approaches are implemented <strong>1) absolute method</strong>: where absolute outliers are removed at a particular threshold or <strong>2) suitable or best outlier detection method</strong> where a method with highest proportion of absolute outliers and has highest similarity with other methods (in terms of the outliers flagged) can be used.</p>
@@ -246,16 +245,8 @@ Figure 1. Workflow for processing species occurrence data within the specleanr R
 After environmental outlier removal, the user can examine the improvement in the model performance before and after environmental outlier removal. The following function can be used.
 </p>
 </li>
-<li>
-<code>sdmfit()</code> fit Generalized Linear Model (GLM) or Random Forest (RF).</li>
-<li>
-<code>modelcomparison()</code> to compare model performance before and outlier removal using threshold-dependent and independent metrics such as Area Under the Curve, true skill statistics, specificity, sensitivity, kappa, and accuracy.</li>
-<li>
-<code>get_performance()</code> to obtain the dataset with the performance values for both scenarios.</li>
-<li>
-<code>ggperform()</code> for ploting the threshold results from <strong><code>modelcomparison()</code></strong> output.</li>
 </ul>
-<p><strong>Package website</strong> To access the details of this package, please check it website on <a href="https://AnthonyBasooma.github.io/specleanr/" class="external-link uri">https://AnthonyBasooma.github.io/specleanr/</a></p>
+<p><strong>Package website</strong> To access the details of this package, please check it website on <a href="https://AnthonyBasooma.github.io/specleanr/" class="external-link">specleanr</a></p>
 </div>
 <div class="section level3">
 <h3 id="package-citation">Package citation<a class="anchor" aria-label="anchor" href="#package-citation"></a>
@@ -304,7 +295,7 @@ After environmental outlier removal, the user can examine the improvement in the
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Anthony Basooma <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Anthony Basooma <br><small class="roles"> Author, maintainer </small>   </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -327,7 +318,7 @@ After environmental outlier removal, the user can examine the improvement in the
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

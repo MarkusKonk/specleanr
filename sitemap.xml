@@ -7,7 +7,6 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/articles/index.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/authors.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/index.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/CharacterOrNULL-class.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/adjustboxplots.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/bestmethod.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/boots.html</loc></url>
@@ -17,9 +16,11 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/check_packages.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/classify_data.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/cosine.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/datacleaner-class.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/distboxplot.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/ecological_ranges.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/efidata.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/eif.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extentvalues.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extractMethods.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/extract_clean_data.html</loc></url>
@@ -59,11 +60,11 @@
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/search_threshold.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/semiIQR.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/seqfences.html</loc></url>
-<url><loc>https://anthonybasooma.github.io/specleanr/reference/seqfences_vec.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/show-datacleaner-method.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/smc.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/sorensen.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/thermal_ranges.html</loc></url>
+<url><loc>https://anthonybasooma.github.io/specleanr/reference/troutdata.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xglosh.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xkmeans.html</loc></url>
 <url><loc>https://anthonybasooma.github.io/specleanr/reference/xknn.html</loc></url>

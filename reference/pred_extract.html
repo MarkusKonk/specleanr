@@ -62,7 +62,8 @@
 <span>  list <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  merge <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  warn <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  warn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  coords <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -142,6 +143,10 @@ extraction. Default <strong>TRUE</strong>.</p></dd>
 <dd><p><code>logical</code>. indicating to whether to show implementation warning or
 not. Default <code>FALSE</code>.</p></dd>
 
+
+<dt id="arg-coords">coords<a class="anchor" aria-label="anchor" href="#arg-coords"></a></dt>
+<dd><p><code>logical</code>. If TRUE, the original coordinates are also returned attached on the extracted dataset. Default FALSE.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -169,7 +174,6 @@ not. Default <code>FALSE</code>.</p></dd>
 <span class="r-in"><span>                          lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span></span>
 <span class="r-in"><span>                          colsp <span class="op">=</span> <span class="st">'scientificName'</span>,</span></span>
 <span class="r-in"><span>                          bbox <span class="op">=</span> <span class="va">danubebasin</span>,</span></span>
-<span class="r-in"><span>                          multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                          list<span class="op">=</span> <span class="cn">TRUE</span>, <span class="co">#list will be generated for all species</span></span></span>
 <span class="r-in"><span>                          minpts <span class="op">=</span> <span class="fl">7</span>, merge<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
@@ -186,7 +190,7 @@ not. Default <code>FALSE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>
