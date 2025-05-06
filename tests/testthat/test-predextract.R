@@ -3,7 +3,7 @@ data("jdsdata")
 data("efidata")
 
 #get records outside danube to test for extent warnings
-salm_ext <- getdata(data = "Salmo trutta", gbiflim = 5, vertlim = 5, inatlim = 5)
+salm_ext <- getdata(data = "Salmo trutta", gbiflim = 5, vertlim = 5, inatlim = 5, verbose = FALSE)
 
 matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata, online = salm_ext),
                           lats = 'lat', lons = 'lon',
@@ -25,12 +25,12 @@ test_that(desc = 'Less number of records after discarding duplicates and missing
               pred_extract(data = jdsdata,raster= zz , lat ='lat',lon = 'lon',
                            colsp = 'speciesname', bbox  = db, verbose = F,
                            list= TRUE, minpts = 10, merge=T))
-            #expect error when minpts is less than 5
+            #expect error when minpts is less than 2
 
             expect_error(
               pred_extract(data = sp,raster= zz , lat ='decimalLatitude',lon = 'decimalLongitude',
                            colsp = 'species', bbox  = db,  verbose = F,
-                           list= TRUE, minpts = 4))
+                           list= TRUE, minpts = 2))
           }
 )
 

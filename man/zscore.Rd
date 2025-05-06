@@ -10,9 +10,9 @@ zscore(
   output = "outlier",
   type = "mild",
   mode = "soft",
-  pc,
-  pcvar,
-  boot
+  pc = FALSE,
+  pcvar = NULL,
+  boot = FALSE
 )
 }
 \arguments{
@@ -26,6 +26,12 @@ zscore(
 
 \item{mode}{Either robust, if a \strong{robust} mode is used which uses median instead of
 mean and median absolute deviation from median.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
 }
 \value{
 Data frame with or with no outliers.
@@ -50,14 +56,15 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
                           colsp = 'speciescheck',
                           bbox = db,
-                          multiple = TRUE,
                           minpts = 10)
 
  zout <- zscore(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')

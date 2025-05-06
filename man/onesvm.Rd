@@ -12,10 +12,10 @@ onesvm(
   output,
   tpar = list(gamma = 1^(-1:1), epislon = seq(0, 1, 0.1), cost = 2^2:4, nu = seq(0.05, 1,
     0.1)),
-  boot,
-  pc,
+  boot = FALSE,
+  pc = FALSE,
   var,
-  pcvar
+  pcvar = NULL
 )
 }
 \arguments{
@@ -31,6 +31,14 @@ latitude/longitude or any column that the user doesnot want to consider.}
 \item{output}{Either clean: for a dataset with no outliers or outlier: to output a dataframe with outliers.}
 
 \item{tpar}{A list of parameters to be varied during tunning from the normal model.}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{var}{The variable of concern, which is vital for univariate outlier detection methods}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
 }
 \value{
 Dataframe with or with no outliers.
@@ -46,7 +54,9 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
@@ -55,7 +65,6 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        lon= 'decimalLongitude',
                        colsp = 'speciescheck',
                       bbox = db,
-                       multiple = TRUE,
                        minpts = 10)
 
 nedata <- onesvm(data = refdata[['Salmo trutta']], exclude = c("x", "y"),  output='outlier')

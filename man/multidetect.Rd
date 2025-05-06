@@ -24,7 +24,7 @@ multidetect(
   knnpar = list(metric = "manhattan", mode = "soft"),
   lofpar = list(metric = "manhattan", mode = "soft", minPts = 10),
   methods,
-  bootSettings = list(run = FALSE, nb = 5, maxrecords = 30, seed = 1135),
+  bootSettings = list(run = FALSE, nb = 5, maxrecords = 30, seed = 1135, th = 0.6),
   pc = list(exec = FALSE, npc = 2, q = T, pcvar = "PC1"),
   verbose = FALSE,
   spname = NULL,
@@ -76,6 +76,12 @@ the \strong{size} of data partitioning for training should be determined. For mo
 such as robust and soft mode. For details \code{\link{xlof}}.}
 
 \item{methods}{\code{vector}. Outlier detection methods considered. Use \code{\link{extractMethods}} to get outlier detection methods implemented in this package.}
+
+\item{bootSettings}{\code{list}. A list of parameters to implement bootstrapping mostly for records below 30.
+For details checks \code{\link{boots}}.}
+
+\item{pc}{\code{list}. A list of parameters to implement principal component analysis for dimesnion reduction.
+For details checks \code{\link{pca}}.}
 
 \item{verbose}{\code{logical}. whether to return messages or not. Default \code{FALSE}.}
 

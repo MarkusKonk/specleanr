@@ -10,9 +10,9 @@ isoforest(
   cutoff = 0.5,
   output,
   exclude = NULL,
-  pc,
-  boot,
-  pcvar,
+  pc = FALSE,
+  boot = FALSE,
+  pcvar = NULL,
   var
 )
 }
@@ -28,6 +28,14 @@ training isolation model.}
 
 \item{exclude}{Exclude variables that should not be considered in the fitting the one class model, for example x and y columns or
 latitude/longitude or any column that the user doesn't want to consider.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
+
+\item{var}{The variable of concern, which is vital for univariate outlier detection methods}
 }
 \value{
 Dataframe with or with no outliers.
@@ -43,7 +51,9 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
@@ -52,7 +62,6 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        lon= 'decimalLongitude',
                        colsp = 'speciescheck',
                       bbox = db,
-                       multiple = TRUE,
                        minpts = 10)
 
 iosd <- isoforest(data = refdata[['Salmo trutta']], size = 0.7,  output='outlier',

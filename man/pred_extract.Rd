@@ -20,7 +20,8 @@ pred_extract(
   list = TRUE,
   merge = FALSE,
   verbose = FALSE,
-  warn = FALSE
+  warn = FALSE,
+  coords = FALSE
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ extraction. Default \strong{TRUE}.}
 
 \item{warn}{\code{logical}. indicating to whether to show implementation warning or
 not. Default \code{FALSE}.}
+
+\item{coords}{\code{logical}. If TRUE, the original coordinates are also returned attached on the extracted dataset. Default FALSE.}
 }
 \value{
 \code{dataframe} or \code{list} of precleaned data sets for single or multiple species.
@@ -96,7 +99,6 @@ referencedata <- pred_extract(data = efidata,
                           lon = 'decimalLongitude',
                           colsp = 'scientificName',
                           bbox = danubebasin,
-                          multiple = TRUE,
                           list= TRUE, #list will be generated for all species
                           minpts = 7, merge=T)
 }

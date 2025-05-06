@@ -8,7 +8,7 @@ extract_clean_data(
   refdata,
   outliers,
   mode = "abs",
-  colsp = NULL,
+  var_col = NULL,
   threshold = NULL,
   warn = FALSE,
   verbose = FALSE,
@@ -25,7 +25,7 @@ extract_clean_data(
 
 \item{mode}{\code{character}. Either \code{abs} to use absolute outliers to filter data or \code{best} to outliers from best method.}
 
-\item{colsp}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
+\item{var_col}{\code{string}. A parameter to be used if the \code{data} is a data frame and the user must indicate the column wih species names.}
 
 \item{threshold}{\code{numeric}. Value to consider whether the outlier is an absolute outlier or not.}
 
@@ -69,7 +69,9 @@ matchdata <- match_datasets(datasets = list(jds = jdsdata, efi = efidata),
 datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
 
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet=TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
@@ -80,7 +82,6 @@ rdata <- pred_extract(data = datacheck,
                       lon= 'decimalLongitude',
                       colsp = 'speciescheck',
                       bbox = db,
-                      multiple = TRUE,
                       minpts = 10,
                       list=TRUE,
                       merge=F)

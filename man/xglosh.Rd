@@ -11,10 +11,10 @@ xglosh(
   exclude = NULL,
   metric = "manhattan",
   mode = "soft",
-  pc,
-  boot,
+  pc = FALSE,
+  boot = FALSE,
   var,
-  pcvar
+  pcvar = NULL
 )
 }
 \arguments{
@@ -33,6 +33,14 @@ how te different distances are applied. The different measures are allowed inclu
 
 \item{mode}{This includes \code{soft} when the outliers are removed using mean to compute the z-scores or \code{robust} when
 median absolute deviation.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
+
+\item{var}{The variable of concern, which is vital for univariate outlier detection methods}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
 }
 \value{
 Dataframe with or with no outliers.
@@ -46,7 +54,9 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
@@ -55,7 +65,6 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        lon= 'decimalLongitude',
                        colsp = 'speciescheck',
                        bbox = db,
-                       multiple = TRUE,
                        minpts = 10)
 
 gloshout <- xglosh(data = refdata[['Salmo trutta']], exclude = c("x", "y"),

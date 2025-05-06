@@ -107,7 +107,7 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
 
                       ##expect error, warn, and next while optimizing span
                       expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                 sp = "Phoxinus phoxinus", tuneLoess = seq(0.1, 1, 0.1)),
+                                                 sp = "Phoxinus phoxinus"),
                                    c('minima', 'maxima'))
 
                       #expect error if the multiple species reference data is provided for search_threshold
