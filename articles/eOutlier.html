@@ -152,7 +152,7 @@ names.</p>
 <span></span>
 <span><span class="co">#Species names are re-cleaned since the species names from vertnet are changed.</span></span>
 <span></span>
-<span><span class="va">cleannames_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_names.html">check_names</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mergealldfs</span>, colsp <span class="op">=</span> <span class="st">'species'</span>, pct <span class="op">=</span> <span class="fl">70</span>, </span>
+<span><span class="va">cleannames_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_names.html">check_names</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mergealldfs</span>, colsp <span class="op">=</span> <span class="st">'species'</span>, pct <span class="op">=</span> <span class="fl">90</span>, </span>
 <span>                             merge <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; The synoynm Salmo trutta fario will be replaced with Salmo trutta.</span></span>
 <span><span class="co">#&gt; The synoynm Salmo trutta lacustris will be replaced with Salmo trutta.</span></span>
@@ -371,74 +371,74 @@ identifying the optimal threshold.</p>
 <span><span class="co">#&gt; 1 6.293614  8.755938 31.96181 690.1050 20.90625 -6.48875 27.39500  7.375333</span></span>
 <span><span class="co">#&gt; 2 4.385906  8.844812 34.54499 639.1041 17.86975 -7.73400 25.60375 12.208917</span></span>
 <span><span class="co">#&gt; 3 8.108875  8.424750 31.78192 689.7935 22.77525 -3.73275 26.50800 16.631666</span></span>
-<span><span class="co">#&gt; 4 6.023146 10.469084 36.15546 698.5480 21.37100 -7.58475 28.95575 12.989917</span></span>
-<span><span class="co">#&gt; 5 4.920063  8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.537000</span></span>
-<span><span class="co">#&gt; 6 4.414302  7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.899292</span></span>
+<span><span class="co">#&gt; 4 4.920063  8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.537000</span></span>
+<span><span class="co">#&gt; 5 6.023146 10.469084 36.15546 698.5480 21.37100 -7.58475 28.95575 12.989917</span></span>
+<span><span class="co">#&gt; 6 8.093719  8.563396 32.36844 682.8456 22.54375 -3.91225 26.45600 16.554874</span></span>
 <span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
 <span><span class="co">#&gt; 1 -1.1756251 14.80313 -2.0642917  2118   241   105 21.73814   663   379   530</span></span>
 <span><span class="co">#&gt; 2 -2.4245417 12.20892 -3.3516667  1309   177    64 33.94616   495   216   495</span></span>
 <span><span class="co">#&gt; 3  0.9817083 16.63167 -0.3191667   798   102    43 30.42370   285   131   285</span></span>
-<span><span class="co">#&gt; 4 -1.6493334 14.52096 -2.6731668   825    92    48 19.36208   251   152   239</span></span>
-<span><span class="co">#&gt; 5 -1.7382917 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
-<span><span class="co">#&gt; 6 -2.7298751 11.89929 -2.7298751  1289   169    67 33.19698   486   219   486</span></span>
+<span><span class="co">#&gt; 4 -1.7382917 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
+<span><span class="co">#&gt; 5 -1.6493334 14.52096 -2.6731668   825    92    48 19.36208   251   152   239</span></span>
+<span><span class="co">#&gt; 6  1.0112917 16.55487 -0.2026250   902   111    48 29.86472   322   151   322</span></span>
 <span><span class="co">#&gt;   bio19         x        y      species</span></span>
 <span><span class="co">#&gt; 1   412 13.916667 46.25000 Salmo trutta</span></span>
 <span><span class="co">#&gt; 2   218 13.083333 47.25000 Salmo trutta</span></span>
 <span><span class="co">#&gt; 3   140  9.916667 48.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 4   163 20.250000 43.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 5   261 12.916667 47.58333 Salmo trutta</span></span>
-<span><span class="co">#&gt; 6   219 11.083333 47.41667 Salmo trutta</span></span>
+<span><span class="co">#&gt; 4   261 12.916667 47.58333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 5   163 20.250000 43.25000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 6   159 10.916667 48.25000 Salmo trutta</span></span>
 <span></span>
 <span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 101  21</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
-<span><span class="co">#&gt; 1 7.878094 8.124437 31.13259 684.2282 22.19500 -3.90125 26.09625 16.32617</span></span>
+<span><span class="co">#&gt; 1 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
 <span><span class="co">#&gt; 2 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
 <span><span class="co">#&gt; 3 8.340094 8.558521 31.95564 691.9463 23.15800 -3.62450 26.78250 15.38925</span></span>
-<span><span class="co">#&gt; 4 5.290083 8.268625 33.26678 635.7107 18.46425 -6.39125 24.85550 13.10142</span></span>
+<span><span class="co">#&gt; 4 7.878094 8.124437 31.13259 684.2282 22.19500 -3.90125 26.09625 16.32617</span></span>
 <span><span class="co">#&gt; 5 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
-<span><span class="co">#&gt; 6 5.290083 8.268625 33.26678 635.7107 18.46425 -6.39125 24.85550 13.10142</span></span>
-<span><span class="co">#&gt;         bio9    bio10       bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
-<span><span class="co">#&gt; 1  0.7570000 16.32617 -0.47941664   821   102    49 25.64842   279   148   279</span></span>
-<span><span class="co">#&gt; 2  0.9313333 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt; 3  1.1871250 16.93192 -0.08562502   789    97    44 28.08648   274   136   274</span></span>
-<span><span class="co">#&gt; 4 -1.4955000 13.10142 -2.34583330  1440   193    76 31.47408   536   261   536</span></span>
-<span><span class="co">#&gt; 5  0.9313333 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt; 6 -1.4955000 13.10142 -2.34583330  1440   193    76 31.47408   536   261   536</span></span>
+<span><span class="co">#&gt; 6 8.688948 8.375896 30.39067 733.9625 23.53350 -4.02725 27.56075 17.66537</span></span>
+<span><span class="co">#&gt;        bio9    bio10       bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
+<span><span class="co">#&gt; 1 0.9313333 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
+<span><span class="co">#&gt; 2 0.9313333 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
+<span><span class="co">#&gt; 3 1.1871250 16.93192 -0.08562502   789    97    44 28.08648   274   136   274</span></span>
+<span><span class="co">#&gt; 4 0.7570000 16.32617 -0.47941664   821   102    49 25.64842   279   148   279</span></span>
+<span><span class="co">#&gt; 5 0.9313333 16.58138 -0.41912505  1307   174    69 33.66177   499   233   499</span></span>
+<span><span class="co">#&gt; 6 1.0729584 17.66537 -0.34283331  1053   134    61 24.62582   361   206   361</span></span>
 <span><span class="co">#&gt;   bio19         x        y</span></span>
-<span><span class="co">#&gt; 1   158  9.916667 48.41667</span></span>
+<span><span class="co">#&gt; 1   234 13.083333 47.75000</span></span>
 <span><span class="co">#&gt; 2   234 13.083333 47.75000</span></span>
 <span><span class="co">#&gt; 3   145 10.083333 48.41667</span></span>
-<span><span class="co">#&gt; 4   266 13.250000 47.58333</span></span>
+<span><span class="co">#&gt; 4   158  9.916667 48.41667</span></span>
 <span><span class="co">#&gt; 5   234 13.083333 47.75000</span></span>
-<span><span class="co">#&gt; 6   266 13.250000 47.58333</span></span>
+<span><span class="co">#&gt; 6   207 13.916667 48.08333</span></span>
 <span></span>
 <span></span>
 <span><span class="va">labeldata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">labeldata</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
-<span><span class="co">#&gt; 5  4.920063 8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.53700</span></span>
-<span><span class="co">#&gt; 6  4.414302 7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.89929</span></span>
-<span><span class="co">#&gt; 8  7.020875 8.222834 31.93085 667.1943 21.05575 -4.69625 25.75200 13.63171</span></span>
+<span><span class="co">#&gt; 4  4.920063 8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.53700</span></span>
 <span><span class="co">#&gt; 9  6.611198 7.958354 32.70937 624.9371 19.68450 -4.64600 24.33050 14.33846</span></span>
 <span><span class="co">#&gt; 10 8.149062 8.922417 32.77950 698.9550 22.49275 -4.72675 27.21950 16.66454</span></span>
 <span><span class="co">#&gt; 11 5.519271 8.059958 32.46808 637.3926 18.68325 -6.14100 24.82425 13.31675</span></span>
-<span><span class="co">#&gt;           bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
-<span><span class="co">#&gt; 5  -1.73829174 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
-<span><span class="co">#&gt; 6  -2.72987509 11.89929 -2.7298751  1289   169    67 33.19698   486   219   486</span></span>
-<span><span class="co">#&gt; 8  -0.03137497 15.23754 -1.0941666   900   112    55 25.05974   304   170   304</span></span>
-<span><span class="co">#&gt; 9  -0.81683332 14.33846 -0.8168333  1324   181    66 38.16012   524   210   524</span></span>
-<span><span class="co">#&gt; 10  0.85704178 16.66454 -0.4938749  1223   159    66 32.25150   460   222   460</span></span>
-<span><span class="co">#&gt; 11 -1.28370821 13.31675 -2.1408334  1303   177    70 33.05493   494   233   494</span></span>
-<span><span class="co">#&gt;    bio19         x        y       label       groups</span></span>
-<span><span class="co">#&gt; 5    261 12.916667 47.58333 not outlier Salmo trutta</span></span>
-<span><span class="co">#&gt; 6    219 11.083333 47.41667 not outlier Salmo trutta</span></span>
-<span><span class="co">#&gt; 8    177  9.416667 48.25000 not outlier Salmo trutta</span></span>
-<span><span class="co">#&gt; 9    210 11.083333 47.58333 not outlier Salmo trutta</span></span>
-<span><span class="co">#&gt; 10   222 13.083333 47.91667 not outlier Salmo trutta</span></span>
-<span><span class="co">#&gt; 11   236 12.583333 47.58333 not outlier Salmo trutta</span></span></code></pre></div>
+<span><span class="co">#&gt; 12 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
+<span><span class="co">#&gt; 15 6.954854 8.379916 30.44364 722.8362 21.85250 -5.67350 27.52600 15.76013</span></span>
+<span><span class="co">#&gt;          bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
+<span><span class="co">#&gt; 4  -1.7382917 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
+<span><span class="co">#&gt; 9  -0.8168333 14.33846 -0.8168333  1324   181    66 38.16012   524   210   524</span></span>
+<span><span class="co">#&gt; 10  0.8570418 16.66454 -0.4938749  1223   159    66 32.25150   460   222   460</span></span>
+<span><span class="co">#&gt; 11 -1.2837082 13.31675 -2.1408334  1303   177    70 33.05493   494   233   494</span></span>
+<span><span class="co">#&gt; 12  0.9313333 16.58138 -0.4191251  1307   174    69 33.66177   499   233   499</span></span>
+<span><span class="co">#&gt; 15 -0.7949167 15.76013 -2.0100417   806   113    38 38.67074   311   118   311</span></span>
+<span><span class="co">#&gt;    bio19        x        y       label       groups</span></span>
+<span><span class="co">#&gt; 4    261 12.91667 47.58333 not outlier Salmo trutta</span></span>
+<span><span class="co">#&gt; 9    210 11.08333 47.58333 not outlier Salmo trutta</span></span>
+<span><span class="co">#&gt; 10   222 13.08333 47.91667 not outlier Salmo trutta</span></span>
+<span><span class="co">#&gt; 11   236 12.58333 47.58333 not outlier Salmo trutta</span></span>
+<span><span class="co">#&gt; 12   234 13.08333 47.75000 not outlier Salmo trutta</span></span>
+<span><span class="co">#&gt; 15   131 18.08333 49.41667 not outlier Salmo trutta</span></span></code></pre></div>
 <p><strong>References</strong> 1. Wieczorek, J., Bloom, D., Guralnick,
 R., Blum, S., Döring, M., Giovanni, R., Robertson, T., &amp; Vieglais,
 D. (2012). Darwin core: An evolving community-developed biodiversity
