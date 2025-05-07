@@ -73,11 +73,11 @@
             },
             "minOccurs": 1,
             "maxOccurs": 1,
-            "keywords": ["year", "column"]
+            "keywords": ["column"]
         },
         "silence_true_errors": {
             "title": "True or False: Show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.",
-            "description": "If \"true\", .",
+            "description": "If \"true\", XYZ HERE PLEASE.",
             "schema": {
                 "type": "boolean"
             },

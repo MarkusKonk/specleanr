@@ -3,10 +3,10 @@
     "id": "pred-extract",
     "use_case": "BOKU",
     "title": {
-        "en": "pred extract"
+        "en": "pred extract XYZ HERE PLEASE"
     },
     "description": {
-        "en": "pred_extract (4/5). For more details, please ask BOKU."
+        "en": "pred_extract (4/5). XYZ HERE PLEASE. For more details, please ask BOKU."
     },
     "jobControlOptions": ["sync-execute", "async-execute"],
     "keywords": ["pan-european use case", "AquaINFRA", "R"],
@@ -19,7 +19,7 @@
     }],
     "inputs": {
         "input_data": {
-            "title": "Occurrences (any source)",
+            "title": "Occurrence data",
             "description": "URL to a table containing the occurrences from any source. This can be the outcome of the checknames process.",
             "schema": {
                 "type": "string"
@@ -29,7 +29,7 @@
             "keywords": ["csv"]
         },
         "input_raster_url_or_name": {
-            "title": "Input raster (anem)",
+            "title": "Input raster",
             "description": "URL of a cloud-optimized raster to be used (will not be downloaded but accessed remotely), or the name of one of the static rasters on the server. Currently only worldclim is available, for testing purposes.",
             "schema": {
                 "type": "string"
@@ -40,7 +40,7 @@
         },
         "study_area": {
             "title": "Area of Interest (Shapefile)",
-            "description": "URL to the input shapefile containing the study areas inside which you would like to ...",
+            "description": "URL to the input shapefile containing the study areas inside which you would like to ... XYZ HERE PLEASE",
             "schema": {
                 "type": "string"
             },
@@ -50,7 +50,7 @@
         },
         "study_area_geojson_url": {
             "title": "Area of Interest (GeoJSON)",
-            "description": "URL to the input GeoJSON file containing the study areas inside which you would like to ...",
+            "description": "URL to the input GeoJSON file containing the study areas inside which you would like to ... XYZ HERE PLEASE",
             "schema": {
                 "type": "string"
             },
@@ -60,7 +60,7 @@
         },
         "study_area_geojson": {
             "title": "Area of Interest (GeoJSON, directly)",
-            "description": "Directly post the GeoJSON containing the study areas inside which you would like to ...",
+            "description": "Directly post the GeoJSON containing the study areas inside which you would like to ... XYZ HERE PLEASE",
             "schema": {
                 "type": "string"
             },
@@ -99,8 +99,8 @@
             "keywords": []
         },
         "min_pts": {
-            "title": "Min pts",
-            "description": "Something. Example: 10",
+            "title": "Min pts XYZ HERE PLEASE",
+            "description": "XYZ HERE PLEASE. Something. Example: 10",
             "schema": {
                 "type": "number"
             },
@@ -109,8 +109,8 @@
             "keywords": []
         },
         "bool_multiple_species": {
-            "title": "True or False: Multiple species?",
-            "description": "Something. Example: true or false.",
+            "title": "XYZ HERE PLEASE",
+            "description": "XYZ HERE PLEASE",
             "schema": {
                 "type": "boolean"
             },
@@ -119,8 +119,8 @@
             "keywords": []
         },
         "bool_merge": {
-            "title": "True or False: Merge something?",
-            "description": "Something. Example: true or false.",
+            "title": "XYZ HERE PLEASE",
+            "description": "This allows to return the full dataset with merged with extracted data.",
             "schema": {
                 "type": "boolean"
             },
@@ -129,8 +129,8 @@
             "keywords": []
         },
         "bool_list": {
-            "title": "True or False: List?",
-            "description": "Something. Example: true or false.",
+            "title": "XYZ HERE PLEASE",
+            "description": "For multiple species, if set to TRUE, then a list of species dataframes are returned. If false, then a dataframe is returned.",
             "schema": {
                 "type": "boolean"
             },
@@ -141,8 +141,8 @@
     },
     "outputs": {
         "multiprecleaned": {
-            "title": "multiprecleaned",
-            "description": "A table containing multiprecleaned....",
+            "title": "XYZ HERE PLEASE",
+            "description": "XYZ HERE PLEASE",
             "schema": {
                 "type": "object",
                 "contentMediaType": "application/json"

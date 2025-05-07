@@ -19,7 +19,7 @@
     }],
     "inputs": {
         "input_data_retrieved": {
-            "title": "Occurrences (GBIF, iNaturalist, VertNet)",
+            "title": "Occurrence data (GBIF, iNaturalist, VertNet)",
             "description": "URL to the table containing the occurrences from GBIF, iNaturalist and VertNet. This can be the outcome of the getdata process.",
             "schema": {
                 "type": "string"
@@ -29,7 +29,7 @@
             "keywords": ["csv"]
         },
         "input_data_from_user": {
-            "title": "Occurrences (user-defined)",
+            "title": "Occurrence data (user-defined)",
             "description": "URL to the table containing the occurrences from the users.",
             "schema": {
                 "type": "string"
