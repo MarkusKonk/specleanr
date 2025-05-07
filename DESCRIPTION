@@ -25,7 +25,7 @@ Suggests:
     rvertnet,
     rgbif,
     curl,
-    rfishbase,
+    rfishbase (>=5.0.1),
     sf,
     terra,
     tidytext

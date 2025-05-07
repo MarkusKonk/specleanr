@@ -157,7 +157,7 @@ getdata <- function(data, colsp = NULL, extent = NULL,
 
         }else if (ndata>50000 && is.null(extent)){
 
-          message("Only ", gbiflim, " records will be downloaded.")
+          if(isTRUE(verbose))message("Only ", gbiflim, " records will be downloaded.")
 
           gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,...)
 

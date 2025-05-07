@@ -72,7 +72,7 @@ mergealldfs <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
 
 #Species names are re-cleaned since the species names from vertnet are changed.
 
-cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, 
+cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 90, 
                              merge = TRUE, verbose = TRUE)
 
 #Filter out species from cleannames df where the species names such as synonyms like Salmo trutta fario chnaged to Slamo trutta
