@@ -71,7 +71,7 @@
     },
     "outputs": {
         "cleannames_df": {
-            "title": "XYZ HERE PLEASE",
+            "title": "Dataframe with checked or quality controlled species data.",
             "description": "A table containing a column speciescheck with names checked with databases for consistency. For fish species, FishBase is used as a standard database.",
             "schema": {
                 "type": "object",
@@ -80,7 +80,7 @@
         },
         "filtered_biodiversity_data": {
             "title": "Filtered occurrences",
-            "description": "A table containing .... XYZ HERE PLEASE",
+            "description": "Ocurrences filtered based on the database.",
             "schema": {
                 "type": "object",
                 "contentMediaType": "application/json"
