@@ -537,7 +537,7 @@ detect <- function(x,
       if(isTRUE(boot)){
 
         listout <- lapply(seq_along(df), function(bb){
-          out <-  handle_true_errors(func = onesvm(data = df[[bb]],  exclude = exclude, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+          mout <-  handle_true_errors(func = onesvm(data = df[[bb]],  exclude = exclude, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                      fname = imx, verbose = verbose, spname = spname,
                                      warn=warn, silence_true_errors = silence_true_errors)
           if(nrow(mout)>=1) mout$id = bb
