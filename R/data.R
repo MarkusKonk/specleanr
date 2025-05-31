@@ -150,7 +150,7 @@
 #"naturalist"
 
 
-#' @title Salmo trutta fario species data from GBIF and iNaturalist
+#' @title Alburnoides bipunctatus species data from GBIF and iNaturalist
 #'
 #' @description A \code{tibble} Data from GBIF (https://www.gbif.org/) and iNaturalist (https://www.inaturalist.org/)
 #'
@@ -158,23 +158,23 @@
 #'
 #' @details The species data was collated from the Global Biodiversity Information Facility and iNaturalist
 #'
-#' @usage data(troutdata)
+#' @usage data(abdata)
 #'
 #' @keywords freshwater information platform datasets
 #'
-#' @format A \code{tibble} 1100 rows and 7 columns.
+#' @format A \code{tibble} 2130 rows and 3 columns.
 #'
 #'
 #' @examples
 #'
 #' \dontrun{
 #'
-#' data("troutdata")
-#' troutdata
+#' data("abdata")
+#' abdata
 #' }
 #'
 #'
-"troutdata"
+"abdata"
 
 
 

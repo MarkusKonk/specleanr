@@ -288,7 +288,7 @@ detect <- function(x,
         df <- boots(df, boots = nboots, seed = nbootseed, pca = pcs)
         }else{
           df
-          warning('If bootstrapping is to be computed increase the maximum number records to be less than the numer of rows in a dataframe, otherwise bootsrapping is not implemnted.')
+          warning('If bootstrapping is to be computed increase the maximum number records to be less than the number of rows in a dataframe, otherwise bootsrapping is not implemnted.')
         }
       }else{
         df

@@ -1,7 +1,7 @@
 Package: specleanr
 Type: Package
 Title: Detecting Environmental Outliers in Biogeographical Modeling Workflows
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(person('Anthony', 'Basooma', email='anthonybasooma@boku.ac.at', role =c('aut', 'cre'), 
     comment=c('0')))
 Description: A framework used to detect and remove environmental outliers in species distribution models across taxa 

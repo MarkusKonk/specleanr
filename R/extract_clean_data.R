@@ -279,7 +279,7 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',var_col = NULL,
 
       if(!is.null(cdata)) spdata <- cdata else spdata <- splist[[fd]]
 
-        if(outliers@mode==FALSE) spdata else spdata['species'] <- fd
+        if(outliers@mode==FALSE) spdata else spdata['groups'] <- fd
 
         spdata
     }, simplify = FALSE)

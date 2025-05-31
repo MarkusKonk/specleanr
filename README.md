@@ -10,7 +10,7 @@ specleanr package for outlier detection
 
 <!-- badges: end -->
 
-<img src = "man/figures/specleanrlogo.png" align ="right" alt="logo" width="150" height="190" />
+<img src = "man/figures/specleanlogo.png" align ="right" alt="logo" width="150" height="190" />
 
 `specleanr` The package aims to improve the reliability and
 acceptability of biogeographical models, including species distribution
@@ -36,7 +36,7 @@ The process of identifying environmental outliers is generally
 classified into **five steps** as detailed below (Figure 1);
 
 <figure>
-<img src="man/figures/specleanrworkflow.png"
+<img src="man/figures/Figure%201.png"
 alt="Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation." />
 <figcaption aria-hidden="true">Figure 1. Workflow for processing species
 occurrence data within the specleanr R-package for environmental outlier

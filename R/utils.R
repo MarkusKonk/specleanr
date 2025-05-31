@@ -143,7 +143,7 @@ getdiff <- function(x, y, full=FALSE){
 }
 
 
-#' Check for packages to install and reposnd to use
+#' Check for packages to install and respond to use
 #'
 #' @param pkgs list of packages to install
 #'
@@ -159,7 +159,6 @@ check_packages <- function(pkgs){
 
   invisible(pkgs)
 }
-
 
 
 #' To check for a bounding box
