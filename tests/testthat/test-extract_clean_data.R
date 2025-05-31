@@ -61,7 +61,7 @@ test_that(desc = 'Data extraction: errors and success',
                       testthat::expect_s3_class(dxx, 'data.frame')
 
                       #species in the cleandata equal to species in outlier df
-                      testthat::expect_equal(length(unique(dxx$species)), length(outlierdf@result))
+                      testthat::expect_equal(length(unique(dxx$groups)), length(outlierdf@result))
 
                       #if both threshold and loess are provided: error
 
