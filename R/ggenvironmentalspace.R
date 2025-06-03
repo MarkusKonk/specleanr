@@ -1,35 +1,53 @@
-
-
-#' Title
+#' Title Plotting to show the quality controlled data in environmental space.
 #'
-#' @param qcdata zz
-#' @param xvar zz
-#' @param yvar t
-#' @param xlab tz
-#' @param ylab zzt
-#' @param ncol zz
-#' @param nrow tz
-#' @param setcolors tt
-#' @param colornames zzt
-#' @param legendposition zzz
-#' @param pointsize uz
-#' @param themebackground zzz
+#' @param qcdata \code{data.frame} Data output from quality controlled function \code{\link{extract_clean_data} and \code{\link{classify_data}}}.
+#' @param xvar \code{string} The variable to be on the x-axis.
+#' @param yvar \code{string} The variable to be on the y-axis.
+#' @param type \code{string} Its either \code{2D} for a two dimensional ggplot2 graph or \code{3D} for a 3-dimensional graph for multivariate data.
+#' @param zvar \code{string} The variable to be on the z-axis only if the 3D plot type is selected..
+#' @param labelvar \code{string} Column name in the quality controlled data that has the labels. This applies is the 3D plot is selected.
+#' @param xlab,ylab,zlab \code{string} x-axis, y-axis, and z-axis label.
+#' @param zlab \code{string} z-axis label.
+#' @param ncol,nrow \code{integer} If number of groups are greater than 1, then number of rows and columns can be set.
+#'      Check ggplot2 facet parameters on how the columns are set.
+#' @param scalecolor \code{string} The scale color themes supported are grey, manual, viridis. If \code{manual} is selected, then the
+#'        \code{colorvalues} should be provided for the different colors for each data label.
+#' @param colorvalues If \code{manual} is selected, then the
+#'        \code{colorvalues} should be provided for the different colors for each data label. If 3D is selected and \code{colorvalues} is not
+#'        \code{auto}, then colors should determined.
+#' @param legend_position \code{string} Its either \code{bottom}, \code{top} or \code{inside}. If the \code{inside} is selected then the vector
+#'        with graph coordinates should be provided to avoid the legend overlap with the graph contents.
+#' @param legend_inside \code{vector} If the \code{inside} for legend position is selected then the vector
+#'        with graph coordinates should be provided to avoid the legend overlap with the graph contents.
+#' @param pointsize \code{decimal} The size of the points.
+#' @param themebackground \code{string} Either \code{classic}, \code{bw} or \code{gray} to set the plot theme. This is based on ggplot2.
+#' @param fontsize \code{integer} Indicates the sizes of fonts for the whole graph.
+#' @param legtitle \code{string} Either \code{blank} or \code{TRUE} to set the legend title for the 2D plot.
+#' @param ggxangle \code{integer} Indicates the angle of the x-axis text. The dafualt is 45 but depend on the data.
+#' @param xhjust \code{numeric} Indicates the distance of the x-axis text from the x-axis line in a vertical direction.
+#' @param xvjust \code{numeric} Indicates the distance of the x-axis text from the x-axis line in a horizontal direction.
+#' @param main \code{string} Plot title
+#' @param pch \code{string} Either \code{auto}: the point characters will be automatically set or different pch are set.
+#' @param lpos3d \code{string} Indicates the legend position for the 3D graph. bottom, left, and right are accepted.
+#' @param cexsym \code{numeric} The size of pch in the 3D plot.
 #'
-#' @return ggplot2 graph
+#' @return If "2D" is the selected type, then a ggplot2 graph will be the output and a "3D" type will return a scatterplot3D plot.
 #'
 #' @export
+#'
 #'
 ggenvironmentalspace <- function(qcdata,
                                  xvar,
                                  yvar,
                                  zvar = NULL,
                                  labelvar = NULL,
+                                 type = '2D',
                                  xlab = NULL,
                                  ylab = NULL,
                                  zlab = NULL,
                                  ncol = 1,
                                  nrow = 1,
-                                 scalecolor = NULL, #grey, manual, viridis
+                                 scalecolor = NULL,
                                  colorvalues = 'auto', #manual color values for ggplot2
                                  legend_position = 'inside',
                                  legend_inside = c(0.6, 0.4),
@@ -40,12 +58,7 @@ ggenvironmentalspace <- function(qcdata,
                                  ggxangle = 1,
                                  xhjust = 0.5,
                                  xvjust = 1,
-                                 type = '2D',
-                                 tick.marks= NULL,
-                                 label.tick.marks=NULL,
-                                 axis = NULL,
                                  main = NULL,
-                                 angle = NULL,
                                  pch = 'auto',
                                  lpos3d = NULL,
                                  cexsym= NULL
@@ -96,7 +109,7 @@ ggenvironmentalspace <- function(qcdata,
 
       }else if(scalecolor=='manual'){
 
-        ggplot2::scalecolor(values = colorvalues)
+        ggplot2::scale_color_manual(values = colorvalues)
 
       } else{
         ggplot2::scale_colour_viridis_d(alpha = 1, direction = -1)
@@ -119,7 +132,7 @@ ggenvironmentalspace <- function(qcdata,
 
       {if(legtitle=='blank')ggplot2::theme(legend.title = ggplot2::element_blank())}+
 
-    ggplot2::labs(x = xlab, y= ylab)
+    ggplot2::labs(x = xlab, y= ylab, title = main)
 
     print(plt)
   }else if(type=="3D"){
@@ -127,6 +140,8 @@ ggenvironmentalspace <- function(qcdata,
     check_packages(pkgs = "scatterplot3d")
 
     if(is.null(zvar)) stop("For 3D plot provide a numeric z parameter.")
+
+    if(is.null(labelvar)) stop("For 3D plot provide a labelvar name, which is the column name with data labels.")
 
     x1 <- qcdata[[xvar]]
     y1 <- qcdata[[yvar]]
