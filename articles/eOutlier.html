@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Environmental outlier detection with bootstrapping and principle component analysis. • specleanr</title>
+<title>Environmental outlier detection with bootstrapping and principal component analysis. • specleanr</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Environmental outlier detection with bootstrapping and principle component analysis.">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Environmental outlier detection with bootstrapping and principal component analysis.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -33,7 +33,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principle component analysis.</a></li>
+<li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principal component analysis.</a></li>
     <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul>
@@ -57,7 +57,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Environmental outlier detection with bootstrapping and principle component analysis.</h1>
+      <h1>Environmental outlier detection with bootstrapping and principal component analysis.</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/vignettes/eOutlier.Rmd" class="external-link"><code>vignettes/eOutlier.Rmd</code></a></small>
@@ -69,8 +69,10 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anthonybasooma.github.io/specleanr/">specleanr</a></span><span class="op">)</span></span></code></pre></div>
-<p><strong>Environmental outlier check for fish species from the Danube
-River Basin</strong></p>
+<div class="section level2">
+<h2 id="environmental-outlier-check-for-fish-species-from-the-danube-river-basin">Environmental outlier check for fish species from the Danube River
+Basin<a class="anchor" aria-label="anchor" href="#environmental-outlier-check-for-fish-species-from-the-danube-river-basin"></a>
+</h2>
 <p>The workflow for environmental outlier detection and removal is
 similar across taxa, regions, or ecological realms. However, we included
 the <strong><code><a href="../reference/check_names.html">check_names()</a></code></strong> function to cater for
@@ -85,10 +87,24 @@ five steps, including: 1) Data acquisition and harmonization; 2)
 Precleaning and predictor extraction 3) outlier detection 4)
 identification of clean data and suitable method 5) developing species
 distribution models (optional).</p>
-<ol style="list-style-type: decimal">
-<li><strong>Data acquisition: a) Collate species species records:
-offline and online data</strong></li>
-</ol>
+<div class="section level3">
+<h3 id="scope-of-application">Scope of application<a class="anchor" aria-label="anchor" href="#scope-of-application"></a>
+</h3>
+<p>In this workflow, we provide three approaches that can be used to
+handle outlier detection, namely 1) the default approach (no
+bootstrapping and principal component analysis applied); 2)
+bootstrapping applied during outlier detection mostly for fewer records
+(user based to set the records) and 3) combining principal component
+analysis and bootstrapping. Because each approach will significantly
+affect how records are flagged as outliers, its upon the user to select
+an approach to use. However, we advise users to apply bootstrapping and
+PCA if the particular suspicious records are still not handled in the
+first approach.</p>
+</div>
+<div class="section level3">
+<h3 id="data-acquisition-a-collate-species-species-records-offline-and-online-data">1.Data acquisition: a) Collate species species records: offline and
+online data**<a class="anchor" aria-label="anchor" href="#data-acquisition-a-collate-species-species-records-offline-and-online-data"></a>
+</h3>
 <p>The species records were obtained from the archived datasets
 extracted from the Joint Danube Survey (<a href="https://www.danubesurvey.org/jds4/" class="external-link uri">https://www.danubesurvey.org/jds4/</a>) and EFIPLUS (Logez
 et al., 2012). To compliment species records, we used the
@@ -129,8 +145,9 @@ is beyond the scope of this package to address such errors.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">df_online</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 567   8</span></span></code></pre></div>
-<p><strong>Merging and harmonizing species records from different
-sources</strong></p>
+<div class="section level4">
+<h4 id="merging-and-harmonizing-species-records-from-different-sources">Merging and harmonizing species records from different sources<a class="anchor" aria-label="anchor" href="#merging-and-harmonizing-species-records-from-different-sources"></a>
+</h4>
 <p>The online data sources from <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong>
 and local files are merged using the
 <strong><code><a href="../reference/match_datasets.html">match_datasets()</a></code></strong> function. Five columns
@@ -171,9 +188,12 @@ names.</p>
 <span><span class="va">speciesfiltered</span> <span class="op">&lt;-</span> <span class="va">cleannames_df</span><span class="op">[</span><span class="va">cleannames_df</span><span class="op">$</span><span class="va">speciescheck</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span></span>
 <span>                                   <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Squalius cephalus"</span>, <span class="st">'Salmo trutta'</span>, </span>
 <span>                                     <span class="st">"Thymallus thymallus"</span>,<span class="st">"Anguilla anguilla"</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
-<ol style="list-style-type: decimal">
-<li><strong>Data acquisition: b) Environmental predictors</strong></li>
-</ol>
+</div>
+</div>
+<div class="section level3">
+<h3 id="data-acquisition-b-environmental-predictors-from-worldclim">1. <strong>Data acquisition: b) Environmental predictors from
+worldclim</strong><a class="anchor" aria-label="anchor" href="#data-acquisition-b-environmental-predictors-from-worldclim"></a>
+</h3>
 <p>We used WORLDCLIM data archived in the package to enable users to
 test the package functions seamlessly. For direct interaction with the
 WORDCLIM data, please visit (<a href="https://www.worldclim.org/" class="external-link uri">https://www.worldclim.org/</a>) and the
@@ -229,9 +249,10 @@ Variation)</li>
 <span><span class="co">#Get climatic variables from the package folder</span></span>
 <span></span>
 <span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li><strong>Precleaning and environmental data extraction</strong></li>
-</ol>
+</div>
+<div class="section level3">
+<h3 id="precleaning-and-environmental-data-extraction">2. Precleaning and environmental data extraction<a class="anchor" aria-label="anchor" href="#precleaning-and-environmental-data-extraction"></a>
+</h3>
 <p>Here, * The duplicate records are removed if points they are obtained
 from the same location for the same species. * The missing values
 coordinates are removed. * The environmental predictors are extracted
@@ -263,44 +284,38 @@ Important in the next steps.</p>
 <span><span class="co">#&gt; [4] "Thymallus thymallus"</span></span>
 <span></span>
 <span></span>
-<span><span class="va">ttdata</span> <span class="op">&lt;-</span> <span class="va">speciesfiltered</span><span class="op">[</span><span class="va">speciesfiltered</span><span class="op">[</span>,<span class="st">'speciescheck'</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Thymallus thymallus"</span><span class="op">)</span>,<span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttdata</span><span class="op">)</span></span>
+<span><span class="va">thymallusdata</span> <span class="op">&lt;-</span> <span class="va">speciesfiltered</span><span class="op">[</span><span class="va">speciesfiltered</span><span class="op">[</span>,<span class="st">'speciescheck'</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Thymallus thymallus"</span><span class="op">)</span>,<span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">thymallusdata</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 135   7</span></span>
 <span></span>
-<span><span class="co">#For single species indicate multiple to FALSE</span></span>
-<span><span class="va">ttrefdata</span><span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">ttdata</span>, raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
+<span><span class="va">thymallus_referencedata</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">thymallusdata</span>, raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                             lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span>
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
 <span>                             colsp <span class="op">=</span> <span class="st">'speciescheck'</span>,</span>
 <span>                             bbox  <span class="op">=</span> <span class="va">danube</span>,</span>
 <span>                             list<span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ttrefdata</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">thymallus_referencedata</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 98 21</span></span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
-<li>
-<strong>Outlier detection</strong> Multiple outlier detection are
-set. This package contains 20 outlier detection methods and the user can
-run <strong><code><a href="../reference/extractMethods.html">extractMethods()</a></code></strong> to get the allowed
+</div>
+<div class="section level3">
+<h3 id="outlier-detection-for-both-single-and-multiple-species-no-pca-or-bootstrapping">3. Outlier detection for both single and multiple species (No PCA or
+bootstrapping)<a class="anchor" aria-label="anchor" href="#outlier-detection-for-both-single-and-multiple-species-no-pca-or-bootstrapping"></a>
+</h3>
+<p>Multiple outlier detection are set. This package contains 20 outlier
+detection methods and the user can run
+<strong><code><a href="../reference/extractMethods.html">extractMethods()</a></code></strong> to get the allowed
 methods. They are categorized into univariate, multivariate and species
-ecological ranges.</li>
-</ol>
-<ul>
-<li>
-<code>var</code> is the predictor to be used univariate
-methods.</li>
-<li>
-<code>exclude</code> allows to remove predictors that user deems
-unnecessary. For example, the coordinates, since the multivariate
-methods consider the whole dataset.</li>
-</ul>
-<p><strong>No bootstrapping and principle component
-analysis</strong></p>
+ecological ranges. * <code>var</code> is the predictor to be used
+univariate methods. * <code>exclude</code> allows to remove predictors
+that user deems unnecessary. For example, the coordinates, since the
+multivariate methods consider the whole dataset.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#For multiple species: default settings</span></span>
 <span></span>
-<span><span class="va">multioutliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">multipreclened</span>,</span>
+<span><span class="va">multiple_spp_out_detection</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">multipreclened</span>,</span>
 <span>                      multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span>
 <span>                     exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span>
@@ -312,7 +327,7 @@ analysis</strong></p>
 <span>                                                <span class="st">'iforest'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#single species:default settings</span></span>
 <span></span>
-<span><span class="va">ttoutlier</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ttrefdata</span>,</span>
+<span><span class="va">thymallus_outlier_detection</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">thymallus_referencedata</span>,</span>
 <span>                      multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span>
 <span>                      output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
@@ -323,9 +338,10 @@ analysis</strong></p>
 <span>                                  <span class="st">'hampel'</span>,<span class="st">'kmeans'</span>,</span>
 <span>                                  <span class="st">'jknife'</span>, <span class="st">'onesvm'</span>,</span>
 <span>                                  <span class="st">'iforest'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<ol start="4" style="list-style-type: decimal">
-<li><strong>Outlier visualization</strong></li>
-</ol>
+</div>
+<div class="section level3">
+<h3 id="outlier-visualization-for-single-and-multiple-species">4. Outlier visualization for single and multiple species<a class="anchor" aria-label="anchor" href="#outlier-visualization-for-single-and-multiple-species"></a>
+</h3>
 <ul>
 <li>
 <code>ggoutliers</code> are based in ggplot2, so it can be modified
@@ -336,12 +352,12 @@ the total number of records will be plotted.</li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#for multiple species</span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">multioutliers</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">multiple_spp_out_detection</span><span class="op">)</span></span></code></pre></div>
 <p><img src="eOutlier_files/figure-html/visualisation-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#for single species</span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">ttoutlier</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">thymallus_outlier_detection</span><span class="op">)</span></span></code></pre></div>
 <p><img src="eOutlier_files/figure-html/visualisation-2.png" width="576" style="display: block; margin: auto;"></p>
 <p><strong>Identify the best threshold using loess model.</strong></p>
 <p>The local regression is used to optimize and identify the best
@@ -352,18 +368,20 @@ records retained does not significantly vary with an increased increase
 in the threshold.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">ttoptimal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">thymallus_opt_threshold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
+<span>                               outliers <span class="op">=</span> <span class="va">thymallus_outlier_detection</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="eOutlier_files/figure-html/threshold%20identifcation-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#obtain the optimal thresholds for multiple species </span></span>
-<span><span class="co">#plotting is not allowed for multiple species.</span></span>
 <span></span>
-<span><span class="va">multioptimal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, outliers <span class="op">=</span> <span class="va">multioutliers</span><span class="op">)</span></span></code></pre></div>
-<ol start="5" style="list-style-type: decimal">
-<li><strong>Extracting clean data from the reference data (precleaned
-data in step 2).</strong></li>
-</ol>
+<span><span class="va">multspp_opt_threshold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, </span>
+<span>                                           outliers <span class="op">=</span> <span class="va">multiple_spp_out_detection</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="extracting-clean-data-from-the-reference-data-precleaned-data-in-step-2-">5. Extracting clean data from the reference data (precleaned data in
+step 2).<a class="anchor" aria-label="anchor" href="#extracting-clean-data-from-the-reference-data-precleaned-data-in-step-2-"></a>
+</h3>
 <p>The user sets a threshold ranging from 0.1 to 1 but its advisable to
 set a value above 0.5 to include above 50% of the methods.
 <strong>threshold</strong> is the value indicating the proportion of
@@ -374,7 +392,7 @@ identifying the optimal threshold.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">multspecies_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, </span>
-<span>                                        outliers <span class="op">=</span> <span class="va">multioutliers</span>, </span>
+<span>                                        outliers <span class="op">=</span> <span class="va">multiple_spp_out_detection</span>, </span>
 <span>                                        loess <span class="op">=</span>  <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7      bio8</span></span>
@@ -399,35 +417,15 @@ identifying the optimal threshold.</p>
 <span><span class="co">#&gt; 5   204 13.08333 48.08333 Salmo trutta</span></span>
 <span><span class="co">#&gt; 6   219 15.08333 47.58333 Salmo trutta</span></span>
 <span></span>
-<span><span class="va">ttclean</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">thymallus_qcdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
+<span>                             outliers <span class="op">=</span> <span class="va">thymallus_outlier_detection</span>, </span>
+<span>                             loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ttclean</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
-<span><span class="co">#&gt; 1 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
-<span><span class="co">#&gt; 2 8.532615 9.764146 33.03609 746.0073 23.86175 -5.69425 29.55600 17.59192</span></span>
-<span><span class="co">#&gt; 3 8.688948 8.375896 30.39067 733.9625 23.53350 -4.02725 27.56075 17.66537</span></span>
-<span><span class="co">#&gt; 4 7.765240 8.342354 31.78373 687.5156 21.74550 -4.50175 26.24725 16.19358</span></span>
-<span><span class="co">#&gt; 5 7.596385 8.438188 30.85853 724.7678 22.51675 -4.82800 27.34475 16.40075</span></span>
-<span><span class="co">#&gt; 6 5.290083 8.268625 33.26678 635.7107 18.46425 -6.39125 24.85550 13.10142</span></span>
-<span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
-<span><span class="co">#&gt; 1  0.9313333 16.58138 -0.4191251  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt; 2 -0.7618751 17.59192 -0.7618751   908   129    29 44.80352   372   110   372</span></span>
-<span><span class="co">#&gt; 3  1.0729584 17.66537 -0.3428333  1053   134    61 24.62582   361   206   361</span></span>
-<span><span class="co">#&gt; 4  0.6048333 16.19358 -0.6059167  1364   175    79 25.91408   479   270   479</span></span>
-<span><span class="co">#&gt; 5 -0.1437499 16.40075 -1.3752500   575    89    24 47.36458   244    76   244</span></span>
-<span><span class="co">#&gt; 6 -1.4955000 13.10142 -2.3458333  1440   193    76 31.47408   536   261   536</span></span>
-<span><span class="co">#&gt;   bio19        x        y</span></span>
-<span><span class="co">#&gt; 1   234 13.08333 47.75000</span></span>
-<span><span class="co">#&gt; 2   110 15.25000 47.08333</span></span>
-<span><span class="co">#&gt; 3   207 13.91667 48.08333</span></span>
-<span><span class="co">#&gt; 4   274 13.58333 47.91667</span></span>
-<span><span class="co">#&gt; 5    80 16.91667 49.91667</span></span>
-<span><span class="co">#&gt; 6   266 13.25000 47.58333</span></span>
 <span></span>
-<span><span class="va">labeldata_mult</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, </span>
-<span>                                outliers <span class="op">=</span> <span class="va">multioutliers</span>, </span>
+<span><span class="va">multiple_spp_qcdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multipreclened</span>, </span>
+<span>                                outliers <span class="op">=</span> <span class="va">multiple_spp_out_detection</span>, </span>
 <span>                                EIF <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">labeldata_mult</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multiple_spp_qcdata</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
 <span><span class="co">#&gt; 3  7.819083 8.406333 32.15458 679.0140 22.02600 -4.11750 26.14350 16.23671</span></span>
 <span><span class="co">#&gt; 5  8.254479 8.690208 31.93257 704.5684 22.73200 -4.48225 27.21425 16.84858</span></span>
@@ -451,8 +449,10 @@ identifying the optimal threshold.</p>
 <span><span class="co">#&gt; 10   234 13.08333 47.75000 not outlier Salmo trutta  0.28757576</span></span>
 <span></span>
 <span></span>
-<span><span class="va">labeldata_tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlier</span>, EIF <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">labeldata_tt</span><span class="op">)</span></span>
+<span><span class="va">thymallus_qc_labelled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
+<span>                              outliers <span class="op">=</span> <span class="va">thymallus_outlier_detection</span>, </span>
+<span>                              EIF <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">thymallus_qc_labelled</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
 <span><span class="co">#&gt; 1 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
 <span><span class="co">#&gt; 2 8.532615 9.764146 33.03609 746.0073 23.86175 -5.69425 29.55600 17.59192</span></span>
@@ -474,14 +474,14 @@ identifying the optimal threshold.</p>
 <span><span class="co">#&gt; 5    80 16.91667 49.91667 not outlier  0.79749478</span></span>
 <span><span class="co">#&gt; 6   266 13.25000 47.58333 not outlier -0.78187126</span></span>
 <span><span class="co">#&gt; 7   266 13.25000 47.58333 not outlier -0.78187126</span></span></code></pre></div>
-<ol start="6" style="list-style-type: decimal">
-<li><strong>Visualize labeled data in environmental space.</strong></li>
-</ol>
+</div>
+<div class="section level3">
+<h3 id="visualize-labeled-data-in-environmental-space-">6. Visualize labeled data in environmental space.<a class="anchor" aria-label="anchor" href="#visualize-labeled-data-in-environmental-space-"></a>
+</h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#multiple species </span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">labeldata_mult</span>, </span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">multiple_spp_qcdata</span>, </span>
 <span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>, </span>
 <span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>, </span>
 <span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
@@ -490,32 +490,48 @@ identifying the optimal threshold.</p>
 <span>                     ncol <span class="op">=</span> <span class="fl">2</span>, </span>
 <span>                     nrow <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="eOutlier_files/figure-html/2d%20plots-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="eOutlier_files/figure-html/2d%20plots%20multiple%20species-1.png" width="720" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#for single species</span></span>
-<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">labeldata_tt</span>, </span>
-<span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>, </span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">thymallus_qc_labelled</span>,</span>
+<span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>,</span>
 <span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>,</span>
 <span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
 <span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
 <span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
 <span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="eOutlier_files/figure-html/2d%20plots-2.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="eOutlier_files/figure-html/2d%20plots%20single%20species-1.png" width="518.4" style="display: block; margin: auto;"></p>
+</div>
 <div class="section level3">
 <h3 id="using-bootstrapping-during-outlier-detection">Using bootstrapping during outlier detection<a class="anchor" aria-label="anchor" href="#using-bootstrapping-during-outlier-detection"></a>
 </h3>
+<p>Bootstrapping is a robust approach where the records are randomly
+sampled with replacement. In this approach, outlier detection is
+iteratively conducted on bootstrap samples and each record flagged as
+outlier is weighted based on the total number of bootstraps used. The
+higher the record is flagged in several across multiple tests, the
+higher the likelihood of record being an absolute outlier. Although the
+default number of records at bootstrapping is 30, the maximum number of
+records can be adjusted by the user as demonstrated below.</p>
+<p><strong>Note</strong></p>
+<p>Bootstrapping is not implemented by the defualt, so the user has to
+set it run during outlier detection.</p>
 <ul>
-<li>The number of records <strong>`maxrecords´</strong> in reference
+<li><p>The number of records <strong>maxrecords</strong> in reference
 dataset for <em>Thymallus thymallus</em> is 99. Therefore, to implement
-bootstrapping, indicate the maximum higher than the nrows in reference
-dataset otherwise bootstrap will not be implemented.</li>
-<li>The number of bootstraps, <strong>`nb´</strong> are
-user-defined.</li>
+bootstrapping, indicate the maximum number of records higher than the
+nrows in reference dataset otherwise bootstrap will not be
+implemented.</p></li>
+<li><p>The number of bootstraps, <strong>nb</strong> are
+user-defined.</p></li>
+<li><p>Bootstrapping was conducted on <em>Thymallus thymallus</em> data
+because there was no proper separation between the moderate and very
+strong outliers.</p></li>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">ttoutlierboot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ttrefdata</span>,</span>
+<span><span class="va">thymallus_outlier_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">thymallus_referencedata</span>,</span>
 <span>                      multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span>
 <span>                      exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span>
@@ -532,36 +548,105 @@ user-defined.</li>
 </h3>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">ttoutlierboot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="eOutlier_files/figure-html/visualisationboot-1.png" width="576" style="display: block; margin: auto;"></p>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">thymallus_outlier_boot</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/visualisationboot-1.png" width="2160" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="classify-data-to-obtain-labels">Classify data to obtain labels<a class="anchor" aria-label="anchor" href="#classify-data-to-obtain-labels"></a>
 </h3>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">labeldata_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">ttrefdata</span>, outliers <span class="op">=</span> <span class="va">ttoutlierboot</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">thymallus_qc_label_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
+<span>                                outliers <span class="op">=</span> <span class="va">thymallus_outlier_boot</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualise-after-bootstrapping">Visualise after bootstrapping<a class="anchor" aria-label="anchor" href="#visualise-after-bootstrapping"></a>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">labeldata_boot</span>, </span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">thymallus_qc_label_boot</span>, </span>
 <span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>, </span>
 <span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>,</span>
 <span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
 <span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
 <span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
 <span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="eOutlier_files/figure-html/ggspaceboot-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="eOutlier_files/figure-html/ggspaceboot-1.png" width="2400" style="display: block; margin: auto;"></p>
+<p><strong>Note</strong></p>
+<p>When bootstrapping is applied, the very strong outlier turned into
+moderate outlier.</p>
+</div>
+<div class="section level3">
+<h3 id="apply-principal-component-analysis-and-bootstrapping-on-thymallus-thymallus-data-">Apply principal component analysis and bootstrapping on
+<em>Thymallus thymallus</em> data.<a class="anchor" aria-label="anchor" href="#apply-principal-component-analysis-and-bootstrapping-on-thymallus-thymallus-data-"></a>
+</h3>
+<ul>
+<li><p>Principal component analyis is a dimension reduction approach
+vital for highly multidimensional datasets. The user can decide to apply
+either PCA and bootstrapping or only one of them.</p></li>
+<li><p>The number of principal components to be returned are changed
+using <strong>npc</strong> argument.</p></li>
+<li><p>The visualise the cummulation variance captured in the principal
+components, the argument <strong>q</strong> is used.</p></li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">thymallus_outlier_boot_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">thymallus_referencedata</span>,</span>
+<span>                      multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                      var <span class="op">=</span> <span class="st">'bio6'</span>,</span>
+<span>                      exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>,<span class="st">'y'</span><span class="op">)</span>,</span>
+<span>                      methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'zscore'</span>, <span class="st">'adjbox'</span>,</span>
+<span>                                  <span class="st">'logboxplot'</span>, <span class="st">'distboxplot'</span>,</span>
+<span>                                  <span class="st">'iqr'</span>, <span class="st">'semiqr'</span>,</span>
+<span>                                  <span class="st">'hampel'</span>,<span class="st">'kmeans'</span>,</span>
+<span>                                  <span class="st">'jknife'</span>, <span class="st">'onesvm'</span>,</span>
+<span>                                  <span class="st">'iforest'</span><span class="op">)</span>,</span>
+<span>                      bootSettings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run <span class="op">=</span> <span class="cn">TRUE</span>, maxrecords <span class="op">=</span> <span class="fl">100</span>, nb <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>                      pc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>exec <span class="op">=</span> <span class="cn">TRUE</span>, npc <span class="op">=</span> <span class="fl">6</span>, q <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The cummulative proprotion for PCs 6 is 0.99205</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="visulise-outliers-after-bootstrapping-and-bootstrapping">Visulise outliers after bootstrapping and bootstrapping<a class="anchor" aria-label="anchor" href="#visulise-outliers-after-bootstrapping-and-bootstrapping"></a>
+</h3>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">thymallus_outlier_boot_pca</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/visualisationbootpca-1.png" width="2160" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="classify-data-to-obtain-labels-1">Classify data to obtain labels<a class="anchor" aria-label="anchor" href="#classify-data-to-obtain-labels-1"></a>
+</h3>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">thymallus_qc_label_boot_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
+<span>                                outliers <span class="op">=</span> <span class="va">thymallus_outlier_boot_pca</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="visualise-after-bootstrapping-1">Visualise after bootstrapping<a class="anchor" aria-label="anchor" href="#visualise-after-bootstrapping-1"></a>
+</h3>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">thymallus_qc_label_boot_pca</span>, </span>
+<span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>, </span>
+<span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>,</span>
+<span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
+<span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
+<span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="eOutlier_files/figure-html/ggspacebootpca-1.png" width="2400" style="display: block; margin: auto;"></p>
 <p><strong>Notes</strong></p>
-<p>When bootstrapping is applied, the very strong outlier was changed to
-moderate label</p>
-<p><strong>References</strong> 1. Wieczorek, J., Bloom, D., Guralnick,
-R., Blum, S., Döring, M., Giovanni, R., Robertson, T., &amp; Vieglais,
-D. (2012). Darwin core: An evolving community-developed biodiversity
-data standard. PLoS ONE, 7(1). <a href="https://doi.org/10.1371/journal.pone.0029715" class="external-link uri">https://doi.org/10.1371/journal.pone.0029715</a></p>
+<p>Coupling PCA and bootstrapping are robust approaches to handle
+outlier detection. In this example, moderate outlier turned into poor
+outliers.</p>
+<p><strong>References</strong></p>
+<ol style="list-style-type: decimal">
+<li>Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M.,
+Giovanni, R., Robertson, T., &amp; Vieglais, D. (2012). Darwin core: An
+evolving community-developed biodiversity data standard. PLoS ONE, 7(1).
+<a href="https://doi.org/10.1371/journal.pone.0029715" class="external-link uri">https://doi.org/10.1371/journal.pone.0029715</a>
+</li>
+</ol>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

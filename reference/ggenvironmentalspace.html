@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principle component analysis.</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principal component analysis.</a></li>
     <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul></li>
@@ -53,6 +53,7 @@
 <span>  type <span class="op">=</span> <span class="st">"2D"</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  zlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  nrow <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  scalecolor <span class="op">=</span> <span class="st">"viridis"</span>,</span>
@@ -78,7 +79,7 @@
 
 
 <dl><dt id="arg-qcdata">qcdata<a class="anchor" aria-label="anchor" href="#arg-qcdata"></a></dt>
-<dd><p><code>data.frame</code> Data output from quality controlled function <code><a href="extract_clean_data.html">extract_clean_data</a> and <code><a href="classify_data.html">classify_data</a></code></code>.</p></dd>
+<dd><p><code>dataframe</code> Data output from quality controlled function <code><a href="extract_clean_data.html">extract_clean_data</a> and <code><a href="classify_data.html">classify_data</a></code></code>.</p></dd>
 
 
 <dt id="arg-xvar">xvar<a class="anchor" aria-label="anchor" href="#arg-xvar"></a></dt>
@@ -173,10 +174,6 @@ with graph coordinates should be provided to avoid the legend overlap with the g
 
 <dt id="arg-cexsym">cexsym<a class="anchor" aria-label="anchor" href="#arg-cexsym"></a></dt>
 <dd><p><code>numeric</code> The size of pch in the 3D plot.</p></dd>
-
-
-<dt id="arg-zlab">zlab<a class="anchor" aria-label="anchor" href="#arg-zlab"></a></dt>
-<dd><p><code>string</code> z-axis label.</p></dd>
 
 </dl></div>
     <div class="section level2">
