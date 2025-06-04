@@ -86,9 +86,9 @@ tolerate various soil habitats but is not tolerant of waterlogged areas
 (Barstow et al., 2018). Although mature individuals have declined, the
 tree species IUCN RedList threat status is assessed as Least Concern
 (Barstow et al., 2018).</p>
-<ol style="list-style-type: decimal">
-<li><strong>Data acquisition: a) species records</strong></li>
-</ol>
+<div class="section level3">
+<h3 id="data-acquisition-a-species-records">1. Data acquisition: a) species records<a class="anchor" aria-label="anchor" href="#data-acquisition-a-species-records"></a>
+</h3>
 <p>Data was retrieved from the iNaturalist (<a href="https://www.inaturalist.org/" class="external-link uri">https://www.inaturalist.org/</a>) and Global Biodiversity
 Information Facility-GBIF (<a href="https://www.gbif.org/" class="external-link uri">https://www.gbif.org/</a>). We use the
 <strong><code><a href="../reference/getdata.html">getdata()</a></code></strong> function, built around rvertnet,
@@ -115,9 +115,10 @@ function will automatically extract the bounding box.</li>
 <span>                     hasCoordinate <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                   extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">8.15250</span>, ymin <span class="op">=</span> <span class="fl">42.08333</span>, xmax<span class="op">=</span><span class="fl">29.73583</span>, ymax <span class="op">=</span> <span class="fl">50.24500</span><span class="op">)</span>,</span>
 <span>                   verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<ol style="list-style-type: decimal">
-<li><strong>Data acquisition: b) Environmental predictors</strong></li>
-</ol>
+</div>
+<div class="section level3">
+<h3 id="data-acquisition-b-environmental-predictors">1. Data acquisition: b) Environmental predictors<a class="anchor" aria-label="anchor" href="#data-acquisition-b-environmental-predictors"></a>
+</h3>
 <p>We used WORLDCLIM data archived in the package to enable users to
 test the package functions seamlessly. For direct interaction with the
 WORDCLIM data, please visit (<a href="https://www.worldclim.org/" class="external-link uri">https://www.worldclim.org/</a>) and the
@@ -175,9 +176,10 @@ Variation)</li>
 <span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/worldclim.tiff'</span>, package <span class="op">=</span> <span class="st">'specleanr'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">worldclim</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">worldclim</span><span class="op">)</span></span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li><strong>Preliminary analysis</strong></li>
-</ol>
+</div>
+<div class="section level3">
+<h3 id="preliminary-analysis">2. Preliminary analysis<a class="anchor" aria-label="anchor" href="#preliminary-analysis"></a>
+</h3>
 <p>The step involves removing missing coordinate values, setting the
 geographical range for the data collated in <strong>1.a</strong>, if the
 user did not set the bounding box during data download. After that, the
@@ -213,10 +215,10 @@ collated from the Hydrography90m basin files (<a href="https://hydrography.org/h
 <span>                             bbox <span class="op">=</span> <span class="va">danube_basin</span>, </span>
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
-<li><strong>Detecting outliers using multiple outlier detection
-methods</strong></li>
-</ol>
+</div>
+<div class="section level3">
+<h3 id="detecting-outliers-using-multiple-outlier-detection-methods">3. Detecting outliers using multiple outlier detection methods<a class="anchor" aria-label="anchor" href="#detecting-outliers-using-multiple-outlier-detection-methods"></a>
+</h3>
 <ul>
 <li>To detect outliers we selected ensembled seven outlier detection
 methods at least from different categories i.e., 1) <strong>univariate
@@ -233,7 +235,6 @@ or machine learning models</strong>: local outlier factor:
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Flag outlier in single species data (multiple = TRUE)</span></span>
-<span></span>
 <span><span class="va">multspp_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">multspreference_data</span>,</span>
 <span>                       multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       var <span class="op">=</span> <span class="st">'bio1'</span>,</span>
@@ -253,7 +254,10 @@ or machine learning models</strong>: local outlier factor:
 <span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'adjbox'</span>, <span class="st">"hampel"</span>, <span class="st">'zscore'</span>, </span>
 <span>                                   <span class="st">'lof'</span>, <span class="st">'jknife'</span>, <span class="st">'kmeans'</span>, <span class="st">'mahal'</span><span class="op">)</span>,</span>
 <span>                       silence_true_errors <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">F</span>, verbose <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Visualizing outliers flagged by each method</strong></p>
+</div>
+<div class="section level3">
+<h3 id="visualizing-outliers-flagged-by-each-method">Visualizing outliers flagged by each method<a class="anchor" aria-label="anchor" href="#visualizing-outliers-flagged-by-each-method"></a>
+</h3>
 <p>The plots are wrapped on a ggplot2 object and extensible with ggplot2
 parameters. The <strong><code>ggoultiers()</code></strong> takes in 3
 parameters: <strong>1: x</strong> the outlier object of
@@ -270,7 +274,8 @@ number of occurrences if <strong>FALSE</strong></p>
 <code class="sourceCode R"><span></span>
 <span><span class="co">#for one species: no index needed</span></span>
 <span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">fagus_outliers</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plants_files/figure-html/visualize%20outliers-2.png" width="576" style="display: block; margin: auto;"><strong>Identify the best threshold using loess model.</strong></p>
+<p><img src="Plants_files/figure-html/visualize%20outliers-2.png" width="576" style="display: block; margin: auto;">
+### Identify the best threshold using loess model.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">optimal1</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">fagus_data_reference</span>, outliers <span class="op">=</span> <span class="va">fagus_outliers</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -279,15 +284,16 @@ number of occurrences if <strong>FALSE</strong></p>
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="va">optimalthreshold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multspreference_data</span>, outliers <span class="op">=</span> <span class="va">multspp_outliers</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>*Indicate the best methods obtained for each species</p>
-<ol start="4" style="list-style-type: decimal">
-<li><strong>Extracting clean data set after outlier
-detection</strong></li>
-</ol>
-<p>The mode can be set to <strong>mode = abs</strong> to discard only
+</div>
+<div class="section level3">
+<h3 id="extracting-clean-data-set-after-outlier-detection">4. Extracting clean data set after outlier detection<a class="anchor" aria-label="anchor" href="#extracting-clean-data-set-after-outlier-detection"></a>
+</h3>
+<ul>
+<li>The mode can be set to <strong>mode = abs</strong> to discard only
 absolute outliers or <strong>mode = best</strong> to use the best
 method. The outlier flagged by the best method will be used to clean the
-data. For more information, check (B….2024).</p>
+data. For more information, check (Basooma et al., 2025).</li>
+</ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">multspp_qc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multspreference_data</span>, </span>
@@ -304,6 +310,7 @@ data. For more information, check (B….2024).</p>
 <span></span>
 <span><span class="va">fagus_qc_label</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">fagus_data_reference</span>, </span>
 <span>                                    outliers <span class="op">=</span> <span class="va">fagus_outliers</span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="visualising-records-in-environmental-space">Visualising records in environmental space<a class="anchor" aria-label="anchor" href="#visualising-records-in-environmental-space"></a>
 </h3>
@@ -328,7 +335,7 @@ data. For more information, check (B….2024).</p>
 <span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
 <span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
 <span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plants_files/figure-html/2d%20plots%20multiple%20species-1.png" width="518.4" style="display: block; margin: auto;"></p>
+<p><img src="Plants_files/figure-html/2d%20plots%20multiple%20species-1.png" width="710.4" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="visualising-records-in-environmental-space-in-3d">Visualising records in environmental space in 3d<a class="anchor" aria-label="anchor" href="#visualising-records-in-environmental-space-in-3d"></a>
@@ -346,8 +353,9 @@ data. For more information, check (B….2024).</p>
 <span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
 <span>                     zlab <span class="op">=</span> <span class="st">"Min Temperature of Coldest Month"</span>,</span>
 <span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     lpos3d <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plants_files/figure-html/3d%20plots%20single%20species-1.png" width="518.4" style="display: block; margin: auto;"></p>
+<p><img src="Plants_files/figure-html/3d%20plots%20single%20species-1.png" width="710.4" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
