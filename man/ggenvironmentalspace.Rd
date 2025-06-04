@@ -6,16 +6,16 @@
 \usage{
 ggenvironmentalspace(
   qcdata,
-  xvar,
-  yvar,
+  xvar = NULL,
+  yvar = NULL,
   zvar = NULL,
   labelvar = NULL,
   type = "2D",
   xlab = NULL,
   ylab = NULL,
   zlab = NULL,
-  ncol = 1,
-  nrow = 1,
+  ncol = 2,
+  nrow = 2,
   scalecolor = "viridis",
   colorvalues = "auto",
   legend_position = "right",
@@ -34,7 +34,7 @@ ggenvironmentalspace(
 )
 }
 \arguments{
-\item{qcdata}{\code{dataframe} Data output from quality controlled function \code{\link{extract_clean_data} and \code{\link{classify_data}}}.}
+\item{qcdata}{\code{dataframe} Data output from quality controlled function \code{\link{extract_clean_data}} and \code{\link{classify_data}}.}
 
 \item{xvar}{\code{string} The variable to be on the x-axis.}
 
@@ -44,7 +44,7 @@ ggenvironmentalspace(
 
 \item{labelvar}{\code{string} Column name in the quality controlled data that has the labels. This applies is the 3D plot is selected.}
 
-\item{type}{\code{string} Its either \code{2D} for a two dimensional ggplot2 graph or \code{3D} for a 3-dimensional graph for multivariate data.}
+\item{type}{\code{string} Its \code{1D}, \code{2D} for a two dimensional ggplot2 graph or \code{3D} for a 3-dimensional graph for multivariate data.}
 
 \item{xlab, ylab, zlab}{\code{string} x-axis, y-axis, and z-axis label.}
 
@@ -87,7 +87,7 @@ with graph coordinates should be provided to avoid the legend overlap with the g
 \item{cexsym}{\code{numeric} The size of pch in the 3D plot.}
 }
 \value{
-If "2D" is the selected type, then a ggplot2 graph will be the output and a "3D" type will return a scatterplot3D plot.
+If "2D" or "1D" is the selected type, then a ggplot2 graph will be the output and a "3D" type will return a scatterplot3D plot.
 }
 \description{
 Title Plotting to show the quality controlled data in environmental space.

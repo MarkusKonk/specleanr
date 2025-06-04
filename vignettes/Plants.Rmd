@@ -88,7 +88,7 @@ danube_basin <- sf::st_read(system.file('extdata', "danube.shp.zip", package = '
 
 #Environmental predictors extraction for multiple species (multiple = TRUE)
 
-plantcleaned <-  pred_extract(data= plantdf, 
+multspreference_data <-  pred_extract(data= plantdf, 
                              raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
@@ -98,9 +98,9 @@ plantcleaned <-  pred_extract(data= plantdf,
                              minpts = 10, merge = FALSE, verbose = FALSE, warn = FALSE)
 
 #Environmental prediction extraction for a single species (multiple = FALSE)
-sp1df <- subset(plantdf, species=="Fagus sylvatica")
+fagus_data_filtered <- subset(plantdf, species=="Fagus sylvatica")
 
-p1cleaned <-  pred_extract(data= sp1df, 
+fagus_data_reference <-  pred_extract(data= fagus_data_filtered, 
                              raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
@@ -118,7 +118,7 @@ p1cleaned <-  pred_extract(data= sp1df,
 
 #Flag outlier in single species data (multiple = TRUE)
 
-outliersdata <- multidetect(data = plantcleaned,
+multspp_outliers <- multidetect(data = multspreference_data,
                        multiple = TRUE,
                        var = 'bio1',
                        output = 'outlier',
@@ -129,7 +129,7 @@ outliersdata <- multidetect(data = plantcleaned,
 
 #Flag outlier in single species data (multiple = FALSE)
 
-out1df <- multidetect(data = p1cleaned,
+fagus_outliers <- multidetect(data = fagus_data_reference,
                        multiple = FALSE,
                        var = 'bio1',
                        output = 'outlier',
@@ -145,20 +145,20 @@ The plots are wrapped on a ggplot2 object and extensible with ggplot2 parameters
 
 ```{r visualize outliers, fig.width = 6, fig.height= 3.5, fig.align='center'}
 
-ggoutliers(x=outliersdata)
+ggoutliers(x=multspp_outliers)
 
 #for one species: no index needed
-ggoutliers(x= out1df)
+ggoutliers(x= fagus_outliers)
 
 ```
 **Identify the best threshold using loess model.**
 
 ```{r threshold identifcation, fig.width = 6, fig.height= 4, fig.align='center'}
 
-optimal1<- optimal_threshold(refdata = p1cleaned, outliers = out1df, plot = TRUE)
+optimal1<- optimal_threshold(refdata = fagus_data_reference, outliers = fagus_outliers, plot = TRUE)
 
 
-optimalthreshold <- optimal_threshold(refdata = plantcleaned, outliers = outliersdata, plot = FALSE)
+optimalthreshold <- optimal_threshold(refdata = multspreference_data, outliers = multspp_outliers, plot = FALSE)
 ```
 
 
@@ -170,14 +170,72 @@ The mode can be set to **mode = abs** to discard only absolute outliers or **mod
 
 ```{r extract outliers from clean dataset}
 
-cleandf <- extract_clean_data(refdata = plantcleaned, outliers = outliersdata, 
-                              threshold = 0.4, pabs = 0.1)
+multspp_qc_data <- extract_clean_data(refdata = multspreference_data, 
+                                      outliers = multspp_outliers,
+                                      loess = TRUE)
+
+multspp_qc_label <- classify_data(refdata = multspreference_data, 
+                                      outliers = multspp_outliers)
 
 
-cleandf1 <- extract_clean_data(refdata = p1cleaned, outliers = out1df, 
-                          threshold = 0.4, pabs = 0.1)
+fagus_qc_data <- extract_clean_data(refdata = fagus_data_reference, 
+                                    outliers = fagus_outliers,
+                                    loess = TRUE)
+
+fagus_qc_label <- classify_data(refdata = fagus_data_reference, 
+                                    outliers = fagus_outliers)
+
 
 ```
+
+### Visualising records in environmental space
+
+```{r 2d plots single species, fig.width = 5.4, fig.height= 4.2, fig.align='center'}
+
+#for single species
+ggenvironmentalspace(qcdata = fagus_qc_label,
+                     xvar = 'bio1',
+                     yvar = "bio18",
+                     xlab = "Annual mean temperature",
+                     ylab = "Precipitation of Warmest Quarter",
+                     scalecolor = 'viridis',
+                     pointsize = 2)
+
+```
+
+```{r 2d plots multiple species, fig.width = 5.4, fig.height= 4.2, fig.align='center'}
+
+#for single species
+ggenvironmentalspace(qcdata = multspp_qc_label,
+                     xvar = 'bio1',
+                     yvar = "bio18",
+                     xlab = "Annual mean temperature",
+                     ylab = "Precipitation of Warmest Quarter",
+                     scalecolor = 'viridis',
+                     pointsize = 2)
+
+```
+
+
+### Visualising records in environmental space in 3d
+
+```{r 3d plots single species, fig.width = 5.4, fig.height= 4.2, fig.align='center'}
+
+#for single species
+ggenvironmentalspace(qcdata = fagus_qc_label,
+                     xvar = 'bio1',
+                     yvar = "bio18",
+                     zvar = 'bio6',
+                     type = "3d",
+                     labelvar = "label",
+                     xlab = "Annual mean temperature",
+                     ylab = "Precipitation of Warmest Quarter",
+                     zlab = "Min Temperature of Coldest Month",
+                     scalecolor = 'viridis',
+                     pointsize = 2)
+
+```
+
 
 ### References 
 

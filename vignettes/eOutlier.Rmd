@@ -29,13 +29,13 @@ In this workflow, we provide three approaches that can be used to handle outlier
 
 
 
-### 1.Data acquisition: a) Collate species species records: offline and online data**
+### 1.Data acquisition: a) Collate species species records: offline and online data
 
 The species records were obtained from the archived datasets extracted from the Joint Danube Survey (https://www.danubesurvey.org/jds4/) and EFIPLUS (Logez et al., 2012).  To compliment species records, we used the **`getdata()`** function to retrieve data from the GBIF (https://www.gbif.org/), VertNet (http://www.vertnet.org/) and iNaturalist ( https://www.inaturalist.org/) for _Squalius cephalus_, _Salmo trutta_, _Thymallus thymallus_, and _Anguilla anguilla_. For online data, we limited data to 50 records from each data source to reduce on the execution time.
 
 **NOTE**
 
-This workflow may fail if the particular settings such as blocking of IP address to GIBF, iNaturalist, FishBase, and VertNet may prevent user from accessing the online data. Since, this may user-to-user basis, it is beyond the scope of this package to address such errors.
+This workflow may fail if the particular settings such as blocking of IP address to GIBF, iNaturalist, FishBase, and VertNet may prevent user from accessing the online data. Since, this may differ at user-to-user basis, it is beyond the scope of this package to address such limitations.
 
 ```{r datasoruces, warning=FALSE}
 #==========================
@@ -127,11 +127,17 @@ worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package = 'specle
 ### 2. Precleaning and environmental data extraction
 
 Here, 
+
 * The duplicate records are removed if points they are obtained from the same location for the same species. 
+
 * The missing values coordinates are removed. 
+
 * The environmental predictors are extracted from the raster layers (WORLDCLIM).
+
 * The user can set the minimum point for the species to be retianed for further analyis.
+
 * The bounding box can be set to limit the extent of data extraction. For this case, we used the basin layer for the Danube Basin was obtained from Hydrography90m (https://hydrography.org/hydrography90m/hydrography90m_layers).
+
 * The user can either return a dataframe or list of the cleaned data. Important in the next steps.
 
 ```{r precleanand, echo=TRUE}
