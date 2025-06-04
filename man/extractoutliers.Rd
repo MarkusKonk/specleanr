@@ -40,7 +40,7 @@ extdf <- pred_extract(data = checkname, raster = wcd,
 outliersdf <- multidetect(data = extdf, output='outlier', var = 'bio6',
                          exclude = c('x','y'), multiple = TRUE,
                          methods = c('mixediqr', "iqr", "mahal", "iqr", "logboxplot"),
-                         showErrors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
+                         silence_true_errors = FALSE, warn = TRUE, verbose = FALSE, sdm = TRUE)
 
 extoutlier <- extractoutliers(x=outliersdf, sp = 8)
 

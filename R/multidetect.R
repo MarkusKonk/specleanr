@@ -262,6 +262,7 @@ detect <- function(x,
 
       if(isTRUE(boot)){
         if(!is.data.frame(df)) {
+
           NROWDF <- nrow(df[[1]])
           } else{
 
@@ -286,11 +287,14 @@ detect <- function(x,
         if(nrow(df)  <= maxrecords){
 
         df <- boots(df, boots = nboots, seed = nbootseed, pca = pcs)
+
         }else{
           df
-          warning('If bootstrapping is to be computed increase the maximum number records to be less than the number of rows in a dataframe, otherwise bootsrapping is not implemnted.')
+          boot <- FALSE
+          warning('To run bootstrapping increase maxrecords to < nrows in reference DF, or bootsrapping is not run.', call. = FALSE)
         }
       }else{
+        boot <- FALSE
         df
       }
     }

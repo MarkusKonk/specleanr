@@ -28,7 +28,8 @@ Suggests:
     rfishbase (>= 5.0.1),
     sf,
     terra,
-    tidytext
+    tidytext,
+    scatterplot3d
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 

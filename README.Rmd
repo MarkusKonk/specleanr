@@ -39,7 +39,7 @@ Installation
 
 The process of identifying environmental outliers is generally classified into **five steps** as detailed below (Figure 1); 
 
-![Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation.](man/figures/Figure 1.png)
+![Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation.](man/figures/Figure1.png)
 
 
 <!--(![This is the caption!](img/rmarkdown_hex.png))-->

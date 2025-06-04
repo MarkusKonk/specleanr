@@ -9,3 +9,4 @@
 ^pkgdown$
 testfolder
 httptests
+.Rhistory
