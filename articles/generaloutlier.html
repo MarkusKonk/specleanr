@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>General outlier detection and removal using ensembling principle • specleanr</title>
+<title>General outlier detection for univariate datasets • specleanr</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="General outlier detection and removal using ensembling principle">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="General outlier detection for univariate datasets">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,7 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principal component analysis.</a></li>
-    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
+    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection for univariate datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul>
 </li>
@@ -57,7 +57,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>General outlier detection and removal using ensembling principle</h1>
+      <h1>General outlier detection for univariate datasets</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/AnthonyBasooma/specleanr/blob/master/vignettes/generaloutlier.Rmd" class="external-link"><code>vignettes/generaloutlier.Rmd</code></a></small>
@@ -68,95 +68,205 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anthonybasooma.github.io/specleanr/">specleanr</a></span><span class="op">)</span></span></code></pre></div>
-<p>The presence of outliers is a general concern even is data which is
-not specifically for species distribution modelling. Also, the same
+<div class="section level3">
+<h3 id="introduction-to-general-data-outlier-detection">Introduction to general data outlier detection<a class="anchor" aria-label="anchor" href="#introduction-to-general-data-outlier-detection"></a>
+</h3>
+<ul>
+<li><p>The presence of outliers is a general concern even is data which
+is not specifically for species distribution modelling. Also, the same
 approach of adhoc selection of outlier detection method is considered to
 detect and remove outliers in the data, which increased subjectivity.
 Therefore, we extend <em>specleanr</em> principle of ensembling multiple
 outlier detection methods to identify <em>absolute outliers</em> in the
-datasets which can later be removed. * The same process is followed but
-the no data extraction and evaluating model performance is required. *
-Below is a detailed workflow for objectively detecting and removing
-outlier in <em>iris</em> dataset which is incorporated in the
-<em>dataset</em> package in <em>R programming Language</em></p>
+datasets which can later be removed.</p></li>
+<li><p>The same process is followed but the no data extraction and
+evaluating model performance is required.</p></li>
+<li><p>Below is a detailed workflow for objectively detecting and
+removing outlier in <em>iris</em> dataset which is incorporated in the
+<em>dataset</em> package in <em>R programming Language</em></p></li>
+</ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span></span>
 <span><span class="va">irisdata1</span> <span class="op">&lt;-</span> <span class="va">iris</span></span>
-<span><span class="co">#add outlier data and NAs</span></span>
-<span><span class="va">rowsOutNA1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">344</span>, <span class="cn">NA</span>,<span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span>, </span>
+<span></span>
+<span><span class="co">#introduce outlier data and NAs</span></span>
+<span></span>
+<span><span class="va">rowsOutNA1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">344</span>, <span class="cn">NA</span>,<span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>                         x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">34</span>, <span class="fl">45</span>, <span class="fl">544</span>, <span class="cn">NA</span><span class="op">)</span>, </span>
 <span>                         x3<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">584</span>, <span class="fl">5</span>, <span class="fl">554</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
-<span>                        x4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">575</span>, <span class="fl">4554</span>,<span class="fl">474</span>, <span class="cn">NA</span><span class="op">)</span>, </span>
-<span>                        x5 <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Setosa'</span>, <span class="st">'Setosa'</span>, <span class="st">'Setosa'</span>, <span class="st">"Setosa"</span><span class="op">)</span><span class="op">)</span></span>
+<span>                         x4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">575</span>, <span class="fl">4554</span>,<span class="fl">474</span>, <span class="cn">NA</span><span class="op">)</span>, </span>
+<span>                         x5 <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'setosa'</span>, <span class="st">'setosa'</span>, <span class="st">'setosa'</span>, <span class="st">"setosa"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">rowsOutNA1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">irisdata1</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="va">dfinal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">irisdata1</span>, <span class="va">rowsOutNA1</span><span class="op">)</span></span></code></pre></div>
-<p><em>Detecting outlier in changed iris dataset</em> We can only use
-univariate methods to detect only in in variable such as Sepal.Length or
-we can exclude the species column and also use multivariate methods such
-as isolation forest, Mahalanobis outlier detection method or One class
-support vector machines. To identify the methods allowed in this
-package, run <code>**extractMethod()**</code></p>
+</div>
+<div class="section level3">
+<h3 id="detecting-outlier-in-changed-iris-dataset">Detecting outlier in changed iris dataset*<a class="anchor" aria-label="anchor" href="#detecting-outlier-in-changed-iris-dataset"></a>
+</h3>
+<p>We can only use univariate methods to detect only in in variable such
+as Sepal.Length or we can exclude the species column and also use
+multivariate methods such as isolation forest, Mahalanobis outlier
+detection method or One class support vector machines. To identify the
+methods allowed in this package, run
+<code>**extractMethod()**</code></p>
+<p><strong>NOTE</strong> * Because we are considering univariate
+analysis, the parameter <strong>sdm</strong> is set to
+<strong>FALSE</strong>.</p>
+<ul>
+<li><p>Also, all multivariate outlier detection methods are not
+necessary for univariate datasets. The function
+<strong>extractMethods()</strong> can be used to identify the different
+methods allowed.</p></li>
+<li><p>Indicate <strong>na.inform</strong> to show how NAs are handled
+in the dataset. If percentage NAs in a column are greater than then
+<strong>missingness</strong> parameter, then that particular column will
+be removed. Otherwise, the rows with NAs will be removed using
+<strong>na.omit</strong> to avoid failing the outlier detection methods.
+In summary, increasing <strong>missingness</strong> may lead to loss
+many rows especially if any column has more missing values.</p></li>
+</ul>
+<p><strong>Filter out only setosa data before outlier
+detection</strong></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">outlieriris_univ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dfinal</span>, var <span class="op">=</span> <span class="st">'Sepal.Length'</span>, multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mixediqr'</span>, <span class="st">'logboxplot'</span>,<span class="st">'iqr'</span>, <span class="st">'distboxplot'</span>,</span>
-<span>                                   <span class="st">'jknife'</span>, <span class="st">'semiqr'</span>, <span class="st">'hampel'</span><span class="op">)</span>,</span>
-<span>                       silence_true_errors <span class="op">=</span> <span class="cn">FALSE</span>, missingness <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="va">setosadf</span> <span class="op">&lt;-</span> <span class="va">dfinal</span><span class="op">[</span><span class="va">dfinal</span><span class="op">$</span><span class="va">Species</span><span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span><span class="st">"setosa"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sepal.Width"</span>, <span class="st">'Species'</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">outlieriris_mult</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dfinal</span>, var <span class="op">=</span> <span class="st">'Sepal.Length'</span>, multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       exclude <span class="op">=</span> <span class="st">"Species"</span>,</span>
-<span>                       methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mixediqr'</span>, <span class="st">'logboxplot'</span>,<span class="st">'iqr'</span>, <span class="st">'distboxplot'</span>, </span>
-<span>                                   <span class="st">'jknife'</span>, <span class="st">'semiqr'</span>,<span class="st">'hampel'</span>, <span class="st">'iforest'</span>, </span>
-<span>                                   <span class="st">'lof'</span>, <span class="st">'mahal'</span><span class="op">)</span>,</span>
-<span>                       silence_true_errors <span class="op">=</span> <span class="cn">TRUE</span>, missingness <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
-<p><em>Plotting graphs to identify the different outliers detected by
-each method</em></p>
+<span><span class="va">setosa_outlier_detection</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">setosadf</span>, </span>
+<span>                                var <span class="op">=</span> <span class="st">'Sepal.Width'</span>, </span>
+<span>                                multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                                methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adjbox"</span>, <span class="st">"iqr"</span>, <span class="st">"hampel"</span>,<span class="st">"jknife"</span>,</span>
+<span>                                            <span class="st">"seqfences"</span>, <span class="st">"mixediqr"</span>,</span>
+<span>                                            <span class="st">"distboxplot"</span>, <span class="st">"semiqr"</span>,</span>
+<span>                                            <span class="st">"zscore"</span>, <span class="st">"logboxplot"</span>, <span class="st">"medianrule"</span><span class="op">)</span>,</span>
+<span>                       silence_true_errors <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                       missingness <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                       sdm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                       na.inform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 1 (1.85%) NAs removed for parameter Sepal.Width.</span></span>
+<span></span>
+<span><span class="co">#extractMethods()</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="visualiss-the-number-of-outliers-detected-by-each-method">Visualiss the number of outliers detected by each method<a class="anchor" aria-label="anchor" href="#visualiss-the-number-of-outliers-detected-by-each-method"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Only univariate methods</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">outlieriris_univ</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">setosa_outlier_detection</span><span class="op">)</span></span></code></pre></div>
 <p><img src="generaloutlier_files/figure-html/ploting-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="obtaining-quality-controlled-dataset-using-loess-method-or-data-labelling">Obtaining quality controlled dataset using loess method or data
+labelling<a class="anchor" aria-label="anchor" href="#obtaining-quality-controlled-dataset-using-loess-method-or-data-labelling"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#multivariate methods considered</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">outlieriris_mult</span><span class="op">)</span></span></code></pre></div>
-<p><img src="generaloutlier_files/figure-html/ploting-2.png" width="576" style="display: block; margin: auto;"></p>
-<p><em>clean data extraction</em></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">cleandata1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">dfinal</span>, outliers <span class="op">=</span> <span class="va">outlieriris_univ</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">setosa_qc_loess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">setosadf</span>, </span>
+<span>                                      outliers <span class="op">=</span> <span class="va">setosa_outlier_detection</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#clean dataset</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cleandata1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 153</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">setosa_qc_loess</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 51</span></span>
+<span></span>
+<span><span class="co">#reference data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">setosadf</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 54</span></span>
+<span></span>
+<span><span class="va">setosa_qc_labeled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">setosadf</span>, outliers <span class="op">=</span> <span class="va">setosa_outlier_detection</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="visualise-labelled-quality-controlled-dataset">Visualise labelled quality controlled dataset<a class="anchor" aria-label="anchor" href="#visualise-labelled-quality-controlled-dataset"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span><span class="va">setosa_qc_labeled</span>, </span>
+<span>                     type <span class="op">=</span> <span class="st">'1D'</span>,</span>
+<span>                     ggxangle <span class="op">=</span> <span class="fl">45</span>, </span>
+<span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     xhjust <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                     legend_position <span class="op">=</span> <span class="st">'blank'</span>,</span>
+<span>                     ylab <span class="op">=</span> <span class="st">"Number of records"</span>,</span>
+<span>                     xlab <span class="op">=</span> <span class="st">"Outlier labels"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="generaloutlier_files/figure-html/clean%20data%20extraction%20and%20labelling_multiple-1.png" width="432" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="for-multiple-species">For multiple species<a class="anchor" aria-label="anchor" href="#for-multiple-species"></a>
+</h3>
+<p><strong>NOTE</strong></p>
+<ul>
+<li>For multiple groups, the parameter <strong>multiple</strong> is
+changed to <strong>TRUE</strong> and the <strong>var_col</strong> should
+be provided as demonstrated below.</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">multspp_outlier_detection</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dfinal</span>, </span>
+<span>                                var <span class="op">=</span> <span class="st">'Sepal.Width'</span>, </span>
+<span>                                multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                var_col <span class="op">=</span> <span class="st">"Species"</span>,</span>
+<span>                                methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adjbox"</span>, <span class="st">"iqr"</span>, <span class="st">"hampel"</span>,<span class="st">"jknife"</span>,</span>
+<span>                                            <span class="st">"seqfences"</span>, <span class="st">"mixediqr"</span>,</span>
+<span>                                            <span class="st">"distboxplot"</span>, <span class="st">"semiqr"</span>,</span>
+<span>                                            <span class="st">"zscore"</span>, <span class="st">"logboxplot"</span>, <span class="st">"medianrule"</span><span class="op">)</span>,</span>
+<span>                       silence_true_errors <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                       missingness <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                       sdm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                       na.inform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 1 (1.85%) NAs removed for parameter Sepal.Width.</span></span>
+<span><span class="co">#&gt; 0 (0%) NAs removed for parameter Sepal.Width.</span></span>
+<span><span class="co">#&gt; 0 (0%) NAs removed for parameter Sepal.Width.</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="visualise-the-number-of-outliers-detected-by-each-method">Visualise the number of outliers detected by each method<a class="anchor" aria-label="anchor" href="#visualise-the-number-of-outliers-detected-by-each-method"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span><span class="va">multspp_outlier_detection</span><span class="op">)</span></span></code></pre></div>
+<p><img src="generaloutlier_files/figure-html/ploting_single-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="obtaining-quality-controlled-dataset-using-loess-method-or-data-labelling-1">Obtaining quality controlled dataset using loess method or data
+labelling<a class="anchor" aria-label="anchor" href="#obtaining-quality-controlled-dataset-using-loess-method-or-data-labelling-1"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">multsp_qc_loess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">dfinal</span>, </span>
+<span>                                      outliers <span class="op">=</span> <span class="va">multspp_outlier_detection</span>,</span>
+<span>                                      var_col <span class="op">=</span> <span class="st">'Species'</span>,</span>
+<span>                                      loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#clean dataset</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">multsp_qc_loess</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 151</span></span>
 <span></span>
 <span><span class="co">#reference data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dfinal</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 154</span></span>
 <span></span>
-<span></span>
-<span><span class="va">cleandata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">dfinal</span>, outliers <span class="op">=</span> <span class="va">outlieriris_mult</span>, loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#clean dataset</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cleandata2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 153</span></span>
-<span></span>
-<span><span class="co">#reference data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dfinal</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 154</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
-</h2>
-<ol style="list-style-type: decimal">
-<li>Ab under review</li>
-</ol>
+<span><span class="va">multi_qc_labeled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">dfinal</span>, </span>
+<span>                                      outliers <span class="op">=</span> <span class="va">multspp_outlier_detection</span>,</span>
+<span>                                  var_col <span class="op">=</span> <span class="st">'Species'</span><span class="op">)</span></span></code></pre></div>
 </div>
-  </main>
+<div class="section level3">
+<h3 id="visualise-labelled-quality-controlled-dataset-1">Visualise labelled quality controlled dataset<a class="anchor" aria-label="anchor" href="#visualise-labelled-quality-controlled-dataset-1"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span><span class="va">multi_qc_labeled</span>, </span>
+<span>                     type <span class="op">=</span> <span class="st">'1D'</span>,</span>
+<span>                     ggxangle <span class="op">=</span> <span class="fl">45</span>, </span>
+<span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     xhjust <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                     legend_position <span class="op">=</span> <span class="st">'blank'</span>,</span>
+<span>                     ylab <span class="op">=</span> <span class="st">"Number of records"</span>,</span>
+<span>                     xlab <span class="op">=</span> <span class="st">"Outlier labels"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="generaloutlier_files/figure-html/visualise%20data%20labelling-1.png" width="624" style="display: block; margin: auto;"></p>
+<p><em>The package is undergoing peer review for publication</em></p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

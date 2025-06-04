@@ -19,7 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principal component analysis.</a></li>
-    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
+    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection for univariate datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -46,16 +46,16 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ggenvironmentalspace</span><span class="op">(</span></span>
 <span>  <span class="va">qcdata</span>,</span>
-<span>  <span class="va">xvar</span>,</span>
-<span>  <span class="va">yvar</span>,</span>
+<span>  xvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  yvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  zvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labelvar <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"2D"</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  zlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ncol <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  nrow <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  scalecolor <span class="op">=</span> <span class="st">"viridis"</span>,</span>
 <span>  colorvalues <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  legend_position <span class="op">=</span> <span class="st">"right"</span>,</span>
@@ -79,7 +79,7 @@
 
 
 <dl><dt id="arg-qcdata">qcdata<a class="anchor" aria-label="anchor" href="#arg-qcdata"></a></dt>
-<dd><p><code>dataframe</code> Data output from quality controlled function <code><a href="extract_clean_data.html">extract_clean_data</a> and <code><a href="classify_data.html">classify_data</a></code></code>.</p></dd>
+<dd><p><code>dataframe</code> Data output from quality controlled function <code><a href="extract_clean_data.html">extract_clean_data</a></code> and <code><a href="classify_data.html">classify_data</a></code>.</p></dd>
 
 
 <dt id="arg-xvar">xvar<a class="anchor" aria-label="anchor" href="#arg-xvar"></a></dt>
@@ -99,7 +99,7 @@
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>string</code> Its either <code>2D</code> for a two dimensional ggplot2 graph or <code>3D</code> for a 3-dimensional graph for multivariate data.</p></dd>
+<dd><p><code>string</code> Its <code>1D</code>, <code>2D</code> for a two dimensional ggplot2 graph or <code>3D</code> for a 3-dimensional graph for multivariate data.</p></dd>
 
 
 <dt id="arg-xlab-ylab-zlab">xlab, ylab, zlab<a class="anchor" aria-label="anchor" href="#arg-xlab-ylab-zlab"></a></dt>
@@ -178,7 +178,7 @@ with graph coordinates should be provided to avoid the legend overlap with the g
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If "2D" is the selected type, then a ggplot2 graph will be the output and a "3D" type will return a scatterplot3D plot.</p>
+    <p>If "2D" or "1D" is the selected type, then a ggplot2 graph will be the output and a "3D" type will return a scatterplot3D plot.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

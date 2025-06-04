@@ -34,7 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principal component analysis.</a></li>
-    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
+    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection for univariate datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul>
 </li>
@@ -193,7 +193,7 @@ collated from the Hydrography90m basin files (<a href="https://hydrography.org/h
 <span></span>
 <span><span class="co">#Environmental predictors extraction for multiple species (multiple = TRUE)</span></span>
 <span></span>
-<span><span class="va">plantcleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">plantdf</span>, </span>
+<span><span class="va">multspreference_data</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">plantdf</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                             lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span>
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
@@ -203,9 +203,9 @@ collated from the Hydrography90m basin files (<a href="https://hydrography.org/h
 <span>                             minpts <span class="op">=</span> <span class="fl">10</span>, merge <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Environmental prediction extraction for a single species (multiple = FALSE)</span></span>
-<span><span class="va">sp1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">plantdf</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
+<span><span class="va">fagus_data_filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">plantdf</span>, <span class="va">species</span><span class="op">==</span><span class="st">"Fagus sylvatica"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">p1cleaned</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">sp1df</span>, </span>
+<span><span class="va">fagus_data_reference</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/pred_extract.html">pred_extract</a></span><span class="op">(</span>data<span class="op">=</span> <span class="va">fagus_data_filtered</span>, </span>
 <span>                             raster<span class="op">=</span> <span class="va">worldclim</span>, </span>
 <span>                             lat <span class="op">=</span> <span class="st">'decimalLatitude'</span>,</span>
 <span>                             lon <span class="op">=</span> <span class="st">'decimalLongitude'</span>,</span>
@@ -234,7 +234,7 @@ or machine learning models</strong>: local outlier factor:
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Flag outlier in single species data (multiple = TRUE)</span></span>
 <span></span>
-<span><span class="va">outliersdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plantcleaned</span>,</span>
+<span><span class="va">multspp_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">multspreference_data</span>,</span>
 <span>                       multiple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       var <span class="op">=</span> <span class="st">'bio1'</span>,</span>
 <span>                       output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
@@ -245,7 +245,7 @@ or machine learning models</strong>: local outlier factor:
 <span></span>
 <span><span class="co">#Flag outlier in single species data (multiple = FALSE)</span></span>
 <span></span>
-<span><span class="va">out1df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">p1cleaned</span>,</span>
+<span><span class="va">fagus_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multidetect.html">multidetect</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">fagus_data_reference</span>,</span>
 <span>                       multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                       var <span class="op">=</span> <span class="st">'bio1'</span>,</span>
 <span>                       output <span class="op">=</span> <span class="st">'outlier'</span>,</span>
@@ -264,21 +264,21 @@ the index or species name if the outlier has more than one species, and
 number of occurrences if <strong>FALSE</strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">outliersdata</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">multspp_outliers</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Plants_files/figure-html/visualize%20outliers-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#for one species: no index needed</span></span>
-<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">out1df</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/ggoutliers.html">ggoutliers</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">fagus_outliers</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Plants_files/figure-html/visualize%20outliers-2.png" width="576" style="display: block; margin: auto;"><strong>Identify the best threshold using loess model.</strong></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">optimal1</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">optimal1</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">fagus_data_reference</span>, outliers <span class="op">=</span> <span class="va">fagus_outliers</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Plants_files/figure-html/threshold%20identifcation-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
-<span><span class="va">optimalthreshold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">optimalthreshold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimal_threshold.html">optimal_threshold</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multspreference_data</span>, outliers <span class="op">=</span> <span class="va">multspp_outliers</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>*Indicate the best methods obtained for each species</p>
 <ol start="4" style="list-style-type: decimal">
 <li><strong>Extracting clean data set after outlier
@@ -290,12 +290,65 @@ method. The outlier flagged by the best method will be used to clean the
 data. For more information, check (B….2024).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cleandf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">plantcleaned</span>, outliers <span class="op">=</span> <span class="va">outliersdata</span>, </span>
-<span>                              threshold <span class="op">=</span> <span class="fl">0.4</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="va">multspp_qc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multspreference_data</span>, </span>
+<span>                                      outliers <span class="op">=</span> <span class="va">multspp_outliers</span>,</span>
+<span>                                      loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">multspp_qc_label</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">multspreference_data</span>, </span>
+<span>                                      outliers <span class="op">=</span> <span class="va">multspp_outliers</span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="va">cleandf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">p1cleaned</span>, outliers <span class="op">=</span> <span class="va">out1df</span>, </span>
-<span>                          threshold <span class="op">=</span> <span class="fl">0.4</span>, pabs <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fagus_qc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">fagus_data_reference</span>, </span>
+<span>                                    outliers <span class="op">=</span> <span class="va">fagus_outliers</span>,</span>
+<span>                                    loess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fagus_qc_label</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">fagus_data_reference</span>, </span>
+<span>                                    outliers <span class="op">=</span> <span class="va">fagus_outliers</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="visualising-records-in-environmental-space">Visualising records in environmental space<a class="anchor" aria-label="anchor" href="#visualising-records-in-environmental-space"></a>
+</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#for single species</span></span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">fagus_qc_label</span>,</span>
+<span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>,</span>
+<span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>,</span>
+<span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
+<span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
+<span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/2d%20plots%20single%20species-1.png" width="518.4" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#for single species</span></span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">multspp_qc_label</span>,</span>
+<span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>,</span>
+<span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>,</span>
+<span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
+<span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
+<span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/2d%20plots%20multiple%20species-1.png" width="518.4" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="visualising-records-in-environmental-space-in-3d">Visualising records in environmental space in 3d<a class="anchor" aria-label="anchor" href="#visualising-records-in-environmental-space-in-3d"></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#for single species</span></span>
+<span><span class="fu"><a href="../reference/ggenvironmentalspace.html">ggenvironmentalspace</a></span><span class="op">(</span>qcdata <span class="op">=</span> <span class="va">fagus_qc_label</span>,</span>
+<span>                     xvar <span class="op">=</span> <span class="st">'bio1'</span>,</span>
+<span>                     yvar <span class="op">=</span> <span class="st">"bio18"</span>,</span>
+<span>                     zvar <span class="op">=</span> <span class="st">'bio6'</span>,</span>
+<span>                     type <span class="op">=</span> <span class="st">"3d"</span>,</span>
+<span>                     labelvar <span class="op">=</span> <span class="st">"label"</span>,</span>
+<span>                     xlab <span class="op">=</span> <span class="st">"Annual mean temperature"</span>,</span>
+<span>                     ylab <span class="op">=</span> <span class="st">"Precipitation of Warmest Quarter"</span>,</span>
+<span>                     zlab <span class="op">=</span> <span class="st">"Min Temperature of Coldest Month"</span>,</span>
+<span>                     scalecolor <span class="op">=</span> <span class="st">'viridis'</span>,</span>
+<span>                     pointsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plants_files/figure-html/3d%20plots%20single%20species-1.png" width="518.4" style="display: block; margin: auto;"></p>
+</div>
 <div class="section level3">
 <h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
@@ -316,7 +369,8 @@ List of Threatened Species 2018: e.T62004722A62004725. <a href="https://dx.doi.o
 Accessed on 24 June 2024.</p></li>
 </ol>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

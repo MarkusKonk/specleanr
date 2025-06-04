@@ -34,7 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/eOutlier.html">Environmental outlier detection with bootstrapping and principal component analysis.</a></li>
-    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection and removal using ensembling principle</a></li>
+    <li><a class="dropdown-item" href="../articles/generaloutlier.html">General outlier detection for univariate datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Plants.html">Detecting environmental outliers in species distribution models for plants.</a></li>
   </ul>
 </li>
@@ -103,7 +103,7 @@ first approach.</p>
 </div>
 <div class="section level3">
 <h3 id="data-acquisition-a-collate-species-species-records-offline-and-online-data">1.Data acquisition: a) Collate species species records: offline and
-online data**<a class="anchor" aria-label="anchor" href="#data-acquisition-a-collate-species-species-records-offline-and-online-data"></a>
+online data<a class="anchor" aria-label="anchor" href="#data-acquisition-a-collate-species-species-records-offline-and-online-data"></a>
 </h3>
 <p>The species records were obtained from the archived datasets
 extracted from the Joint Danube Survey (<a href="https://www.danubesurvey.org/jds4/" class="external-link uri">https://www.danubesurvey.org/jds4/</a>) and EFIPLUS (Logez
@@ -117,8 +117,9 @@ records from each data source to reduce on the execution time.</p>
 <p><strong>NOTE</strong></p>
 <p>This workflow may fail if the particular settings such as blocking of
 IP address to GIBF, iNaturalist, FishBase, and VertNet may prevent user
-from accessing the online data. Since, this may user-to-user basis, it
-is beyond the scope of this package to address such errors.</p>
+from accessing the online data. Since, this may differ at user-to-user
+basis, it is beyond the scope of this package to address such
+limitations.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#==========================</span></span>
 <span><span class="co">#Step 1ai. Obtain Local data sources (archived in this package)</span></span>
@@ -253,16 +254,21 @@ Variation)</li>
 <div class="section level3">
 <h3 id="precleaning-and-environmental-data-extraction">2. Precleaning and environmental data extraction<a class="anchor" aria-label="anchor" href="#precleaning-and-environmental-data-extraction"></a>
 </h3>
-<p>Here, * The duplicate records are removed if points they are obtained
-from the same location for the same species. * The missing values
-coordinates are removed. * The environmental predictors are extracted
-from the raster layers (WORLDCLIM). * The user can set the minimum point
-for the species to be retianed for further analyis. * The bounding box
-can be set to limit the extent of data extraction. For this case, we
-used the basin layer for the Danube Basin was obtained from
-Hydrography90m (<a href="https://hydrography.org/hydrography90m/hydrography90m_layers" class="external-link uri">https://hydrography.org/hydrography90m/hydrography90m_layers</a>).
-* The user can either return a dataframe or list of the cleaned data.
-Important in the next steps.</p>
+<p>Here,</p>
+<ul>
+<li><p>The duplicate records are removed if points they are obtained
+from the same location for the same species.</p></li>
+<li><p>The missing values coordinates are removed.</p></li>
+<li><p>The environmental predictors are extracted from the raster layers
+(WORLDCLIM).</p></li>
+<li><p>The user can set the minimum point for the species to be retianed
+for further analyis.</p></li>
+<li><p>The bounding box can be set to limit the extent of data
+extraction. For this case, we used the basin layer for the Danube Basin
+was obtained from Hydrography90m (<a href="https://hydrography.org/hydrography90m/hydrography90m_layers" class="external-link uri">https://hydrography.org/hydrography90m/hydrography90m_layers</a>).</p></li>
+<li><p>The user can either return a dataframe or list of the cleaned
+data. Important in the next steps.</p></li>
+</ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Get basin shapefile to delineate the study region: optional</span></span>
@@ -397,24 +403,24 @@ identifying the optimal threshold.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multspecies_clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7      bio8</span></span>
 <span><span class="co">#&gt; 1 6.293614 8.755938 31.96181 690.1050 20.90625 -6.48875 27.39500  7.375333</span></span>
-<span><span class="co">#&gt; 2 4.414302 7.574229 32.06125 606.7263 17.16025 -6.46400 23.62425 11.899292</span></span>
-<span><span class="co">#&gt; 3 7.819083 8.406333 32.15458 679.0140 22.02600 -4.11750 26.14350 16.236708</span></span>
-<span><span class="co">#&gt; 4 4.356198 8.618521 32.93503 664.5812 18.24000 -7.92825 26.16825 12.529167</span></span>
-<span><span class="co">#&gt; 5 8.254479 8.690208 31.93257 704.5684 22.73200 -4.48225 27.21425 16.848583</span></span>
+<span><span class="co">#&gt; 2 4.356198 8.618521 32.93503 664.5812 18.24000 -7.92825 26.16825 12.529167</span></span>
+<span><span class="co">#&gt; 3 8.093719 8.563396 32.36844 682.8456 22.54375 -3.91225 26.45600 16.554874</span></span>
+<span><span class="co">#&gt; 4 8.254479 8.690208 31.93257 704.5684 22.73200 -4.48225 27.21425 16.848583</span></span>
+<span><span class="co">#&gt; 5 4.920063 8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.537000</span></span>
 <span><span class="co">#&gt; 6 4.356198 8.618521 32.93503 664.5812 18.24000 -7.92825 26.16825 12.529167</span></span>
-<span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
-<span><span class="co">#&gt; 1 -1.1756251 14.80313 -2.0642917  2118   241   105 21.73814   663   379   530</span></span>
-<span><span class="co">#&gt; 2 -2.7298751 11.89929 -2.7298751  1289   169    67 33.19698   486   219   486</span></span>
-<span><span class="co">#&gt; 3  0.7327917 16.23671 -0.4094166   969   121    50 31.11297   351   161   351</span></span>
-<span><span class="co">#&gt; 4 -3.6311667 12.52917 -3.6311667  1287   170    67 30.58820   463   219   463</span></span>
-<span><span class="co">#&gt; 5  0.9236250 16.84858 -0.4467084  1103   141    62 30.58010   407   204   407</span></span>
-<span><span class="co">#&gt; 6 -3.6311667 12.52917 -3.6311667  1287   170    67 30.58820   463   219   463</span></span>
+<span><span class="co">#&gt;        bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
+<span><span class="co">#&gt; 1 -1.175625 14.80313 -2.0642917  2118   241   105 21.73814   663   379   530</span></span>
+<span><span class="co">#&gt; 2 -3.631167 12.52917 -3.6311667  1287   170    67 30.58820   463   219   463</span></span>
+<span><span class="co">#&gt; 3  1.011292 16.55487 -0.2026250   902   111    48 29.86472   322   151   322</span></span>
+<span><span class="co">#&gt; 4  0.923625 16.84858 -0.4467084  1103   141    62 30.58010   407   204   407</span></span>
+<span><span class="co">#&gt; 5 -1.738292 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
+<span><span class="co">#&gt; 6 -3.631167 12.52917 -3.6311667  1287   170    67 30.58820   463   219   463</span></span>
 <span><span class="co">#&gt;   bio19        x        y       groups</span></span>
 <span><span class="co">#&gt; 1   412 13.91667 46.25000 Salmo trutta</span></span>
-<span><span class="co">#&gt; 2   219 11.08333 47.41667 Salmo trutta</span></span>
-<span><span class="co">#&gt; 3   167 10.91667 48.08333 Salmo trutta</span></span>
-<span><span class="co">#&gt; 4   219 15.08333 47.58333 Salmo trutta</span></span>
-<span><span class="co">#&gt; 5   204 13.08333 48.08333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 2   219 15.08333 47.58333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 3   159 10.91667 48.25000 Salmo trutta</span></span>
+<span><span class="co">#&gt; 4   204 13.08333 48.08333 Salmo trutta</span></span>
+<span><span class="co">#&gt; 5   261 12.91667 47.58333 Salmo trutta</span></span>
 <span><span class="co">#&gt; 6   219 15.08333 47.58333 Salmo trutta</span></span>
 <span></span>
 <span><span class="va">thymallus_qcdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_clean_data.html">extract_clean_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
@@ -426,27 +432,27 @@ identifying the optimal threshold.</p>
 <span>                                outliers <span class="op">=</span> <span class="va">multiple_spp_out_detection</span>, </span>
 <span>                                EIF <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multiple_spp_qcdata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
-<span><span class="co">#&gt; 3  7.819083 8.406333 32.15458 679.0140 22.02600 -4.11750 26.14350 16.23671</span></span>
-<span><span class="co">#&gt; 5  8.254479 8.690208 31.93257 704.5684 22.73200 -4.48225 27.21425 16.84858</span></span>
-<span><span class="co">#&gt; 7  6.770688 8.237541 32.67342 653.4917 20.17375 -5.03800 25.21175 14.79887</span></span>
-<span><span class="co">#&gt; 8  4.920063 8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.53700</span></span>
-<span><span class="co">#&gt; 9  8.149062 8.922417 32.77950 698.9550 22.49275 -4.72675 27.21950 16.66454</span></span>
-<span><span class="co">#&gt; 10 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
-<span><span class="co">#&gt;          bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
-<span><span class="co">#&gt; 3   0.7327917 16.23671 -0.4094166   969   121    50 31.11297   351   161   351</span></span>
-<span><span class="co">#&gt; 5   0.9236250 16.84858 -0.4467084  1103   141    62 30.58010   407   204   407</span></span>
-<span><span class="co">#&gt; 7  -0.1399583 14.79887 -1.1001667  1425   191    78 30.79005   528   268   528</span></span>
-<span><span class="co">#&gt; 8  -1.7382917 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
-<span><span class="co">#&gt; 9   0.8570418 16.66454 -0.4938749  1223   159    66 32.25150   460   222   460</span></span>
-<span><span class="co">#&gt; 10  0.9313333 16.58138 -0.4191251  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt;    bio19        x        y       label       groups         EIF</span></span>
-<span><span class="co">#&gt; 3    167 10.91667 48.08333 not outlier Salmo trutta  0.96993766</span></span>
-<span><span class="co">#&gt; 5    204 13.08333 48.08333 not outlier Salmo trutta  0.60038793</span></span>
-<span><span class="co">#&gt; 7    274 13.41667 47.75000 not outlier Salmo trutta  0.03732554</span></span>
-<span><span class="co">#&gt; 8    261 12.91667 47.58333 not outlier Salmo trutta -1.41908893</span></span>
-<span><span class="co">#&gt; 9    222 13.08333 47.91667 not outlier Salmo trutta  0.35267115</span></span>
-<span><span class="co">#&gt; 10   234 13.08333 47.75000 not outlier Salmo trutta  0.28757576</span></span>
+<span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
+<span><span class="co">#&gt; 3 8.093719 8.563396 32.36844 682.8456 22.54375 -3.91225 26.45600 16.55487</span></span>
+<span><span class="co">#&gt; 4 8.254479 8.690208 31.93257 704.5684 22.73200 -4.48225 27.21425 16.84858</span></span>
+<span><span class="co">#&gt; 5 4.920063 8.054250 33.13006 620.0639 17.83550 -6.47550 24.31100 12.53700</span></span>
+<span><span class="co">#&gt; 7 6.770688 8.237541 32.67342 653.4917 20.17375 -5.03800 25.21175 14.79887</span></span>
+<span><span class="co">#&gt; 8 8.149062 8.922417 32.77950 698.9550 22.49275 -4.72675 27.21950 16.66454</span></span>
+<span><span class="co">#&gt; 9 5.519271 8.059958 32.46808 637.3926 18.68325 -6.14100 24.82425 13.31675</span></span>
+<span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
+<span><span class="co">#&gt; 3  1.0112917 16.55487 -0.2026250   902   111    48 29.86472   322   151   322</span></span>
+<span><span class="co">#&gt; 4  0.9236250 16.84858 -0.4467084  1103   141    62 30.58010   407   204   407</span></span>
+<span><span class="co">#&gt; 5 -1.7382917 12.53700 -2.4977083  1409   188    76 31.33461   524   257   524</span></span>
+<span><span class="co">#&gt; 7 -0.1399583 14.79887 -1.1001667  1425   191    78 30.79005   528   268   528</span></span>
+<span><span class="co">#&gt; 8  0.8570418 16.66454 -0.4938749  1223   159    66 32.25150   460   222   460</span></span>
+<span><span class="co">#&gt; 9 -1.2837082 13.31675 -2.1408334  1303   177    70 33.05493   494   233   494</span></span>
+<span><span class="co">#&gt;   bio19        x        y       label       groups         EIF</span></span>
+<span><span class="co">#&gt; 3   159 10.91667 48.25000 not outlier Salmo trutta  1.17788810</span></span>
+<span><span class="co">#&gt; 4   204 13.08333 48.08333 not outlier Salmo trutta  0.60038793</span></span>
+<span><span class="co">#&gt; 5   261 12.91667 47.58333 not outlier Salmo trutta -1.41908893</span></span>
+<span><span class="co">#&gt; 7   274 13.41667 47.75000 not outlier Salmo trutta  0.03732554</span></span>
+<span><span class="co">#&gt; 8   222 13.08333 47.91667 not outlier Salmo trutta  0.35267115</span></span>
+<span><span class="co">#&gt; 9   236 12.58333 47.58333 not outlier Salmo trutta -1.08018730</span></span>
 <span></span>
 <span></span>
 <span><span class="va">thymallus_qc_labelled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_data.html">classify_data</a></span><span class="op">(</span>refdata <span class="op">=</span> <span class="va">thymallus_referencedata</span>, </span>
@@ -455,24 +461,24 @@ identifying the optimal threshold.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">thymallus_qc_labelled</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       bio1     bio2     bio3     bio4     bio5     bio6     bio7     bio8</span></span>
 <span><span class="co">#&gt; 1 8.130990 9.155687 33.54192 693.5986 22.50525 -4.79100 27.29625 16.58138</span></span>
-<span><span class="co">#&gt; 2 8.532615 9.764146 33.03609 746.0073 23.86175 -5.69425 29.55600 17.59192</span></span>
+<span><span class="co">#&gt; 2 7.596385 8.438188 30.85853 724.7678 22.51675 -4.82800 27.34475 16.40075</span></span>
 <span><span class="co">#&gt; 4 7.765240 8.342354 31.78373 687.5156 21.74550 -4.50175 26.24725 16.19358</span></span>
-<span><span class="co">#&gt; 5 7.596385 8.438188 30.85853 724.7678 22.51675 -4.82800 27.34475 16.40075</span></span>
-<span><span class="co">#&gt; 6 5.290083 8.268625 33.26678 635.7107 18.46425 -6.39125 24.85550 13.10142</span></span>
+<span><span class="co">#&gt; 5 8.390240 8.568895 31.32536 722.0088 23.12525 -4.22925 27.35450 17.21496</span></span>
+<span><span class="co">#&gt; 6 8.532615 9.764146 33.03609 746.0073 23.86175 -5.69425 29.55600 17.59192</span></span>
 <span><span class="co">#&gt; 7 5.290083 8.268625 33.26678 635.7107 18.46425 -6.39125 24.85550 13.10142</span></span>
 <span><span class="co">#&gt;         bio9    bio10      bio11 bio12 bio13 bio14    bio15 bio16 bio17 bio18</span></span>
 <span><span class="co">#&gt; 1  0.9313333 16.58138 -0.4191251  1307   174    69 33.66177   499   233   499</span></span>
-<span><span class="co">#&gt; 2 -0.7618751 17.59192 -0.7618751   908   129    29 44.80352   372   110   372</span></span>
+<span><span class="co">#&gt; 2 -0.1437499 16.40075 -1.3752500   575    89    24 47.36458   244    76   244</span></span>
 <span><span class="co">#&gt; 4  0.6048333 16.19358 -0.6059167  1364   175    79 25.91408   479   270   479</span></span>
-<span><span class="co">#&gt; 5 -0.1437499 16.40075 -1.3752500   575    89    24 47.36458   244    76   244</span></span>
-<span><span class="co">#&gt; 6 -1.4955000 13.10142 -2.3458333  1440   193    76 31.47408   536   261   536</span></span>
+<span><span class="co">#&gt; 5  0.9156250 17.21496 -0.4847917  1142   143    68 23.92640   391   228   391</span></span>
+<span><span class="co">#&gt; 6 -0.7618751 17.59192 -0.7618751   908   129    29 44.80352   372   110   372</span></span>
 <span><span class="co">#&gt; 7 -1.4955000 13.10142 -2.3458333  1440   193    76 31.47408   536   261   536</span></span>
 <span><span class="co">#&gt;   bio19        x        y       label         EIF</span></span>
 <span><span class="co">#&gt; 1   234 13.08333 47.75000 not outlier  0.83487640</span></span>
-<span><span class="co">#&gt; 2   110 15.25000 47.08333 not outlier -0.07768567</span></span>
+<span><span class="co">#&gt; 2    80 16.91667 49.91667 not outlier  0.79749478</span></span>
 <span><span class="co">#&gt; 4   274 13.58333 47.91667 not outlier  1.12710826</span></span>
-<span><span class="co">#&gt; 5    80 16.91667 49.91667 not outlier  0.79749478</span></span>
-<span><span class="co">#&gt; 6   266 13.25000 47.58333 not outlier -0.78187126</span></span>
+<span><span class="co">#&gt; 5   230 13.75000 48.08333 not outlier  1.40241758</span></span>
+<span><span class="co">#&gt; 6   110 15.25000 47.08333 not outlier -0.07768567</span></span>
 <span><span class="co">#&gt; 7   266 13.25000 47.58333 not outlier -0.78187126</span></span></code></pre></div>
 </div>
 <div class="section level3">
