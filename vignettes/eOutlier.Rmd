@@ -1,8 +1,8 @@
 ---
-title: "Environmental outlier detection with bootstrapping and principle component analysis."
+title: "Environmental outlier detection with bootstrapping and principal component analysis."
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Environmental outlier detection with bootstrapping and principle component analysis.}
+  %\VignetteIndexEntry{Environmental outlier detection with bootstrapping and principal component analysis.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,12 +19,17 @@ knitr::opts_chunk$set(
 library(specleanr)
 
 ```
-**Environmental outlier check for fish species from the Danube River Basin** 
+## Environmental outlier check for fish species from the Danube River Basin 
 
 The workflow for environmental outlier detection and removal is similar across taxa, regions, or ecological realms. However, we included the **`check_names()`** function to cater for fish species names exhaustively. In this worked example, we tried the functionalities on the fish species from the Danube River Basin, with extracts of species records from Joint Danube Survey (JDS) and EFI+ data archived in the package. We complimented the data with fish species occurrences from online sources including Global Biodiversity Information Facility (GBIF), iNaturalist, and VertNET using the **`getdata()`** function. They are basically five steps, including: 1) Data acquisition and harmonization; 2) Precleaning and predictor extraction 3) outlier detection 4) identification of clean data and suitable method 5) developing species distribution models (optional).
 
+### Scope of application
 
-1. **Data acquisition: a) Collate species species records: offline and online data**
+In this workflow, we provide three approaches that can be used to handle outlier detection, namely 1) the default approach (no bootstrapping and principal component analysis applied); 2) bootstrapping applied during outlier detection mostly for fewer records (user based to set the records) and 3) combining principal component analysis and bootstrapping. Because each approach will significantly affect how records are flagged as outliers, its upon the user to select an approach to use. However, we advise users to apply bootstrapping and PCA if the particular suspicious records are still not handled in the first approach.
+
+
+
+### 1.Data acquisition: a) Collate species species records: offline and online data**
 
 The species records were obtained from the archived datasets extracted from the Joint Danube Survey (https://www.danubesurvey.org/jds4/) and EFIPLUS (Logez et al., 2012).  To compliment species records, we used the **`getdata()`** function to retrieve data from the GBIF (https://www.gbif.org/), VertNet (http://www.vertnet.org/) and iNaturalist ( https://www.inaturalist.org/) for _Squalius cephalus_, _Salmo trutta_, _Thymallus thymallus_, and _Anguilla anguilla_. For online data, we limited data to 50 records from each data source to reduce on the execution time.
 
@@ -60,7 +65,7 @@ dim(df_online)
 
 ```
 
-**Merging and harmonizing species records from different sources**
+#### Merging and harmonizing species records from different sources
 
 The online data sources from **`getdata()`** and local files are merged using the **`match_datasets()`** function. Five columns are harmonized while combining data from different sources: the country, species names, latitude/longitude columns, and dates. The Darwin Core standard names are country, species, decimalLatitude, decimalLongitude, and dates (Wieczorek et al., 2012). So, if the local dataset has a different name for standard names, the user should indicate it. For example, in JDS data, the species column is labeled **speciesname**, shown in the species parameter for automatic renaming and merging with other datasets. 
 * Note: The user should indicate all dataset names in the list.
@@ -87,7 +92,7 @@ speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in%
 
 ```
 
-1. **Data acquisition: b) Environmental predictors**
+### 1. **Data acquisition: b) Environmental predictors from worldclim**
 
 We used WORLDCLIM data archived in the package to enable users to test the package functions seamlessly. For direct interaction with the WORDCLIM data, please visit (https://www.worldclim.org/) and the **`geodata`** package for download in user-customized workflows. WORLDCLIM data has 19 bioclimatic variables (https://www.worldclim.org/data/bioclim.html), including;
 
@@ -119,7 +124,7 @@ worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package = 'specle
 
 ```
 
-2. **Precleaning and environmental data extraction**
+### 2. Precleaning and environmental data extraction
 
 Here, 
 * The duplicate records are removed if points they are obtained from the same location for the same species. 
@@ -148,33 +153,32 @@ multipreclened <-  pred_extract(data= speciesfiltered,
 names(multipreclened)
 
 
-ttdata <- speciesfiltered[speciesfiltered[,'speciescheck'] %in%c("Thymallus thymallus"),]
-dim(ttdata)
+thymallusdata <- speciesfiltered[speciesfiltered[,'speciescheck'] %in%c("Thymallus thymallus"),]
 
-#For single species indicate multiple to FALSE
-ttrefdata<-  pred_extract(data= ttdata, raster= worldclim, 
+dim(thymallusdata)
+
+thymallus_referencedata <-  pred_extract(data= thymallusdata, raster= worldclim, 
                              lat = 'decimalLatitude',
                              lon = 'decimalLongitude',
                              colsp = 'speciescheck',
                              bbox  = danube,
                              list= TRUE, 
                              minpts = 10)
-dim(ttrefdata)
+dim(thymallus_referencedata)
 
 ```
 
-3. **Outlier detection**
+### 3. Outlier detection for both single and multiple species (No PCA or bootstrapping)
+
 Multiple outlier detection are set. This package contains 20 outlier detection methods and the user can run **`extractMethods()`** to get the allowed methods. They are categorized into univariate, multivariate and species ecological ranges.
 * `var` is the predictor to be used univariate methods.
 * `exclude` allows to remove predictors that user deems unnecessary. For example, the coordinates, since the multivariate methods consider the whole dataset.
-
-**No bootstrapping and principle component analysis**
 
 ```{r outlierdetection, echo=TRUE, message=FALSE, warning=FALSE}
 
 #For multiple species: default settings
 
-multioutliers <- multidetect(data = multipreclened,
+multiple_spp_out_detection <- multidetect(data = multipreclened,
                       multiple = TRUE,
                       var = 'bio6',
                      exclude = c('x','y'),
@@ -186,7 +190,7 @@ multioutliers <- multidetect(data = multipreclened,
                                                 'iforest'))
 #single species:default settings
 
-ttoutlier<- multidetect(data = ttrefdata,
+thymallus_outlier_detection <- multidetect(data = thymallus_referencedata,
                       multiple = FALSE,
                       var = 'bio6',
                       output = 'outlier',
@@ -201,16 +205,16 @@ ttoutlier<- multidetect(data = ttrefdata,
 ```
 
 
-4. **Outlier visualization**
+### 4. Outlier visualization for single and multiple species
 
 * `ggoutliers` are based in ggplot2, so it can be modified based on user needs. x: is the output for outlier detection, y is the species name or index for multiple species, and raw = TRUE if the number of outliers are the displayed, otherwise the proportion of outliers to the total number of records will be plotted.
 
 ```{r visualisation, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
 #for multiple species
-ggoutliers(multioutliers)
+ggoutliers(multiple_spp_out_detection)
 
 #for single species
-ggoutliers(ttoutlier)
+ggoutliers(thymallus_outlier_detection)
 
 ```
 
@@ -220,49 +224,52 @@ The local regression is used to optimize and identify the best threshold for den
 
 ```{r threshold identifcation, fig.width = 6, fig.height= 5, fig.align='center'}
 
-ttoptimal <- optimal_threshold(refdata = ttrefdata, outliers = ttoutlier, plot = TRUE)
+thymallus_opt_threshold <- optimal_threshold(refdata = thymallus_referencedata, 
+                               outliers = thymallus_outlier_detection, plot = TRUE)
 
 #obtain the optimal thresholds for multiple species 
-#plotting is not allowed for multiple species.
 
-multioptimal <- optimal_threshold(refdata = multipreclened, outliers = multioutliers)
+multspp_opt_threshold <- optimal_threshold(refdata = multipreclened, 
+                                           outliers = multiple_spp_out_detection)
 
 ```
 
 
-5. **Extracting clean data from the reference data (precleaned data in step 2).**
+### 5. Extracting clean data from the reference data (precleaned data in step 2).
 
 The user sets a threshold ranging from 0.1 to 1 but its advisable to set a value above 0.5 to include above 50% of the methods. **threshold** is the value indicating the proportion of methods to be used to classify a record as a true outlier. For example, a threshold of 0.6 means that at least in the 4 of the 6 methods noted during outlier detection in step 3. We used the loess method for identifying the optimal threshold.
 
 ```{r extract clean dataset}
 
 multspecies_clean <- extract_clean_data(refdata = multipreclened, 
-                                        outliers = multioutliers, 
+                                        outliers = multiple_spp_out_detection, 
                                         loess =  TRUE)
 head(multspecies_clean)
 
-ttclean<- extract_clean_data(refdata = ttrefdata, outliers = ttoutlier, loess = TRUE)
+thymallus_qcdata <- extract_clean_data(refdata = thymallus_referencedata, 
+                             outliers = thymallus_outlier_detection, 
+                             loess = TRUE)
 
-head(ttclean)
 
-labeldata_mult <- classify_data(refdata = multipreclened, 
-                                outliers = multioutliers, 
+multiple_spp_qcdata <- classify_data(refdata = multipreclened, 
+                                outliers = multiple_spp_out_detection, 
                                 EIF = TRUE)
-head(labeldata_mult)
+head(multiple_spp_qcdata)
 
 
-labeldata_tt <- classify_data(refdata = ttrefdata, outliers = ttoutlier, EIF = TRUE)
-head(labeldata_tt)
+thymallus_qc_labelled <- classify_data(refdata = thymallus_referencedata, 
+                              outliers = thymallus_outlier_detection, 
+                              EIF = TRUE)
+head(thymallus_qc_labelled)
 
 ```
 
-6. **Visualize labeled data in environmental space.**
+### 6. Visualize labeled data in environmental space.
 
-```{r 2d plots, fig.width = 6, fig.height= 5, fig.align='center'}
+```{r 2d plots multiple species, fig.width = 7.5, fig.height= 5.2, fig.align='center'}
 
 #multiple species 
-
-ggenvironmentalspace(qcdata = labeldata_mult, 
+ggenvironmentalspace(qcdata = multiple_spp_qcdata, 
                      xvar = 'bio1', 
                      yvar = "bio18", 
                      xlab = "Annual mean temperature",
@@ -272,9 +279,13 @@ ggenvironmentalspace(qcdata = labeldata_mult,
                      nrow = 2,
                      pointsize = 2)
 
+```
+
+```{r 2d plots single species, fig.width = 5.4, fig.height= 4.2, fig.align='center'}
+
 #for single species
-ggenvironmentalspace(qcdata = labeldata_tt, 
-                     xvar = 'bio1', 
+ggenvironmentalspace(qcdata = thymallus_qc_labelled,
+                     xvar = 'bio1',
                      yvar = "bio18",
                      xlab = "Annual mean temperature",
                      ylab = "Precipitation of Warmest Quarter",
@@ -283,14 +294,23 @@ ggenvironmentalspace(qcdata = labeldata_tt,
 
 ```
 
+
 ### Using bootstrapping during outlier detection
 
-* The number of records **`maxrecords´** in reference dataset for _Thymallus thymallus_ is 99. Therefore, to implement bootstrapping, indicate the maximum higher than the nrows in reference dataset otherwise bootstrap will not be implemented.
-* The number of bootstraps, **`nb´** are user-defined.
+Bootstrapping is a robust approach where the records are randomly sampled with replacement. In this approach, outlier detection is iteratively conducted on bootstrap samples and each record flagged as outlier is weighted based on the total number of bootstraps used. The higher the record is flagged in several across multiple tests, the higher the likelihood of record being an absolute outlier. Although the default number of records at bootstrapping is 30, the maximum number of records can be adjusted by the user as demonstrated below.
+
+**Note**
+
+Bootstrapping is not implemented by the defualt, so the user has to set it run during outlier detection.
+
+* The number of records **maxrecords** in reference dataset for _Thymallus thymallus_ is 99. Therefore, to implement bootstrapping, indicate the maximum number of records higher than the nrows in reference dataset otherwise bootstrap will not be implemented.
+* The number of bootstraps, **nb** are user-defined.
+
+* Bootstrapping was conducted on _Thymallus thymallus_ data because there was no proper separation between the moderate and very strong outliers.
 
 ```{r bootstrappingoutlier detection}
 
-ttoutlierboot <- multidetect(data = ttrefdata,
+thymallus_outlier_boot <- multidetect(data = thymallus_referencedata,
                       multiple = FALSE,
                       var = 'bio6',
                       exclude = c('x','y'),
@@ -305,25 +325,85 @@ ttoutlierboot <- multidetect(data = ttrefdata,
 ```
 ### Visulise outliers after bootstrapping 
 
-```{r visualisationboot, fig.align='center', fig.height=5, fig.width=6, warning=FALSE}
+```{r visualisationboot, fig.align='center', fig.width = 5.4, fig.height= 4.2, warning=FALSE, dpi=400}
 
-ggoutliers(ttoutlierboot)
+ggoutliers(thymallus_outlier_boot)
 
 ```
 
 ### Classify data to obtain labels 
 
-```{r classifyboot, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
+```{r classifyboot, warning=FALSE}
 
-labeldata_boot <- classify_data(refdata = ttrefdata, outliers = ttoutlierboot)
+thymallus_qc_label_boot <- classify_data(refdata = thymallus_referencedata, 
+                                outliers = thymallus_outlier_boot)
 
 ```
 
 ### Visualise after bootstrapping 
 
-```{r ggspaceboot, warning=FALSE, fig.width = 6, fig.height= 5, fig.align='center'}
+```{r ggspaceboot, warning=FALSE, fig.width = 6, fig.height= 3.6, fig.align='center', dpi=400}
 
-ggenvironmentalspace(qcdata = labeldata_boot, 
+ggenvironmentalspace(qcdata = thymallus_qc_label_boot, 
+                     xvar = 'bio1', 
+                     yvar = "bio18",
+                     xlab = "Annual mean temperature",
+                     ylab = "Precipitation of Warmest Quarter",
+                     scalecolor = 'viridis',
+                     pointsize = 2)
+
+```
+
+**Note**
+
+When bootstrapping is applied, the very strong outlier turned into moderate outlier.
+
+### Apply principal component analysis and bootstrapping on _Thymallus thymallus_ data.
+
+* Principal component analyis is a dimension reduction approach vital for highly multidimensional datasets. The user can decide to apply either PCA and bootstrapping or only one of them. 
+
+* The number of principal components to be returned are changed using **npc** argument.
+
+* The visualise the cummulation variance captured in the principal components, the argument **q** is used.
+
+```{r bootpcaoutlier detection}
+
+thymallus_outlier_boot_pca <- multidetect(data = thymallus_referencedata,
+                      multiple = FALSE,
+                      var = 'bio6',
+                      exclude = c('x','y'),
+                      methods = c('zscore', 'adjbox',
+                                  'logboxplot', 'distboxplot',
+                                  'iqr', 'semiqr',
+                                  'hampel','kmeans',
+                                  'jknife', 'onesvm',
+                                  'iforest'),
+                      bootSettings = list(run = TRUE, maxrecords = 100, nb = 10),
+                      pc = list(exec = TRUE, npc = 6, q = FALSE))
+
+```
+### Visulise outliers after bootstrapping and bootstrapping
+
+```{r visualisationbootpca, fig.align='center', fig.width = 5.4, fig.height= 4.2, warning=FALSE, dpi=400}
+
+ggoutliers(thymallus_outlier_boot_pca)
+
+```
+
+### Classify data to obtain labels 
+
+```{r classifybootpca, warning=FALSE}
+
+thymallus_qc_label_boot_pca <- classify_data(refdata = thymallus_referencedata, 
+                                outliers = thymallus_outlier_boot_pca)
+
+```
+
+### Visualise after bootstrapping 
+
+```{r ggspacebootpca, warning=FALSE, fig.width = 6, fig.height= 3.6, fig.align='center', dpi=400}
+
+ggenvironmentalspace(qcdata = thymallus_qc_label_boot_pca, 
                      xvar = 'bio1', 
                      yvar = "bio18",
                      xlab = "Annual mean temperature",
@@ -335,9 +415,10 @@ ggenvironmentalspace(qcdata = labeldata_boot,
 
 **Notes**
 
-When bootstrapping is applied, the very strong outlier was changed to moderate label
+Coupling PCA and bootstrapping are robust approaches to handle outlier detection. In this example, moderate outlier turned into poor outliers. 
 
 
 **References**
+
 1. Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T., & Vieglais, D. (2012). Darwin core: An evolving community-developed biodiversity data standard. PLoS ONE, 7(1). https://doi.org/10.1371/journal.pone.0029715
 

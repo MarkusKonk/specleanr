@@ -7,6 +7,8 @@ specleanr package for outlier detection
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/AnthonyBasooma/specleanr)
+[![GitHub
+Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/specleanr/repo/total.svg)](https://github.com/AnthonyBasooma/specleanr/repo/releases)
 
 <!-- badges: end -->
 

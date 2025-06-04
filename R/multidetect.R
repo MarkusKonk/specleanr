@@ -911,7 +911,10 @@ multidetect <- function(data,
                         bootSettings = list(run=FALSE, nb=5, maxrecords = 30, seed=1135, th = 0.6),
                         pc = list(exec = FALSE, npc=2, q = T, pcvar = 'PC1'),
                         verbose=FALSE, spname=NULL,warn=FALSE,
-                        missingness = 0.1, silence_true_errors = TRUE, sdm = TRUE, na.inform = FALSE){
+                        missingness = 0.1,
+                        silence_true_errors = TRUE,
+                        sdm = TRUE,
+                        na.inform = FALSE){
 
   #check if var is the excluded strings
 

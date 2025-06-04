@@ -13,6 +13,7 @@ ggenvironmentalspace(
   type = "2D",
   xlab = NULL,
   ylab = NULL,
+  zlab = NULL,
   ncol = 1,
   nrow = 1,
   scalecolor = "viridis",
@@ -33,7 +34,7 @@ ggenvironmentalspace(
 )
 }
 \arguments{
-\item{qcdata}{\code{data.frame} Data output from quality controlled function \code{\link{extract_clean_data} and \code{\link{classify_data}}}.}
+\item{qcdata}{\code{dataframe} Data output from quality controlled function \code{\link{extract_clean_data} and \code{\link{classify_data}}}.}
 
 \item{xvar}{\code{string} The variable to be on the x-axis.}
 
@@ -84,8 +85,6 @@ with graph coordinates should be provided to avoid the legend overlap with the g
 \item{lpos3d}{\code{string} Indicates the legend position for the 3D graph. bottom, left, and right are accepted.}
 
 \item{cexsym}{\code{numeric} The size of pch in the 3D plot.}
-
-\item{zlab}{\code{string} z-axis label.}
 }
 \value{
 If "2D" is the selected type, then a ggplot2 graph will be the output and a "3D" type will return a scatterplot3D plot.

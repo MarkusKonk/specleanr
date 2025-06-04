@@ -1,6 +1,6 @@
 #' Title Plotting to show the quality controlled data in environmental space.
 #'
-#' @param qcdata \code{dataframe} Data output from quality controlled function \code{\link{extract_clean_data} and \code{\link{classify_data}}}.
+#' @param qcdata \code{dataframe} Data output from quality controlled function \code{\link{extract_clean_data}} and \code{\link{classify_data}}}.
 #' @param xvar \code{string} The variable to be on the x-axis.
 #' @param yvar \code{string} The variable to be on the y-axis.
 #' @param type \code{string} Its either \code{2D} for a two dimensional ggplot2 graph or \code{3D} for a 3-dimensional graph for multivariate data.
@@ -146,7 +146,7 @@ ggenvironmentalspace <- function(qcdata,
 
       {if(is.null(xlab))ggplot2::xlab(label = xvar) else ggplot2::labs(x = xlab)}+
 
-      {if(is.null(ylab))ggplot2::ylab(label = yvar) else ggplot2::labs(x = ylab)}+
+      {if(is.null(ylab))ggplot2::ylab(label = yvar) else ggplot2::labs(y = ylab)}+
 
       ggplot2::ggtitle(label = main)
 
