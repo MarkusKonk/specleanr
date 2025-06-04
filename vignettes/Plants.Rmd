@@ -25,7 +25,7 @@ library(specleanr)
 
 To test the workflow on two plant species, namely the black poplar (*Populus nigra*) , which is a pioneer wind-pollinated deciduous tree from the Salicaceae family (de Rigo et al., 2016). The tree is distributed across Europe, Asia, and northern Africa (de Rigo et al., 2016; Harvey-Brown et al., 2017) and predominantly in flood plains in mixed forests (Harvey-Brown et al., 2017). The mature tree lives up to 300 to 400 years (de Rigo et al., 2016), and it has been assessed as data deficient according to IUCN RedList (Harvey-Brown et al., 2017). Secondly, we considered the European beech or common beech (*Fagus sylvatica*), which is also a deciduous hardy tree species that can tolerate various soil habitats but is not tolerant of waterlogged areas (Barstow et al., 2018). Although mature individuals have declined, the tree species IUCN RedList threat status is assessed as Least Concern (Barstow et al., 2018).
 
-1. **Data acquisition: a) species records**
+### 1. Data acquisition: a) species records
 
 Data was retrieved from the iNaturalist (https://www.inaturalist.org/) and Global Biodiversity Information Facility-GBIF (https://www.gbif.org/). We use the **`getdata()`** function, built around rvertnet, rgbif, and rinat packages. We limited the occurrence records from GBIF to 700 and iNaturalist to 100. 
 * **Note**: If the user has locally saved data, then after extracting the online data, the **`match_datasets()`** function can be used to merge all the data sets. 
@@ -42,7 +42,7 @@ plantdf <- getdata(data = c( "Populus nigra", "Fagus sylvatica"),
 
 
 ```
-1. **Data acquisition: b) Environmental predictors**
+### 1. Data acquisition: b) Environmental predictors
 
 We used WORLDCLIM data archived in the package to enable users to test the package functions seamlessly. For direct interaction with the WORDCLIM data, please visit (https://www.worldclim.org/) and the **`geodata`** package for download in user-customized workflows. WORLDCLIM data has 19 bioclimatic variables (https://www.worldclim.org/data/bioclim.html) (Amatulli et al., 2022), including 
 
@@ -77,7 +77,7 @@ worldclim <- terra::rast(worldclim)
 
 ```
 
-2. **Preliminary analysis**
+### 2. Preliminary analysis
 
 The step involves removing missing coordinate values, setting the geographical range for the data collated in **1.a**, if the user did not set the bounding box during data download. After that, the environmental data predictors are extracted. The user can set either parameter **list = TRUE** to return a list of datasets for each species, if multiple species are considered, or **list = FALSE** to return a combined dataframe. The Danube basin was collated from the Hydrography90m basin files (https://hydrography.org/hydrography90m/hydrography90m_layers).
 
@@ -111,13 +111,13 @@ fagus_data_reference <-  pred_extract(data= fagus_data_filtered,
 
 ```
 
-3. **Detecting outliers using multiple outlier detection methods**
+### 3. Detecting outliers using multiple outlier detection methods
+
 * To detect outliers we selected ensembled seven outlier detection methods at least from different categories i.e., 1) **univariate methods**: adjusted boxplot **`adjbox()`**, Hampel filter: **`hampel()`**, Z-score **`zscore()`** and reverse jackknifing **`jknife()`**; 2) **Multivariate methods or machine learning models**: local outlier factor: **`lof()`**, K-means: **`kmeans()`**, and Mahalanobis distance measure **`mahal()`**.
 
 ```{r oultlier detection}
 
 #Flag outlier in single species data (multiple = TRUE)
-
 multspp_outliers <- multidetect(data = multspreference_data,
                        multiple = TRUE,
                        var = 'bio1',
@@ -139,7 +139,7 @@ fagus_outliers <- multidetect(data = fagus_data_reference,
                        silence_true_errors = FALSE, warn = F, verbose = F)
 
 ```
-**Visualizing outliers flagged by each method**
+### Visualizing outliers flagged by each method
 
 The plots are wrapped on a ggplot2 object and extensible with ggplot2 parameters. The **`ggoultiers()`** takes in 3 parameters: **1: x** the outlier object of **`datacleaner class`**; **2: y** the index or species name if the outlier has more than one species, and **3: raw** to either indicate the number of outlier if **TRUE** or proportional or outliers flagged about total number of occurrences if **FALSE**
 
@@ -151,7 +151,7 @@ ggoutliers(x=multspp_outliers)
 ggoutliers(x= fagus_outliers)
 
 ```
-**Identify the best threshold using loess model.**
+### Identify the best threshold using loess model.
 
 ```{r threshold identifcation, fig.width = 6, fig.height= 4, fig.align='center'}
 
@@ -161,12 +161,9 @@ optimal1<- optimal_threshold(refdata = fagus_data_reference, outliers = fagus_ou
 optimalthreshold <- optimal_threshold(refdata = multspreference_data, outliers = multspp_outliers, plot = FALSE)
 ```
 
+### 4. Extracting clean data set after outlier detection
 
-*Indicate the best methods obtained for each species 
-
-4. **Extracting clean data set after outlier detection**
-
-The mode can be set to **mode = abs** to discard only absolute outliers or **mode = best** to use the best method. The outlier flagged by the best method will be used to clean the data. For more information, check (B....2024).
+* The mode can be set to **mode = abs** to discard only absolute outliers or **mode = best** to use the best method. The outlier flagged by the best method will be used to clean the data. For more information, check (Basooma et al., 2025).
 
 ```{r extract outliers from clean dataset}
 
@@ -203,7 +200,7 @@ ggenvironmentalspace(qcdata = fagus_qc_label,
 
 ```
 
-```{r 2d plots multiple species, fig.width = 5.4, fig.height= 4.2, fig.align='center'}
+```{r 2d plots multiple species, fig.width = 7.4, fig.height= 4.2, fig.align='center'}
 
 #for single species
 ggenvironmentalspace(qcdata = multspp_qc_label,
@@ -219,7 +216,7 @@ ggenvironmentalspace(qcdata = multspp_qc_label,
 
 ### Visualising records in environmental space in 3d
 
-```{r 3d plots single species, fig.width = 5.4, fig.height= 4.2, fig.align='center'}
+```{r 3d plots single species, fig.width = 7.4, fig.height= 4.2, fig.align='center'}
 
 #for single species
 ggenvironmentalspace(qcdata = fagus_qc_label,
@@ -232,6 +229,7 @@ ggenvironmentalspace(qcdata = fagus_qc_label,
                      ylab = "Precipitation of Warmest Quarter",
                      zlab = "Min Temperature of Coldest Month",
                      scalecolor = 'viridis',
+                     lpos3d = "right",
                      pointsize = 2)
 
 ```
