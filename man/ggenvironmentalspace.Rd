@@ -29,7 +29,7 @@ ggenvironmentalspace(
   xvjust = 1,
   main = NULL,
   pch = "auto",
-  lpos3d = NULL,
+  lpos3d = "left",
   cexsym = NULL
 )
 }

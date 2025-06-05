@@ -143,7 +143,7 @@ matchdata <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
                             country = c('JDS4_site_ID'))
 
 
-datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
+datacheck <- check_names(matchdata, colsp = 'species', pct = 90, merge =TRUE)
 
 
 danube <- system.file('extdata/danube.shp.zip', package='specleanr')
@@ -156,13 +156,12 @@ worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='speclean
 rdata <- pred_extract(data = datacheck,
                      raster= worldclim ,
                      lat = 'decimalLatitude',
-                    lon= 'decimalLongitude',
-                    colsp = 'speciescheck',
-                    bbox = db,
-                     multiple = TRUE,
-                    minpts = 10,
-                    list=TRUE,
-                    merge=F)
+                     lon= 'decimalLongitude',
+                     colsp = 'speciescheck',
+                     bbox = db,
+                     minpts = 10,
+                     list=TRUE,
+                     merge=F)
 
 
 out_df <- multidetect(data = rdata, multiple = TRUE,
