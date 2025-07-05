@@ -2,9 +2,9 @@
 ## the specleanr package, to be run from the pygeoapi platform.
 ##
 ## Package by Anthony Basooma, BOKU Vienna.
-## R script by Merret Buurman, IGB Berlin
+## R script by Merret Buurman, IGB Berlin and Anthony Basooma, BOKU Vienna.
 ##
-## AquaINFRA Project, October 2024
+## AquaINFRA Project, October 2025
 ##
 
 
@@ -18,32 +18,52 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path       = args[1] #can be a dataset or species list. If species list then the colsp is empty
-in_species_names   = args[2] # 
-in_gbif_lim        = args[3] # e.g. "50"
-in_inat_lim        = args[4] # e.g. "50"
-in_vert_lim        = args[5] # e.g. "50"
-out_result_path    = args[6]
+in_data_path        = args[1] #can be a dataset or species list. If species list then the colsp is empty
+in_species_column   = args[2] # if the data is a dataframe then the colsp should be provided. Otherwise NULL by default
+in_database         = args[3] #databases to consider (gbif, inat, and vertnet)
+in_gbif_lim         = args[4] # e.g. "50"
+in_inat_lim         = args[5] # e.g. "50"
+in_vert_lim         = args[6] # e.g. "50"
+in_verbose          = args[7] # logical TRUE or FALSE: EXECUTION messages
+in_extent           = args[8] #provide either a shaepfile to act as a polygon bounding box or use a bounding box (xmin, ymin, xmax, ymax)
+in_percent_correct  = as.numeric(args[9]) #allowed percentage correctness of species names. Used for checknames fn
+in_synonym_check    = arsg[10] #allow synoymns or not from FishBase
+in_warn_check       = args[11] #logical
+out_result_path     = args[11]
 
-data, colsp = NULL, extent = NULL,
-                     db = c("gbif", 'vertnet', 'inat'),
-                     gbiflim = 5e4, vertlim = 1e3,
-                     inatlim =3e3, verbose= FALSE, warn =FALSE, pct = 80, sn = F
 
-
-# (1) Read data from shapefile
+#check if the bounding box is provided in a form of vector (xmin, ymin, xmax, ymax). otherwise load from shapefile
+if(is(in_extent, 'vector')){
+study_area = in_extent
+}else{
+  # (1) Read data from shapefile
 # TODO Test, can st_read also read GeoJSON? It should?
 print(paste('Reading input data from shapefile or GeoJSON:', in_data_path))
 #print(paste('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", ")))
 study_area <- sf::st_read(in_data_path, quiet=TRUE)
 #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
+}
 
 
-# (2) Remove spaces and split:
+
+
+if(!is(in_data_path, 'vector')){
+speciesdata <- sf::st_read(in_data_path, quiet=TRUE)
+}else{
+  # (2) Remove spaces and split:
 print(paste('Splitting input arg species names...'))
-in_species_names = gsub(", ", ",", in_species_names, fixed = TRUE)
-in_species_names = gsub(" ,", ",", in_species_names, fixed = TRUE)
-in_species_names = strsplit(in_species_names, ",")[[1]]
+in_data_path = gsub(", ", ",", in_data_path, fixed = TRUE)
+in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
+speciesdata = strsplit(in_data_path, ",")[[1]]
+}
+
+
+#database list
+in_database = gsub(", ", ",", in_database, fixed = TRUE)
+in_database = gsub(" ,", ",", in_database, fixed = TRUE)
+in_database = strsplit(in_database, ",")[[1]]
+
+
 
 
 # (3) Make limits numeric
@@ -55,12 +75,18 @@ in_vert_lim = as.numeric(in_vert_lim)
 # (3) Run getdata:
 print('Running specleanr::getdata...')
 df_online <- getdata(
-  data = in_species_names, 
-  extent = study_area,
-  gbiflim = in_gbif_lim,
-  inatlim = in_inat_lim,
-  vertlim = in_vert_lim,
-  verbose = F)
+  data     = speciesdata, 
+  colsp    = in_species_column,
+  extent   = study_area,
+  db       = in_database
+  gbiflim  = in_gbif_lim,
+  inatlim  = in_inat_lim,
+  vertlim  = in_vert_lim,
+  verbose  = in_verbose,
+  sn = in_synonym_check,
+  warn = in_warn_check,
+  pct =  in_percent_correct
+  )
 print('Running specleanr::getdata... DONE.')
 
 
