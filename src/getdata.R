@@ -18,12 +18,17 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path = args[1]
-in_species_names = args[2] # e.g. "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla"
-in_gbif_lim = args[3] # e.g. "50"
-in_inat_lim = args[4] # e.g. "50"
-in_vert_lim = args[5] # e.g. "50"
-out_result_path = args[6]
+in_data_path       = args[1] #can be a dataset or species list. If species list then the colsp is empty
+in_species_names   = args[2] # 
+in_gbif_lim        = args[3] # e.g. "50"
+in_inat_lim        = args[4] # e.g. "50"
+in_vert_lim        = args[5] # e.g. "50"
+out_result_path    = args[6]
+
+data, colsp = NULL, extent = NULL,
+                     db = c("gbif", 'vertnet', 'inat'),
+                     gbiflim = 5e4, vertlim = 1e3,
+                     inatlim =3e3, verbose= FALSE, warn =FALSE, pct = 80, sn = F
 
 
 # (1) Read data from shapefile

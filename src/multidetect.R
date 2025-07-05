@@ -23,15 +23,15 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path_or_url             = args[1] # req
-in_colname_var            = args[2] # req     e.g. "Sepal.Length
-in_select_var             = args[3] # opt     if only particular columns are needed form the datasest
-in_bool_multiple_species  = args[4] # opt     e.g. "TRUE"
-in_output_type            = args[5] # req_set e.g., clean or outlier#defualt outlier
-in_group_columnname       = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species
-in_colnames_exclude       = args[7] # opt     e.g.exclude irrelevant columns mostly important for multidimensional data e.g. ID, SN, x, y etc
-in_methods                = args[8] # req     e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
-in_silence_true_errors    = args[9] # req_set e.g. "TRUE"
+in_data_path_or_url                  = args[1] # req
+in_colname_var                       = args[2] # req     e.g. "Sepal.Length
+in_select_var                        = args[3] # opt     if only particular columns are needed form the datasest
+in_bool_multiple_species             = args[4] # opt     e.g. "TRUE"
+in_output_type                       = args[5] # req_set e.g., clean or outlier#defualt outlier
+in_group_columnname                  = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species
+in_colnames_exclude                  = args[7] # opt     e.g.exclude irrelevant columns mostly important for multidimensional data e.g. ID, SN, x, y etc
+in_methods                           = args[8] # req     e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
+in_silence_true_errors               = args[9] # req_set e.g. "TRUE"
 in_ecoranges_settings_df             = args[10]  #opt dataframe with ranges: optional unless ecoranges used
 in_ecoranges_settings_ecoparam       = args[11]  #opt ecorange param used e.g temp opt unless ecoranges used
 in_ecoranges_settings_optspcol       = args[12]  #opt unless ecoranges used
@@ -77,8 +77,24 @@ in_warn_bool                  = args[46] #return warning msgs
 in_spname_auto                = args[47] #auto detected
 in_sdm_bool                   = args[48] # if multidimensional data then its TRUE. univariate data sdm is F
 in_na.inform_bool             = args[49] # msgs on handling NAs defualt FALSE
-in_missingness            = as.numeric(args[51]) #req_adj# e.g. 0.1
-50
+in_missingness                = as.numeric(args[51]) #req_adj# e.g. 0.1
+
+#parameter for extracting clean data
+
+in_bool_loess                 =   args[52] #e.g.g TRUE or FALSE
+in_threshold_clean            =   args[53] #defualt is 0.8
+in_mode_clean                 =   args[54]#e.g. 'abs', "best"
+in_outliertoNA_bool           =   args[55]     
+in_classifymode               =   args[56] #default med
+in_eif_bool                   =   args[57] #e.g. F/T  
+in_autothreshold_bool         =   args[58] 
+in_percent_abs                =   as.numeric(args[59])    #ranges 0.1 to 1 
+
+
+#classify data 
+
+
+
 ###=========
 #Extrain clean data
 #===========
@@ -121,6 +137,10 @@ in_pca_settings_exec_bool  = "true"
 in_boot_settings_run_bool  = "true"
 in_ecoranges_settings_checkFB_bool = "true"
 in_pca_settings_quiet      = "true"
+in_bool_loess              =  "true"
+in_outliertoNA_bool        =  "true"   
+in_eif_bool                =  "true" 
+in_autothreshold_bool      =  "true"
 
 
 
@@ -134,6 +154,10 @@ in_boot_settings_run_bool  = tolower(in_boot_settings_run_bool) == 'true'
 in_ecoranges_settings_checkFB_bool = tolower(in_ecoranges_settings_checkFB_bool) == 'true'
 in_verbose_bool            = tolower(in_verbose_bool) == 'true'
 in_pca_settings_quiet      = tolower(in_pca_settings_quiet) == 'true'
+in_bool_loess              = tolower(in_bool_loess ) == 'true'
+in_outliertoNA_bool        = tolower(in_outliertoNA_bool) == 'true'
+in_eif_bool                = tolower(in_eif_bool) == 'true'
+in_autothreshold_bool      = tolower(in_autothreshold_bool) == 'true'
 
 
 in_optpar = list(optdf = in_ecoranges_settings_df, ecoparam = in_ecoranges_settings_ecoparam,
@@ -268,12 +292,32 @@ if (tolower(in_threshold) == 'null') {
 }
 print(paste('Running specleanr::extract_clean_data...'))
 cleandata2 <- extract_clean_data(
-  refdata = dfinal,
-  outliers = outlieriris_mult,
-  loess = in_bool_loess,
-  threshold = in_threshold,
-  var = in_colname_species)
+  refdata             = dfinal,
+  outliers            = outlieriris_mult,
+  mode                = in_mode_clean,
+  var_col             = in_group_columnname,
+  threshold           = in_threshold_clean,
+  warn                = in_warn_bool,
+  verbose             = in_verbose_bool,
+  autothreshold       = in_autothreshold_bool,
+  pabs                = in_percent_abs,
+  loess               = in_bool_loess,
+  outlier_to_NA       = in_outliertoNA_bool
+)
 print(paste('Running specleanr::extract_clean_data... DONE.'))
+
+
+classifyout <- classify_data(
+  refdata     = dfinal,
+  outliers    = outlieriris_mult,
+  var_col     = in_group_columnname,
+  threshold   = in_threshold_clean,
+  warn        = in_warn_bool,
+  verbose     = in_verbose_bool,
+  classify    = in_classifymode,
+  EIF         = in_eif_bool
+)
+
 
 
 # (6) Write summary to txt file
@@ -288,6 +332,9 @@ print(paste('Running specleanr::extract_clean_data... DONE.'))
 print(paste0('Write result to csv file: ', out_result_path))
 data.table::fwrite(cleandata2 , file = out_result_path)
 
+#=========================================
+#PROVIDE MODE TO ALLOW DATA CLASSIFICATION
+#==========================================
 
 
 #> outlieriris_mult

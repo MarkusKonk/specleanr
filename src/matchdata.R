@@ -26,16 +26,22 @@ library(specleanr)
 #data.table::fwrite(df_online , file = './df_online.csv')
 
 
-
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path_or_url_online = args[1]
-in_data_path_or_url_user = args[2]
-in_colnames_species_names = args[3] # e.g. "speciesname, scientificName"
-in_colnames_countries = args[4] # e.g. "JDS4_sampling_ID"
-in_colnames_lat = args[5] # e.g. "lat, lati"
-in_colnames_lon = args[6] # e.g. "lon, long"
-out_result_path = args[7]
+in_data_path_or_url_online   = args[1]
+in_data_path_or_url_user     = args[2]
+in_colnames_species_names    = args[3] # e.g. "speciesname, scientificName"
+in_colnames_countries        = args[4] # e.g. "JDS4_sampling_ID"
+in_colnames_lat              = args[5] # e.g. "lat, lati"
+in_colnames_lon              = args[6] # e.g. "lon, long"
+out_result_path              = args[7]
+in_verbose_bool              = args[8]
+
+in_verbose_bool      =  "true"
+
+
+
+in_verbose_bool   = tolower(in_verbose_bool) == 'true'
 
 
 # (1) Remove spaces and split:
@@ -70,6 +76,14 @@ mergealldfs <- match_datasets(
   lats = in_colnames_lat,
   lons = in_colnames_lon,
   species = in_colnames_species_names)
+
+  datasets,
+  country = NULL,
+  lats = NULL,
+  lons = NULL,
+  species = NULL,
+  date = NULL,
+  verbose = FALSE
 print('Running specleanr:match_datasets... DONE.')
 
 # mergealldfs <- match_datasets(
