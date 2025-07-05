@@ -17,17 +17,23 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path_or_url = args[1]
-in_raster_path = args[2]
-in_shape_path = args[3]
-in_colname_lat = args[4] # e.g. "decimalLatitude"
-in_colname_lon = args[5] # e.g. "decimalLongitude"
-in_colname_species = args[6] # e.g. "speciescheck"
-in_min_pts = args[7] # e.g. "10"
-in_bool_merge = args[8] # e.g. "FALSE"
-in_bool_list = args[9] # e.g. "TRUE"
+in_data_path_or_url  = args[1]
+in_raster_path       = args[2]
+in_bbox_path         = args[3]
+in_colname_lat       = args[4] # e.g. "decimalLatitude"
+in_colname_lon       = args[5] # e.g. "decimalLongitude"
+in_colname_species   = args[6] # e.g. "speciescheck"
+in_min_pts           = args[7] # e.g. "10"
+in_bool_merge        = args[8] # e.g. "FALSE"
+in_bool_list         = args[9] # e.g. "TRUE"
+in_bool_verbose      = args[10] #logical, FALSE
+in_bool_warn         = args[11] #logical, FALSE
+in_bool_coords       = args[12] #logical, FALSE
+in_na_inform         = args[13] #logical, FALSE
+in_na_rm             = args[14] #logical, FALSE
+in_rm_duplicates     = args[15] #logical, FALSE
+in_minimumpts_rm     = args[16] #logical, FALSE
 out_result_path = args[10]
-
 
 
 # (1) Read data from CSV or from URL
@@ -43,8 +49,8 @@ worldclim <- terra::rast(in_raster_path)
 
 # (3) Read bbox from shapefile
 # TODO: Whole shapefile just for bbox? Better?
-print(paste('Reading input data from shapefile, from:', in_shape_path))
-study_area <- sf::st_read(in_shape_path, quiet=TRUE)
+print(paste('Reading input data from shapefile, from:', in_bbox_path))
+study_area <- sf::st_read(in_bbox_path, quiet=TRUE)
 #danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
 
@@ -71,8 +77,16 @@ multiprecleaned <- pred_extract(
   bbox  = study_area,  
   list = in_bool_list, 
   minpts = as.numeric(in_min_pts),
-  merge = in_bool_merge)
+  mp     = in_minimumpts_rm,
+  rm_duplicates = in_rm_duplicates,
+  merge = in_bool_merge,
+  warn = in_bool_warn,
+  verbose= in_bool_verbose,
+  coords = in_bool_coords,
+  na.inform = in_na.inform,
+  na.rm = in_na_rm)
 print('Running specleanr::pred_extract... DONE.')
+
 
 #multipreclened <- pred_extract(
 #  data= speciesfiltered, 

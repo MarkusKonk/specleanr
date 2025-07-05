@@ -105,6 +105,19 @@ class DataRetrievalProcessor(BaseProcessor):
         inaturalist_limit = data.get('inaturalist_limit', 50)
         vertnet_limit = data.get('vertnet_limit', 50)
 
+        #corrections
+        data     = speciesdata, 
+        colsp    = in_species_column,
+        extent   = study_area,
+        db       = in_database
+        gbiflim  = in_gbif_lim,
+        inatlim  = in_inat_lim,
+        vertlim  = in_vert_lim,
+        verbose  = in_verbose,
+        sn = in_synonym_check,
+        warn = in_warn_check,
+        pct =  in_percent_correct
+
         # Checks
         if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
