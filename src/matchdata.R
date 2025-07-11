@@ -34,12 +34,12 @@ in_colnames_species_names    = args[3] # e.g. "speciesname, scientificName"
 in_colnames_countries        = args[4] # e.g. "JDS4_sampling_ID"
 in_colnames_lat              = args[5] # e.g. "lat, lati"
 in_colnames_lon              = args[6] # e.g. "lon, long"
-out_result_path              = args[7]
+in_colnames_date             = args[7]
 in_verbose_bool              = args[8]
+out_result_path              = args[9]
+
 
 in_verbose_bool      =  "true"
-
-
 
 in_verbose_bool   = tolower(in_verbose_bool) == 'true'
 
@@ -58,6 +58,10 @@ in_colnames_lat = strsplit(in_colnames_lat, ",")[[1]]
 in_colnames_lon = gsub(", ", ",", in_colnames_lon, fixed = TRUE)
 in_colnames_lon = gsub(" ,", ",", in_colnames_lon, fixed = TRUE)
 in_colnames_lon = strsplit(in_colnames_lon, ",")[[1]]
+in_colnames_date = gsub(", ", ",", in_colnames_date, fixed = TRUE)
+in_colnames_date = gsub(" ,", ",", in_colnames_date, fixed = TRUE)
+in_colnames_date = strsplit(in_colnames_date, ",")[[1]]
+
 
 
 # (2) Read data from CSV or from URL
@@ -70,20 +74,15 @@ data_from_user <- data.table::fread(in_data_path_or_url_user)
 print('Running specleanr:match_datasets...')
 mergealldfs <- match_datasets(
   datasets = list(
-    user = data_from_user,
+    user = data_from_user, #the user and onlinedate will create a column to label data in that way.
     onlinedata = df_online),
   country = in_colnames_countries,
   lats = in_colnames_lat,
   lons = in_colnames_lon,
-  species = in_colnames_species_names)
+  species = in_colnames_species_names,
+  date = in_colnames_date,
+  verbose = in_verbose_bool)
 
-  datasets,
-  country = NULL,
-  lats = NULL,
-  lons = NULL,
-  species = NULL,
-  date = NULL,
-  verbose = FALSE
 print('Running specleanr:match_datasets... DONE.')
 
 # mergealldfs <- match_datasets(
@@ -95,7 +94,6 @@ print('Running specleanr:match_datasets... DONE.')
 #  lats = c('lat', 'lati'),
 #  lons = c('lon', 'long', 'lo'),
 #  species = c('speciesname', 'scientificName'))
-
 
 # (4) Write the result to csv file:
 print(paste0('Write result to csv file: ', out_result_path))

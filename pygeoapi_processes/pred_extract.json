@@ -38,7 +38,7 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "study_area": {
+        "study_area_extent": {
             "title": "Area of Interest (Shapefile)",
             "description": "URL to the input shapefile containing the study areas inside which you would like to delineate the bounding box or extent for study area.",
             "schema": {
@@ -98,7 +98,7 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "min_pts": {
+        "mininmum_sprecords": {
             "title": "Min pts to consider the species dataframe.",
             "description": "The minimum number of points in a dataframe to allow aspecies retained in the dataframe. Example: 10, is species dataset is less than 10 records will be rejected.",
             "schema": {
@@ -108,9 +108,9 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "bool_multiple_species": {
-            "title": "Either multiple or single species.",
-            "description": "If true, then the number of species must be greater than 1.",
+        "minimum_sprecordsallow": {
+            "title": "Logical to either species with fewer records",
+            "description": "In species distribution models, species with fewer records needs to be removed but normal data extraction this parameter should be set to FALSE to retain all species.",
             "schema": {
                 "type": "boolean"
             },
@@ -131,6 +131,66 @@
         "bool_list": {
             "title": "Return a list of dataframe for species if they are more than 1.",
             "description": "For multiple species, if set to TRUE, then a list of species dataframes are returned. If false, then a dataframe is returned.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_verbose": {
+            "title": "Returns data extraction messages.",
+            "description": "If TRUE, detailed species level messages will be returend to the user.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_warn": {
+            "title": "Returns data extraction warnings.",
+            "description": "If TRUE, detailed species level warnings will be returend to the user especially when species with fewer records are dropped from the dataset.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_coords": {
+            "title": "Logical to attach the original coordinates.",
+            "description": "If TRUE, the original records used for data extraction will be attached on the dataset. Easy to tract the slight changes in coordinates during data extraction.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_rm_nainform": {
+            "title": "Remove NAs after data extraction.",
+            "description": "If TRUE, the usser will informed about NAs created when the coordinates didnot retrun records. Default FALSE",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_remove_nas": {
+            "title": "Remove NAs after data extraction.",
+            "description": "If TRUE, the NAs created when the coordinates didnot retrun records and left in the dataset. Default TRUE",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_remove_duplicates": {
+            "title": "Remove duplicates.",
+            "description": "If TRUE, duplicates records will be removed. Default TRUE",
             "schema": {
                 "type": "boolean"
             },

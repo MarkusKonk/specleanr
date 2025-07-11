@@ -116,16 +116,24 @@ class PredExtractProcessor(BaseProcessor):
         # Get user inputs
         input_data_url = data.get('input_data')
         input_raster_url_or_name = data.get('input_raster_url_or_name') # TODO: Get from data lake?
-        study_area_shp_url = data.get('study_area')
+        study_area_shp_url = data.get('study_area_extent')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
         colname_lat = data.get('colname_lat')
         colname_lon = data.get('colname_lon')
         colname_species = data.get('colname_species')
-        min_pts = data.get('min_pts')
-        bool_multiple_species = data.get('bool_multiple_species')
-        bool_merge = data.get('bool_merge')
+        mininmum_sprecords = data.get('mininmum_sprecords')
+        minimum_sprecordsallow = data.get("minimum_sprecordsallow")
+        bool_remove_duplicates = data.get("bool_remove_duplicates")
+        bool_remove_nas = data.get('bool_remove_nas')
+        bool_rm_nainform = data.get('bool_rm_nainform')
         bool_list = data.get('bool_list')
+        bool_merge = data.get('bool_merge')
+        bool_verbose = data.get('bool_verbose')
+        bool_warn = data.get('bool_warn')
+        bool_coords = data.get('bool_coords')
+        
+
 
 
         # Checks
@@ -141,10 +149,8 @@ class PredExtractProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "colname_lon". Please provide a column name.')
         if colname_species is None:
             raise ProcessorExecuteError('Missing parameter "colname_species". Please provide a column name.')
-        if min_pts is None:
-            raise ProcessorExecuteError('Missing parameter "min_pts". Please provide a number.')
-        if bool_multiple_species is None:
-            raise ProcessorExecuteError('Missing parameter "bool_multiple_species". Please provide "true" or "false".')
+        if mininmum_sprecords is None:
+            raise ProcessorExecuteError('Missing parameter "mininmum_sprecords". Please provide a number.')
         if bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
         if bool_list is None:
@@ -198,17 +204,25 @@ class PredExtractProcessor(BaseProcessor):
 
         # Assemble args for R script:
         r_args = [
-            input_csv_path,
+            input_data_url,
             input_raster_path,
             input_polygons_path,
             colname_lat,
             colname_lon,
             colname_species,
-            str(min_pts),
+            str(mininmum_sprecords),
             bool_merge,
             bool_list,
+            bool_verbose,
+            bool_warn,
+            bool_coords,
+            bool_rm_nainform,
+            bool_remove_nas,
+            bool_remove_duplicates,
+            minimum_sprecordsallow,
             result_filepath
         ]
+
 
         # Run the docker:
         returncode, stdout, stderr, user_err_msg = run_docker_container(

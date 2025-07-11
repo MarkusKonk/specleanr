@@ -19,7 +19,7 @@
     }],
     "inputs": {
 
-            "speciesdata": {
+            "input_data": {
             "title": "Data with species names to download",
             "description": "URL to the input dataframe or directly indicating a vector of species names. If dataframe, provide species column names",
             "schema": {
@@ -29,7 +29,7 @@
             "maxOccurs": 1,
             "keywords": ["dataframe", "string"]
         },
-        "in_species_column": {
+        "colnames_species": {
             "title": "Species column name",
             "description": "If the data provided in the data path is a dataframe, indicate here the column name with species names.",
             "schema": {
@@ -39,7 +39,7 @@
             "maxOccurs": 1,
             "keywords": ["string"]
         },
-        "study_area": {
+        "study_area_extent": {
             "title": "Area of Interest (Shapefile)",
             "description": "URL to the input shapefile containing the study areas inside which you would like to retrieve occurrences",
             "schema": {
@@ -69,7 +69,7 @@
             "maxOccurs": 1,
             "keywords": ["JSON", "GeoJSON"]
         },
-        "in_database": {
+        "databases": {
             "title": "Database names",
             "description": "List of databases to consider. Only \"gbif, inat, and vertnet\" supported",
             "schema": {
@@ -79,7 +79,7 @@
             "maxOccurs": 1,
             "keywords": ["databases"]
         },
-        "in_verbose": {
+        "verbose": {
             "title": "Show messages from checking species names",
             "description": "Logical, TRUE if the messages to be displayed or FALSE for no messages.",
             "schema": {
@@ -89,7 +89,7 @@
             "maxOccurs": 1,
             "keywords": ["messasges"]
         },
-         "in_warn_check": {
+         "warn_checks": {
             "title": "Show warnings during data download",
             "description": "Logical, TRUE if the messages to be displayed or FALSE for no messages.",
             "schema": {
@@ -99,7 +99,7 @@
             "maxOccurs": 1,
             "keywords": ["warn"]
         },
-        "in_synonym_check": {
+        "synonym_checks": {
             "title": "Either consider synonym from standard databases like FishBase.",
             "description": "Logical, TRUE if synoymns species names should be returned during data checks before data download.",
             "schema": {
@@ -109,7 +109,7 @@
             "maxOccurs": 1,
             "keywords": ["synonym"]
         },
-        "in_percent_correct": {
+        "percentage_correctness": {
             "title": "Allowed percentage name correctness.",
             "description": "An integer indicating the percentage of species name corretness that should be allowed to be replaced. High values ensures a perfect match from the standard database.",
             "schema": {

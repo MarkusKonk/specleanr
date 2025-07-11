@@ -17,13 +17,16 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path = args[1]
-in_colname_species = args[2] # e.g. "species"
-in_species_names = args[3] # e.g. "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla"
-in_pct = args[4] # e.g. "70"
-in_bool_merge = args[5] # e.g. "true"
-out_result_path_names = args[6]
-out_result_path_filtered = args[7]
+in_data_path              = args[1]
+in_colname_species        = args[2] # e.g. "species"
+in_percent_correctness    = args[3] # e.g. "70"
+in_bool_merge             = args[4] # e.g. "true"
+in_bool_verbose           = args[5] #logical
+in_synonymn_checks        = args[6] #logical
+in_ecosystem_checks       = args[7] #logical
+in_rm_duplicates          = args[8] #logical
+out_result_path_names     = args[9] 
+out_result_path_filtered  = args[10]
 
 
 # (1) Read data from CSV or from URL
@@ -32,7 +35,7 @@ mergealldfs <- data.table::fread(in_data_path)
 
 
 # (2) Make string booleans boolean
-in_bool_merge = tolower(in_bool_merge) == 'true'
+in_bool_merge = tolower(in_bool_merge) == 'true' #confirms this
 
 
 # (3) Remove spaces and split:
@@ -44,7 +47,15 @@ in_species_names = strsplit(in_species_names, ",")[[1]]
 
 # (4) Run check_names:
 print('Running specleanr::check_names...')
-cleannames_df <- check_names(data = mergealldfs, colsp = in_colname_species, pct = as.numeric(in_pct), merge = in_bool_merge)
+cleannames_df <- check_names(data = mergealldfs, 
+colsp = in_colname_species, 
+pct = as.numeric(in_pct), 
+merge = in_bool_merge,
+verbose = in_bool_verbose,
+sn = in_synonymn_checks,
+ecosystem = in_ecosystem_checks,
+rm_duplicates = in_rm_duplicates
+)
 #cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE)
 print('Running specleanr::check_names... DONE.')
 

@@ -13,9 +13,9 @@ curl --location 'https://localhost:5000/processes/check-names/execution' \
     "inputs": {
         "input_data": "https://localhost:5000/download/out/matched-biodiv-data.csv",
         "colname_species": "species",
-        "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
-        "pct": 70,
-        "bool_merge": true
+        "percent_correctness": 70,
+        "bool_merge": true,
+        "bool_synonymn": true
     }
 }'
 
@@ -54,27 +54,19 @@ class NameCheckProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        input_data_url = data.get('input_data')
-        colname_species = data.get('colname_species')
-        species_names = data.get('species_names')
-        pct = data.get('pct')
-        bool_merge = data.get('bool_merge')
+        input_data_url        = data.get('input_data')
+        colname_species       = data.get('colname_species')
+        percent_correctness   = data.get('percent_correctness')
+        bool_merge            = data.get('bool_merge')
+        bool_verbose          = data.get('bool_verbose')
+        bool_synonymn         = data.get('bool_synonymn')
+        bool_ecosystem_type   = data.get('bool_ecosystem_type')
+        bool_rmduplicates     = data.get('bool_rmduplicates')
+
 
         # Checks
-        # Either species name OR input data + colname have to be provided!
-        if species_names is None:
-            if (input_data_url is None) or (colname_species is None):
-                err_msg = 'Missing inputs. Please provide either "species_names" or both "input_data" and "colname_species".'
-                LOGGER.error(err_msg)
-                raise ProcessorExecuteError(err_msg)
-        else:
-            if not (input_data_url is None and colname_species is None):
-                err_msg = 'Too many inputs. Please provide either "species_names" or both "input_data" and "colname_species".'
-                LOGGER.error(err_msg)
-                raise ProcessorExecuteError(err_msg)
-
-        if pct is None:
-            raise ProcessorExecuteError('Missing parameter "pct". Please provide a number.')
+        if percent_correctness is None:
+            raise ProcessorExecuteError('Missing parameter "percent_correctness". Please provide a number.')
         if bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
 
@@ -102,11 +94,14 @@ class NameCheckProcessor(BaseProcessor):
 
         # Assemble args for R script:
         r_args = [
-            input_data_path,
+            input_data_url,
             colname_species,
-            species_names,
-            str(pct),
+            str(percent_correctness),
             bool_merge,
+            bool_verbose,
+            bool_synonymn,
+            bool_ecosystem_type,
+            bool_rmduplicates, 
             result_filepath1,
             result_filepath2
         ]

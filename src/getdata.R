@@ -29,7 +29,7 @@ in_extent           = args[8] #provide either a shaepfile to act as a polygon bo
 in_percent_correct  = as.numeric(args[9]) #allowed percentage correctness of species names. Used for checknames fn
 in_synonym_check    = arsg[10] #allow synoymns or not from FishBase
 in_warn_check       = args[11] #logical
-out_result_path     = args[11]
+out_result_path     = args[12]
 
 
 #check if the bounding box is provided in a form of vector (xmin, ymin, xmax, ymax). otherwise load from shapefile
@@ -43,9 +43,6 @@ print(paste('Reading input data from shapefile or GeoJSON:', in_data_path))
 study_area <- sf::st_read(in_data_path, quiet=TRUE)
 #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 }
-
-
-
 
 if(!is(in_data_path, 'vector')){
 speciesdata <- sf::st_read(in_data_path, quiet=TRUE)

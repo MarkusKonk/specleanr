@@ -4,6 +4,7 @@ import json
 import os
 import requests
 import zipfile
+import warnings
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
@@ -97,32 +98,29 @@ class DataRetrievalProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        study_area_shp_url = data.get('study_area')
+        input_data = data.get("input_data")
+        study_area_shp_url = data.get('study_area_extent')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
-        species_names = data.get('species_names')
+        colnames_species = data.get('colnames_species')
         gbif_limit = data.get('gbif_limit', 50)
         inaturalist_limit = data.get('inaturalist_limit', 50)
         vertnet_limit = data.get('vertnet_limit', 50)
+        databases = data.get("database")
+        verbose = data.get("verbose")
+        percentage_correctness = data.get("percentage_correctness", 80)
+        synonym_checks    = data.get("synonym_check")
+        warn_checks       = data.get("warn_checks")
 
-        #corrections
-        data     = speciesdata, 
-        colsp    = in_species_column,
-        extent   = study_area,
-        db       = in_database
-        gbiflim  = in_gbif_lim,
-        inatlim  = in_inat_lim,
-        vertlim  = in_vert_lim,
-        verbose  = in_verbose,
-        sn = in_synonym_check,
-        warn = in_warn_check,
-        pct =  in_percent_correct
 
         # Checks
+        if input_data is None:
+            raise ProcessorExecuteError('Provide the input´data in either vector or dataframe format.')
         if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
-        if species_names is None:
-            raise ProcessorExecuteError('Missing parameter "species_names". Please provide a list of species.')
+        
+        #if colnames_species is None:
+            #raise ProcessorExecuteError('Missing parameter "colnames_species". Please provide a list of species.')
 
         # Input files passed by user:
         # Download and unzip shapefile:
@@ -150,13 +148,20 @@ class DataRetrievalProcessor(BaseProcessor):
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
 
-        # Assemble args for R script:
+        # Assemble args for R script: ###
+        #THIS ARRANGMENT MUST MATCH THE SOURCE CODE NUMBERING
         r_args = [
-            input_polygons_path,
-            species_names,
+            input_data,
+            colnames_species,
+            databases,
             str(gbif_limit),
             str(inaturalist_limit),
             str(vertnet_limit),
+            verbose,
+            input_polygons_path,
+            str(percentage_correctness),
+            synonym_checks,
+            warn_checks,
             result_filepath
         ]
 

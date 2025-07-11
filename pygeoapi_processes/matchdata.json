@@ -77,6 +77,26 @@
             "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": []
+        },
+        "colnames_date": {
+            "title": "Column name: Dates",
+            "description": "List of column name that indicate the dates in each of the provided datasets. Example: \"Date, sampling_date\"",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "verbose": {
+            "title": "Merging messages",
+            "description": "Return messages while merging data",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["TRUE"]
         }
     },
     "outputs": {
@@ -96,7 +116,9 @@
             "colnames_species_names": "speciesname, scientificName",
             "colnames_countries": "JDS4_sampling_ID",
             "colnames_lat": "lat, latitude",
-            "colnames_lon": "lon, long, longitude"
+            "colnames_lon": "lon, long, longitude",
+            "colnames_date": "Date, sampling_date",
+            "verbose": "TRUE"
         }
     }
 }

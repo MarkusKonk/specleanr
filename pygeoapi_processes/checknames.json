@@ -38,17 +38,7 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "species_names": {
-            "title": "Species names",
-            "description": "List of species about which to retrieve data, as a comma-separated list. Only required if you do not provide your own tabular occurrence data ('input_data'). Example: \"Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla\"",
-            "schema": {
-                "type": "string"
-            },
-            "minOccurs": 0,
-            "maxOccurs": 1,
-            "keywords": []
-        },
-        "pct": {
+        "percent_correctness": {
             "title": "pct number",
             "description": "The percentage that indicates the errorness for the species to be accepted for it to be replaced with the database name. Mostly fish species names are qualitt controlled.",
             "schema": {
@@ -61,6 +51,46 @@
         "bool_merge": {
             "title": "True or False: Merge?",
             "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false. Please put a Boolean value, not a string.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_verbose": {
+            "title": "True or False: Merge?",
+            "description": "Return messages for species checks from FishBase.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_synonymn": {
+            "title": "True or False: Merge?",
+            "description": "Return synoymn checks from FishBase.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_ecosystem_type": {
+            "title": "True or False: Merge?",
+            "description": "Return ecoystem checks for species from FishBase including marine, freshwater, and brackish.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_rmduplicates": {
+            "title": "True or False: Merge?",
+            "description": "Remove duplicates from the dataset. Default is FALSE.",
             "schema": {
                 "type": "boolean"
             },
@@ -91,9 +121,14 @@
         "inputs": {
             "input_data": "https://localhost:5000/download/out/matched-biodiv-data.csv",
             "colname_species": "species",
-            "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
-            "pct": 90,
-            "bool_merge": true
+            "percent_correctness": 90,
+            "bool_merge": true,
+            "bool_verbose": true,
+            "bool_synonymn": true,
+            "bool_ecosystem_type": true,
+            "bool_rmduplicates": true
+
+
         }
     }
 }

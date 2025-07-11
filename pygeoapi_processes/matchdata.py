@@ -16,7 +16,9 @@ curl --location 'https://localhost/pygeoapi/processes/match-data/execution' \
         "colnames_species_names": "speciesname, scientificName",
         "colnames_countries": "JDS4_sampling_ID",
         "colnames_lat": "lat, latitude",
-        "colnames_lon": "lon, long, longitude"
+        "colnames_lon": "lon, long, longitude",
+        "colnames_date": "Date, sampling_date",
+        "verbose": "TRUE"
     }
 }'
 '''
@@ -60,6 +62,8 @@ class DataMatchProcessor(BaseProcessor):
         colnames_countries = data.get('colnames_countries')
         colnames_lat = data.get('colnames_lat')
         colnames_lon = data.get('colnames_lon')
+        colnames_date = data.get('colnames_date') #appears in JSON file
+        verbose = data.get('verbose')
 
         # Checks
         if input_data_retrieved_url is None:
@@ -74,6 +78,8 @@ class DataMatchProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "colnames_lat". Please provide a list of column names.')
         if colnames_lon is None:
             raise ProcessorExecuteError('Missing parameter "colnames_lon". Please provide a list of column names.')
+        if colnames_date is None:
+            raise ProcessorExecuteError('Missing parameter "colnames_date". Please provide a list of column names.')
 
         # Input files passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
@@ -93,6 +99,8 @@ class DataMatchProcessor(BaseProcessor):
             colnames_countries,
             colnames_lat,
             colnames_lon,
+            colnames_date,
+            verbose,
             result_filepath
         ]
 
