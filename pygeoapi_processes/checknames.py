@@ -61,18 +61,31 @@ class NameCheckProcessor(BaseProcessor):
         bool_merge = data.get('bool_merge')
 
         # Checks
-        if input_data_url is None:
-            raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input csv.')
-        if colname_species is None:
-            raise ProcessorExecuteError('Missing parameter "colname_species". Please provide a column name.')
+        # Either species name OR input data + colname have to be provided!
         if species_names is None:
-            raise ProcessorExecuteError('Missing parameter "species_names". Please provide a list of species names.')
+            if (input_data_url is None) or (colname_species is None):
+                err_msg = 'Missing inputs. Please provide either "species_names" or both "input_data" and "colname_species".'
+                LOGGER.error(err_msg)
+                raise ProcessorExecuteError(err_msg)
+        else:
+            if not (input_data_url is None and colname_species is None):
+                err_msg = 'Too many inputs. Please provide either "species_names" or both "input_data" and "colname_species".'
+                LOGGER.error(err_msg)
+                raise ProcessorExecuteError(err_msg)
+
         if pct is None:
             raise ProcessorExecuteError('Missing parameter "pct". Please provide a number.')
         if bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
 
         # From boolean to string:
+        # TODO: Does not seem to work! Check on this!
+        # R script will interpret a string 'true' as True, and everything else as False!
+        LOGGER.debug('Parameter "bool_merge": %s (type %s)' % (bool_merge, type(bool_merge)))
+        if bool_merge:
+            LOGGER.debug('User requested to merge!')
+        else:
+            LOGGER.debug('User did not request to merge!')
         bool_merge = 'true' if bool_merge else 'false'
 
         # Input files passed by user:
