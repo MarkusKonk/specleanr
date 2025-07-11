@@ -20,31 +20,31 @@
     "inputs": {
         "input_data": {
             "title": "Occurrence data",
-            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the matchdata process.",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the matchdata process. Optional. Instead, you can provide a list of species ('species_names').",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": ["csv"]
         },
         "colname_species": {
             "title": "Column name: Species",
-            "description": "Column name that indicate the Species in the provided datases. Example: \"species\"",
+            "description": "Column name that indicate the Species in the provided dataset. Only required you provide tabular occurrence data ('input_data'). Example: \"species\"",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
         "species_names": {
             "title": "Species names",
-            "description": "List of species about which to retrieve data, as a comma-separated list. Example: \"Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla\"",
+            "description": "List of species about which to retrieve data, as a comma-separated list. Only required if you do not provide your own tabular occurrence data ('input_data'). Example: \"Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla\"",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
@@ -60,7 +60,7 @@
         },
         "bool_merge": {
             "title": "True or False: Merge?",
-            "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false.",
+            "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false. Please put a Boolean value, not a string.",
             "schema": {
                 "type": "boolean"
             },
