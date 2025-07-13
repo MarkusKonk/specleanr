@@ -58,30 +58,57 @@ class MultiDetectProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        in_data_url = data.get('input_data')
-        in_colname_var = data.get('colname_variable')
-        in_bool_multiple_species = data.get('multiple_species')
-        in_colname_species = data.get('colname_species', 'not_provided')
-        in_colname_exclude = data.get('colname_exclude')
-        in_methods = data.get('methods')
-        in_silence_true_errors = data.get('silence_true_errors')
-        in_missingness = data.get('missingness')
-        in_threshold = data.get('threshold', 0.1)
+        in_data_url                          = data.get('input_data')
+        colname_var                       = data.get('colname_variable')
+        bool_multiple_species             = data.get('multiple_species')
+        group_colname                     = data.get('group_colname', 'not_provided')
+        colname_exclude                   = data.get('colname_exclude')
+        methods                           = data.get('methods')
+        missingness                       = data.get('missingness')
+        select_var                        = data.get('select_columns')
+        output_type                       = data.get('output_type') #clean or outlier/ Defualt outliers
+        silence_true_errors               = data.get('silence_true_errors')
+        boot_settings_run_bool            = data.get('boot_run')
+        boot_settings_maxrecords          = data.get('boot_maxrecords')
+        boot_settings_nb                  = data.get('number_of_boots')
+        boot_settings_seed                = data.get('setseed')
+        boot_settings_threshold           = data.get('boot_threshold')
+        pca_settings_exec_bool            = data.get('exceute_pca')
+        pca_settings_npc                  = data.get('number_of_pca')
+        pca_settings_quiet                = data.get('pca_silence')
+        pca_settings_pcvar                = data.get('pcavariable')
+        verbose_bool                      = data.get('verbose_outlier')
+        warn_bool                         = data.get('warn_outlier')
+        sdm_bool                          = data.get('sdm_data') #multivaritate data, sdm must be TRUE
+        na_inform_bool                    = data.get('inform_na_outlier')
+
+        ###=========
+        #Extrain clean data
+        #===========
+        bool_loess                         =  data.get('bool_loess')
+        threshold_clean                    =  data.get('threshold_clean')   
+        mode_clean                         =  data.get('outlierweights_mode')
+        #classifying data
+        classifymode                       =  data.get('classifymode') #med
+        eif_bool                           =  data.get('eif_bool') #empirical influence function
+
+        #whether to run a classify to auto removal 
+        autoextract                        =  data.get('classify_or_autoremove')
 
         # Checks
         if in_data_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input table.')
-        if in_colname_var is None:
+        if colname_var is None:
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
         if in_bool_multiple_species is None:
             raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide \"true\" or \"false\".')
-        if in_colname_exclude is None:
+        if colname_exclude is None:
             raise ProcessorExecuteError('Missing parameter "colname_exclude". Please provide a column name.')
-        if in_methods is None:
+        if methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
-        if in_silence_true_errors is None:
-            raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".')
-        if in_missingness is None:
+        #if in_silence_true_errors is None:
+            #raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".') defualt is there
+        if missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
 
         # From booleans to string:
@@ -104,14 +131,34 @@ class MultiDetectProcessor(BaseProcessor):
         # Assemble args for R script:
         r_args = [
             input_csv_path,
-            in_colname_var,
-            in_bool_multiple_species,
-            in_colname_exclude,
-            in_methods,
-            in_silence_true_errors,
-            str(in_missingness),
-            str(in_threshold),
-            in_colname_species,
+            colname_var,
+            select_var,
+            bool_multiple_species,
+            output_type,
+            group_colname,
+            colname_exclude,
+            methods,
+            silence_true_errors,
+            boot_settings_run_bool,
+            boot_settings_maxrecords,
+            str(boot_settings_nb), 
+            boot_settings_seed,
+            boot_settings_threshold,
+            pca_settings_exec_bool,
+            str(pca_settings_npc),
+            pca_settings_quiet,
+            pca_settings_pcvar,
+            verbose_bool,
+            warn_bool,
+            sdm_bool,
+            na_inform_bool,
+            str(missingness), 
+            bool_loess,
+            str(threshold_clean),
+            mode_clean,
+            classifymode,
+            eif_bool,
+            autoextract,
             result_filepath
         ]
 

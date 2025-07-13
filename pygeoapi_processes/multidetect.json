@@ -55,6 +55,16 @@
             "maxOccurs": 1,
             "keywords": []
         },
+        "group_colname": {
+            "title": ": Required for multiple groups",
+            "description": "For multiple groups in a dataframe, provide the column name containing the groups to be checked. For example, a column name with species name in a dataset.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
         "colname_exclude": {
             "title": "Column name: Exclude",
             "description": "Exclude mainly numerical variables that are not necessary in the analysis, for example x and y columns or latitude/longitude, row numbers or serial IDs. Categorical variables are removed automatically in the data preparation.",
@@ -75,16 +85,6 @@
             "maxOccurs": 1,
             "keywords": ["column"]
         },
-        "silence_true_errors": {
-            "title": "True or False",
-            "description": "Show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
         "missingness": {
             "title": "Missingness",
             "description": "Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if a column has more than 10 % missing values, then it will be removed from the dataset rather than the rows.",
@@ -96,9 +96,201 @@
             "default": 0.1,
             "keywords": []
         },
-        "threshold": {
-            "title": "Outlier Threshold",
-            "description": "Value to consider whether the outlier is an absolute outlier or not. If no threshold is specified, loess threshold optimization is used.",
+        "select_columns": {
+            "title": "Select colums",
+            "description": "In a multivariate dataset, if only particular columns needs to be checked then they should be indicated here. Otherwise all columns will be considerd in outlier detection.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "default": 0.1,
+            "keywords": []
+        },
+        "output_type": {
+            "title": "Output type",
+            "description": "Set whether you want to return ourliers or clean dataset. The Defualt is outlier to return outliers from each method.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "default": 0.1,
+            "keywords": []
+        },
+        "silence_true_errors": {
+            "title": "True or False",
+            "description": "Show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "boot_run": {
+            "title": "bool",
+            "description": "If set to true, then bootstrapping will be done for small samples.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["column"]
+        },
+        "boot_maxrecords": {
+            "title": "Maximum records",
+            "description": "The user can adjust the maximum records were to initiate bootstrapping. Default is 30. So data will N more than 30 will not be bootstrapped.",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["column"]
+        },
+        "number_of_boots": {
+            "title": "Number of bootstraps",
+            "description": "The number of bootstraps to generate during bootstrapping. The defualt is 10.",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["column"]
+        },
+        "setseed": {
+            "title": "Set seed",
+            "description": "Durring bootstrapping, random samples are generated that requires to set a seed for reproducibility.",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["column"]
+        },
+        "boot_threshold": {
+            "title": "Threshold value to flag a record from bootstrap samples.",
+            "description": "As a record is flagged in multiple bootstrap samples, a threshold is required to extract an outlier. Default is 0.6, meaning if a record is flagged 6 of the 10 bootsraps, will be flagged as an outlier.",
+            "schema": {
+                "type": "decimal"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["column"]
+        },
+        "exceute_pca": {
+            "title": "Execute Principal Component Analysis.",
+            "description": "If true, then PCA will be intiated.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "number_of_pca": {
+            "title": "Number of PCs to retain.",
+            "description": "The user can indicate the maximum number of PCs to retain in the outlier detection. The Defualt is 5.",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "pca_silence": {
+            "title": "Message during PCA analysis",
+            "description": "Messages during PCA analyis are returned if set to false. Default is true to silence the messages like the variance explainedf from the total PCs selected.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "pcavariable": {
+            "title": "Select the among retained to be used as variable of interest",
+            "description": "The PC1 is the defualt variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "verbose_outlier": {
+            "title": "Methods successes and failure messages",
+            "description": "If set to true, each method successfuly implemented will be displayed. Defualt is FALSE.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "warn_outlier": {
+            "title": "Methods warning messages",
+            "description": "If set to true, each method warnings implemented will be displayed. Defualt is FALSE.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "sdm_bool": {
+            "title": "Changes the outlier detection routine",
+            "description": "If univariate data then sdm should set to false. All data that requires multivariate analysis such as using kmeans, isolation forest, or Mahalanobis distance, sdm must be set to true. Defualt is true.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "na_inform_bool": {
+            "title": "inform NAs removal",
+            "description": "If set to true then NAs removed will be displayed for each group variable. Defualt is FALSE.",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "bool_loess ": {
+            "title": "Data extraction parameter",
+            "description": "If set to true then the local regression method for data extraction will be used. Check Basooma et al., 2025",
+            "schema": {
+                "type": "logical"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "threshold_clean": {
+            "title": "Data extraction parameter: Threshold setting",
+            "description": "If bool_loess is not set to true, then a threshold value can be provided. Default is 0.8. The threshold will significantly determine which is flagged as an absolute outlier. Check Basooma et al., 2025",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "outlierweights_mode": {
+            "title": "Data extraction parameter: Oultier weighting",
+            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an abolute outlier. Default is abs",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "classifymode": {
+            "title": "Cuts data into classess",
+            "description": "Categorize data base on the correlation coefficient manner based on Akoglu 2018",
             "schema": {
                 "type": "number"
             },
@@ -106,11 +298,11 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "colname_species": {
-            "title": "Column name: Species",
-            "description": "A column with species names if the dataset for species is a dataframe not a list.",
+        "eif_bool": {
+            "title": "Emprical Influence Function",
+            "description": "Computes the Emprical Influence Fucntion for classified outlier. Defualt is FALSE",
             "schema": {
-                "type": "string"
+                "type": "logcial"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -136,8 +328,8 @@
             "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
             "silence_true_errors": true,
             "missingness": 0.1,
-            "threshold": 0.7,
-            "colname_species": "species"
+            "threshold_clean": 0.7,
+            "group_colname": "species"
         }
     }
 }

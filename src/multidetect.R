@@ -28,82 +28,46 @@ in_colname_var                       = args[2] # req     e.g. "Sepal.Length
 in_select_var                        = args[3] # opt     if only particular columns are needed form the datasest
 in_bool_multiple_species             = args[4] # opt     e.g. "TRUE"
 in_output_type                       = args[5] # req_set e.g., clean or outlier#defualt outlier
-in_group_columnname                  = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species
+in_group_colname                     = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species
 in_colnames_exclude                  = args[7] # opt     e.g.exclude irrelevant columns mostly important for multidimensional data e.g. ID, SN, x, y etc
 in_methods                           = args[8] # req     e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
 in_silence_true_errors               = args[9] # req_set e.g. "TRUE"
-in_ecoranges_settings_df             = args[10]  #opt dataframe with ranges: optional unless ecoranges used
-in_ecoranges_settings_ecoparam       = args[11]  #opt ecorange param used e.g temp opt unless ecoranges used
-in_ecoranges_settings_optspcol       = args[12]  #opt unless ecoranges used
-in_ecoranges_settings_direction      = args[13]  #opt unless ecoranges used
-in_ecoranges_settings_maxcol         = args[14]  #opt unless ecoranges used
-in_ecoranges_settings_mincol         = args[15]  #opt unless ecoranges used
-in_ecoranges_settings_minval         = args[16]  #opt unless ecoranges used
-in_ecoranges_settings_maxval         = args[50]  #opt unless ecoranges used
-in_ecoranges_settings_checkFB_bool   = args[17]  #opt unless ecoranges used
-in_ecoranges_settings_mode           = args[18]  #opt unless ecoranges used
-in_ecoranges_settings_lat            = args[19]  #opt unless ecoranges used
-in_ecoranges_settings_lon            = args[17]  #opt unless ecoranges used
-in_ecoranges_settings_pct            = args[18]  #opt unless ecoranges used
-in_ecoranges_settings_warn           = args[19]  #opt unless ecoranges used
-in_kmeans_settings_k          = args[20] #number of clusters
-in_kmeans_settings_method     = args[21] #e.g 'silhouette' #optimising
-in_kmeans_settings_mode       = args[22]
-in_isoforest_settings_cutoff  = args[22] #e.g 0.5
-in_isoforest_settings_size    = args[23] #e.g 0.7
-in_mahal_settings_mode        = args[24] #e.g soft
-in_reversejk_settings         = args[25] #e.g soft
-in_zscore_settings_type       = args[26] #e.g mild
-in_zscore_settings_mode       = args[27] #e.g mild
-in_glosh_settings_k           = as.numeric(args[28]) #e.g k= 3
-in_glosh_settings_metric      = args[29] #e.g manhattan
-in_glosh_settings_mode        = args[30] #e.g soft
-in_knn_settings_metric        = args[31] #e.g manhattan
-in_knn_settings_mode          = args[32] #e.g soft
-in_lof_settings_metric        = args[33] #e.g manhattan
-in_lof_settings_mode          = args[34] #e.g soft
-in_lof_settings_minpts        = as.numeric(args[35]) #e.g soft
-in_boot_settings_run_bool     = args[36] #bool
-in_boot_settings_maxrecords   = as.numeric(args[37]) #numb or max to initate bootstraping
-in_boot_settings_nb           = as.numeric(args[38]) #numeric e.g 30 defualt
-in_boot_settings_seed         = as.numeric(args[39]) #rnadomisation e.g 1123..
-in_boot_settings_threshold    = as.numeric(args[40]) #decimal e.g. 0.6
-in_pca_settings_exec_bool     = args[41] #bool
-in_pca_settings_npc           = as.numeric(args[42]) #integer..number of pcs retained
-in_pca_settings_quiet         = args[43] #bool to print the cummulative variance
-in_pca_settings_pcvar         = args[44] #pc used for outlier detectiion defualt is PC1
-in_verbose_bool               = args[45] #implementation messages
-in_warn_bool                  = args[46] #return warning msgs
-in_spname_auto                = args[47] #auto detected
-in_sdm_bool                   = args[48] # if multidimensional data then its TRUE. univariate data sdm is F
-in_na.inform_bool             = args[49] # msgs on handling NAs defualt FALSE
-in_missingness                = as.numeric(args[51]) #req_adj# e.g. 0.1
-
-#parameter for extracting clean data
-
-in_bool_loess                 =   args[52] #e.g.g TRUE or FALSE
-in_threshold_clean            =   args[53] #defualt is 0.8
-in_mode_clean                 =   args[54]#e.g. 'abs', "best"
-in_outliertoNA_bool           =   args[55]     
-in_classifymode               =   args[56] #default med
-in_eif_bool                   =   args[57] #e.g. F/T  
-in_autothreshold_bool         =   args[58] 
-in_percent_abs                =   as.numeric(args[59])    #ranges 0.1 to 1 
-
-
-#classify data 
-
-
+in_boot_settings_run_bool            = args[10] #bool
+in_boot_settings_maxrecords          = as.numeric(args[11]) #numb or max to initate bootstraping
+in_boot_settings_nb                  = as.numeric(args[12]) #numeric e.g 30 defualt
+in_boot_settings_seed                = as.numeric(args[13]) #rnadomisation e.g 1123..
+in_boot_settings_threshold           = as.numeric(args[14]) #decimal e.g. 0.6
+in_pca_settings_exec_bool            = args[15] #bool
+in_pca_settings_npc                  = as.numeric(args[16]) #integer..number of pcs retained
+in_pca_settings_quiet                = args[17] #bool to print the cummulative variance
+in_pca_settings_pcvar                = args[18] #pc used for outlier detectiion defualt is PC1
+in_verbose_bool                      = args[19] #implementation messages
+in_warn_bool                         = args[20] #return warning msgs
+in_sdm_bool                          = args[22] # if multidimensional data then its TRUE. univariate data sdm is F
+in_na_inform_bool                    = args[23] # msgs on handling NAs defualt FALSE
+in_missingness                       = as.numeric(args[24]) #req_adj# e.g. 0.1
 
 ###=========
 #Extrain clean data
 #===========
+in_bool_loess                        =   args[25] #e.g.g TRUE or FALSE
+in_threshold_clean                   =   args[26] #defualt is 0.8
+in_mode_clean                        =   args[30]#e.g. 'abs', "best"
+
+#classifying data
+in_classifymode                      =   args[31] #default med
+in_eif_bool                          =   args[32] #e.g. F/T 
+
+in_autoextract                       =  args[33] #TRUE to classfy data
+
+#output
+out_result_path = args[34]
+##out_summary_path = args[35]
 
 
 # in_threshold = args[8] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
 # in_colname_species = args[9]
-# out_result_path = args[10]
-# #out_summary_path = args[10]
+
 
 
 # (1) Read data from CSV or from URL
@@ -151,7 +115,6 @@ in_na.inform               = tolower(in_na.inform) == 'true'
 in_sdm_bool                = tolower(in_sdm_bool) == 'true'
 in_pca_settings_exec_bool  = tolower(in_pca_settings_exec_bool) == 'true'
 in_boot_settings_run_bool  = tolower(in_boot_settings_run_bool) == 'true'
-in_ecoranges_settings_checkFB_bool = tolower(in_ecoranges_settings_checkFB_bool) == 'true'
 in_verbose_bool            = tolower(in_verbose_bool) == 'true'
 in_pca_settings_quiet      = tolower(in_pca_settings_quiet) == 'true'
 in_bool_loess              = tolower(in_bool_loess ) == 'true'
@@ -160,72 +123,12 @@ in_eif_bool                = tolower(in_eif_bool) == 'true'
 in_autothreshold_bool      = tolower(in_autothreshold_bool) == 'true'
 
 
-in_optpar = list(optdf = in_ecoranges_settings_df, ecoparam = in_ecoranges_settings_ecoparam,
-              optspcol = in_ecoranges_settings_optspcol, direction =in_ecoranges_settings_direction,
-              maxcol = in_ecoranges_settings_maxcol, mincol = in_ecoranges_settings_mincol,
-              maxval = in_ecoranges_settings_maxval, minval = in_ecoranges_settings_minval,
-              checkfishbase =in_ecoranges_settings_checkFB_bool,
-              mode = in_ecoranges_settings_mode, lat = in_ecoranges_settings_lat,
-              lon = in_ecoranges_settings_lon, pct = in_ecoranges_settings_pct,
-              warn = in_ecoranges_settings_warn)
-
-in_kmpar =list(k= in_kmeans_settings_k, method= in_kmeans_settings_method, mode= in_kmeans_settings_mode)
-
-in_ifpar = list(cutoff = in_isoforest_settings_cutoff, size=in_isoforest_settings_size)
-
-in_mahalpar = list(mode= in_mahal_settings_mode)
-
-in_jkpar = list(mode=in_reversejk_settings)
-
-in_zpar = list(type=in_zscore_settings_type, mode= in_zscore_settings_mode)
-
-in_gloshpar = list(k= in_glosh_settings_k, metric= in_glosh_settings_metric, mode= in_glosh_settings_mode)
-
-knnpar = list(metric= in_knn_settings_metric, mode= in_knn_settings_mode)
-
-in_lofpar = list(metric= in_lof_settings_metric, mode= in_lof_settings_mode, minPts= in_lof_settings_minpts)
-
 in_bootSettings = list(run= in_boot_settings_run_bool, nb= in_boot_settings_nb,
                     maxrecords = in_boot_settings_maxrecords, seed= in_boot_settings_seed,
                     th = in_boot_settings_threshold)
 
 in_pc = list(exec = in_pca_settings_exec_bool, npc= in_pca_settings_npc,
           q = in_pca_settings_quiet, pcvar = in_pca_settings_pcvar)
-
-
-#===============
-#predefined variables
-#===========
-data,
-var,
-select = NULL,
-output = "outlier",
-exclude = NULL,
-multiple,
-var_col = NULL,
-optpar = list(optdf = NULL, ecoparam = NULL, optspcol = NULL, direction =NULL,
-              maxcol = NULL, mincol = NULL, maxval = NULL, minval = NULL,
-              checkfishbase =FALSE, mode = NULL, lat = NULL, lon = NULL, pct = 80,
-              warn = FALSE),
-kmpar =list(k=6, method='silhouette', mode='soft'),
-ifpar = list(cutoff = 0.5, size=0.7),
-mahalpar = list(mode='soft'),
-jkpar = list(mode='soft'),
-zpar = list(type='mild', mode='soft'),
-gloshpar = list(k= 3, metric='manhattan', mode='soft'),
-knnpar = list(metric='manhattan', mode='soft'),
-lofpar = list(metric='manhattan', mode='soft', minPts= 10),
-methods,
-bootSettings = list(run=FALSE, nb=5, maxrecords = 30, seed=1135, th = 0.6),
-pc = list(exec = FALSE, npc=2, q = T, pcvar = 'PC1'),
-verbose=FALSE, spname=NULL,warn=FALSE,
-missingness = 0.1,
-silence_true_errors = TRUE,
-sdm = TRUE,
-na.inform = FALSE
-
-
-
 
 
 # Only provide column name for group if multiple = FALSE
@@ -254,15 +157,6 @@ outlieriris_mult <- multidetect(
   exclude         = in_colnames_exclude,
   multiple        = in_bool_multiple_species,
   var_col         = in_group_columnname,
-  optpar          = in_optpar,
-  kmpar           = in_kmpar,
-  ifpar           = in_ifpar,
-  mahalpar        = in_mahalpar,
-  jkpar           = in_jkpar,
-  zpar            = in_zpar,
-  gloshpar        = in_gloshpar,
-  knnpar          = in_knnpar,
-  lofpar          = in_lofpar,
   methods         = in_methods,
   bootSettings    = in_bootSettings,
   pc              = in_pc,
@@ -277,8 +171,21 @@ outlieriris_mult <- multidetect(
 
 print(paste('Running specleanr::multidetect... DONE.'))
 
+if(tolower(in_autoextract)=='true'){
 
-# (5) Run extract_clean_data
+  cleandata2 <- classify_data(
+  refdata     = dfinal,
+  outliers    = outlieriris_mult,
+  var_col     = in_group_colname,
+  threshold   = in_classifythreshold,
+  warn        = in_warn_bool,
+  verbose     = in_verbose_bool,
+  classify    = in_classifymode,
+  EIF         = in_eif_bool
+)
+
+}else{
+  # (5) Run extract_clean_data
 if (tolower(in_threshold) == 'null') {
   # if loess=TRUE, then no threshold!
   print('Threshold is null, using loess=TRUE...')
@@ -295,7 +202,7 @@ cleandata2 <- extract_clean_data(
   refdata             = dfinal,
   outliers            = outlieriris_mult,
   mode                = in_mode_clean,
-  var_col             = in_group_columnname,
+  var_col             = in_group_colname,
   threshold           = in_threshold_clean,
   warn                = in_warn_bool,
   verbose             = in_verbose_bool,
@@ -305,20 +212,7 @@ cleandata2 <- extract_clean_data(
   outlier_to_NA       = in_outliertoNA_bool
 )
 print(paste('Running specleanr::extract_clean_data... DONE.'))
-
-
-classifyout <- classify_data(
-  refdata     = dfinal,
-  outliers    = outlieriris_mult,
-  var_col     = in_group_columnname,
-  threshold   = in_threshold_clean,
-  warn        = in_warn_bool,
-  verbose     = in_verbose_bool,
-  classify    = in_classifymode,
-  EIF         = in_eif_bool
-)
-
-
+}
 
 # (6) Write summary to txt file
 # Note: I don't know how to get the string summary. The object is an S4 object, and I cannot access the string.
@@ -331,26 +225,4 @@ classifyout <- classify_data(
 # (7) Write the result to csv file:
 print(paste0('Write result to csv file: ', out_result_path))
 data.table::fwrite(cleandata2 , file = out_result_path)
-
-#=========================================
-#PROVIDE MODE TO ALLOW DATA CLASSIFICATION
-#==========================================
-
-
-#> outlieriris_mult
-#====================================== 
-#  Data cleaning summary 
-#======================================
-# Number of species        : 1 
-# Number of methods        : 10 
-# Methods used             : mixediqr,logboxplot,iqr,distboxplot,jknife,semiqr,hampel,iforest,lof,mahal
-# Multiple                 : FALSE
-# Variable                 : Sepal.Length
-# Output                   : outlier
-# Dataset Name             : dfinal
-# Excluded columns         : Species
-# ======================================> 
-
-#testing how to fork
-
 
