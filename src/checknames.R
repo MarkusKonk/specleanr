@@ -8,11 +8,11 @@
 ## AquaINFRA Project, October 2024
 ##
 
-
-
 # To test, run this script in bash with:
-# Rscript checknames.R "matched-biodiv-data.csv" "species" "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla" "70" "true"  "data_checked1.csv" "data_checked2.csv"
-print('Starting wrapper script: checknames.R.')
+# Rscript checknames.R "./result_matchdata.csv" "species" "70" "true" "true" "true" "true" "true" "./result_checknames1.csv" "./result_checknames2.csv"
+# Rscript checknames.R "species1,species2,species3" "NA"  "70" "true" "true" "true" "true" "true" "./result_checknames1.csv" "./result_checknames2.csv"
+
+message('Starting wrapper script: checknames.R.')
 library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -20,11 +20,11 @@ print(paste0('R Command line args: ', args))
 in_data_path              = args[1] # a URL or a list of species
 in_colname_species        = args[2] # e.g. "species", or "NA" or "na"
 in_percent_correctness    = args[3] # e.g. "70"
-in_bool_merge             = args[4] # e.g. "true"
-in_bool_verbose           = args[5] #logical
-in_synonymn_checks        = args[6] #logical
-in_ecosystem_checks       = args[7] #logical
-in_rm_duplicates          = args[8] #logical
+in_bool_merge             = args[4] #logical, e.g. "true"
+in_bool_verbose           = args[5] #logical, e.g. "true"
+in_synonymn_checks        = args[6] #logical, e.g. "true"
+in_ecosystem_checks       = args[7] #logical, e.g. "true"
+in_rm_duplicates          = args[8] #logical, e.g. "true"
 out_result_path_names     = args[9] 
 out_result_path_filtered  = args[10]
 
@@ -47,8 +47,8 @@ if (tolower(in_colname_species) == 'na') {
   if (in_bool_verbose) message('DEBUG: Found species names: ', paste(in_species_names, collapse=' + '))
   mergealldfs <- in_species_names
 } else {
-  message('A column name was given, so we assume the user passed a file...')
-  message(paste0('Reading input data from CSV: ', in_data_path))
+  if (in_bool_verbose) message('DEBUG: A column name was given, so we assume the user passed a file...')
+  if (in_bool_verbose) message(paste0('DEBUG: Reading input data from CSV: ', in_data_path))
   mergealldfs <- data.table::fread(in_data_path)
 }
 
@@ -65,18 +65,16 @@ cleannames_df <- check_names(
   ecosystem = in_ecosystem_checks,
   rm_duplicates = in_rm_duplicates
 )
-#cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 70, merge = TRUE)
-print('Running specleanr::check_names... DONE.')
+if (in_bool_verbose) message('DEBUG: Running specleanr::check_names... DONE.')
 
 
-# (5) Filter result:
+# Filter result:
 speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in% in_species_names,]
-# speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in% c("Squalius cephalus", 'Salmo trutta', "Thymallus thymallus","Anguilla anguilla"),]
 
 
-# (6) Write the results to csv file:
-print(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names))
+# Write the results to csv file:
+if (in_bool_verbose) message(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names))
 data.table::fwrite(cleannames_df , file = out_result_path_names)
-print(paste0('Write result (speciesfiltered) to csv file: ', out_result_path_filtered))
+if (in_bool_verbose) message(paste0('Write result (speciesfiltered) to csv file: ', out_result_path_filtered))
 data.table::fwrite(speciesfiltered , file = out_result_path_filtered)
 
