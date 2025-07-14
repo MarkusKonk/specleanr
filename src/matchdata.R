@@ -28,24 +28,24 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path_or_url_online   = args[1]
-in_data_path_or_url_user     = args[2]
-in_colnames_species_names    = args[3] # e.g. "speciesname, scientificName"
-in_colnames_countries        = args[4] # e.g. "JDS4_sampling_ID"
-in_colnames_lat              = args[5] # e.g. "lat, lati"
-in_colnames_lon              = args[6] # e.g. "lon, long"
-in_colnames_date             = args[7]
-in_verbose_bool              = args[8]
-out_result_path              = args[9]
-
+in_data_paths_or_urls        = args[1]
+in_colnames_species_names    = args[2] # e.g. "speciesname, scientificName"
+in_colnames_countries        = args[3] # e.g. "JDS4_sampling_ID"
+in_colnames_lat              = args[4] # e.g. "lat, lati"
+in_colnames_lon              = args[5] # e.g. "lon, long"
+in_colnames_date             = args[6]
+in_verbose_bool              = args[7]
+out_result_path              = args[8]
 
 in_verbose_bool      =  "true"
-
 in_verbose_bool   = tolower(in_verbose_bool) == 'true'
 
 
 # (1) Remove spaces and split:
 print(paste('Splitting input arg species names...'))
+in_data_paths_or_urls = gsub(", ", ",", in_data_paths_or_urls, fixed = TRUE)
+in_data_paths_or_urls = gsub(" ,", ",", in_data_paths_or_urls, fixed = TRUE)
+in_data_paths_or_urls = strsplit(in_data_paths_or_urls, ",")[[1]]
 in_colnames_species_names = gsub(", ", ",", in_colnames_species_names, fixed = TRUE)
 in_colnames_species_names = gsub(" ,", ",", in_colnames_species_names, fixed = TRUE)
 in_colnames_species_names = strsplit(in_colnames_species_names, ",")[[1]]
@@ -63,19 +63,18 @@ in_colnames_date = gsub(" ,", ",", in_colnames_date, fixed = TRUE)
 in_colnames_date = strsplit(in_colnames_date, ",")[[1]]
 
 
-
 # (2) Read data from CSV or from URL
 print(paste('Reading input data from CSV...'))
-df_online <- data.table::fread(in_data_path_or_url_online)
-data_from_user <- data.table::fread(in_data_path_or_url_user)
+if (in_verbose_bool) message("DEBUG: Inputs data URLs (or paths): ", paste(in_data_paths_or_urls, collapse=" + "))
+all_input_datasets <- lapply(in_data_paths_or_urls, data.table::fread)
+names(all_input_datasets) <- basename(in_data_paths_or_urls)
+if (in_verbose_bool) message("DEBUG: Names of input datasets (from URLs): ", paste(names(all_input_datasets), collapse=" + "))
 
 
 # (3) Run match_datasets:
 print('Running specleanr:match_datasets...')
 mergealldfs <- match_datasets(
-  datasets = list(
-    user = data_from_user, #the user and onlinedate will create a column to label data in that way.
-    onlinedata = df_online),
+  datasets = all_input_datasets,
   country = in_colnames_countries,
   lats = in_colnames_lat,
   lons = in_colnames_lon,
