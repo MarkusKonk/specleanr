@@ -27,7 +27,7 @@ in_vert_lim         = args[6] # e.g. "50"
 in_verbose          = args[7] # logical TRUE or FALSE: EXECUTION messages
 in_extent           = args[8] #provide either a shaepfile to act as a polygon bounding box or use a bounding box (xmin, ymin, xmax, ymax)
 in_percent_correct  = as.numeric(args[9]) #allowed percentage correctness of species names. Used for checknames fn
-in_synonym_check    = arsg[10] #allow synoymns or not from FishBase
+in_synonym_check    = args[10] #allow synoymns or not from FishBase
 in_warn_check       = args[11] #logical
 out_result_path     = args[12]
 
@@ -75,7 +75,7 @@ df_online <- getdata(
   data     = speciesdata, 
   colsp    = in_species_column,
   extent   = study_area,
-  db       = in_database
+  db       = in_database,
   gbiflim  = in_gbif_lim,
   inatlim  = in_inat_lim,
   vertlim  = in_vert_lim,
