@@ -43,22 +43,21 @@ in_pca_settings_quiet                = args[17] #bool to print the cummulative v
 in_pca_settings_pcvar                = args[18] #pc used for outlier detectiion defualt is PC1
 in_verbose_bool                      = args[19] #implementation messages
 in_warn_bool                         = args[20] #return warning msgs
-in_sdm_bool                          = args[22] # if multidimensional data then its TRUE. univariate data sdm is F
-in_na_inform_bool                    = args[23] # msgs on handling NAs defualt FALSE
-in_missingness                       = as.numeric(args[24]) #req_adj# e.g. 0.1
+in_sdm_bool                          = args[21] # if multidimensional data then its TRUE. univariate data sdm is F
+in_na_inform_bool                    = args[22] # msgs on handling NAs defualt FALSE
+in_missingness                       = as.numeric(args[23]) #req_adj# e.g. 0.1
 
 ###=========
 #Extrain clean data
 #===========
-in_bool_loess                        =   args[25] #e.g.g TRUE or FALSE
-in_threshold_clean                   =   args[26] #defualt is 0.8
-in_mode_clean                        =   args[30]#e.g. 'abs', "best"
+in_bool_loess                        = args[24] #e.g.g TRUE or FALSE
+in_threshold_clean                   = args[25] #defualt is 0.8
+in_mode_clean                        = args[26]#e.g. 'abs', "best"
 
 #classifying data
-in_classifymode                      =   args[31] #default med
-in_eif_bool                          =   args[32] #e.g. F/T 
-
-in_autoextract                       =  args[33] #TRUE to classfy data
+in_classifymode                      = args[27] #default med
+in_eif_bool                          = args[28] #e.g. F/T 
+in_autoextract                       = args[29] #TRUE to classfy data
 
 #output
 out_result_path = args[34]

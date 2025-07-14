@@ -33,7 +33,7 @@ in_na_inform         = args[13] #logical, FALSE
 in_na_rm             = args[14] #logical, FALSE
 in_rm_duplicates     = args[15] #logical, FALSE
 in_minimumpts_rm     = args[16] #logical, FALSE
-out_result_path = args[10]
+out_result_path      = args[17]
 
 
 # (1) Read data from CSV or from URL
