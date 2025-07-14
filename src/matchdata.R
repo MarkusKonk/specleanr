@@ -11,7 +11,7 @@
 
 # To test, run this script in bash with:
 # Rscript matchdata.R "some_inputs.csv" "some_more_inputs.csv" "speciesname, scientificName" "JDS4_sampling_ID" "lat, lati" "lon, long" "data_matched.csv"
-print('Starting wrapper script: matchdata.R')
+message('Starting wrapper script: matchdata.R')
 library(specleanr)
 
 
@@ -30,19 +30,20 @@ args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_paths_or_urls        = args[1]
 in_colnames_species_names    = args[2] # e.g. "speciesname, scientificName"
-in_colnames_countries        = args[3] # e.g. "JDS4_sampling_ID"
+in_colnames_countries        = args[3] # e.g. "JDS4_sampling_ID, country"
 in_colnames_lat              = args[4] # e.g. "lat, lati"
 in_colnames_lon              = args[5] # e.g. "lon, long"
-in_colnames_date             = args[6]
-in_verbose_bool              = args[7]
+in_colnames_date             = args[6] # e.g. "sampling_date,Date"
+in_verbose_bool              = args[7] # e.g. "true"
 out_result_path              = args[8]
 
-in_verbose_bool      =  "true"
+
+# Make boolean from string:
 in_verbose_bool   = tolower(in_verbose_bool) == 'true'
 
 
-# (1) Remove spaces and split:
-print(paste('Splitting input arg species names...'))
+# Remove spaces and split:
+if (in_verbose_bool) message('DEBUG: Splitting input args that are lists...')
 in_data_paths_or_urls = gsub(", ", ",", in_data_paths_or_urls, fixed = TRUE)
 in_data_paths_or_urls = gsub(" ,", ",", in_data_paths_or_urls, fixed = TRUE)
 in_data_paths_or_urls = strsplit(in_data_paths_or_urls, ",")[[1]]
@@ -63,16 +64,16 @@ in_colnames_date = gsub(" ,", ",", in_colnames_date, fixed = TRUE)
 in_colnames_date = strsplit(in_colnames_date, ",")[[1]]
 
 
-# (2) Read data from CSV or from URL
-print(paste('Reading input data from CSV...'))
-if (in_verbose_bool) message("DEBUG: Inputs data URLs (or paths): ", paste(in_data_paths_or_urls, collapse=" + "))
+# Read data from CSV or from URL
+if (in_verbose_bool) message('DEBUG: Reading input data from CSV...')
+if (in_verbose_bool) message('DEBUG: Inputs data URLs (or paths): ', paste(in_data_paths_or_urls, collapse=' + '))
 all_input_datasets <- lapply(in_data_paths_or_urls, data.table::fread)
 names(all_input_datasets) <- basename(in_data_paths_or_urls)
-if (in_verbose_bool) message("DEBUG: Names of input datasets (from URLs): ", paste(names(all_input_datasets), collapse=" + "))
+if (in_verbose_bool) message('DEBUG: Names of input datasets (from URLs): ', paste(names(all_input_datasets), collapse=' + '))
 
 
-# (3) Run match_datasets:
-print('Running specleanr:match_datasets...')
+# Run match_datasets:
+if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets...')
 mergealldfs <- match_datasets(
   datasets = all_input_datasets,
   country = in_colnames_countries,
@@ -81,19 +82,9 @@ mergealldfs <- match_datasets(
   species = in_colnames_species_names,
   date = in_colnames_date,
   verbose = in_verbose_bool)
+if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets... DONE.')
 
-print('Running specleanr:match_datasets... DONE.')
 
-# mergealldfs <- match_datasets(
-#  datasets = list(
-#    efi= efidata,
-#    jds = jdsdata,
-#    onlinedata = df_online),
-#  country = c('JDS4_sampling_ID', 'country', 'Land'),
-#  lats = c('lat', 'lati'),
-#  lons = c('lon', 'long', 'lo'),
-#  species = c('speciesname', 'scientificName'))
-
-# (4) Write the result to csv file:
-print(paste0('Write result to csv file: ', out_result_path))
+# Write the result to csv file:
+if (in_verbose_bool) message(paste0('DEBUG: Write result to csv file: ', out_result_path))
 data.table::fwrite(mergealldfs , file = out_result_path)
