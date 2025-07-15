@@ -33,15 +33,26 @@ out_result_path     = args[12]
 
 
 #check if the bounding box is provided in a form of vector (xmin, ymin, xmax, ymax). otherwise load from shapefile
-if(is(in_extent, 'vector')){
-study_area = in_extent
-}else{
+
+if(tolower(in_extent)=='null'){ #
+
+  study_area = NULL
+  
+}else if(startsWith(in_extent, 'http') | file.exists(in_extent)){
+
   # (1) Read data from shapefile
 # TODO Test, can st_read also read GeoJSON? It should?
-print(paste('Reading input data from shapefile or GeoJSON:', in_data_path))
+print(paste('Reading input data from shapefile or GeoJSON:',in_extent))
 #print(paste('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", ")))
-study_area <- sf::st_read(in_data_path, quiet=TRUE)
-#study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
+study_area <- sf::st_read(in_extent, quiet=TRUE)
+
+
+  }else{
+    #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
+  x = in_extent
+  print('Spliting the string to form a vector of bounding box. Must provide a string of named e.g. "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"')
+  study_area = eval(parse(text = paste0("list(", x, ")")))
+  
 }
 
 if(!is(in_data_path, 'vector')){
