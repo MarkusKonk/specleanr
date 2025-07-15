@@ -24,7 +24,7 @@ library(specleanr)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path_or_url                  = args[1] # req
-in_colname_var                       = args[2] # req     e.g. "Sepal.Length
+in_var_ofinterest                    = args[2] # req     e.g. "Sepal.Length
 in_select_var                        = args[3] # opt     if only particular columns are needed form the datasest
 in_bool_multiple_species             = args[4] # opt     e.g. "TRUE"
 in_output_type                       = args[5] # req_set e.g., clean or outlier#defualt outlier
@@ -60,7 +60,7 @@ in_eif_bool                          = args[28] #e.g. F/T
 in_autoextract                       = args[29] #TRUE to classfy data
 
 #output
-out_result_path = args[34]
+out_result_path = args[30]
 ##out_summary_path = args[35]
 
 
@@ -82,10 +82,22 @@ in_methods = gsub(", ", ",", in_methods, fixed = TRUE)
 in_methods = gsub(" ,", ",", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
 
-
+if(!in_colnames_exclude==tolower('null')){
 in_colnames_exclude = gsub(", ", ",", in_colnames_exclude, fixed = TRUE)
 in_colnames_exclude = gsub(" ,", ",", in_colnames_exclude, fixed = TRUE)
 in_colnames_exclude = strsplit(in_colnames_exclude, ",")[[1]]
+}else{
+  in_colnames_exclude <- NULL
+}
+
+if(!in_select_var==tolower('null')){
+in_select_var = gsub(", ", ",", in_select_var, fixed = TRUE)
+in_select_var = gsub(" ,", ",", in_select_var, fixed = TRUE)
+in_select_var = strsplit(in_select_var, ",")[[1]]
+}else{
+  in_select_var<- NULL
+}
+
 
 #=========================================
 # (3) Make string booleans boolean
@@ -108,7 +120,7 @@ in_autothreshold_bool      =  "true"
 
 
 in_bool_multiple_species   = tolower(in_bool_multiple_species) == 'true'
-in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
+#in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
 in_warn_bool               = tolower(in_warn_bool) == 'true'
 in_na.inform               = tolower(in_na.inform) == 'true'
 in_sdm_bool                = tolower(in_sdm_bool) == 'true'
@@ -120,7 +132,6 @@ in_bool_loess              = tolower(in_bool_loess ) == 'true'
 in_outliertoNA_bool        = tolower(in_outliertoNA_bool) == 'true'
 in_eif_bool                = tolower(in_eif_bool) == 'true'
 in_autothreshold_bool      = tolower(in_autothreshold_bool) == 'true'
-
 
 in_bootSettings = list(run= in_boot_settings_run_bool, nb= in_boot_settings_nb,
                     maxrecords = in_boot_settings_maxrecords, seed= in_boot_settings_seed,
@@ -134,13 +145,13 @@ in_pc = list(exec = in_pca_settings_exec_bool, npc= in_pca_settings_npc,
 
 if (!in_bool_multiple_species) {
   print('Setting group column name to NULL (only needed in case of multiple groups).')
-  in_group_columnname <- NULL
+  in_group_colname <- NULL
 }
 
 
 # # (4) Run multidetect
 # print(paste('Running specleanr::multidetect...'))
-# print(paste('Var:', in_colname_var))
+# print(paste('Var:', in_var_ofinterest))
 # print(paste('Multiple:', in_bool_multiple_species))
 # print(paste('Colname Species:', in_colname_species))
 # print(paste('Exclude columns:', paste0(in_colnames_exclude, collapse=' + ')))
@@ -148,14 +159,22 @@ if (!in_bool_multiple_species) {
 # print(paste('SilenceErrors:', in_silence_true_errors))
 # print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 
+print(in_var_ofinterest)
+print(in_select_var)
+print(in_boot_settings_run_bool)
+print(in_pca_settings_exec_bool )
+print(in_pc[[1]])
+
+print(in_silence_true_errors)
+
 outlieriris_mult <- multidetect(
   data            = dfinal,
-  var             = in_colname_var,
+  var             = in_var_ofinterest,
   select          = in_select_var,
   output          = in_output_type,
   exclude         = in_colnames_exclude,
   multiple        = in_bool_multiple_species,
-  var_col         = in_group_columnname,
+  var_col         = in_group_colname,
   methods         = in_methods,
   bootSettings    = in_bootSettings,
   pc              = in_pc,
@@ -170,7 +189,7 @@ outlieriris_mult <- multidetect(
 
 print(paste('Running specleanr::multidetect... DONE.'))
 
-if(tolower(in_autoextract)=='true'){
+if(tolower(in_autoextract)=='false'){
 
   cleandata2 <- classify_data(
   refdata     = dfinal,
@@ -185,15 +204,15 @@ if(tolower(in_autoextract)=='true'){
 
 }else{
   # (5) Run extract_clean_data
-if (tolower(in_threshold) == 'null') {
+if (tolower(in_threshold_clean) == 'null') {
   # if loess=TRUE, then no threshold!
   print('Threshold is null, using loess=TRUE...')
-  in_threshold <- NULL
+  in_threshold_clean <- NULL
   in_bool_loess <- TRUE
 } else if (!(is.na(as.numeric(in_threshold)))) {
   # if loess=FALSE, then set threshold!
-  in_threshold <- as.numeric(in_threshold)
-  print(paste0('Threshold is a number (', in_threshold, '), using loess=FALSE...'))
+  in_threshold_clean <- as.numeric(in_threshold_clean)
+  print(paste0('Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
   in_bool_loess <- FALSE
 }
 print(paste('Running specleanr::extract_clean_data...'))
@@ -220,7 +239,7 @@ print(paste('Running specleanr::extract_clean_data... DONE.'))
 #writeLines(outlieriris_mult, fileConn)
 #close(fileConn)
 
-
+print(cleandata2)
 # (7) Write the result to csv file:
 print(paste0('Write result to csv file: ', out_result_path))
 data.table::fwrite(cleandata2 , file = out_result_path)
