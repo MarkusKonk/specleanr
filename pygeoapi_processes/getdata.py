@@ -12,8 +12,8 @@ curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
-        "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "study_area_extent": "https://localhost/referencedata/specleanr/basinfinal.zip",
+        "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "gbif_limit": 50,
         "vertnet_limit": 50,
         "inaturalist_limit": 50
@@ -26,7 +26,7 @@ curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity
 --data '{
     "inputs": {
         "study_area_geojson_url": "https://vm4072.kaj.pouta.csc.fi/ddas/oapif/collections/hydro90-basin/items?f=json&basin_id=1293067",
-        "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "gbif_limit": 50,
         "vertnet_limit": 50,
         "inaturalist_limit": 50

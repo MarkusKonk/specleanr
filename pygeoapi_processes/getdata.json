@@ -24,7 +24,7 @@
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 0,
+            "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": ["dataframe", "string"]
         },
@@ -161,8 +161,8 @@
     },
     "example": {
         "inputs": {
-            "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
-            "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+            "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+            "study_area_extent": "https://localhost/referencedata/specleanr/basinfinal.zip",
             "databases": "gbif, inat,vertnet",
             "gbif_limit": 50,
             "vertnet_limit": 50,
