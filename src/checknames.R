@@ -26,7 +26,6 @@ in_synonymn_checks        = args[6] #logical, e.g. "true"
 in_ecosystem_checks       = args[7] #logical, e.g. "true"
 in_rm_duplicates          = args[8] #logical, e.g. "true"
 out_result_path_names     = args[9] 
-out_result_path_filtered  = args[10]
 
 
 # Make string booleans boolean
