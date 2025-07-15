@@ -18,8 +18,7 @@
         "hreflang": "en-US"
     }],
     "inputs": {
-
-            "input_data": {
+        "input_data": {
             "title": "Data with species names to download",
             "description": "URL to the input dataframe or directly indicating a vector of species names. If dataframe, provide species column names",
             "schema": {
@@ -29,7 +28,7 @@
             "maxOccurs": 1,
             "keywords": ["dataframe", "string"]
         },
-        "colnames_species": {
+        "colname_species": {
             "title": "Species column name",
             "description": "If the data provided in the data path is a dataframe, indicate here the column name with species names.",
             "schema": {

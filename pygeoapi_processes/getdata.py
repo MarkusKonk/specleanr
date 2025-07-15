@@ -99,8 +99,8 @@ class DataRetrievalProcessor(BaseProcessor):
 
         # Get user inputs
         in_data_path = data.get("input_data")
-        in_species_column = data.get('colnames_species')
-        in_database = data.get("database")
+        in_species_column = data.get("colname_species")
+        in_database = data.get("databases")
         in_gbif_lim = data.get('gbif_limit', 50)
         in_inat_lim = data.get('inaturalist_limit', 50)
         in_vert_lim = data.get('vertnet_limit', 50)
