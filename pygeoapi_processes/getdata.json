@@ -40,7 +40,7 @@
         },
         "study_area_extent": {
             "title": "Area of Interest (Shapefile)",
-            "description": "URL to the input shapefile containing the study areas inside which you would like to retrieve occurrences",
+            "description": "URL to the zipped input shapefile containing the study areas inside which you would like to retrieve occurrences",
             "schema": {
                 "type": "string"
             },
@@ -163,6 +163,7 @@
         "inputs": {
             "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
             "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+            "databases": "gbif, inat,vertnet",
             "gbif_limit": 50,
             "vertnet_limit": 50,
             "inaturalist_limit": 50
