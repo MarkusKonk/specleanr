@@ -59,12 +59,12 @@ study_area <- sf::st_read(in_extent, quiet=TRUE)
   }else{
     #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
   x = in_extent
-  print('Spliting the string to form a vector of bounding box. Must provide a string of named e.g. "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"')
+  message("Splitting the string to form a vector of bounding box... (Must be provided as named list, in this format: 'xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500')")
   study_area = eval(parse(text = paste0("list(", x, ")")))
   
 }
 
-if(startsWith(in_extent, 'http') | file.exists(in_extent)){
+if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 speciesdata <- sf::st_read(in_data_path, quiet=TRUE)
 }else{
   # (2) Remove spaces and split:
