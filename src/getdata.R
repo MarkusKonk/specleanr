@@ -40,6 +40,13 @@ if(tolower(in_extent)=='null'){ #
   
 }else if(startsWith(in_extent, 'http') | file.exists(in_extent)){
 
+  # If the URL points to a zipped shape, download and unzip before we can read it:
+  if (startsWith(in_extent, 'http') & endsWith(in_extent, 'zip')) {
+    temp_zip <- tempfile(fileext = ".zip")
+    download.file(in_extent, temp_zip, mode = "wb")
+    unzip(temp_zip, exdir = tempdir())
+    in_extent <- list.files(tempdir(), pattern = "\\.shp$", full.names = TRUE)
+  }
   # (1) Read data from shapefile
 # TODO Test, can st_read also read GeoJSON? It should?
 print(paste('Reading input data from shapefile or GeoJSON:',in_extent))
