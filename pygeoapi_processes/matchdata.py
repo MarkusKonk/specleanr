@@ -36,7 +36,7 @@ class DataMatchProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'matchdata.R'
-        self.image_name = 'specleanr:20250410'
+        self.image_name = 'specleanr:20250715'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -56,8 +56,7 @@ class DataMatchProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        input_data_retrieved_url = data.get('input_data_retrieved')
-        input_data_from_user_url = data.get('input_data_from_user')
+        input_data_retrieved_url = data.get('input_datasets')
         colnames_species_names = data.get('colnames_species_names')
         colnames_countries = data.get('colnames_countries')
         colnames_lat = data.get('colnames_lat')
@@ -67,9 +66,7 @@ class DataMatchProcessor(BaseProcessor):
 
         # Checks
         if input_data_retrieved_url is None:
-            raise ProcessorExecuteError('Missing parameter "input_data_retrieved". Please provide a URL to your input csv.')
-        if input_data_from_user_url is None:
-            raise ProcessorExecuteError('Missing parameter "input_data_from_user". Please provide a URL to your input csv.')
+            raise ProcessorExecuteError('Missing parameter "input_datasets". Please provide URL(s) to your input csv file(s).')
         if colnames_species_names is None:
             raise ProcessorExecuteError('Missing parameter "colnames_species_names". Please provide a list of column names.')
         if colnames_countries is None:
@@ -81,10 +78,8 @@ class DataMatchProcessor(BaseProcessor):
         if colnames_date is None:
             raise ProcessorExecuteError('Missing parameter "colnames_date". Please provide a list of column names.')
 
-        # Input files passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_data_retrieved_path = download_any_file(input_data_retrieved_url, input_dir, ".csv")
-        input_data_from_user_path = download_any_file(input_data_from_user_url, input_dir, ".csv")
+        # Make comma-separated string from list of input URLs:
+        input_data_retrieved_url = ','.join(input_data_retrieved_url)
 
         # Where to store output data
         result_filename = 'matched-biodiv-data-%s.csv' % self.job_id
@@ -93,8 +88,7 @@ class DataMatchProcessor(BaseProcessor):
 
         # Assemble args for R script:
         r_args = [
-            input_data_retrieved_path,
-            input_data_from_user_path,
+            input_data_retrieved_url,
             colnames_species_names,
             colnames_countries,
             colnames_lat,
