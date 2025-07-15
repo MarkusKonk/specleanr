@@ -55,7 +55,7 @@ study_area <- sf::st_read(in_extent, quiet=TRUE)
   
 }
 
-if(!is(in_data_path, 'vector')){
+if(startsWith(in_extent, 'http') | file.exists(in_extent)){
 speciesdata <- sf::st_read(in_data_path, quiet=TRUE)
 }else{
   # (2) Remove spaces and split:

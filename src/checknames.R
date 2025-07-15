@@ -50,14 +50,16 @@ if (tolower(in_colname_species) == 'na') {
   if (in_bool_verbose) message('DEBUG: A column name was given, so we assume the user passed a file...')
   if (in_bool_verbose) message(paste0('DEBUG: Reading input data from CSV: ', in_data_path))
   mergealldfs <- data.table::fread(in_data_path)
+  in_species_names <- in_colname_species
 }
 
+print(in_colname_species)
 
 # Run check_names:
 if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')
 cleannames_df <- check_names(
   data = mergealldfs,
-  colsp = in_colname_species,
+  colsp = in_species_names,
   pct = as.numeric(in_pct),
   merge = in_bool_merge,
   verbose = in_bool_verbose,
@@ -68,13 +70,7 @@ cleannames_df <- check_names(
 if (in_bool_verbose) message('DEBUG: Running specleanr::check_names... DONE.')
 
 
-# Filter result:
-speciesfiltered <- cleannames_df[cleannames_df$speciescheck %in% in_species_names,]
-
-
 # Write the results to csv file:
 if (in_bool_verbose) message(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names))
 data.table::fwrite(cleannames_df , file = out_result_path_names)
-if (in_bool_verbose) message(paste0('Write result (speciesfiltered) to csv file: ', out_result_path_filtered))
-data.table::fwrite(speciesfiltered , file = out_result_path_filtered)
 
