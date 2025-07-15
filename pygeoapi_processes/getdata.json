@@ -72,7 +72,7 @@
             "title": "Database names",
             "description": "List of databases to consider. Only \"gbif, inat, and vertnet\" supported",
             "schema": {
-                "type": "string"
+                "type": "array",
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -163,7 +163,7 @@
         "inputs": {
             "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
             "study_area_extent": "https://localhost/referencedata/specleanr/basinfinal.zip",
-            "databases": "gbif, inat,vertnet",
+            "databases": ["gbif", "inat", "vertnet"],
             "gbif_limit": 50,
             "vertnet_limit": 50,
             "inaturalist_limit": 50
