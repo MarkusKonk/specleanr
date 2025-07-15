@@ -11,14 +11,13 @@ curl --location 'https://localhost/pygeoapi/processes/match-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{ 
     "inputs": {
-        "input_data_retrieved": "https://localhost/download/out/biodiv-data.csv",
-        "input_data_from_user": "https://localhost/referencedata/specleanr/efidata.csv",
-        "colnames_species_names": "speciesname, scientificName",
-        "colnames_countries": "JDS4_sampling_ID",
-        "colnames_lat": "lat, latitude",
-        "colnames_lon": "lon, long, longitude",
-        "colnames_date": "Date, sampling_date",
-        "verbose": "TRUE"
+        "input_datasets": ["https://localhost/download/out/biodiv-data.csv", "https://localhost/referencedata/specleanr/efidata.csv"],
+        "colnames_species_names": ["speciesname", "scientificName"],
+        "colnames_countries": ["JDS4_sampling_ID"],
+        "colnames_lat": ["lat", "latitude"],
+        "colnames_lon": ["lon", "long", "longitude"],
+        "colnames_date": ["Date", "sampling_date"],
+        "verbose": true
     }
 }'
 '''
@@ -56,30 +55,30 @@ class DataMatchProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        input_data_retrieved_url = data.get('input_datasets')
-        colnames_species_names = data.get('colnames_species_names')
-        colnames_countries = data.get('colnames_countries')
-        colnames_lat = data.get('colnames_lat')
-        colnames_lon = data.get('colnames_lon')
-        colnames_date = data.get('colnames_date') #appears in JSON file
+        in_data_paths_or_urls = data.get('input_datasets')
+        in_colnames_species_names = data.get('colnames_species_names')
+        in_colnames_countries = data.get('colnames_countries')
+        in_colnames_lat = data.get('colnames_lat')
+        in_colnames_lon = data.get('colnames_lon')
+        in_colnames_date = data.get('colnames_date') #appears in JSON file
         verbose = data.get('verbose')
 
         # Checks
-        if input_data_retrieved_url is None:
+        if in_data_paths_or_urls is None:
             raise ProcessorExecuteError('Missing parameter "input_datasets". Please provide URL(s) to your input csv file(s).')
-        if colnames_species_names is None:
+        if in_colnames_species_names is None:
             raise ProcessorExecuteError('Missing parameter "colnames_species_names". Please provide a list of column names.')
-        if colnames_countries is None:
+        if in_colnames_countries is None:
             raise ProcessorExecuteError('Missing parameter "colnames_countries". Please provide a list of column names.')
-        if colnames_lat is None:
+        if in_colnames_lat is None:
             raise ProcessorExecuteError('Missing parameter "colnames_lat". Please provide a list of column names.')
-        if colnames_lon is None:
+        if in_colnames_lon is None:
             raise ProcessorExecuteError('Missing parameter "colnames_lon". Please provide a list of column names.')
-        if colnames_date is None:
+        if in_colnames_date is None:
             raise ProcessorExecuteError('Missing parameter "colnames_date". Please provide a list of column names.')
 
         # Make comma-separated string from list of input URLs:
-        input_data_retrieved_url = ','.join(input_data_retrieved_url)
+        in_data_paths_or_urls = ','.join(in_data_paths_or_urls)
 
         # Where to store output data
         result_filename = 'matched-biodiv-data-%s.csv' % self.job_id
@@ -88,12 +87,12 @@ class DataMatchProcessor(BaseProcessor):
 
         # Assemble args for R script:
         r_args = [
-            input_data_retrieved_url,
-            colnames_species_names,
-            colnames_countries,
-            colnames_lat,
-            colnames_lon,
-            colnames_date,
+            in_data_paths_or_urls,
+            in_colnames_species_names,
+            in_colnames_countries,
+            in_colnames_lat,
+            in_colnames_lon,
+            in_colnames_date,
             verbose,
             result_filepath
         ]

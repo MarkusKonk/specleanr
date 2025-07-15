@@ -29,53 +29,53 @@
             "keywords": ["csv"]
         },
         "colnames_species_names": {
-            "title": "Column name: Species names",
-            "description": "List of column name that indicate the Species Name in each of the provided datasets. Example: \"speciesname, scientificName\"",
+            "title": "Column names: Species names",
+            "description": "List of column names that indicate the Species Name in each of the provided datasets. Example: \"speciesname, scientificName\"",
             "schema": {
-                "type": "string"
+                "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 1,
+            "maxOccurs": 100,
             "keywords": []
         },
         "colnames_countries": {
-            "title": "Column name: Country",
-            "description": "List of column name that indicate the Country in each of the provided datasets. Example: \"JDS4_sampling_ID\"",
+            "title": "Column names: Country",
+            "description": "List of column names that indicate the Country in each of the provided datasets. Example: \"JDS4_sampling_ID\"",
             "schema": {
-                "type": "string"
+                "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 1,
+            "maxOccurs": 100,
             "keywords": []
         },
         "colnames_lat": {
-            "title": "Column name: Latitude",
-            "description": "List of column name that indicate the Latitude in each of the provided datasets. Example: \"lat, latitude\"",
+            "title": "Column names: Latitude",
+            "description": "List of column names that indicate the Latitude in each of the provided datasets. Example: \"lat, latitude\"",
             "schema": {
-                "type": "string"
+                "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 1,
+            "maxOccurs": 100,
             "keywords": []
         },
         "colnames_lon": {
-            "title": "Column name: Longitude",
-            "description": "List of column name that indicate the Longitude in each of the provided datasets. Example: \"lon, long, longitude\"",
+            "title": "Column names: Longitude",
+            "description": "List of column names that indicate the Longitude in each of the provided datasets. Example: \"lon, long, longitude\"",
             "schema": {
-                "type": "string"
+                "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 1,
+            "maxOccurs": 100,
             "keywords": []
         },
         "colnames_date": {
-            "title": "Column name: Dates",
-            "description": "List of column name that indicate the dates in each of the provided datasets. Example: \"Date, sampling_date\"",
+            "title": "Column names: Dates",
+            "description": "List of column names that indicate the dates in each of the provided datasets. Example: \"Date, sampling_date\"",
             "schema": {
-                "type": "string"
+                "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 1,
+            "maxOccurs": 100,
             "keywords": []
         },
         "verbose": {
@@ -84,7 +84,7 @@
             "schema": {
                 "type": "logical"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": ["TRUE"]
         }
@@ -101,14 +101,13 @@
     },
     "example": {
         "inputs": {
-            "input_data_retrieved": "https://localhost/download/out/biodiv-data.csv",
-            "input_data_from_user": "https://localhost/referencedata/specleanr/efidata.csv",
-            "colnames_species_names": "speciesname, scientificName",
-            "colnames_countries": "JDS4_sampling_ID",
-            "colnames_lat": "lat, latitude",
-            "colnames_lon": "lon, long, longitude",
-            "colnames_date": "Date, sampling_date",
-            "verbose": "TRUE"
+            "input_datasets": ["https://localhost/download/out/biodiv-data.csv", "https://localhost/referencedata/specleanr/efidata.csv"],
+            "colnames_species_names": ["speciesname", "scientificName"],
+            "colnames_countries": ["JDS4_sampling_ID"],
+            "colnames_lat": ["lat", "latitude"],
+            "colnames_lon": ["lon", "long", "longitude"],
+            "colnames_date": ["Date", "sampling_date"],
+            "verbose": true
         }
     }
 }
