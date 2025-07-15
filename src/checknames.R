@@ -60,7 +60,7 @@ if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')
 cleannames_df <- check_names(
   data = mergealldfs,
   colsp = in_species_names,
-  pct = as.numeric(in_pct),
+  pct = as.numeric(in_percent_correctness),
   merge = in_bool_merge,
   verbose = in_bool_verbose,
   sn = in_synonymn_checks,
