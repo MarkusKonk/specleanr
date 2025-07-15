@@ -98,28 +98,29 @@ class DataRetrievalProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        input_data = data.get("input_data")
+        in_data_path = data.get("input_data")
+        in_species_column = data.get('colnames_species')
+        in_database = data.get("database")
+        in_gbif_lim = data.get('gbif_limit', 50)
+        in_inat_lim = data.get('inaturalist_limit', 50)
+        in_vert_lim = data.get('vertnet_limit', 50)
+        in_verbose = data.get("verbose")
+        in_percent_correct = data.get("percentage_correctness", 80)
+        in_synonym_check    = data.get("synonym_check")
+        in_warn_check       = data.get("warn_checks")
+        # Three ways of passing the bounding box:
         study_area_shp_url = data.get('study_area_extent')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
-        colnames_species = data.get('colnames_species')
-        gbif_limit = data.get('gbif_limit', 50)
-        inaturalist_limit = data.get('inaturalist_limit', 50)
-        vertnet_limit = data.get('vertnet_limit', 50)
-        databases = data.get("database")
-        verbose = data.get("verbose")
-        percentage_correctness = data.get("percentage_correctness", 80)
-        synonym_checks    = data.get("synonym_check")
-        warn_checks       = data.get("warn_checks")
-
+        # TODO: Allow bounding box, by passing 4 corners!
 
         # Checks
-        if input_data is None:
-            raise ProcessorExecuteError('Provide the input´data in either vector or dataframe format.')
+        if in_data_path is None:
+            raise ProcessorExecuteError('Provide the input data in either string or CSV format.')
         if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
         
-        #if colnames_species is None:
+        #if in_species_column is None:
             #raise ProcessorExecuteError('Missing parameter "colnames_species". Please provide a list of species.')
 
         # Input files passed by user:
@@ -143,6 +144,8 @@ class DataRetrievalProcessor(BaseProcessor):
         elif study_area_geojson is not None:
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
 
+        in_extent = input_polygons_path
+
         # Where to store output data
         result_filename = 'biodiv-data-%s.csv' % self.job_id
         result_filepath     = self.download_dir+'/out/'+result_filename
@@ -151,17 +154,17 @@ class DataRetrievalProcessor(BaseProcessor):
         # Assemble args for R script: ###
         #THIS ARRANGMENT MUST MATCH THE SOURCE CODE NUMBERING
         r_args = [
-            input_data,
-            colnames_species,
-            databases,
-            str(gbif_limit),
-            str(inaturalist_limit),
-            str(vertnet_limit),
-            verbose,
-            input_polygons_path,
-            str(percentage_correctness),
-            synonym_checks,
-            warn_checks,
+            in_data_path,
+            in_species_column,
+            in_database,
+            str(in_gbif_lim),
+            str(in_inat_lim),
+            str(in_vert_lim),
+            in_verbose,
+            in_extent,
+            str(in_percent_correct),
+            in_synonym_check,
+            in_warn_check,
             result_filepath
         ]
 
