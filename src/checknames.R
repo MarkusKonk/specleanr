@@ -36,7 +36,7 @@ in_bool_verbose = tolower(in_bool_verbose) == 'true'
 
 # If there is NO column name, we assume that a list of species is given.
 # Otherwise, we assume an input CSV file is given.
-if (tolower(in_colname_species) == 'na') {
+if (tolower(in_colname_species) == 'null') {
   in_colname_species <- NULL
   if (in_bool_verbose) message('DEBUG: No column name given, so we assume the user passed a list of species...')
   if (in_bool_verbose) message('DEBUG: Splitting input arg species names...')
@@ -44,8 +44,14 @@ if (tolower(in_colname_species) == 'na') {
   in_species_names <- gsub(", ", ",", in_species_names, fixed = TRUE)
   in_species_names <- gsub(" ,", ",", in_species_names, fixed = TRUE)
   in_species_names <- strsplit(in_species_names, ",")[[1]]
-  if (in_bool_verbose) message('DEBUG: Found species names: ', paste(in_species_names, collapse=' + '))
+
+  if(length(in_species_names)<2 ){
+    stop('The number of species should be greater than 1 and nodataframe can be exported')
+  }else{
+    if (in_bool_verbose) message('DEBUG: Found species names: ', paste(in_species_names, collapse=' + '))
   mergealldfs <- in_species_names
+  }
+  
 } else {
   if (in_bool_verbose) message('DEBUG: A column name was given, so we assume the user passed a file...')
   if (in_bool_verbose) message(paste0('DEBUG: Reading input data from CSV: ', in_data_path))
