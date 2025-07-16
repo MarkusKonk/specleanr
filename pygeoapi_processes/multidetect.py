@@ -111,10 +111,6 @@ class MultiDetectProcessor(BaseProcessor):
         if missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
 
-        # From booleans to string:
-        in_bool_multiple_species = 'true' if in_bool_multiple_species else 'false'
-        in_silence_true_errors = 'true' if in_silence_true_errors else 'false'
-
         # Set null threshold:
         if in_threshold is None:
             in_threshold = 'null'
@@ -131,34 +127,34 @@ class MultiDetectProcessor(BaseProcessor):
         # Assemble args for R script:
         r_args = [
             in_data_path_or_url,
-            in_var_ofinterest,
-            in_select_var,
-            in_bool_multiple_species,
-            in_output_type,
-            in_group_colname,
-            in_colnames_exclude,
-            in_methods,
-            in_silence_true_errors,
-            in_boot_settings_run_bool,
-            in_boot_settings_maxrecords,
+            str(in_var_ofinterest),
+            str(in_select_var),
+            str(in_bool_multiple_species),
+            str(in_output_type),
+            str(in_group_colname),
+            str(in_colnames_exclude),
+            str(in_methods),
+            str(in_silence_true_errors),
+            str(in_boot_settings_run_bool),
+            str(in_boot_settings_maxrecords),
             str(in_boot_settings_nb),
-            in_boot_settings_seed,
-            in_boot_settings_threshold,
-            in_pca_settings_exec_bool,
+            str(in_boot_settings_seed),
+            str(in_boot_settings_threshold),
+            str(in_pca_settings_exec_bool),
             str(in_pca_settings_npc),
-            in_pca_settings_quiet,
-            in_pca_settings_pcvar,
-            in_verbose_bool,
-            in_warn_bool,
-            in_sdm_bool,
-            in_na_inform_bool,
+            str(in_pca_settings_quiet),
+            str(in_pca_settings_pcvar),
+            str(in_verbose_bool),
+            str(in_warn_bool),
+            str(in_sdm_bool),
+            str(in_na_inform_bool),
             str(in_missingness),
-            in_bool_loess,
+            str(in_bool_loess),
             str(in_threshold_clean),
-            in_mode_clean,
-            in_classifymode,
-            in_eif_bool,
-            in_autoextract,
+            str(in_mode_clean),
+            str(in_classifymode),
+            str(in_eif_bool),
+            str(in_autoextract),
             result_filepath
         ]
 
