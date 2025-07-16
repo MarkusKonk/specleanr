@@ -65,7 +65,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_data_url                       = data.get('input_data')
         in_var_ofinterest                 = data.get('colname_variable')
         in_bool_multiple_species          = data.get('multiple_species')
-        group_colname                     = data.get('group_colname', 'not_provided')
+        in_group_colname                  = data.get('group_colname', 'not_provided')
         in_colnames_exclude               = data.get('colname_exclude')
         in_methods                        = data.get('methods')
         in_missingness                    = data.get('missingness')
@@ -108,7 +108,7 @@ class MultiDetectProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
         #if in_silence_true_errors is None:
             #raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".') defualt is there
-        if missingness is None:
+        if in_missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
 
         #################################
