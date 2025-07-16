@@ -77,10 +77,6 @@ class NameCheckProcessor(BaseProcessor):
         ### storage/download location ###
         #################################
 
-        # Input files passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_data_path = download_any_file(in_data_path, input_dir, '.csv')
-
         # Where to store output data
         result_filename1 = 'checked-biodiv-data-%s.csv' % self.job_id
         result_filepath1     = self.download_dir+'/out/'+result_filename1
@@ -135,34 +131,6 @@ class NameCheckProcessor(BaseProcessor):
         }
 
         return 'application/json', response_object
-
-
-def download_any_file(input_url, input_dir, ending=None):
-
-    # Make sure the dir exists:
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    # Download file into given dir:
-    LOGGER.debug('Downloading input file: %s' % input_url)
-    resp = requests.get(input_url)
-    if not resp.status_code == 200:
-        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url))
-
-    # How should the downloaded file be named?
-    # If the URL includes a name: TODO can we trust this name?
-    #filename = os.path.basename(input_url)
-    filename = "download%s" % os.urandom(5).hex()
-    filename = filename if ending is None else filename+ending
-    input_file_path = '%s/%s' % (input_dir, filename)
-    LOGGER.debug('Storing input file to: %s' % input_file_path)
-    
-    with open(input_file_path, 'wb') as myfile:
-        for chunk in resp.iter_content(chunk_size=1024):
-            if chunk:
-                myfile.write(chunk)
-
-    return input_file_path
 
 
 def run_docker_container(
