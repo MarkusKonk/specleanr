@@ -138,39 +138,9 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "bool_verbose": {
-            "title": "Returns data extraction messages.",
-            "description": "If TRUE, detailed species level messages will be returend to the user.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
-        "bool_warn": {
-            "title": "Returns data extraction warnings.",
-            "description": "If TRUE, detailed species level warnings will be returend to the user especially when species with fewer records are dropped from the dataset.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
         "bool_coords": {
             "title": "Logical to attach the original coordinates.",
             "description": "If TRUE, the original records used for data extraction will be attached on the dataset. Easy to tract the slight changes in coordinates during data extraction.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
-        "bool_rm_nainform": {
-            "title": "Remove NAs after data extraction.",
-            "description": "If TRUE, the usser will informed about NAs created when the coordinates didnot retrun records. Default FALSE",
             "schema": {
                 "type": "boolean"
             },

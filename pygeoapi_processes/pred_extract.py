@@ -130,11 +130,8 @@ class PredExtractProcessor(BaseProcessor):
         in_minimumpts_rm = data.get("minimum_sprecordsallow")
         in_rm_duplicates = data.get("bool_remove_duplicates")
         in_na_rm = data.get('bool_remove_nas')
-        in_na_inform = data.get('bool_rm_nainform')
         in_bool_list = data.get('bool_list')
         in_bool_merge = data.get('bool_merge')
-        in_bool_verbose = data.get('bool_verbose')
-        in_bool_warn = data.get('bool_warn')
         in_bool_coords = data.get('bool_coords')
 
         # Checks
@@ -215,6 +212,9 @@ class PredExtractProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
+        in_bool_verbose = True
+        in_na_inform = True
+        in_bool_warn = True
 
         # Assemble args for R script:
         r_args = [
@@ -227,10 +227,10 @@ class PredExtractProcessor(BaseProcessor):
             str(in_min_pts),
             in_bool_merge,
             in_bool_list,
-            in_bool_verbose,
-            in_bool_warn,
+            str(in_bool_verbose),
+            str(in_bool_warn),
             in_bool_coords,
-            in_na_inform,
+            str(in_na_inform),
             in_na_rm,
             in_rm_duplicates,
             in_minimumpts_rm,
