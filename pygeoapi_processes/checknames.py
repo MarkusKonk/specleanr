@@ -34,7 +34,7 @@ class NameCheckProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'checknames.R'
-        self.image_name = 'specleanr:20250410'
+        self.image_name = 'specleanr:20250716'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -62,7 +62,7 @@ class NameCheckProcessor(BaseProcessor):
         in_percent_correctness = data.get('percent_correctness') # number
         in_bool_merge          = data.get('bool_merge')
         in_bool_verbose        = data.get('bool_verbose')
-        in_synonymn_checks     = data.get('bool_synonymn')
+        in_synonymn_checks     = data.get('bool_synonym')
         in_ecosystem_checks    = data.get('bool_ecosystem_type')
         in_rm_duplicates       = data.get('bool_rm_duplicates')
 
@@ -86,7 +86,8 @@ class NameCheckProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # Nothing to be done...
+        if in_colname_species is None:
+            in_colname_species = "null"
 
         ####################################
         ### Assemble args and run docker ###

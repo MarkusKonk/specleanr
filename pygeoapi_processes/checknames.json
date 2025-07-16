@@ -68,7 +68,7 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "bool_synonymn": {
+        "bool_synonym": {
             "title": "True or False: Merge?",
             "description": "Return synoymn checks from FishBase.",
             "schema": {
@@ -116,7 +116,7 @@
             "percent_correctness": 90,
             "bool_merge": true,
             "bool_verbose": true,
-            "bool_synonymn": true,
+            "bool_synonym": true,
             "bool_ecosystem_type": true,
             "bool_rm_duplicates": true
 
