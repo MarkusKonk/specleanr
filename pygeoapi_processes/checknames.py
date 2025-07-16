@@ -53,36 +53,42 @@ class NameCheckProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
-        # Get user inputs
-        input_data_url        = data.get('input_data')
-        colname_species       = data.get('colname_species')
-        percent_correctness   = data.get('percent_correctness')
-        bool_merge            = data.get('bool_merge')
-        bool_verbose          = data.get('bool_verbose')
-        bool_synonymn         = data.get('bool_synonymn')
-        bool_ecosystem_type   = data.get('bool_ecosystem_type')
-        bool_rmduplicates     = data.get('bool_rmduplicates')
+        #################################
+        ### Get user inputs and check ###
+        #################################
 
+        in_data_path           = data.get('input_data')
+        in_colname_species     = data.get('colname_species')
+        in_percent_correctness = data.get('percent_correctness')
+        in_bool_merge          = data.get('bool_merge')
+        in_bool_verbose        = data.get('bool_verbose')
+        in_synonymn_checks     = data.get('bool_synonymn')
+        in_ecosystem_checks    = data.get('bool_ecosystem_type')
+        in_rm_duplicates       = data.get('bool_rm_duplicates')
 
         # Checks
-        if percent_correctness is None:
+        if in_percent_correctness is None:
             raise ProcessorExecuteError('Missing parameter "percent_correctness". Please provide a number.')
-        if bool_merge is None:
+        if in_bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
 
         # From boolean to string:
         # TODO: Does not seem to work! Check on this!
         # R script will interpret a string 'true' as True, and everything else as False!
-        LOGGER.debug('Parameter "bool_merge": %s (type %s)' % (bool_merge, type(bool_merge)))
-        if bool_merge:
+        LOGGER.debug('Parameter "bool_merge": %s (type %s)' % (in_bool_merge, type(in_bool_merge)))
+        if in_bool_merge:
             LOGGER.debug('User requested to merge!')
         else:
             LOGGER.debug('User did not request to merge!')
-        bool_merge = 'true' if bool_merge else 'false'
+        in_bool_merge = 'true' if in_bool_merge else 'false'
 
         # Input files passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_data_path = download_any_file(input_data_url, input_dir, '.csv')
+        input_data_path = download_any_file(in_data_path, input_dir, '.csv')
 
         # Where to store output data
         result_filename1 = 'checked-biodiv-data-%s.csv' % self.job_id
@@ -94,14 +100,14 @@ class NameCheckProcessor(BaseProcessor):
 
         # Assemble args for R script:
         r_args = [
-            input_data_url,
-            colname_species,
-            str(percent_correctness),
-            bool_merge,
-            bool_verbose,
-            bool_synonymn,
-            bool_ecosystem_type,
-            bool_rmduplicates, 
+            in_data_path,
+            in_colname_species,
+            str(in_percent_correctness),
+            in_bool_merge,
+            in_bool_verbose,
+            in_synonymn_checks,
+            in_ecosystem_checks,
+            in_rm_duplicates,
             result_filepath1,
             result_filepath2
         ]

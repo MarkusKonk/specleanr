@@ -88,7 +88,7 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "bool_rmduplicates": {
+        "bool_rm_duplicates": {
             "title": "True or False: Merge?",
             "description": "Remove duplicates from the dataset. Default is FALSE.",
             "schema": {
@@ -126,7 +126,7 @@
             "bool_verbose": true,
             "bool_synonymn": true,
             "bool_ecosystem_type": true,
-            "bool_rmduplicates": true
+            "bool_rm_duplicates": true
 
 
         }
