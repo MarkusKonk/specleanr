@@ -62,7 +62,7 @@ class MultiDetectProcessor(BaseProcessor):
         #################################
 
         # Get user inputs
-        in_data_url                       = data.get('input_data')
+        in_data_path_or_url               = data.get('input_data')
         in_var_ofinterest                 = data.get('colname_variable')
         in_bool_multiple_species          = data.get('multiple_species')
         in_group_colname                  = data.get('group_colname', 'not_provided')
@@ -98,7 +98,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_autoextract                     = data.get('classify_or_autoremove')
 
         # Checks
-        if in_data_url is None:
+        if in_data_path_or_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input table.')
         if in_var_ofinterest is None:
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
@@ -115,10 +115,6 @@ class MultiDetectProcessor(BaseProcessor):
         ### Input and output          ###
         ### storage/download location ###
         #################################
-
-        # Input files passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        in_data_path_or_url = download_any_file(in_data_url, input_dir, ".csv")
 
         # Where to store output data
         result_filename = 'cleaned-data-%s.csv' % self.job_id
@@ -198,34 +194,6 @@ class MultiDetectProcessor(BaseProcessor):
         }
 
         return 'application/json', response_object
-
-
-def download_any_file(input_url, input_dir, ending=None):
-
-    # Make sure the dir exists:
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    # Download file into given dir:
-    LOGGER.debug('Downloading input file: %s' % input_url)
-    resp = requests.get(input_url)
-    if not resp.status_code == 200:
-        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url))
-
-    # How should the downloaded file be named?
-    # If the URL includes a name: TODO can we trust this name?
-    #filename = os.path.basename(input_url)
-    filename = "download%s" % os.urandom(5).hex()
-    filename = filename if ending is None else filename+ending
-    input_file_path = '%s/%s' % (input_dir, filename)
-    LOGGER.debug('Storing input file to: %s' % input_file_path)
-    
-    with open(input_file_path, 'wb') as myfile:
-        for chunk in resp.iter_content(chunk_size=1024):
-            if chunk:
-                myfile.write(chunk)
-
-    return input_file_path
 
 
 def run_docker_container(
