@@ -58,53 +58,53 @@ class MultiDetectProcessor(BaseProcessor):
     def execute(self, data, outputs=None):
 
         # Get user inputs
-        in_data_url                          = data.get('input_data')
-        colname_var                       = data.get('colname_variable')
-        bool_multiple_species             = data.get('multiple_species')
+        in_data_url                       = data.get('input_data')
+        in_var_ofinterest                 = data.get('colname_variable')
+        in_bool_multiple_species          = data.get('multiple_species')
         group_colname                     = data.get('group_colname', 'not_provided')
-        colname_exclude                   = data.get('colname_exclude')
-        methods                           = data.get('methods')
-        missingness                       = data.get('missingness')
-        select_var                        = data.get('select_columns')
-        output_type                       = data.get('output_type') #clean or outlier/ Defualt outliers
-        silence_true_errors               = data.get('silence_true_errors')
-        boot_settings_run_bool            = data.get('boot_run')
-        boot_settings_maxrecords          = data.get('boot_maxrecords')
-        boot_settings_nb                  = data.get('number_of_boots')
-        boot_settings_seed                = data.get('setseed')
-        boot_settings_threshold           = data.get('boot_threshold')
-        pca_settings_exec_bool            = data.get('exceute_pca')
-        pca_settings_npc                  = data.get('number_of_pca')
-        pca_settings_quiet                = data.get('pca_silence')
-        pca_settings_pcvar                = data.get('pcavariable')
-        verbose_bool                      = data.get('verbose_outlier')
-        warn_bool                         = data.get('warn_outlier')
-        sdm_bool                          = data.get('sdm_data') #multivaritate data, sdm must be TRUE
-        na_inform_bool                    = data.get('inform_na_outlier')
+        in_colnames_exclude               = data.get('colname_exclude')
+        in_methods                        = data.get('methods')
+        in_missingness                    = data.get('missingness')
+        in_select_var                     = data.get('select_columns')
+        in_output_type                    = data.get('output_type') #clean or outlier/ Defualt outliers
+        in_silence_true_errors            = data.get('silence_true_errors')
+        in_boot_settings_run_bool         = data.get('boot_run')
+        in_boot_settings_maxrecords       = data.get('boot_maxrecords')
+        in_boot_settings_nb               = data.get('number_of_boots')
+        in_boot_settings_seed             = data.get('setseed')
+        in_boot_settings_threshold        = data.get('boot_threshold')
+        in_pca_settings_exec_bool         = data.get('exceute_pca')
+        in_pca_settings_npc               = data.get('number_of_pca')
+        in_pca_settings_quiet             = data.get('pca_silence')
+        in_pca_settings_pcvar             = data.get('pcavariable')
+        in_verbose_bool                   = data.get('verbose_outlier')
+        in_warn_bool                      = data.get('warn_outlier')
+        in_sdm_bool                       = data.get('sdm_data') #multivaritate data, sdm must be TRUE
+        in_na_inform_bool                 = data.get('inform_na_outlier')
 
         ###=========
         #Extrain clean data
         #===========
-        bool_loess                         =  data.get('bool_loess')
-        threshold_clean                    =  data.get('threshold_clean')   
-        mode_clean                         =  data.get('outlierweights_mode')
+        in_bool_loess                      = data.get('bool_loess')
+        in_threshold_clean                 = data.get('threshold_clean')
+        in_mode_clean                      = data.get('outlierweights_mode')
         #classifying data
-        classifymode                       =  data.get('classifymode') #med
-        eif_bool                           =  data.get('eif_bool') #empirical influence function
+        in_classifymode                    = data.get('classifymode') #med
+        in_eif_bool                        = data.get('eif_bool') #empirical influence function
 
         #whether to run a classify to auto removal 
-        autoextract                        =  data.get('classify_or_autoremove')
+        in_autoextract                     = data.get('classify_or_autoremove')
 
         # Checks
         if in_data_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input table.')
-        if colname_var is None:
+        if in_var_ofinterest is None:
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
         if in_bool_multiple_species is None:
             raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide \"true\" or \"false\".')
-        if colname_exclude is None:
+        if in_colnames_exclude is None:
             raise ProcessorExecuteError('Missing parameter "colname_exclude". Please provide a column name.')
-        if methods is None:
+        if in_methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
         #if in_silence_true_errors is None:
             #raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".') defualt is there
@@ -121,7 +121,7 @@ class MultiDetectProcessor(BaseProcessor):
 
         # Input files passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_csv_path = download_any_file(in_data_url, input_dir, ".csv")
+        in_data_path_or_url = download_any_file(in_data_url, input_dir, ".csv")
 
         # Where to store output data
         result_filename = 'cleaned-data-%s.csv' % self.job_id
@@ -130,35 +130,35 @@ class MultiDetectProcessor(BaseProcessor):
 
         # Assemble args for R script:
         r_args = [
-            input_csv_path,
-            colname_var,
-            select_var,
-            bool_multiple_species,
-            output_type,
-            group_colname,
-            colname_exclude,
-            methods,
-            silence_true_errors,
-            boot_settings_run_bool,
-            boot_settings_maxrecords,
-            str(boot_settings_nb), 
-            boot_settings_seed,
-            boot_settings_threshold,
-            pca_settings_exec_bool,
-            str(pca_settings_npc),
-            pca_settings_quiet,
-            pca_settings_pcvar,
-            verbose_bool,
-            warn_bool,
-            sdm_bool,
-            na_inform_bool,
-            str(missingness), 
-            bool_loess,
-            str(threshold_clean),
-            mode_clean,
-            classifymode,
-            eif_bool,
-            autoextract,
+            in_data_path_or_url,
+            in_var_ofinterest,
+            in_select_var,
+            in_bool_multiple_species,
+            in_output_type,
+            in_group_colname,
+            in_colnames_exclude,
+            in_methods,
+            in_silence_true_errors,
+            in_boot_settings_run_bool,
+            in_boot_settings_maxrecords,
+            str(in_boot_settings_nb),
+            in_boot_settings_seed,
+            in_boot_settings_threshold,
+            in_pca_settings_exec_bool,
+            str(in_pca_settings_npc),
+            in_pca_settings_quiet,
+            in_pca_settings_pcvar,
+            in_verbose_bool,
+            in_warn_bool,
+            in_sdm_bool,
+            in_na_inform_bool,
+            str(in_missingness),
+            in_bool_loess,
+            str(in_threshold_clean),
+            in_mode_clean,
+            in_classifymode,
+            in_eif_bool,
+            in_autoextract,
             result_filepath
         ]
 
