@@ -168,11 +168,6 @@ class PredExtractProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # From booleans to string:
-        bool_multiple_species = 'true' if bool_multiple_species else 'false'
-        in_bool_merge = 'true' if in_bool_merge else 'false'
-        in_bool_list = 'true' if in_bool_list else 'false'
-
         # Input csv file passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
         input_csv_path = download_any_file(in_data_path_or_url, input_dir, ".csv")
@@ -225,15 +220,15 @@ class PredExtractProcessor(BaseProcessor):
             in_colname_lon,
             in_colname_species,
             str(in_min_pts),
-            in_bool_merge,
-            in_bool_list,
+            str(in_bool_merge),
+            str(in_bool_list),
             str(in_bool_verbose),
             str(in_bool_warn),
-            in_bool_coords,
+            str(in_bool_coords),
             str(in_na_inform),
-            in_na_rm,
-            in_rm_duplicates,
-            in_minimumpts_rm,
+            str(in_na_rm),
+            str(in_rm_duplicates),
+            str(in_minimumpts_rm),
             result_filepath
         ]
 
