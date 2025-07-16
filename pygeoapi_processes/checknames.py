@@ -43,7 +43,6 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": false,
-        "bool_verbose": true,
         "bool_synonym": true,
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
@@ -91,7 +90,6 @@ class NameCheckProcessor(BaseProcessor):
         in_colname_species     = data.get('colname_species') # just one string
         in_percent_correctness = data.get('percent_correctness') # number
         in_bool_merge          = data.get('bool_merge')
-        in_bool_verbose        = data.get('bool_verbose')
         in_synonymn_checks     = data.get('bool_synonym')
         in_ecosystem_checks    = data.get('bool_ecosystem_type')
         in_rm_duplicates       = data.get('bool_rm_duplicates')
@@ -122,6 +120,7 @@ class NameCheckProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
+        in_bool_verbose = True
 
         # Assemble args for R script:
         r_args = [

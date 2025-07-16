@@ -81,7 +81,6 @@ class DataMatchProcessor(BaseProcessor):
         in_colnames_lat = data.get('colnames_lat')
         in_colnames_lon = data.get('colnames_lon')
         in_colnames_date = data.get('colnames_date') #appears in JSON file
-        verbose = data.get('verbose')
 
         # Checks
         if in_data_paths_or_urls is None:
@@ -125,6 +124,7 @@ class DataMatchProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
+        in_verbose = True
 
         # Assemble args for R script:
         r_args = [
@@ -134,7 +134,7 @@ class DataMatchProcessor(BaseProcessor):
             in_colnames_lat,
             in_colnames_lon,
             in_colnames_date,
-            str(verbose),
+            str(in_verbose),
             result_filepath
         ]
 

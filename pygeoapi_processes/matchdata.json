@@ -77,16 +77,6 @@
             "minOccurs": 1,
             "maxOccurs": 100,
             "keywords": []
-        },
-        "verbose": {
-            "title": "Merging messages",
-            "description": "Return messages while merging data",
-            "schema": {
-                "type": "logical"
-            },
-            "minOccurs": 0,
-            "maxOccurs": 1,
-            "keywords": ["TRUE"]
         }
     },
     "outputs": {
@@ -106,8 +96,7 @@
             "colnames_countries": ["JDS4_sampling_ID"],
             "colnames_lat": ["lat", "latitude"],
             "colnames_lon": ["lon", "long", "longitude"],
-            "colnames_date": ["Date", "sampling_date"],
-            "verbose": true
+            "colnames_date": ["Date", "sampling_date"]
         }
     }
 }

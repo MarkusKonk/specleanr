@@ -122,10 +122,8 @@ class DataRetrievalProcessor(BaseProcessor):
         in_gbif_lim = data.get('gbif_limit', 50)
         in_inat_lim = data.get('inaturalist_limit', 50)
         in_vert_lim = data.get('vertnet_limit', 50)
-        in_verbose = data.get("verbose")
         in_percent_correct = data.get("percentage_correctness", 80)
         in_synonym_check    = data.get("synonym_check")
-        in_warn_check       = data.get("warn_checks")
         # Three ways of passing the bounding box:
         study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
@@ -167,14 +165,8 @@ class DataRetrievalProcessor(BaseProcessor):
         if in_species_column is None:
             in_species_column = 'null'
 
-        if in_verbose is None:
-            in_verbose = 'null'
-
         if in_synonym_check is None:
             in_synonym_check = 'null'
-
-        if in_warn_check is None:
-            in_warn_check = 'null'
 
         # Join database strings:
         in_database = ','.join(in_database)
@@ -214,6 +206,8 @@ class DataRetrievalProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
+        in_verbose = True
+        in_warn_check = True
 
         # Assemble args for R script: ###
         #THIS ARRANGMENT MUST MATCH THE SOURCE CODE NUMBERING
@@ -224,11 +218,11 @@ class DataRetrievalProcessor(BaseProcessor):
             str(in_gbif_lim),
             str(in_inat_lim),
             str(in_vert_lim),
-            in_verbose,
+            str(in_verbose),
             in_extent,
             str(in_percent_correct),
-            in_synonym_check,
-            in_warn_check,
+            str(in_synonym_check),
+            str(in_warn_check),
             result_filepath
         ]
         LOGGER.debug('r_args: %s' % r_args)

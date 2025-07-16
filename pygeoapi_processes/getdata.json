@@ -88,26 +88,6 @@
             "maxOccurs": 1,
             "keywords": ["databases"]
         },
-        "verbose": {
-            "title": "Show messages from checking species names",
-            "description": "Logical, TRUE if the messages to be displayed or FALSE for no messages.",
-            "schema": {
-                "type": "logical"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": ["messasges"]
-        },
-         "warn_checks": {
-            "title": "Show warnings during data download",
-            "description": "Logical, TRUE if the messages to be displayed or FALSE for no messages.",
-            "schema": {
-                "type": "logical"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": ["warn"]
-        },
         "synonym_checks": {
             "title": "Either consider synonym from standard databases like FishBase.",
             "description": "Logical, TRUE if synoymns species names should be returned during data checks before data download.",
