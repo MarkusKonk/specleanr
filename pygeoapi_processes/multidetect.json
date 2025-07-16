@@ -59,7 +59,7 @@
             "title": ": Required for multiple groups",
             "description": "For multiple groups in a dataframe, provide the column name containing the groups to be checked. For example, a column name with species name in a dataset.",
             "schema": {
-                "type": "boolean"
+                "type": "string"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -97,7 +97,7 @@
             "keywords": []
         },
         "select_columns": {
-            "title": "Select colums",
+            "title": "Select columns",
             "description": "In a multivariate dataset, if only particular columns needs to be checked then they should be indicated here. Otherwise all columns will be considerd in outlier detection.",
             "schema": {
                 "type": "string"
