@@ -99,39 +99,17 @@ in_select_var = strsplit(in_select_var, ",")[[1]]
 }
 
 
-#=========================================
-# (3) Make string booleans boolean
-#=========================================
-in_bool_multiple_species   = "true"
-in_silence_true_errors     = "true"
-in_warn_bool               = "true"
-in_na.inform               = "true"
-in_verbose_bool            = "true"
-in_sdm_bool                = "true"
-in_pca_settings_exec_bool  = "true"
-in_boot_settings_run_bool  = "true"
-in_ecoranges_settings_checkFB_bool = "true"
-in_pca_settings_quiet      = "true"
-in_bool_loess              =  "true"
-in_outliertoNA_bool        =  "true"   
-in_eif_bool                =  "true" 
-in_autothreshold_bool      =  "true"
-
-
-
 in_bool_multiple_species   = tolower(in_bool_multiple_species) == 'true'
 #in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
 in_warn_bool               = tolower(in_warn_bool) == 'true'
-in_na.inform               = tolower(in_na.inform) == 'true'
+in_na_inform_bool               = tolower(in_na_inform_bool) == 'true'
 in_sdm_bool                = tolower(in_sdm_bool) == 'true'
 in_pca_settings_exec_bool  = tolower(in_pca_settings_exec_bool) == 'true'
 in_boot_settings_run_bool  = tolower(in_boot_settings_run_bool) == 'true'
 in_verbose_bool            = tolower(in_verbose_bool) == 'true'
 in_pca_settings_quiet      = tolower(in_pca_settings_quiet) == 'true'
 in_bool_loess              = tolower(in_bool_loess ) == 'true'
-in_outliertoNA_bool        = tolower(in_outliertoNA_bool) == 'true'
 in_eif_bool                = tolower(in_eif_bool) == 'true'
-in_autothreshold_bool      = tolower(in_autothreshold_bool) == 'true'
 
 in_bootSettings = list(run= in_boot_settings_run_bool, nb= in_boot_settings_nb,
                     maxrecords = in_boot_settings_maxrecords, seed= in_boot_settings_seed,
@@ -159,14 +137,6 @@ if (!in_bool_multiple_species) {
 # print(paste('SilenceErrors:', in_silence_true_errors))
 # print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 
-print(in_var_ofinterest)
-print(in_select_var)
-print(in_boot_settings_run_bool)
-print(in_pca_settings_exec_bool )
-print(in_pc[[1]])
-
-print(in_silence_true_errors)
-
 outlieriris_mult <- multidetect(
   data            = dfinal,
   var             = in_var_ofinterest,
@@ -186,7 +156,7 @@ outlieriris_mult <- multidetect(
   sdm             = in_sdm_bool,
   na.inform       = in_na.inform_bool
   )
-
+'in_outliertoNA_bool'
 print(paste('Running specleanr::multidetect... DONE.'))
 
 if(tolower(in_autoextract)=='false'){
@@ -209,7 +179,7 @@ if (tolower(in_threshold_clean) == 'null') {
   print('Threshold is null, using loess=TRUE...')
   in_threshold_clean <- NULL
   in_bool_loess <- TRUE
-} else if (!(is.na(as.numeric(in_threshold)))) {
+} else if (!(is.na(as.numeric(in_threshold_clean)))) {
   # if loess=FALSE, then set threshold!
   in_threshold_clean <- as.numeric(in_threshold_clean)
   print(paste0('Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
