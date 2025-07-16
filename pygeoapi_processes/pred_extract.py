@@ -7,9 +7,9 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'https://localhost/processes/pred-extract/execution' \
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
---data '{ 
+--data '{
     "inputs": {
         "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
         "input_raster_url_or_name": "worldclim",
@@ -24,8 +24,28 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
     }
 }'
 
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff",
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "minimum_sprecordsallow": 10,
+        "bool_list": false,
+        "bool_merge": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": true
+    }
+}'
+
 ### Same request, but with GeoJSON study area, instead of shapefile.
-curl --location 'https://localhost/processes/pred-extract/execution' \
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
@@ -35,7 +55,8 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
         "colname_lat": "decimalLatitude",
         "colname_lon": "decimalLongitude",
         "colname_species": "speciescheck",
-        "min_pts": 10,
+        "mininmum_sprecords": 10,
+        "minimum_sprecordsallow": xx,
         "bool_multiple_species": true,
         "bool_merge": false,
         "bool_list": false
