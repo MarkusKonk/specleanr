@@ -104,8 +104,6 @@ class MultiDetectProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
         if in_bool_multiple_species is None:
             raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide \"true\" or \"false\".')
-        if in_colnames_exclude is None:
-            raise ProcessorExecuteError('Missing parameter "colname_exclude". Please provide a column name.')
         if in_methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
         #if in_silence_true_errors is None:
