@@ -52,7 +52,7 @@ class DataMatchProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'matchdata.R'
-        self.image_name = 'specleanr:20250715'
+        self.image_name = 'specleanr:20250716'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -97,9 +97,6 @@ class DataMatchProcessor(BaseProcessor):
         if in_colnames_date is None:
             raise ProcessorExecuteError('Missing parameter "colnames_date". Please provide a list of column names.')
 
-        # Make comma-separated string from list of input URLs:
-        in_data_paths_or_urls = ','.join(in_data_paths_or_urls)
-
 
         #################################
         ### Input and output          ###
@@ -116,7 +113,14 @@ class DataMatchProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # Nothing to do ... ?
+        # Make comma-separated string from lists:
+        in_data_paths_or_urls = ','.join(in_data_paths_or_urls)
+        in_colnames_species_names = ','.join(in_colnames_species_names)
+        in_colnames_countries = ','.join(in_colnames_countries)
+        in_colnames_lat = ','.join(in_colnames_lat)
+        in_colnames_lon = ','.join(in_colnames_lon)
+        in_colnames_date = ','.join(in_colnames_date)
+
 
         ####################################
         ### Assemble args and run docker ###
@@ -130,7 +134,7 @@ class DataMatchProcessor(BaseProcessor):
             in_colnames_lat,
             in_colnames_lon,
             in_colnames_date,
-            verbose,
+            str(verbose),
             result_filepath
         ]
 
