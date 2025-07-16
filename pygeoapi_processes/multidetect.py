@@ -12,17 +12,36 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://localhost/download/out/multiprecleaned.csv",
-        "colname_variable": "bio6",
+        "input_data": "https://example.com/exampledata/boku/iris1.csv",
+        "colname_variable": "Sepal.Length",
+        "select_columns": null,
         "multiple_species": true,
-        "colname_exclude": "x,y",
-        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-        "silence_true_errors": true,
-        "missingness": 0.1,
-        "threshold": 0.7,
-        "colname_species": "species"
+        "output_type": "outlier",
+        "group_colname": "Species",
+        "colname_exclude": null,
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel",
+        "silence_true_errors": false,
+        "boot_run": false,
+        "boot_maxrecords": 30,
+        "number_of_boots": 5,
+        "setseed": 1125,
+        "boot_threshold": 0.6,
+        "exceute_pca": true,
+        "number_of_pca": 2,
+        "pca_silence": true,
+        "pcavariable": "PC1",
+        "sdm_data": true,
+        "inform_na_outlier": true,
+        "missingness": 1.0,
+        "bool_loess": true,
+        "threshold_clean": null,
+        "outlierweights_mode": "abs",
+        "classifymode": "med",
+        "eif_bool": false,
+        "classify_or_autoremove": true
     }
 }'
+
 '''
 
 LOGGER = logging.getLogger(__name__)
