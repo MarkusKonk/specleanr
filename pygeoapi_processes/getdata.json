@@ -82,7 +82,7 @@
             "title": "Database names",
             "description": "List of databases to consider. Only \"gbif, inat, and vertnet\" supported",
             "schema": {
-                "type": "array",
+                "type": "array"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
