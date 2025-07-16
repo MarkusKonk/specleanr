@@ -84,9 +84,6 @@ class NameCheckProcessor(BaseProcessor):
         result_filename1 = 'checked-biodiv-data-%s.csv' % self.job_id
         result_filepath1     = self.download_dir+'/out/'+result_filename1
         result_downloadlink1 = self.download_url+'/out/'+result_filename1
-        result_filename2 = 'filtered-biodiv-data-%s.csv' % self.job_id
-        result_filepath2     = self.download_dir+'/out/'+result_filename2
-        result_downloadlink2 = self.download_url+'/out/'+result_filename2
 
         # Assemble args for R script:
         r_args = [
@@ -98,8 +95,7 @@ class NameCheckProcessor(BaseProcessor):
             str(in_synonymn_checks),
             str(in_ecosystem_checks),
             str(in_rm_duplicates),
-            result_filepath1,
-            result_filepath2
+            result_filepath1
         ]
 
         ## Run the docker:
@@ -123,11 +119,6 @@ class NameCheckProcessor(BaseProcessor):
                     "title": self.metadata['outputs']['cleannames_df']['title'],
                     "description": self.metadata['outputs']['cleannames_df']['description'],
                     "href": result_downloadlink1
-                },
-                "filtered_biodiversity_data": {
-                    "title": self.metadata['outputs']['filtered_biodiversity_data']['title'],
-                    "description": self.metadata['outputs']['filtered_biodiversity_data']['description'],
-                    "href": result_downloadlink2
                 }
             }
         }

@@ -107,14 +107,6 @@
                 "type": "object",
                 "contentMediaType": "application/json"
             }
-        },
-        "filtered_biodiversity_data": {
-            "title": "Filtered occurrences",
-            "description": "Ocurrences filtered based on the database.",
-            "schema": {
-                "type": "object",
-                "contentMediaType": "application/json"
-            }
         }
     },
     "example": {
