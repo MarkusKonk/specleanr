@@ -57,6 +57,10 @@ class MultiDetectProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
+        #################################
+        ### Get user inputs and check ###
+        #################################
+
         # Get user inputs
         in_data_url                       = data.get('input_data')
         in_var_ofinterest                 = data.get('colname_variable')
@@ -109,9 +113,10 @@ class MultiDetectProcessor(BaseProcessor):
         if missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
 
-        # Set null threshold:
-        if in_threshold is None:
-            in_threshold = 'null'
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
 
         # Input files passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
@@ -121,6 +126,17 @@ class MultiDetectProcessor(BaseProcessor):
         result_filename = 'cleaned-data-%s.csv' % self.job_id
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
+
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
+
+        # Nothing to do here...
+
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
 
         # Assemble args for R script:
         in_verbose_bool = True
@@ -250,6 +266,8 @@ def run_docker_container(
         elif local_out in arg:
             newarg = arg.replace(local_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        elif arg == 'None':
+            newarg = 'null'
         sanitized_args.append(newarg)
 
     # Prepare container command
