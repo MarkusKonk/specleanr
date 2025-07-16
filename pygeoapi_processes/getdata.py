@@ -154,6 +154,11 @@ class DataRetrievalProcessor(BaseProcessor):
         # users' inputs properly! But the /in has to be there I guess to be mounted...
         # Maybe /in will not be exposed publicly, while /out will??? Do we need to separate /in and /out?
 
+        # Where to store output data
+        result_filename = 'biodiv-data-%s.csv' % self.job_id
+        result_filepath     = self.download_dir+'/out/'+result_filename
+        result_downloadlink = self.download_url+'/out/'+result_filename
+
 
         ##################################################
         ### Convert user inputs to what R script needs ###
@@ -205,10 +210,6 @@ class DataRetrievalProcessor(BaseProcessor):
                 east  = study_area_bbox["bbox"][3]
             )
 
-        # Where to store output data
-        result_filename = 'biodiv-data-%s.csv' % self.job_id
-        result_filepath     = self.download_dir+'/out/'+result_filename
-        result_downloadlink = self.download_url+'/out/'+result_filename
 
         ####################################
         ### Assemble args and run docker ###
