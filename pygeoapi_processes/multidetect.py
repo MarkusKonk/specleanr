@@ -77,8 +77,6 @@ class MultiDetectProcessor(BaseProcessor):
         in_pca_settings_npc               = data.get('number_of_pca')
         in_pca_settings_quiet             = data.get('pca_silence')
         in_pca_settings_pcvar             = data.get('pcavariable')
-        in_verbose_bool                   = data.get('verbose_outlier')
-        in_warn_bool                      = data.get('warn_outlier')
         in_sdm_bool                       = data.get('sdm_data') #multivaritate data, sdm must be TRUE
         in_na_inform_bool                 = data.get('inform_na_outlier')
 
@@ -125,6 +123,8 @@ class MultiDetectProcessor(BaseProcessor):
         result_downloadlink = self.download_url+'/out/'+result_filename
 
         # Assemble args for R script:
+        in_verbose_bool = True
+        in_warn_bool = True
         r_args = [
             in_data_path_or_url,
             str(in_var_ofinterest),
