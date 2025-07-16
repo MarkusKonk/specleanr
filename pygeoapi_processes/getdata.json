@@ -38,7 +38,17 @@
             "maxOccurs": 1,
             "keywords": ["string"]
         },
-        "study_area_extent": {
+        "study_area_bbox": {
+            "title": "Area of Interest (Bounding study_area_bbox)",
+            "description": "A bounding box: {'bbox': [south, west, north, east]} (see https://docs.ogc.org/is/18-062r2/18-062r2.html#bounding-box-value)",
+            "schema": {
+                "type": "object"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": ["OGC BBOX"]
+        },
+        "study_area_shapefile": {
             "title": "Area of Interest (Shapefile)",
             "description": "URL to the zipped input shapefile containing the study areas inside which you would like to retrieve occurrences",
             "schema": {
@@ -162,7 +172,7 @@
     "example": {
         "inputs": {
             "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
-            "study_area_extent": "https://localhost/referencedata/specleanr/basinfinal.zip",
+            "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
             "databases": ["gbif", "inat", "vertnet"],
             "gbif_limit": 50,
             "vertnet_limit": 50,

@@ -111,10 +111,10 @@ class DataRetrievalProcessor(BaseProcessor):
         in_synonym_check    = data.get("synonym_check")
         in_warn_check       = data.get("warn_checks")
         # Three ways of passing the bounding box:
-        study_area_shp_url = data.get('study_area_extent')
+        study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
-        # TODO: Allow bounding box, by passing 4 corners!
+        study_area_bbox data.get('study_area_bbox')
 
         # Checks
         if in_data_path is None:
@@ -135,18 +135,33 @@ class DataRetrievalProcessor(BaseProcessor):
         # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
         if study_area_shp_url is not None:
             input_polygons_path = study_area_shp_url
+            in_extent = input_polygons_path
 
         # OR download and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
         elif study_area_geojson_url is not None:
             input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
+            in_extent = input_polygons_path
 
         # OR receive and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
         elif study_area_geojson is not None:
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
+            in_extent = input_polygons_path
 
-        in_extent = input_polygons_path
+        elif study_area_bbox is not None:
+            # R script needs: "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
+            # OGC API spec:
+            # "boundingBoxInput": {
+            #   "bbox": [ 51.9, 7, 52, 7.1 ],
+            #   "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+            # },
+            in_extent = "xmin={west}, ymin={south}, xmax={east}, ymax={north}".format(
+                south = study_area_bbox["bbox"][0],
+                west  = study_area_bbox["bbox"][1],
+                north = study_area_bbox["bbox"][2],
+                east  = study_area_bbox["bbox"][3]
+            )
 
         # Where to store output data
         result_filename = 'biodiv-data-%s.csv' % self.job_id
