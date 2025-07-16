@@ -93,7 +93,7 @@ class PredExtractProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'pred_extract.R'
-        self.image_name = 'specleanr:20250410'
+        self.image_name = 'specleanr:20250716'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -112,6 +112,10 @@ class PredExtractProcessor(BaseProcessor):
         return f'<PredExtractProcessor> {self.name}'
 
     def execute(self, data, outputs=None):
+
+        #################################
+        ### Get user inputs and check ###
+        #################################
 
         # Get user inputs
         in_data_path_or_url = data.get('input_data')
@@ -152,6 +156,20 @@ class PredExtractProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
         if in_bool_list is None:
             raise ProcessorExecuteError('Missing parameter "bool_list". Please provide "true" or "false".')
+
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
+
+        # Where to store output data
+        result_filename = 'multiprecleaned-%s.csv' % self.job_id
+        result_filepath     = self.download_dir+'/out/'+result_filename
+        result_downloadlink = self.download_url+'/out/'+result_filename
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
 
         # From booleans to string:
         bool_multiple_species = 'true' if bool_multiple_species else 'false'
@@ -194,11 +212,9 @@ class PredExtractProcessor(BaseProcessor):
                 raise NotImplementedError(err_msg)
         LOGGER.debug('Using raster: %s' % in_raster_path)
 
-
-        # Where to store output data
-        result_filename = 'multiprecleaned-%s.csv' % self.job_id
-        result_filepath     = self.download_dir+'/out/'+result_filename
-        result_downloadlink = self.download_url+'/out/'+result_filename
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
 
         # Assemble args for R script:
         r_args = [
@@ -220,7 +236,6 @@ class PredExtractProcessor(BaseProcessor):
             in_minimumpts_rm,
             result_filepath
         ]
-
 
         # Run the docker:
         returncode, stdout, stderr, user_err_msg = run_docker_container(
