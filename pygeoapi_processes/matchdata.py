@@ -7,7 +7,7 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'https://localhost/pygeoapi/processes/match-data/execution' \
+curl --location 'http://localhost:5000/processes/match-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{ 
     "inputs": {
@@ -20,6 +20,23 @@ curl --location 'https://localhost/pygeoapi/processes/match-data/execution' \
         "verbose": true
     }
 }'
+
+curl --location 'http://localhost:5000/processes/match-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_datasets": ["https://exampleserver.com/exampledata/boku/jdsdata.csv",
+                           "https://exampleserver.com/exampledata/boku/efidata.csv"],
+        "colnames_species_names": ["speciesname", "scientificName"],
+        "colnames_countries": ["JDS4_sampling_ID"],
+        "colnames_lat": ["lat", "latitude"],
+        "colnames_lon": ["lon", "long", "longitude"],
+        "colnames_date": ["Date", "sampling_date"],
+        "verbose": true
+    }
+}'
+
+
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -54,7 +71,10 @@ class DataMatchProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
-        # Get user inputs
+        #################################
+        ### Get user inputs and check ###
+        #################################
+
         in_data_paths_or_urls = data.get('input_datasets')
         in_colnames_species_names = data.get('colnames_species_names')
         in_colnames_countries = data.get('colnames_countries')
@@ -80,10 +100,27 @@ class DataMatchProcessor(BaseProcessor):
         # Make comma-separated string from list of input URLs:
         in_data_paths_or_urls = ','.join(in_data_paths_or_urls)
 
+
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
+
         # Where to store output data
         result_filename = 'matched-biodiv-data-%s.csv' % self.job_id
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
+
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
+
+        # Nothing to do ... ?
+
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
 
         # Assemble args for R script:
         r_args = [

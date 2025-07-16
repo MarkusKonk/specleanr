@@ -7,9 +7,9 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'https://localhost:5000/processes/check-names/execution' \
+curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
---data '{ 
+--data '{
     "inputs": {
         "input_data": "https://localhost:5000/download/out/matched-biodiv-data.csv",
         "colname_species": "species",
@@ -19,6 +19,36 @@ curl --location 'https://localhost:5000/processes/check-names/execution' \
     }
 }'
 
+# Pass a list of species
+curl --location 'http://localhost:5000/processes/check-names/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "percent_correctness": 70,
+        "bool_merge": false,
+        "bool_verbose": true,
+        "bool_synonym": true,
+        "bool_ecosystem_type": true,
+        "bool_rm_duplicates": true
+    }
+}'
+
+# Pass a csv containing species
+curl --location 'http://localhost:5000/processes/check-names/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "http://exampleserver.com/bla.csv",
+        "colname_species": "species",
+        "percent_correctness": 70,
+        "bool_merge": false,
+        "bool_verbose": true,
+        "bool_synonym": true,
+        "bool_ecosystem_type": true,
+        "bool_rm_duplicates": true
+    }
+}'
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -105,6 +135,7 @@ class NameCheckProcessor(BaseProcessor):
             str(in_rm_duplicates),
             result_filepath1
         ]
+        LOGGER.debug('r_args: %s' % r_args)
 
         ## Run the docker:
         returncode, stdout, stderr, user_err_msg = run_docker_container(

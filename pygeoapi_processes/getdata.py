@@ -8,11 +8,24 @@ import warnings
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "study_area_extent": "https://localhost/referencedata/specleanr/basinfinal.zip",
+        "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
+        "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "databases": ["gbif", "inat", "vertnet"],
+        "gbif_limit": 50,
+        "vertnet_limit": 50,
+        "inaturalist_limit": 50
+    }
+}'
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "study_area_shapefile": "http://localhost/referencedata/specleanr/basinfinal.zip",
         "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 50,
@@ -22,7 +35,7 @@ curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity
 }'
 
 ### Same request, but with GeoJSON study area, instead of shapefile.
-curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
@@ -37,7 +50,7 @@ curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity
 
 ### Same request, but with GeoJSON study area directly posted in the HTTP POST payload.
 ### Note: This area is too small to yield meaningful results in the subsequent steps!
-curl --location 'https://localhost:5000/pygeoapi/processes/retrieve-biodiversity-data/execution' \
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
@@ -99,7 +112,10 @@ class DataRetrievalProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
-        # Get user inputs
+        #################################
+        ### Get user inputs and check ###
+        #################################
+
         in_data_path = data.get("input_data")
         in_species_column = data.get("colname_species")
         in_database = data.get("databases")
@@ -125,12 +141,23 @@ class DataRetrievalProcessor(BaseProcessor):
         #if in_species_column is None:
             #raise ProcessorExecuteError('Missing parameter "colnames_species". Please provide a list of species.')
 
+
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
+
         # Input files passed by user:
         # Download and unzip shapefile:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
         # TODO: Come up with a good plan to have unique dirs for the jobs, so we separate
         # users' inputs properly! But the /in has to be there I guess to be mounted...
         # Maybe /in will not be exposed publicly, while /out will??? Do we need to separate /in and /out?
+
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
 
         # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
         if study_area_shp_url is not None:
@@ -168,6 +195,10 @@ class DataRetrievalProcessor(BaseProcessor):
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
 
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
+
         # Assemble args for R script: ###
         #THIS ARRANGMENT MUST MATCH THE SOURCE CODE NUMBERING
         r_args = [
@@ -184,6 +215,7 @@ class DataRetrievalProcessor(BaseProcessor):
             in_warn_check,
             result_filepath
         ]
+        LOGGER.debug('r_args: %s' % r_args)
 
         ## Run the docker:
         returncode, stdout, stderr, user_err_msg = run_docker_container(
@@ -265,12 +297,14 @@ def run_docker_container(
     # Define local paths
     local_in = os.path.join(download_dir, "in")
     local_out = os.path.join(download_dir, "out")
+    LOGGER.debug('Local in/out: %s, %s' % (local_in, local_out))
 
     # Ensure directories exist
     os.makedirs(local_in, exist_ok=True)
     os.makedirs(local_out, exist_ok=True)
 
     # Replace paths in args:
+    LOGGER.debug('Script args: %s' % script_args)
     sanitized_args = []
     for arg in script_args:
         newarg = arg
