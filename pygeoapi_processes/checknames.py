@@ -76,16 +76,6 @@ class NameCheckProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # From boolean to string:
-        # TODO: Does not seem to work! Check on this!
-        # R script will interpret a string 'true' as True, and everything else as False!
-        LOGGER.debug('Parameter "bool_merge": %s (type %s)' % (in_bool_merge, type(in_bool_merge)))
-        if in_bool_merge:
-            LOGGER.debug('User requested to merge!')
-        else:
-            LOGGER.debug('User did not request to merge!')
-        in_bool_merge = 'true' if in_bool_merge else 'false'
-
         # Input files passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
         input_data_path = download_any_file(in_data_path, input_dir, '.csv')
@@ -103,11 +93,11 @@ class NameCheckProcessor(BaseProcessor):
             in_data_path,
             in_colname_species,
             str(in_percent_correctness),
-            in_bool_merge,
-            in_bool_verbose,
-            in_synonymn_checks,
-            in_ecosystem_checks,
-            in_rm_duplicates,
+            str(in_bool_merge),
+            str(in_bool_verbose),
+            str(in_synonymn_checks),
+            str(in_ecosystem_checks),
+            str(in_rm_duplicates),
             result_filepath1,
             result_filepath2
         ]
