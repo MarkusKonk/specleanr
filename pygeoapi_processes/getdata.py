@@ -130,16 +130,13 @@ class DataRetrievalProcessor(BaseProcessor):
         study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
-        study_area_bbox data.get('study_area_bbox')
+        study_area_bbox = data.get('study_area_bbox')
 
         # Checks
         if in_data_path is None:
             raise ProcessorExecuteError('Provide the input data in either string or CSV format.')
         if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
-        
-        #if in_species_column is None:
-            #raise ProcessorExecuteError('Missing parameter "colnames_species". Please provide a list of species.')
 
 
         #################################
@@ -158,6 +155,21 @@ class DataRetrievalProcessor(BaseProcessor):
         ##################################################
         ### Convert user inputs to what R script needs ###
         ##################################################
+
+        if in_species_column is None:
+            in_species_column = 'null'
+
+        if in_verbose is None:
+            in_verbose = 'null'
+
+        if in_synonym_check is None:
+            in_synonym_check = 'null'
+
+        if in_warn_check is None:
+            in_warn_check = 'null'
+
+        # Join database strings:
+        in_database = ','.join(in_database)
 
         # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
         if study_area_shp_url is not None:
