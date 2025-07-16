@@ -135,7 +135,10 @@ class DataRetrievalProcessor(BaseProcessor):
         # Checks
         if in_data_path is None:
             raise ProcessorExecuteError('Provide the input data in either string or CSV format.')
-        if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
+        if (study_area_bbox is None and
+            study_area_shp_url is None and
+            study_area_geojson_url is None and
+            study_area_geojson is None):
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
 
 
