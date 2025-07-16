@@ -57,9 +57,9 @@ class NameCheckProcessor(BaseProcessor):
         ### Get user inputs and check ###
         #################################
 
-        in_data_path           = data.get('input_data')
-        in_colname_species     = data.get('colname_species')
-        in_percent_correctness = data.get('percent_correctness')
+        in_data_path           = data.get('input_data') # either one URL, or comma-separated list of strings (species names)
+        in_colname_species     = data.get('colname_species') # just one string
+        in_percent_correctness = data.get('percent_correctness') # number
         in_bool_merge          = data.get('bool_merge')
         in_bool_verbose        = data.get('bool_verbose')
         in_synonymn_checks     = data.get('bool_synonymn')
@@ -72,9 +72,10 @@ class NameCheckProcessor(BaseProcessor):
         if in_bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
 
-        ##################################################
-        ### Convert user inputs to what R script needs ###
-        ##################################################
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
 
         # Input files passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
@@ -84,6 +85,16 @@ class NameCheckProcessor(BaseProcessor):
         result_filename1 = 'checked-biodiv-data-%s.csv' % self.job_id
         result_filepath1     = self.download_dir+'/out/'+result_filename1
         result_downloadlink1 = self.download_url+'/out/'+result_filename1
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
+
+        # Nothing to be done...
+
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
 
         # Assemble args for R script:
         r_args = [
