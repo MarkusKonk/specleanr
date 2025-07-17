@@ -7,9 +7,9 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'https://localhost/processes/pred-extract/execution' \
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
---data '{ 
+--data '{
     "inputs": {
         "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
         "input_raster_url_or_name": "worldclim",
@@ -24,8 +24,28 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
     }
 }'
 
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff",
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "minimum_sprecordsallow": 10,
+        "bool_list": false,
+        "bool_merge": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": true
+    }
+}'
+
 ### Same request, but with GeoJSON study area, instead of shapefile.
-curl --location 'https://localhost/processes/pred-extract/execution' \
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
@@ -35,7 +55,8 @@ curl --location 'https://localhost/processes/pred-extract/execution' \
         "colname_lat": "decimalLatitude",
         "colname_lon": "decimalLongitude",
         "colname_species": "speciescheck",
-        "min_pts": 10,
+        "mininmum_sprecords": 10,
+        "minimum_sprecordsallow": xx,
         "bool_multiple_species": true,
         "bool_merge": false,
         "bool_list": false
@@ -93,7 +114,7 @@ class PredExtractProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'pred_extract.R'
-        self.image_name = 'specleanr:20250410'
+        self.image_name = 'specleanr:20250716'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -113,116 +134,124 @@ class PredExtractProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
+        #################################
+        ### Get user inputs and check ###
+        #################################
+
         # Get user inputs
-        input_data_url = data.get('input_data')
-        input_raster_url_or_name = data.get('input_raster_url_or_name') # TODO: Get from data lake?
+        in_data_path_or_url = data.get('input_data')
+        in_raster_path = data.get('input_raster_url_or_name') # TODO: Get from data lake?
         study_area_shp_url = data.get('study_area_extent')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
-        colname_lat = data.get('colname_lat')
-        colname_lon = data.get('colname_lon')
-        colname_species = data.get('colname_species')
-        mininmum_sprecords = data.get('mininmum_sprecords')
-        minimum_sprecordsallow = data.get("minimum_sprecordsallow")
-        bool_remove_duplicates = data.get("bool_remove_duplicates")
-        bool_remove_nas = data.get('bool_remove_nas')
-        bool_rm_nainform = data.get('bool_rm_nainform')
-        bool_list = data.get('bool_list')
-        bool_merge = data.get('bool_merge')
-        bool_verbose = data.get('bool_verbose')
-        bool_warn = data.get('bool_warn')
-        bool_coords = data.get('bool_coords')
-        
-
-
+        in_colname_lat = data.get('colname_lat')
+        in_colname_lon = data.get('colname_lon')
+        in_colname_species = data.get('colname_species')
+        in_min_pts = data.get('mininmum_sprecords')
+        in_minimumpts_rm = data.get("minimum_sprecordsallow")
+        in_rm_duplicates = data.get("bool_remove_duplicates")
+        in_na_rm = data.get('bool_remove_nas')
+        in_bool_list = data.get('bool_list')
+        in_bool_merge = data.get('bool_merge')
+        in_bool_coords = data.get('bool_coords')
 
         # Checks
-        if input_data_url is None:
+        if in_data_path_or_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input csv.')
         if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
             raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
-        if input_raster_url_or_name is None:
+        if in_raster_path is None:
             raise ProcessorExecuteError('Missing parameter "input_raster_url_or_name". Please provide a name or URL of your input raster.')
-        if colname_lat is None:
+        if in_colname_lat is None:
             raise ProcessorExecuteError('Missing parameter "colname_lat". Please provide a column name.')
-        if colname_lon is None:
+        if in_colname_lon is None:
             raise ProcessorExecuteError('Missing parameter "colname_lon". Please provide a column name.')
-        if colname_species is None:
+        if in_colname_species is None:
             raise ProcessorExecuteError('Missing parameter "colname_species". Please provide a column name.')
-        if mininmum_sprecords is None:
+        if in_min_pts is None:
             raise ProcessorExecuteError('Missing parameter "mininmum_sprecords". Please provide a number.')
-        if bool_merge is None:
+        if in_bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
-        if bool_list is None:
+        if in_bool_list is None:
             raise ProcessorExecuteError('Missing parameter "bool_list". Please provide "true" or "false".')
 
-        # From booleans to string:
-        bool_multiple_species = 'true' if bool_multiple_species else 'false'
-        bool_merge = 'true' if bool_merge else 'false'
-        bool_list = 'true' if bool_list else 'false'
-
-        # Input csv file passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_csv_path = download_any_file(input_data_url, input_dir, ".csv")
-
-        # Input study area passed by user:
-        # Download and unzip shapefile:
-        if study_area_shp_url is not None:
-            input_polygons_path = download_zipped_shapefile(study_area_shp_url, input_dir)
-
-        # OR download and store GeoJSON:
-        # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
-        elif study_area_geojson_url is not None:
-            input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
-
-        # OR receive and store GeoJSON:
-        # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
-        elif study_area_geojson is not None:
-            input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
-
-        # Input raster:
-        input_raster_path = None
-        if input_raster_url_or_name.startswith('http'):
-            LOGGER.debug('Using the raster provided by the user. It will not be downloaded, but accessed as-is.')
-            input_raster_path = input_raster_url_or_name
-        else:
-            LOGGER.debug('Using static raster on the server...')
-            # TODO: Maybe remove this option at some point?
-            if input_raster_url_or_name == 'worldclim':
-                input_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
-            else:
-                err_msg = "Providing other rasters (than worldclim) by name is currently not possible! Try with worldclim, or provide the URL to a cloud-optimized raster."
-                LOGGER.error(err_msg)
-                raise NotImplementedError(err_msg)
-        LOGGER.debug('Using raster: %s' % input_raster_path)
-
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
 
         # Where to store output data
         result_filename = 'multiprecleaned-%s.csv' % self.job_id
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
 
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
+
+        # Input csv file passed by user:
+        input_dir = self.download_dir+'/in/job_%s' % self.job_id
+        input_csv_path = download_any_file(in_data_path_or_url, input_dir, ".csv")
+
+        # Input study area passed by user:
+        # Download and unzip shapefile:
+        if study_area_shp_url is not None:
+            input_polygons_path = download_zipped_shapefile(study_area_shp_url, input_dir)
+            in_bbox_path = input_polygons_path
+
+        # OR download and store GeoJSON:
+        # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
+        elif study_area_geojson_url is not None:
+            input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
+            in_bbox_path = input_polygons_path
+
+        # OR receive and store GeoJSON:
+        # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
+        elif study_area_geojson is not None:
+            input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
+            in_bbox_path = input_polygons_path
+
+        # Input raster:
+        if in_raster_path.startswith('http'):
+            LOGGER.debug('Using the raster provided by the user. It will not be downloaded, but accessed as-is.')
+        else:
+            LOGGER.debug('Using static raster on the server...')
+            # TODO: Maybe remove this option at some point?
+            if in_raster_path == 'worldclim':
+                in_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
+            else:
+                err_msg = "Providing other rasters (than worldclim) by name is currently not possible! Try with worldclim, or provide the URL to a cloud-optimized raster."
+                LOGGER.error(err_msg)
+                raise NotImplementedError(err_msg)
+        LOGGER.debug('Using raster: %s' % in_raster_path)
+
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
+        in_bool_verbose = True
+        in_na_inform = True
+        in_bool_warn = True
+
         # Assemble args for R script:
         r_args = [
-            input_data_url,
-            input_raster_path,
-            input_polygons_path,
-            colname_lat,
-            colname_lon,
-            colname_species,
-            str(mininmum_sprecords),
-            bool_merge,
-            bool_list,
-            bool_verbose,
-            bool_warn,
-            bool_coords,
-            bool_rm_nainform,
-            bool_remove_nas,
-            bool_remove_duplicates,
-            minimum_sprecordsallow,
+            in_data_path_or_url,
+            in_raster_path,
+            in_bbox_path,
+            in_colname_lat,
+            in_colname_lon,
+            in_colname_species,
+            str(in_min_pts),
+            str(in_bool_merge),
+            str(in_bool_list),
+            str(in_bool_verbose),
+            str(in_bool_warn),
+            str(in_bool_coords),
+            str(in_na_inform),
+            str(in_na_rm),
+            str(in_rm_duplicates),
+            str(in_minimumpts_rm),
             result_filepath
         ]
-
 
         # Run the docker:
         returncode, stdout, stderr, user_err_msg = run_docker_container(

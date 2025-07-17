@@ -93,7 +93,7 @@ class DataRetrievalProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'getdata.R'
-        self.image_name = 'specleanr:20250715'
+        self.image_name = 'specleanr:20250716'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -133,12 +133,6 @@ class DataRetrievalProcessor(BaseProcessor):
         # Checks
         if in_data_path is None:
             raise ProcessorExecuteError('Provide the input data in either string or CSV format.')
-        if (study_area_bbox is None and
-            study_area_shp_url is None and
-            study_area_geojson_url is None and
-            study_area_geojson is None):
-            raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
-
 
         #################################
         ### Input and output          ###
@@ -201,6 +195,9 @@ class DataRetrievalProcessor(BaseProcessor):
                 north = study_area_bbox["bbox"][2],
                 east  = study_area_bbox["bbox"][3]
             )
+
+        else:
+            in_extent = "null"
 
 
         ####################################

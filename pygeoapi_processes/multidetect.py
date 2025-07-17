@@ -12,17 +12,36 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://localhost/download/out/multiprecleaned.csv",
-        "colname_variable": "bio6",
+        "input_data": "https://example.com/exampledata/boku/iris1.csv",
+        "colname_variable": "Sepal.Length",
+        "select_columns": null,
         "multiple_species": true,
-        "colname_exclude": "x,y",
-        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-        "silence_true_errors": true,
-        "missingness": 0.1,
-        "threshold": 0.7,
-        "colname_species": "species"
+        "output_type": "outlier",
+        "group_colname": "Species",
+        "colname_exclude": null,
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel",
+        "silence_true_errors": false,
+        "boot_run": false,
+        "boot_maxrecords": 30,
+        "number_of_boots": 5,
+        "setseed": 1125,
+        "boot_threshold": 0.6,
+        "exceute_pca": true,
+        "number_of_pca": 2,
+        "pca_silence": true,
+        "pcavariable": "PC1",
+        "sdm_data": true,
+        "inform_na_outlier": true,
+        "missingness": 1.0,
+        "bool_loess": true,
+        "threshold_clean": null,
+        "outlierweights_mode": "abs",
+        "classifymode": "med",
+        "eif_bool": false,
+        "classify_or_autoremove": true
     }
 }'
+
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -38,7 +57,7 @@ class MultiDetectProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'multidetect.R'
-        self.image_name = 'specleanr:20250410'
+        self.image_name = 'specleanr:20250716'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -57,108 +76,114 @@ class MultiDetectProcessor(BaseProcessor):
 
     def execute(self, data, outputs=None):
 
+        #################################
+        ### Get user inputs and check ###
+        #################################
+
         # Get user inputs
-        in_data_url                          = data.get('input_data')
-        colname_var                       = data.get('colname_variable')
-        bool_multiple_species             = data.get('multiple_species')
-        group_colname                     = data.get('group_colname', 'not_provided')
-        colname_exclude                   = data.get('colname_exclude')
-        methods                           = data.get('methods')
-        missingness                       = data.get('missingness')
-        select_var                        = data.get('select_columns')
-        output_type                       = data.get('output_type') #clean or outlier/ Defualt outliers
-        silence_true_errors               = data.get('silence_true_errors')
-        boot_settings_run_bool            = data.get('boot_run')
-        boot_settings_maxrecords          = data.get('boot_maxrecords')
-        boot_settings_nb                  = data.get('number_of_boots')
-        boot_settings_seed                = data.get('setseed')
-        boot_settings_threshold           = data.get('boot_threshold')
-        pca_settings_exec_bool            = data.get('exceute_pca')
-        pca_settings_npc                  = data.get('number_of_pca')
-        pca_settings_quiet                = data.get('pca_silence')
-        pca_settings_pcvar                = data.get('pcavariable')
-        verbose_bool                      = data.get('verbose_outlier')
-        warn_bool                         = data.get('warn_outlier')
-        sdm_bool                          = data.get('sdm_data') #multivaritate data, sdm must be TRUE
-        na_inform_bool                    = data.get('inform_na_outlier')
+        in_data_path_or_url               = data.get('input_data')
+        in_var_ofinterest                 = data.get('colname_variable')
+        in_bool_multiple_species          = data.get('multiple_species')
+        in_group_colname                  = data.get('group_colname', 'not_provided')
+        in_colnames_exclude               = data.get('colname_exclude')
+        in_methods                        = data.get('methods')
+        in_missingness                    = data.get('missingness')
+        in_select_var                     = data.get('select_columns')
+        in_output_type                    = data.get('output_type') #clean or outlier/ Defualt outliers
+        in_silence_true_errors            = data.get('silence_true_errors')
+        in_boot_settings_run_bool         = data.get('boot_run')
+        in_boot_settings_maxrecords       = data.get('boot_maxrecords')
+        in_boot_settings_nb               = data.get('number_of_boots')
+        in_boot_settings_seed             = data.get('setseed')
+        in_boot_settings_threshold        = data.get('boot_threshold')
+        in_pca_settings_exec_bool         = data.get('exceute_pca')
+        in_pca_settings_npc               = data.get('number_of_pca')
+        in_pca_settings_quiet             = data.get('pca_silence')
+        in_pca_settings_pcvar             = data.get('pcavariable')
+        in_sdm_bool                       = data.get('sdm_data') #multivaritate data, sdm must be TRUE
+        in_na_inform_bool                 = data.get('inform_na_outlier')
 
         ###=========
         #Extrain clean data
         #===========
-        bool_loess                         =  data.get('bool_loess')
-        threshold_clean                    =  data.get('threshold_clean')   
-        mode_clean                         =  data.get('outlierweights_mode')
+        in_bool_loess                      = data.get('bool_loess')
+        in_threshold_clean                 = data.get('threshold_clean')
+        in_mode_clean                      = data.get('outlierweights_mode')
         #classifying data
-        classifymode                       =  data.get('classifymode') #med
-        eif_bool                           =  data.get('eif_bool') #empirical influence function
+        in_classifymode                    = data.get('classifymode') #med
+        in_eif_bool                        = data.get('eif_bool') #empirical influence function
 
         #whether to run a classify to auto removal 
-        autoextract                        =  data.get('classify_or_autoremove')
+        in_autoextract                     = data.get('classify_or_autoremove')
 
         # Checks
-        if in_data_url is None:
+        if in_data_path_or_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input table.')
-        if colname_var is None:
+        if in_var_ofinterest is None:
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
         if in_bool_multiple_species is None:
             raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide \"true\" or \"false\".')
-        if colname_exclude is None:
-            raise ProcessorExecuteError('Missing parameter "colname_exclude". Please provide a column name.')
-        if methods is None:
+        if in_methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
         #if in_silence_true_errors is None:
             #raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".') defualt is there
-        if missingness is None:
+        if in_missingness is None:
             raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
 
-        # From booleans to string:
-        in_bool_multiple_species = 'true' if in_bool_multiple_species else 'false'
-        in_silence_true_errors = 'true' if in_silence_true_errors else 'false'
-
-        # Set null threshold:
-        if in_threshold is None:
-            in_threshold = 'null'
-
-        # Input files passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_csv_path = download_any_file(in_data_url, input_dir, ".csv")
+        #################################
+        ### Input and output          ###
+        ### storage/download location ###
+        #################################
 
         # Where to store output data
         result_filename = 'cleaned-data-%s.csv' % self.job_id
         result_filepath     = self.download_dir+'/out/'+result_filename
         result_downloadlink = self.download_url+'/out/'+result_filename
 
+
+        ##################################################
+        ### Convert user inputs to what R script needs ###
+        ##################################################
+
+        # Nothing to do here...
+
+        ####################################
+        ### Assemble args and run docker ###
+        ####################################
+
         # Assemble args for R script:
+        in_verbose_bool = True
+        in_warn_bool = True
         r_args = [
-            input_csv_path,
-            colname_var,
-            select_var,
-            bool_multiple_species,
-            output_type,
-            group_colname,
-            colname_exclude,
-            methods,
-            silence_true_errors,
-            boot_settings_run_bool,
-            boot_settings_maxrecords,
-            str(boot_settings_nb), 
-            boot_settings_seed,
-            boot_settings_threshold,
-            pca_settings_exec_bool,
-            str(pca_settings_npc),
-            pca_settings_quiet,
-            pca_settings_pcvar,
-            verbose_bool,
-            warn_bool,
-            sdm_bool,
-            na_inform_bool,
-            str(missingness), 
-            bool_loess,
-            str(threshold_clean),
-            mode_clean,
-            classifymode,
-            eif_bool,
-            autoextract,
+            in_data_path_or_url,
+            str(in_var_ofinterest),
+            str(in_select_var),
+            str(in_bool_multiple_species),
+            str(in_output_type),
+            str(in_group_colname),
+            str(in_colnames_exclude),
+            str(in_methods),
+            str(in_silence_true_errors),
+            str(in_boot_settings_run_bool),
+            str(in_boot_settings_maxrecords),
+            str(in_boot_settings_nb),
+            str(in_boot_settings_seed),
+            str(in_boot_settings_threshold),
+            str(in_pca_settings_exec_bool),
+            str(in_pca_settings_npc),
+            str(in_pca_settings_quiet),
+            str(in_pca_settings_pcvar),
+            str(in_verbose_bool),
+            str(in_warn_bool),
+            str(in_sdm_bool),
+            str(in_na_inform_bool),
+            str(in_missingness),
+            str(in_bool_loess),
+            str(in_threshold_clean),
+            str(in_mode_clean),
+            str(in_classifymode),
+            str(in_eif_bool),
+            str(in_autoextract),
             result_filepath
         ]
 
@@ -188,34 +213,6 @@ class MultiDetectProcessor(BaseProcessor):
         }
 
         return 'application/json', response_object
-
-
-def download_any_file(input_url, input_dir, ending=None):
-
-    # Make sure the dir exists:
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    # Download file into given dir:
-    LOGGER.debug('Downloading input file: %s' % input_url)
-    resp = requests.get(input_url)
-    if not resp.status_code == 200:
-        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url))
-
-    # How should the downloaded file be named?
-    # If the URL includes a name: TODO can we trust this name?
-    #filename = os.path.basename(input_url)
-    filename = "download%s" % os.urandom(5).hex()
-    filename = filename if ending is None else filename+ending
-    input_file_path = '%s/%s' % (input_dir, filename)
-    LOGGER.debug('Storing input file to: %s' % input_file_path)
-    
-    with open(input_file_path, 'wb') as myfile:
-        for chunk in resp.iter_content(chunk_size=1024):
-            if chunk:
-                myfile.write(chunk)
-
-    return input_file_path
 
 
 def run_docker_container(
@@ -254,6 +251,8 @@ def run_docker_container(
         elif local_out in arg:
             newarg = arg.replace(local_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        elif arg == 'None':
+            newarg = 'null'
         sanitized_args.append(newarg)
 
     # Prepare container command
