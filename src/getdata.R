@@ -64,8 +64,11 @@ study_area <- sf::st_read(in_extent, quiet=TRUE)
   
 }
 
+
 if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
-speciesdata <- sf::st_read(in_data_path, quiet=TRUE)
+
+speciesdata <- data.table::fread(in_data_path)
+
 }else{
   # (2) Remove spaces and split:
 print(paste('Splitting input arg species names...'))
