@@ -8,10 +8,15 @@
 ##
 
 
-
 # To test, run this script in bash with:
-# Rscript getdata.R "studyarea.shp" "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla" "50" "50" "50" "data_gbif_vert_inat.csv"
-print('Starting wrapper script: getdata.R.')
+#
+# Rscript getdata.R "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+#  "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
+#  "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500" \
+#  "30" "TRUE" "TRUE" "./result_getdata.csv"
+
+
+message('Starting wrapper script: getdata.R.')
 #print(paste('DEBUG: R package sources: libPaths()', .libPaths()))
 library(specleanr)
 #print('DEBUG: Successfully imported library specleanr')
@@ -23,18 +28,18 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path        = args[1] #can be a dataset or species list. If species list then the colsp is empty
-in_species_column   = args[2] # if the data is a dataframe then the colsp should be provided. Otherwise NULL by default
-in_database         = args[3] #databases to consider (gbif, inat, and vertnet)
+in_data_path        = args[1] # can be a dataset or species list. If species list then the colsp is empty
+in_species_column   = args[2] # if the data is a dataframe then the colsp should be provided. Otherwise "null"
+in_database         = args[3] # list of databases to consider (gbif, inat, and vertnet)
 in_gbif_lim         = args[4] # e.g. "50"
 in_inat_lim         = args[5] # e.g. "50"
 in_vert_lim         = args[6] # e.g. "50"
-in_verbose          = args[7] # logical TRUE or FALSE: EXECUTION messages
-in_extent           = args[8] #provide either a shaepfile to act as a polygon bounding box or use a bounding box (xmin, ymin, xmax, ymax)
-in_percent_correct  = args[9] #allowed percentage correctness of species names. Used for checknames fn
-in_synonym_check    = args[10] #allow synoymns or not from FishBase
-in_warn_check       = args[11] #logical
-out_result_path     = args[12]
+in_verbose          = args[7] # logical: verbose or not
+in_extent           = args[8] # provide either "null" or shapefile or geojson (to act as a polygon bounding box) or a bounding box (xmin, ymin, xmax, ymax)
+in_percent_correct  = args[9] # allowed percentage correctness of species names. Used for checknames fn
+in_synonym_check    = args[10] # logical: allow synoymns or not from FishBase
+in_warn_check       = args[11] # logical: ??
+out_result_path     = args[12] # path where output CSV will be written
 
 ########################
 ### Read input data: ###
@@ -98,11 +103,12 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
   in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
   speciesdata = strsplit(in_data_path, ",")[[1]]
   message('DEBUG: Splitted input arg species names: ', paste(speciesdata, collapse="+"))
+  in_species_column <- NULL
 }
 
 ################################
 ### Convert string arguments ###
-### required to R data types ###
+### to R data types          ###
 ################################
 
 # List of database names (remove spaces and split)
@@ -127,7 +133,7 @@ in_warn_check    = tolower(in_warn_check) == 'true'
 ### Run specleanr function ###
 ##############################
 
-if (FALSE) {
+if (in_verbose) {
   message("DEBUG: Logging all input args to getdata():")
   message("DEBUG:   data = ", speciesdata)
   message("DEBUG:   colsp = ", in_species_column)
