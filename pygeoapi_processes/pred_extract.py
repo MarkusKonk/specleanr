@@ -194,9 +194,8 @@ class PredExtractProcessor(BaseProcessor):
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
 
         # Input study area passed by user:
-        # Download and unzip shapefile:
+        # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
         if study_area_shp_url is not None:
-            input_polygons_path = download_zipped_shapefile(study_area_shp_url, input_dir)
             in_bbox_path = input_polygons_path
 
         # OR download and store GeoJSON:
@@ -329,77 +328,6 @@ def download_geojson(input_url_geojson, input_dir, ending=None):
         raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
 
     return store_geojson(resp.json(), input_dir, ending=ending)
-
-
-def download_zipped_shapefile(input_url, input_dir):
-
-    # Create a unique dir just for this download.
-    # Why? We do not control what is in the unzipped zip, so we cannot
-    # return the correct name if various files are mixed in the same dir!
-    randomstring = os.urandom(5).hex()
-    input_shp_dir = input_dir.rstrip('/')+'/zippedshp%s' % randomstring
-
-    input_zipped_shp_path = download_any_file(input_url, input_shp_dir, '.zip')
-    unzip_file(input_zipped_shp_path, input_shp_dir)
-
-    # Find name of shapefile, which we dont control, as it is defined by whoever
-    # zipped the zipfile:
-    input_unzipped_shp_path = retrieve_file_name_by_ending(input_shp_dir, '.shp')
-    return input_unzipped_shp_path
-
-
-def retrieve_file_name_by_ending(input_dir, ending):
-
-    # If user passed zipped inputs, we don't know the filename, so we can extract
-    # it by its ending, if there are only one file with this ending (e.g. zipped shape).
-    # DANGER: If there are several, we may return the wrong one!
-    # TODO I am sure there is a better way!
-    for filename in os.listdir(input_dir):
-        if filename.endswith(ending):
-            filepath = '%s/%s' % (input_dir, filename)
-            LOGGER.debug('Name of %s file: %s' % (ending, filepath))
-            return filepath
-
-
-def download_any_file(input_url, input_dir, ending=None):
-
-    # Make sure the dir exists:
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    # Download file into given dir:
-    LOGGER.debug('Downloading input file: %s' % input_url)
-    resp = requests.get(input_url)
-    if not resp.status_code == 200:
-        raise ProcessorExecuteError('Could not download input file (HTTP status %s): %s' % (resp.status_code, input_url))
-
-    # How should the downloaded file be named?
-    # If the URL includes a name: TODO can we trust this name?
-    #filename = os.path.basename(input_url)
-    filename = "download%s" % os.urandom(5).hex()
-    filename = filename if ending is None else filename+ending
-    input_file_path = '%s/%s' % (input_dir, filename)
-    LOGGER.debug('Storing input file to: %s' % input_file_path)
-    
-    with open(input_file_path, 'wb') as myfile:
-        for chunk in resp.iter_content(chunk_size=1024):
-            if chunk:
-                myfile.write(chunk)
-
-    return input_file_path
-
-
-def unzip_file(input_zipped_file_path, unzip_dir):
-    # TODO: See important secutiry warning here: https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile.extractall
-
-    # Note: Make sure unzip_dir is a custom dir just for this zipfile!
-    # Why? We do not control what is in the unzipped zip, so we cannot
-    # return the correct name if various files are mixed in the same dir!
-
-    LOGGER.debug('Unzipping file "%s" to "%s"' % (input_zipped_file_path, unzip_dir))
-    with zipfile.ZipFile(input_zipped_file_path, 'r') as zip_ref:
-        zip_ref.extractall(unzip_dir)
-        LOGGER.debug('Unzipping file... DONE.')
 
 
 def run_docker_container(

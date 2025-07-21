@@ -50,6 +50,18 @@ worldclim <- terra::rast(in_raster_path)
 # (3) Read bbox from shapefile
 # TODO: Whole shapefile just for bbox? Better?
 print(paste('Reading input data from shapefile, from:', in_bbox_path))
+
+# If the URL points to a zipped shape, download and unzip before we can read it:
+if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip'))
+  message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
+  temp_zip <- tempfile(fileext = ".zip")
+  download.file(in_bbox_path, temp_zip, mode = "wb")
+  unzip(temp_zip, exdir = tempdir())
+  in_bbox_path <- list.files(tempdir(), pattern = "\\.shp$", full.names = TRUE)
+} else if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'shp')) {
+  stop('If you specify a remote shapefile as input, please zip it...')
+}
+
 study_area <- sf::st_read(in_bbox_path, quiet=TRUE)
 #danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
 
