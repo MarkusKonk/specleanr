@@ -15,6 +15,12 @@
 message('Starting wrapper script: checknames.R.')
 library(specleanr)
 
+
+##################################
+### Get command line arguments ###
+### as strings                 ###
+##################################
+
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path              = args[1] # a URL or a list of species
@@ -28,10 +34,20 @@ in_rm_duplicates          = args[8] #logical, e.g. "true"
 out_result_path_names     = args[9] 
 
 
-# Make string booleans boolean
+################################
+### Convert string arguments ###
+### to R data types          ###
+################################
+
+# Make booleans from string:
 in_bool_merge = tolower(in_bool_merge) == 'true'
 in_bool_verbose = tolower(in_bool_verbose) == 'true'
 
+
+########################
+### Read input data: ###
+### speciesdata      ###
+########################
 
 # If there is NO column name, we assume that a list of species is given.
 # Otherwise, we assume an input CSV file is given.
@@ -48,7 +64,7 @@ if (tolower(in_colname_species) == 'null') {
     stop('The number of species should be greater than 1 and nodataframe can be exported')
   }else{
     if (in_bool_verbose) message('DEBUG: Found species names: ', paste(in_species_names, collapse=' + '))
-  mergealldfs <- in_species_names
+    mergealldfs <- in_species_names
   }
   
 } else {
@@ -58,9 +74,23 @@ if (tolower(in_colname_species) == 'null') {
   in_species_names <- in_colname_species
 }
 
-print(in_colname_species)
 
-# Run check_names:
+##############################
+### Run specleanr function ###
+##############################
+
+if (in_bool_verbose) {
+  message("DEBUG: Logging all input args to check_names():")
+  #message("DEBUG:   data    = ", mergealldfs)
+  message("DEBUG:   colsp   = ", in_colname_species)
+  message("DEBUG:   pct     = ", in_percent_correctness)
+  message("DEBUG:   merge   = ", in_bool_merge)
+  message("DEBUG:   verbose = ", in_bool_verbose)
+  message("DEBUG:   sn            = ", in_synonymn_checks)
+  message("DEBUG:   ecosystem     = ", in_ecosystem_checks)
+  message("DEBUG:   rm_duplicates = ", in_rm_duplicates)
+}
+
 if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')
 cleannames_df <- check_names(
   data = mergealldfs,
@@ -78,4 +108,5 @@ if (in_bool_verbose) message('DEBUG: Running specleanr::check_names... DONE.')
 # Write the results to csv file:
 if (in_bool_verbose) message(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names))
 data.table::fwrite(cleannames_df , file = out_result_path_names)
-
+if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script getdata.R.')
