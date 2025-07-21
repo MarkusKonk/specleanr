@@ -31,7 +31,7 @@ in_inat_lim         = args[5] # e.g. "50"
 in_vert_lim         = args[6] # e.g. "50"
 in_verbose          = args[7] # logical TRUE or FALSE: EXECUTION messages
 in_extent           = args[8] #provide either a shaepfile to act as a polygon bounding box or use a bounding box (xmin, ymin, xmax, ymax)
-in_percent_correct  = as.numeric(args[9]) #allowed percentage correctness of species names. Used for checknames fn
+in_percent_correct  = args[9] #allowed percentage correctness of species names. Used for checknames fn
 in_synonym_check    = args[10] #allow synoymns or not from FishBase
 in_warn_check       = args[11] #logical
 out_result_path     = args[12]
@@ -100,15 +100,21 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 ### required to R data types ###
 ################################
 
-# List of database names
+# List of database names (remove spaces and split)
 in_database = gsub(", ", ",", in_database, fixed = TRUE)
 in_database = gsub(" ,", ",", in_database, fixed = TRUE)
 in_database = strsplit(in_database, ",")[[1]]
 
-# Make limits numeric
+# Make numerics from string:
 in_gbif_lim = as.numeric(in_gbif_lim)
 in_inat_lim = as.numeric(in_inat_lim)
 in_vert_lim = as.numeric(in_vert_lim)
+in_percent_correct = as.numeric(in_percent_correct)
+
+# Make booleans from string:
+in_verbose       = tolower(in_verbose) == 'true'
+in_synonym_check = tolower(in_synonym_check) == 'true'
+in_warn_check    = tolower(in_warn_check) == 'true'
 
 
 ##############################
