@@ -15,6 +15,12 @@
 print('Starting wrapper script: pred_extract.R.')
 library(specleanr)
 
+
+##################################
+### Get command line arguments ###
+### as strings                 ###
+##################################
+
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path_or_url  = args[1]
@@ -36,24 +42,28 @@ in_minimumpts_rm     = args[16] #logical, FALSE
 out_result_path      = args[17]
 
 
+########################
+### Read input data: ###
+########################
+
 # (1) Read data from CSV or from URL
-print(paste('Reading input data from CSV, from:', in_data_path_or_url))
+if (in_bool_verbose) message('DEBUG: Reading input data from CSV, from:', in_data_path_or_url)
 speciesfiltered <- data.table::fread(in_data_path_or_url)
+if (in_bool_verbose) message('DEBUG: Reading input data from CSV... DONE.')
 
 
 # (2) Read raster from ...
-print(paste('Reading input raster, from:', in_raster_path))
+if (in_bool_verbose) message('DEBUG: Reading input raster, from:', in_raster_path)
 worldclim <- terra::rast(in_raster_path)
 #worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package = 'specleanr'))
+if (in_bool_verbose) message('DEBUG: Reading input raster... DONE.')
 
 
 # (3) Read bbox from shapefile
 # TODO: Whole shapefile just for bbox? Better?
-print(paste('Reading input data from shapefile, from:', in_bbox_path))
-
 # If the URL points to a zipped shape, download and unzip before we can read it:
 if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip'))
-  message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
+  if (in_bool_verbose) message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
   temp_zip <- tempfile(fileext = ".zip")
   download.file(in_bbox_path, temp_zip, mode = "wb")
   unzip(temp_zip, exdir = tempdir())
@@ -62,24 +72,47 @@ if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip'))
   stop('If you specify a remote shapefile as input, please zip it...')
 }
 
+if (in_bool_verbose) message('DEBUG: Reading input data from shapefile, from:', in_bbox_path)
 study_area <- sf::st_read(in_bbox_path, quiet=TRUE)
-#danube <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
+if (in_bool_verbose) message('DEBUG: Reading input data from shapefile... DONE.')
 
 
-# (4) Make string booleans boolean
+################################
+### Convert string arguments ###
+### to R data types          ###
+################################
+
+# Make boolean from string:
 in_bool_merge = tolower(in_bool_merge) == 'true'
 in_bool_list = tolower(in_bool_list) == 'true'
 
 
-# (5) Run pred_extract
-print(paste('Run pred_extract...'))
-print(paste('in_colname_lat:', in_colname_lat))
-print(paste('in_colname_lon:', in_colname_lon))
-print(paste('in_colname_species:', in_colname_species))
-print(paste('in_min_pts:', in_min_pts))
-print(paste('in_bool_list:', in_bool_list))
-print(paste('in_bool_merge:', in_bool_merge))
-print('Running specleanr::pred_extract...')
+##############################
+### Run specleanr function ###
+##############################
+
+
+if (in_verbose_bool) {
+  message("DEBUG: Logging all input args to match_datasets():")
+  #message("DEBUG: data   = ", speciesfiltered)
+  message('DEBUG: raster = ', worldclim)
+  message('DEBUG: lat    = ', in_colname_lat)
+  message('DEBUG: lon    = ', in_colname_lon)
+  message('DEBUG: colsp  = ', in_colname_species)
+  message('DEBUG: bbox   = ', study_area)
+  message('DEBUG: list   = ', in_bool_list)
+  message('DEBUG: minpts = ', in_min_pts)
+  message('DEBUG: mp     = ', in_minimumpts_rm)
+  message('DEBUG: rm_duplicates = ', in_rm_duplicates)
+  message('DEBUG: merge     = ', in_bool_merge)
+  message('DEBUG: warn      = ', in_bool_warn)
+  message('DEBUG: verbose   = ', in_bool_verbose)
+  message('DEBUG: coords    = ', in_bool_coords)
+  message('DEBUG: na.inform = ', in_na.inform)
+  message('DEBUG: na.rm     = ', in_na_rm)
+}
+
+if (in_bool_verbose) message('DEBUG: Running specleanr::pred_extract...')
 multiprecleaned <- pred_extract(
   data = speciesfiltered, 
   raster = worldclim, 
@@ -97,7 +130,7 @@ multiprecleaned <- pred_extract(
   coords = in_bool_coords,
   na.inform = in_na.inform,
   na.rm = in_na_rm)
-print('Running specleanr::pred_extract... DONE.')
+if (in_bool_verbose) message('DEBUG: Running specleanr::pred_extract... DONE.')
 
 
 #multipreclened <- pred_extract(
@@ -115,7 +148,8 @@ print('Running specleanr::pred_extract... DONE.')
 #[1] "Salmo trutta"        "Anguilla anguilla"   "Squalius cephalus"  "Thymallus thymallus"
 
 
-# (6) Write the result to csv file:
-print(paste0('Write result to csv file: ', out_result_path))
+# Write the result to csv file:
+if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path)
 data.table::fwrite(multiprecleaned , file = out_result_path)
-
+if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script matchdata')
