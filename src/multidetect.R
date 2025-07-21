@@ -95,17 +95,17 @@ in_methods = gsub(" ,", ",", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
 
 if(!in_colnames_exclude==tolower('null')){
-in_colnames_exclude = gsub(", ", ",", in_colnames_exclude, fixed = TRUE)
-in_colnames_exclude = gsub(" ,", ",", in_colnames_exclude, fixed = TRUE)
-in_colnames_exclude = strsplit(in_colnames_exclude, ",")[[1]]
+  in_colnames_exclude = gsub(", ", ",", in_colnames_exclude, fixed = TRUE)
+  in_colnames_exclude = gsub(" ,", ",", in_colnames_exclude, fixed = TRUE)
+  in_colnames_exclude = strsplit(in_colnames_exclude, ",")[[1]]
 }else{
   in_colnames_exclude <- NULL
 }
 
 if(!in_select_var==tolower('null')){
-in_select_var = gsub(", ", ",", in_select_var, fixed = TRUE)
-in_select_var = gsub(" ,", ",", in_select_var, fixed = TRUE)
-in_select_var = strsplit(in_select_var, ",")[[1]]
+  in_select_var = gsub(", ", ",", in_select_var, fixed = TRUE)
+  in_select_var = gsub(" ,", ",", in_select_var, fixed = TRUE)
+  in_select_var = strsplit(in_select_var, ",")[[1]]
 }else{
   in_select_var<- NULL
 }
@@ -124,16 +124,23 @@ in_bool_loess              = tolower(in_bool_loess ) == 'true'
 in_eif_bool                = tolower(in_eif_bool) == 'true'
 
 # Assemble required lists:
-in_bootSettings = list(run= in_boot_settings_run_bool, nb= in_boot_settings_nb,
-                    maxrecords = in_boot_settings_maxrecords, seed= in_boot_settings_seed,
-                    th = in_boot_settings_threshold)
+in_bootSettings = list(
+  run= in_boot_settings_run_bool,
+  nb= in_boot_settings_nb,
+  maxrecords = in_boot_settings_maxrecords,
+  seed= in_boot_settings_seed,
+  th = in_boot_settings_threshold
+)
 
-in_pc = list(exec = in_pca_settings_exec_bool, npc= in_pca_settings_npc,
-          q = in_pca_settings_quiet, pcvar = in_pca_settings_pcvar)
+in_pc = list(
+  exec = in_pca_settings_exec_bool,
+  npc= in_pca_settings_npc,
+  q = in_pca_settings_quiet,
+  pcvar = in_pca_settings_pcvar
+)
 
 
 # Only provide column name for group if multiple = FALSE
-
 if (!in_bool_multiple_species) {
   message('DEBUG: Setting group column name to NULL (only needed in case of multiple groups).')
   in_group_colname <- NULL
@@ -190,32 +197,34 @@ if(tolower(in_autoextract)=='false'){
 )
   message('DEBUG: Running specleanr::classify_data... DONE.')
 
-}else{
-  # Run extract_clean_data
-if (tolower(in_threshold_clean) == 'null') {
-  # if loess=TRUE, then no threshold!
-  message('DEBUG: Threshold is null, using loess=TRUE...')
-  in_threshold_clean <- NULL
-  in_bool_loess <- TRUE
-} else if (!(is.na(as.numeric(in_threshold_clean)))) {
-  # if loess=FALSE, then set threshold!
-  in_threshold_clean <- as.numeric(in_threshold_clean)
-  message(paste0('DEBUG: Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
-  in_bool_loess <- FALSE
-}
 
-message('DEBUG: Running specleanr::extract_clean_data...')
-cleandata2 <- extract_clean_data(
-  refdata             = dfinal,
-  outliers            = outlieriris_mult,
-  mode                = in_mode_clean,
-  var_col             = in_group_colname,
-  threshold           = in_threshold_clean,
-  warn                = in_warn_bool,
-  verbose             = in_verbose_bool,
-  loess               = in_bool_loess
-)
-message('DEBUG: Running specleanr::extract_clean_data... DONE.')
+# Otherwise, run extract_clean_data...
+}else{
+
+  if (tolower(in_threshold_clean) == 'null') {
+    # if loess=TRUE, then no threshold!
+    message('DEBUG: Threshold is null, using loess=TRUE...')
+    in_threshold_clean <- NULL
+    in_bool_loess <- TRUE
+  } else if (!(is.na(as.numeric(in_threshold_clean)))) {
+    # if loess=FALSE, then set threshold!
+    in_threshold_clean <- as.numeric(in_threshold_clean)
+    message(paste0('DEBUG: Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
+    in_bool_loess <- FALSE
+  }
+
+  message('DEBUG: Running specleanr::extract_clean_data...')
+  cleandata2 <- extract_clean_data(
+    refdata             = dfinal,
+    outliers            = outlieriris_mult,
+    mode                = in_mode_clean,
+    var_col             = in_group_colname,
+    threshold           = in_threshold_clean,
+    warn                = in_warn_bool,
+    verbose             = in_verbose_bool,
+    loess               = in_bool_loess
+  )
+  message('DEBUG: Running specleanr::extract_clean_data... DONE.')
 }
 
 # Write summary to txt file
