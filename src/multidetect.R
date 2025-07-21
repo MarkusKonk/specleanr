@@ -185,7 +185,7 @@ outlieriris_mult <- multidetect(
   missingness     = in_missingness,
   silence_true_errors = in_silence_true_errors,
   sdm             = in_sdm_bool,
-  na.inform       = in_na.inform_bool
+  na.inform       = in_na_inform_bool
 )
 message('DEBUG: Running specleanr::multidetect... DONE.')
 
