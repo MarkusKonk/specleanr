@@ -66,18 +66,16 @@ if(tolower(in_extent)=='null'){
     stop('If you specify a remote shapefile as input, please zip it...')
   }
 
-# Read data from shapefile
-# TODO Test, can st_read also read GeoJSON? It should?
-message('DEBUG: Reading input data from shapefile or GeoJSON:',in_extent)
-#message('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", "))
-study_area <- sf::st_read(in_extent, quiet=TRUE)
+  # Read data from shapefile
+  # TODO Test, can st_read also read GeoJSON? It should?
+  message('DEBUG: Reading input data from shapefile or GeoJSON:',in_extent)
+  #message('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", "))
+  study_area <- sf::st_read(in_extent, quiet=TRUE)
 
 # study area is a bounding box:
-  }else{
-    #study_area <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package = 'specleanr'), quiet=TRUE)
-  x = in_extent
+}else{
   message("DEBUG: Splitting the string to form a vector of bounding box... (Must be provided as named list, in this format: 'xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500')")
-  study_area = eval(parse(text = paste0("list(", x, ")")))
+  study_area = eval(parse(text = paste0("list(", in_extent, ")")))
 }
 
 ##################################
@@ -87,14 +85,14 @@ study_area <- sf::st_read(in_extent, quiet=TRUE)
 
 # if species data is a file, read it:
 if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
-speciesdata <- data.table::fread(in_data_path)
+  speciesdata <- data.table::fread(in_data_path)
 
 # if species are given as a comma-separated list, remove spaces and split:
 }else{
-message('DEBUG: Splitting input arg species names...')
-in_data_path = gsub(", ", ",", in_data_path, fixed = TRUE)
-in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
-speciesdata = strsplit(in_data_path, ",")[[1]]
+  message('DEBUG: Splitting input arg species names...')
+  in_data_path = gsub(", ", ",", in_data_path, fixed = TRUE)
+  in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
+  speciesdata = strsplit(in_data_path, ",")[[1]]
 }
 
 ################################
@@ -127,9 +125,9 @@ df_online <- getdata(
   inatlim  = in_inat_lim,
   vertlim  = in_vert_lim,
   verbose  = in_verbose,
-  sn = in_synonym_check,
+  sn   = in_synonym_check,
   warn = in_warn_check,
-  pct =  in_percent_correct
+  pct  = in_percent_correct
   )
 message('DEBUG: Running specleanr::getdata... DONE.')
 
