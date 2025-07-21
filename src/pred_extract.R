@@ -117,7 +117,7 @@ if (in_bool_verbose) {
   message('DEBUG: warn      = ', in_bool_warn)
   message('DEBUG: verbose   = ', in_bool_verbose)
   message('DEBUG: coords    = ', in_bool_coords)
-  message('DEBUG: na.inform = ', in_na.inform)
+  message('DEBUG: na.inform = ', in_na_inform)
   message('DEBUG: na.rm     = ', in_na_rm)
 }
 
