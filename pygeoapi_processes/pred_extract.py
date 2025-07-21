@@ -141,7 +141,7 @@ class PredExtractProcessor(BaseProcessor):
         # Get user inputs
         in_data_path_or_url = data.get('input_data')
         in_raster_path = data.get('input_raster_url_or_name') # TODO: Get from data lake?
-        study_area_shp_url = data.get('study_area_extent')
+        study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
         in_colname_lat = data.get('colname_lat')
