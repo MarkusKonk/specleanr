@@ -21,6 +21,12 @@ library(specleanr)
 
 #data used to give example: iris data
 
+
+##################################
+### Get command line arguments ###
+### as strings                 ###
+##################################
+
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path_or_url                  = args[1] # req
@@ -63,21 +69,27 @@ in_autoextract                       = args[29] #TRUE to classfy data
 out_result_path = args[30]
 ##out_summary_path = args[35]
 
-
 # in_threshold = args[8] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
 # in_colname_species = args[9]
 
 
+########################
+### Read input data: ###
+########################
 
 # (1) Read data from CSV or from URL
-print(paste('Reading input data from CSV...'))
-
+message('DEBUG: Reading input data from CSV file: ', in_data_path_or_url)
 dfinal <- data.table::fread(in_data_path_or_url)
+message('DEBUG: Reading input data from CSV file... DONE.')
 
 
-# (2) Remove spaces and split:
-print(paste('Splitting input arg methods...'))
+################################
+### Convert string arguments ###
+### to R data types          ###
+################################
 
+# Remove spaces and split:
+message('DEBUG: Splitting input args that are lists...')
 in_methods = gsub(", ", ",", in_methods, fixed = TRUE)
 in_methods = gsub(" ,", ",", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
@@ -98,11 +110,11 @@ in_select_var = strsplit(in_select_var, ",")[[1]]
   in_select_var<- NULL
 }
 
-
+# Make boolean from string:
 in_bool_multiple_species   = tolower(in_bool_multiple_species) == 'true'
 in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
 in_warn_bool               = tolower(in_warn_bool) == 'true'
-in_na_inform_bool               = tolower(in_na_inform_bool) == 'true'
+in_na_inform_bool          = tolower(in_na_inform_bool) == 'true'
 in_sdm_bool                = tolower(in_sdm_bool) == 'true'
 in_pca_settings_exec_bool  = tolower(in_pca_settings_exec_bool) == 'true'
 in_boot_settings_run_bool  = tolower(in_boot_settings_run_bool) == 'true'
@@ -111,6 +123,7 @@ in_pca_settings_quiet      = tolower(in_pca_settings_quiet) == 'true'
 in_bool_loess              = tolower(in_bool_loess ) == 'true'
 in_eif_bool                = tolower(in_eif_bool) == 'true'
 
+# Assemble required lists:
 in_bootSettings = list(run= in_boot_settings_run_bool, nb= in_boot_settings_nb,
                     maxrecords = in_boot_settings_maxrecords, seed= in_boot_settings_seed,
                     th = in_boot_settings_threshold)
@@ -122,12 +135,16 @@ in_pc = list(exec = in_pca_settings_exec_bool, npc= in_pca_settings_npc,
 # Only provide column name for group if multiple = FALSE
 
 if (!in_bool_multiple_species) {
-  print('Setting group column name to NULL (only needed in case of multiple groups).')
+  message('DEBUG: Setting group column name to NULL (only needed in case of multiple groups).')
   in_group_colname <- NULL
 }
 
 
-# # (4) Run multidetect
+##############################
+### Run specleanr function ###
+##############################
+
+# Run multidetect
 # print(paste('Running specleanr::multidetect...'))
 # print(paste('Var:', in_var_ofinterest))
 # print(paste('Multiple:', in_bool_multiple_species))
@@ -137,6 +154,7 @@ if (!in_bool_multiple_species) {
 # print(paste('SilenceErrors:', in_silence_true_errors))
 # print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 
+message('DEBUG: Running specleanr::multidetect...')
 outlieriris_mult <- multidetect(
   data            = dfinal,
   var             = in_var_ofinterest,
@@ -156,10 +174,11 @@ outlieriris_mult <- multidetect(
   sdm             = in_sdm_bool,
   na.inform       = in_na.inform_bool
   )
-print(paste('Running specleanr::multidetect... DONE.'))
+message('DEBUG: Running specleanr::multidetect... DONE.')
 
 if(tolower(in_autoextract)=='false'){
 
+  message('DEBUG: Running specleanr::classify_data...')
   cleandata2 <- classify_data(
   refdata     = dfinal,
   outliers    = outlieriris_mult,
@@ -169,21 +188,23 @@ if(tolower(in_autoextract)=='false'){
   classify    = in_classifymode,
   EIF         = in_eif_bool
 )
+  message('DEBUG: Running specleanr::classify_data... DONE.')
 
 }else{
-  # (5) Run extract_clean_data
+  # Run extract_clean_data
 if (tolower(in_threshold_clean) == 'null') {
   # if loess=TRUE, then no threshold!
-  print('Threshold is null, using loess=TRUE...')
+  message('DEBUG: Threshold is null, using loess=TRUE...')
   in_threshold_clean <- NULL
   in_bool_loess <- TRUE
 } else if (!(is.na(as.numeric(in_threshold_clean)))) {
   # if loess=FALSE, then set threshold!
   in_threshold_clean <- as.numeric(in_threshold_clean)
-  print(paste0('Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
+  message(paste0('DEBUG: Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
   in_bool_loess <- FALSE
 }
-print(paste('Running specleanr::extract_clean_data...'))
+
+message('DEBUG: Running specleanr::extract_clean_data...')
 cleandata2 <- extract_clean_data(
   refdata             = dfinal,
   outliers            = outlieriris_mult,
@@ -194,18 +215,20 @@ cleandata2 <- extract_clean_data(
   verbose             = in_verbose_bool,
   loess               = in_bool_loess
 )
-print(paste('Running specleanr::extract_clean_data... DONE.'))
+message('DEBUG: Running specleanr::extract_clean_data... DONE.')
 }
 
-# (6) Write summary to txt file
+# Write summary to txt file
 # Note: I don't know how to get the string summary. The object is an S4 object, and I cannot access the string.
 #print(paste0('Write result to txt file: ', out_summary_path))
 #fileConn<-file(out_summary_path)
 #writeLines(outlieriris_mult, fileConn)
 #close(fileConn)
 
-print(cleandata2)
-# (7) Write the result to csv file:
-print(paste0('Write result to csv file: ', out_result_path))
-data.table::fwrite(cleandata2 , file = out_result_path)
 
+# Write the result to csv file:
+#print(cleandata2)
+if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path)
+data.table::fwrite(cleandata2 , file = out_result_path)
+if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script pred_extract')
