@@ -29,48 +29,42 @@ library(specleanr)
 
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-in_data_path_or_url                  = args[1] # req
-in_var_ofinterest                    = args[2] # req     e.g. "Sepal.Length
+in_data_path_or_url                  = args[1] # req   path or URL, must be readable by data.table::fread
+in_var_ofinterest                    = args[2] # req     e.g. "Sepal.Length" (stays strig)
 in_select_var                        = args[3] # opt     if only particular columns are needed form the datasest
-in_bool_multiple_species             = args[4] # opt     e.g. "TRUE"
-in_output_type                       = args[5] # req_set e.g., clean or outlier#defualt outlier
-in_group_colname                     = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species
+in_bool_multiple_species             = args[4] # logical, opt     e.g. "TRUE"
+in_output_type                       = args[5] # req_set e.g., clean or outlier#defualt outlier (stays string)
+in_group_colname                     = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species" (stays string, can be null)
 in_colnames_exclude                  = args[7] # opt     e.g.exclude irrelevant columns mostly important for multidimensional data e.g. ID, SN, x, y etc
 in_methods                           = args[8] # req     e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
-in_silence_true_errors               = args[9] # req_set e.g. "TRUE"
-in_boot_settings_run_bool            = args[10] #bool
+in_silence_true_errors               = args[9] # logical, req_set e.g. "TRUE"
+in_boot_settings_run_bool            = args[10] # logical
 in_boot_settings_maxrecords          = as.numeric(args[11]) #numb or max to initate bootstraping
 in_boot_settings_nb                  = as.numeric(args[12]) #numeric e.g 30 defualt
 in_boot_settings_seed                = as.numeric(args[13]) #rnadomisation e.g 1123..
 in_boot_settings_threshold           = as.numeric(args[14]) #decimal e.g. 0.6
-in_pca_settings_exec_bool            = args[15] #bool
-in_pca_settings_npc                  = as.numeric(args[16]) #integer..number of pcs retained
-in_pca_settings_quiet                = args[17] #bool to print the cummulative variance
-in_pca_settings_pcvar                = args[18] #pc used for outlier detectiion defualt is PC1
-in_verbose_bool                      = args[19] #implementation messages
-in_warn_bool                         = args[20] #return warning msgs
-in_sdm_bool                          = args[21] # if multidimensional data then its TRUE. univariate data sdm is F
-in_na_inform_bool                    = args[22] # msgs on handling NAs defualt FALSE
+in_pca_settings_exec_bool            = args[15] # logical
+in_pca_settings_npc                  = as.numeric(args[16]) # integer..number of pcs retained
+in_pca_settings_quiet                = args[17] # logical, bool to print the cummulative variance
+in_pca_settings_pcvar                = args[18] # pc used for outlier detectiion defualt is PC1 (stays string)
+in_verbose_bool                      = args[19] # logical, implementation messages
+in_warn_bool                         = args[20] # logicla, return warning msgs
+in_sdm_bool                          = args[21] # logical, if multidimensional data then its TRUE. univariate data sdm is F
+in_na_inform_bool                    = args[22] # logical, msgs on handling NAs defualt FALSE
 in_missingness                       = as.numeric(args[23]) #req_adj# e.g. 0.1
 
-###=========
 #Extrain clean data
-#===========
 in_bool_loess                        = args[24] #e.g.g TRUE or FALSE
 in_threshold_clean                   = args[25] #defualt is 0.8
-in_mode_clean                        = args[26]#e.g. 'abs', "best"
+in_mode_clean                        = args[26]#e.g. 'abs', "best" (stays string)
 
 #classifying data
-in_classifymode                      = args[27] #default med
-in_eif_bool                          = args[28] #e.g. F/T 
+in_classifymode                      = args[27] #default med (stays string)
+in_eif_bool                          = args[28] #logical, e.g. F/T 
 in_autoextract                       = args[29] #TRUE to classfy data
 
 #output
-out_result_path = args[30]
-##out_summary_path = args[35]
-
-# in_threshold = args[8] # can be "0.7", then loess is set to FALSE. Can be "NULL", then loess is set to TRUE
-# in_colname_species = args[9]
+out_result_path                      = args[30]
 
 
 ########################
@@ -256,4 +250,4 @@ if(!in_autoextract){
 if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path)
 data.table::fwrite(cleandata2 , file = out_result_path)
 if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
-if (in_bool_verbose) message('DEBUG: Finished wrapper script pred_extract')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script multidetect')
