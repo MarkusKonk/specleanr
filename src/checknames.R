@@ -54,29 +54,30 @@ in_percent_correctness = as.numeric(in_percent_correctness)
 ### speciesdata      ###
 ########################
 
-# If there is NO column name, we assume that a list of species is given.
-# Otherwise, we assume an input CSV file is given.
-if (tolower(in_colname_species) == 'null') {
+ä
+########################
+### Read input data: ###
+### speciesdata      ###
+########################
+
+# if species data is a file, read it:
+if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
+  message("DEBUG: Reading speciesdata from CSV: ", in_data_path)
+  mergealldfs <- data.table::fread(in_data_path)
+  message("DEBUG: Reading speciesdata from CSV... DONE.")
+
+# if species are given as a comma-separated list, remove spaces and split:
+} else {
   in_colname_species <- NULL
-  if (in_bool_verbose) message('DEBUG: No column name given, so we assume the user passed a list of species...')
-  if (in_bool_verbose) message('DEBUG: Splitting input arg species names...')
-  in_species_names <- in_data_path
-  in_species_names <- gsub(", ", ",", in_species_names, fixed = TRUE)
-  in_species_names <- gsub(" ,", ",", in_species_names, fixed = TRUE)
-  in_species_names <- strsplit(in_species_names, ",")[[1]]
+  message('DEBUG: Splitting input arg species names...')
+  in_data_path = gsub(", ", ",", in_data_path, fixed = TRUE)
+  in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
+  mergealldfs = strsplit(in_data_path, ",")[[1]]
+  message('DEBUG: Splitted input arg species names: ', paste(speciesdata, collapse="+"))
 
   if(length(in_species_names)<2 ){
     stop('The number of species should be greater than 1 and nodataframe can be exported')
-  }else{
-    if (in_bool_verbose) message('DEBUG: Found species names: ', paste(in_species_names, collapse=' + '))
-    mergealldfs <- in_species_names
   }
-  
-} else {
-  if (in_bool_verbose) message('DEBUG: A column name was given, so we assume the user passed a file...')
-  if (in_bool_verbose) message(paste0('DEBUG: Reading input data from CSV: ', in_data_path))
-  mergealldfs <- data.table::fread(in_data_path)
-  in_species_names <- in_colname_species
 }
 
 
