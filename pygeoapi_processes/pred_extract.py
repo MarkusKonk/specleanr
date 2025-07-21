@@ -192,7 +192,6 @@ class PredExtractProcessor(BaseProcessor):
 
         # Input csv file passed by user:
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        input_csv_path = download_any_file(in_data_path_or_url, input_dir, ".csv")
 
         # Input study area passed by user:
         # Download and unzip shapefile:
