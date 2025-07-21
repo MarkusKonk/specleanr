@@ -42,6 +42,26 @@ in_minimumpts_rm     = args[16] #logical, FALSE
 out_result_path      = args[17]
 
 
+################################
+### Convert string arguments ###
+### to R data types          ###
+################################
+
+# Make numeric from string:
+in_min_pts = as.numeric(in_min_pts)
+
+# Make boolean from string:
+in_bool_merge = tolower(in_bool_merge) == 'true'
+in_bool_list = tolower(in_bool_list) == 'true'
+in_bool_verbose = tolower(in_bool_verbose) == 'true'
+in_bool_warn = tolower(in_bool_warn) == 'true'
+in_bool_coords = tolower(in_bool_coords) == 'true'
+in_na_inform = tolower(in_na_inform) == 'true'
+in_na_rm = tolower(in_na_rm) == 'true'
+in_rm_duplicates = tolower(in_rm_duplicates) == 'true'
+in_minimumpts_rm = tolower(in_minimumpts_rm) == 'true'
+
+
 ########################
 ### Read input data: ###
 ########################
@@ -77,32 +97,11 @@ study_area <- sf::st_read(in_bbox_path, quiet=TRUE)
 if (in_bool_verbose) message('DEBUG: Reading input data from shapefile... DONE.')
 
 
-################################
-### Convert string arguments ###
-### to R data types          ###
-################################
-
-# Make numeric from string:
-in_min_pts = as.numeric(in_min_pts)
-
-# Make boolean from string:
-in_bool_merge = tolower(in_bool_merge) == 'true'
-in_bool_list = tolower(in_bool_list) == 'true'
-in_bool_verbose = tolower(in_bool_verbose) == 'true'
-in_bool_warn = tolower(in_bool_warn) == 'true'
-in_bool_coords = tolower(in_bool_coords) == 'true'
-in_na_inform = tolower(in_na_inform) == 'true'
-in_na_rm = tolower(in_na_rm) == 'true'
-in_rm_duplicates = tolower(in_rm_duplicates) == 'true'
-in_minimumpts_rm = tolower(in_minimumpts_rm) == 'true'
-
-
 ##############################
 ### Run specleanr function ###
 ##############################
 
-
-if (in_verbose_bool) {
+if (in_bool_verbose) {
   message("DEBUG: Logging all input args to match_datasets():")
   #message("DEBUG: data   = ", speciesfiltered)
   message('DEBUG: raster = ', worldclim)
