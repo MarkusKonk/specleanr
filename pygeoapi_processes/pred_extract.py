@@ -144,6 +144,7 @@ class PredExtractProcessor(BaseProcessor):
         study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
+        study_area_bbox = data.get('study_area_bbox')
         in_colname_lat = data.get('colname_lat')
         in_colname_lon = data.get('colname_lon')
         in_colname_species = data.get('colname_species')
@@ -211,6 +212,23 @@ class PredExtractProcessor(BaseProcessor):
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
             in_bbox_path = input_polygons_path
 
+        elif study_area_bbox is not None:
+            # R script needs: "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
+            # OGC API spec:
+            # "boundingBoxInput": {
+            #   "bbox": [ 51.9, 7, 52, 7.1 ],
+            #   "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+            # },
+            in_bbox_path = "xmin={west}, ymin={south}, xmax={east}, ymax={north}".format(
+                south = study_area_bbox["bbox"][0],
+                west  = study_area_bbox["bbox"][1],
+                north = study_area_bbox["bbox"][2],
+                east  = study_area_bbox["bbox"][3]
+            )
+
+        else:
+            in_bbox_path = "null"
+
         # Input raster:
         if in_raster_path.startswith('http'):
             LOGGER.debug('Using the raster provided by the user. It will not be downloaded, but accessed as-is.')
@@ -228,6 +246,7 @@ class PredExtractProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
+
         in_bool_verbose = True
         in_na_inform = True
         in_bool_warn = True
