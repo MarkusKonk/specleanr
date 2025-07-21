@@ -100,7 +100,7 @@ in_select_var = strsplit(in_select_var, ",")[[1]]
 
 
 in_bool_multiple_species   = tolower(in_bool_multiple_species) == 'true'
-#in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
+in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
 in_warn_bool               = tolower(in_warn_bool) == 'true'
 in_na_inform_bool               = tolower(in_na_inform_bool) == 'true'
 in_sdm_bool                = tolower(in_sdm_bool) == 'true'
@@ -156,7 +156,6 @@ outlieriris_mult <- multidetect(
   sdm             = in_sdm_bool,
   na.inform       = in_na.inform_bool
   )
-'in_outliertoNA_bool'
 print(paste('Running specleanr::multidetect... DONE.'))
 
 if(tolower(in_autoextract)=='false'){
@@ -165,7 +164,6 @@ if(tolower(in_autoextract)=='false'){
   refdata     = dfinal,
   outliers    = outlieriris_mult,
   var_col     = in_group_colname,
-  threshold   = in_classifythreshold,
   warn        = in_warn_bool,
   verbose     = in_verbose_bool,
   classify    = in_classifymode,
@@ -194,10 +192,7 @@ cleandata2 <- extract_clean_data(
   threshold           = in_threshold_clean,
   warn                = in_warn_bool,
   verbose             = in_verbose_bool,
-  autothreshold       = in_autothreshold_bool,
-  pabs                = in_percent_abs,
-  loess               = in_bool_loess,
-  outlier_to_NA       = in_outliertoNA_bool
+  loess               = in_bool_loess
 )
 print(paste('Running specleanr::extract_clean_data... DONE.'))
 }
