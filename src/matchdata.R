@@ -6,8 +6,6 @@
 ##
 ## AquaINFRA Project, October 2024
 ##
-## TODO: Currently this only allowes one user-defined dataset!
-
 
 # To test, run this script in bash with:
 # Rscript matchdata.R "some_inputs.csv" "some_more_inputs.csv" "speciesname, scientificName" "JDS4_sampling_ID" "lat, lati" "lon, long" "data_matched.csv"
@@ -26,6 +24,11 @@ library(specleanr)
 #data.table::fwrite(df_online , file = './df_online.csv')
 
 
+##################################
+### Get command line arguments ###
+### as strings                 ###
+##################################
+
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_paths_or_urls        = args[1]
@@ -35,12 +38,16 @@ in_colnames_lat              = args[4] # e.g. "lat, lati"
 in_colnames_lon              = args[5] # e.g. "lon, long"
 in_colnames_date             = args[6] # e.g. "sampling_date,Date"
 in_verbose_bool              = args[7] # e.g. "true"
-out_result_path              = args[8]
+out_result_path              = args[8] # path where output CSV will be written
 
+
+################################
+### Convert string arguments ###
+### to R data types          ###
+################################
 
 # Make boolean from string:
 in_verbose_bool   = tolower(in_verbose_bool) == 'true'
-
 
 # Remove spaces and split:
 if (in_verbose_bool) message('DEBUG: Splitting input args that are lists...')
@@ -64,6 +71,10 @@ in_colnames_date = gsub(" ,", ",", in_colnames_date, fixed = TRUE)
 in_colnames_date = strsplit(in_colnames_date, ",")[[1]]
 
 
+########################
+### Read input data: ###
+########################
+
 # Read data from CSV or from URL
 if (in_verbose_bool) message('DEBUG: Reading input data from CSV...')
 if (in_verbose_bool) message('DEBUG: Inputs data URLs (or paths): ', paste(in_data_paths_or_urls, collapse=' + '))
@@ -72,7 +83,21 @@ names(all_input_datasets) <- basename(in_data_paths_or_urls)
 if (in_verbose_bool) message('DEBUG: Names of input datasets (from URLs): ', paste(names(all_input_datasets), collapse=' + '))
 
 
-# Run match_datasets:
+##############################
+### Run specleanr function ###
+##############################
+
+if (in_verbose_bool) {
+  message("DEBUG: Logging all input args to match_datasets():")
+  message("DEBUG:   datasets = ", all_input_datasets)
+  message("DEBUG:   country  = ", in_colnames_countries)
+  message("DEBUG:   lats     = ", in_colnames_lat)
+  message("DEBUG:   lons     = ", in_colnames_lon)
+  message("DEBUG:   species  = ", in_colnames_species_names)
+  message("DEBUG:   date     = ", in_colnames_date)
+  message("DEBUG:   verbose  = ", in_bool_verbose)
+}
+
 if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets...')
 mergealldfs <- match_datasets(
   datasets = all_input_datasets,
@@ -88,3 +113,5 @@ if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets... DONE.'
 # Write the result to csv file:
 if (in_verbose_bool) message(paste0('DEBUG: Write result to csv file: ', out_result_path))
 data.table::fwrite(mergealldfs , file = out_result_path)
+if (in_verbose_bool) message('DEBUG: Write result to csv file... DONE.')
+if (in_verbose_bool) message('DEBUG: Finished wrapper script matchdata')
