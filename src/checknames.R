@@ -42,7 +42,12 @@ out_result_path_names     = args[9]
 # Make booleans from string:
 in_bool_merge = tolower(in_bool_merge) == 'true'
 in_bool_verbose = tolower(in_bool_verbose) == 'true'
+in_synonymn_checks = tolower(in_synonymn_checks) == 'true'
+in_ecosystem_checks = tolower(in_synonymn_checks) == 'true'
+in_rm_duplicates = tolower(in_rm_duplocates) == 'true'
 
+# Make numeric from string:
+in_percent_correctness = as.numeric(in_percent_correctness)
 
 ########################
 ### Read input data: ###
@@ -95,7 +100,7 @@ if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')
 cleannames_df <- check_names(
   data = mergealldfs,
   colsp = in_species_names,
-  pct = as.numeric(in_percent_correctness),
+  pct = in_percent_correctness,
   merge = in_bool_merge,
   verbose = in_bool_verbose,
   sn = in_synonymn_checks,
