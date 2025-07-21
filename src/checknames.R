@@ -9,8 +9,7 @@
 ##
 
 # To test, run this script in bash with:
-# Rscript checknames.R "./result_matchdata.csv" "species" "70" "true" "true" "true" "true" "true" "./result_checknames1.csv" "./result_checknames2.csv"
-# Rscript checknames.R "species1,species2,species3" "NA"  "70" "true" "true" "true" "true" "true" "./result_checknames1.csv" "./result_checknames2.csv"
+# Rscript checknames.R "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "70" "false" "true" "true" "true" "true" "./result_checknames.csv"
 
 message('Starting wrapper script: checknames.R.')
 library(specleanr)
@@ -110,4 +109,4 @@ if (in_bool_verbose) message('DEBUG: Running specleanr::check_names... DONE.')
 if (in_bool_verbose) message(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names))
 data.table::fwrite(cleannames_df , file = out_result_path_names)
 if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
-if (in_bool_verbose) message('DEBUG: Finished wrapper script getdata.R.')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script checknames.')

@@ -102,7 +102,7 @@ if (in_bool_verbose) message('DEBUG: Reading input data from shapefile... DONE.'
 ##############################
 
 if (in_bool_verbose) {
-  message("DEBUG: Logging all input args to match_datasets():")
+  message("DEBUG: Logging all input args to pred_extract():")
   #message("DEBUG: data   = ", speciesfiltered)
   message('DEBUG: raster = ', worldclim)
   message('DEBUG: lat    = ', in_colname_lat)
@@ -161,4 +161,4 @@ if (in_bool_verbose) message('DEBUG: Running specleanr::pred_extract... DONE.')
 if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path)
 data.table::fwrite(multiprecleaned , file = out_result_path)
 if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
-if (in_bool_verbose) message('DEBUG: Finished wrapper script matchdata')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script pred_extract')

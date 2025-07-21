@@ -71,7 +71,7 @@ out_result_path                      = args[30]
 ### Read input data: ###
 ########################
 
-# (1) Read data from CSV or from URL
+# Read data from CSV or from URL
 message('DEBUG: Reading input data from CSV file: ', in_data_path_or_url)
 dfinal <- data.table::fread(in_data_path_or_url)
 message('DEBUG: Reading input data from CSV file... DONE.')
@@ -120,7 +120,7 @@ in_bool_loess              = tolower(in_bool_loess ) == 'true'
 in_eif_bool                = tolower(in_eif_bool) == 'true'
 in_autoextract             = tolower(in_autoextract) == 'true'
 
-# Assemble required lists:
+# Assemble required list:
 in_bootSettings = list(
   run= in_boot_settings_run_bool,
   nb= in_boot_settings_nb,
@@ -128,13 +128,19 @@ in_bootSettings = list(
   seed= in_boot_settings_seed,
   th = in_boot_settings_threshold
 )
+message('DEBUG: List "in_bootSettings":')
+message(paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
 
+
+# Assemble required list:
 in_pc = list(
   exec = in_pca_settings_exec_bool,
   npc= in_pca_settings_npc,
   q = in_pca_settings_quiet,
   pcvar = in_pca_settings_pcvar
 )
+message('DEBUG: List "in_pc":')
+message(paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
 
 
 # Only provide column name for group if multiple = FALSE

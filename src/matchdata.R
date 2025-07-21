@@ -47,7 +47,7 @@ out_result_path              = args[8] # path where output CSV will be written
 ################################
 
 # Make boolean from string:
-in_verbose_bool   = tolower(in_verbose_bool) == 'true'
+in_verbose_bool = tolower(in_verbose_bool) == 'true'
 
 # Remove spaces and split:
 if (in_verbose_bool) message('DEBUG: Splitting input args that are lists...')
