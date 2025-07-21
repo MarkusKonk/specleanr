@@ -24,14 +24,14 @@ library(specleanr)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 in_data_path              = args[1] # a URL or a list of species
-in_colname_species        = args[2] # e.g. "species", or "NA" or "na"
-in_percent_correctness    = args[3] # e.g. "70"
-in_bool_merge             = args[4] #logical, e.g. "true"
-in_bool_verbose           = args[5] #logical, e.g. "true"
-in_synonymn_checks        = args[6] #logical, e.g. "true"
-in_ecosystem_checks       = args[7] #logical, e.g. "true"
-in_rm_duplicates          = args[8] #logical, e.g. "true"
-out_result_path_names     = args[9] 
+in_colname_species        = args[2] # column name, e.g. "species", or "null"
+in_percent_correctness    = args[3] # number, e.g. "70"
+in_bool_merge             = args[4] # logical, e.g. "true"
+in_bool_verbose           = args[5] # logical, e.g. "true"
+in_synonymn_checks        = args[6] # logical, e.g. "true"
+in_ecosystem_checks       = args[7] # logical, e.g. "true"
+in_rm_duplicates          = args[8] # logical, e.g. "true"
+out_result_path_names     = args[9] # path where output CSV will be written
 
 
 ################################
@@ -43,18 +43,13 @@ out_result_path_names     = args[9]
 in_bool_merge = tolower(in_bool_merge) == 'true'
 in_bool_verbose = tolower(in_bool_verbose) == 'true'
 in_synonymn_checks = tolower(in_synonymn_checks) == 'true'
-in_ecosystem_checks = tolower(in_synonymn_checks) == 'true'
-in_rm_duplicates = tolower(in_rm_duplocates) == 'true'
+in_ecosystem_checks = tolower(in_ecosystem_checks) == 'true'
+in_rm_duplicates = tolower(in_rm_duplicates) == 'true'
 
 # Make numeric from string:
 in_percent_correctness = as.numeric(in_percent_correctness)
 
-########################
-### Read input data: ###
-### speciesdata      ###
-########################
 
-ä
 ########################
 ### Read input data: ###
 ### speciesdata      ###
@@ -63,7 +58,7 @@ in_percent_correctness = as.numeric(in_percent_correctness)
 # if species data is a file, read it:
 if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
   message("DEBUG: Reading speciesdata from CSV: ", in_data_path)
-  mergealldfs <- data.table::fread(in_data_path)
+  species_names_or_df <- data.table::fread(in_data_path)
   message("DEBUG: Reading speciesdata from CSV... DONE.")
 
 # if species are given as a comma-separated list, remove spaces and split:
@@ -72,10 +67,10 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
   message('DEBUG: Splitting input arg species names...')
   in_data_path = gsub(", ", ",", in_data_path, fixed = TRUE)
   in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
-  mergealldfs = strsplit(in_data_path, ",")[[1]]
-  message('DEBUG: Splitted input arg species names: ', paste(speciesdata, collapse="+"))
+  species_names_or_df = strsplit(in_data_path, ",")[[1]]
+  message('DEBUG: Splitted input arg species names: ', paste(species_names_or_df, collapse="+"))
 
-  if(length(in_species_names)<2 ){
+  if(length(species_names_or_df)<2 ){
     stop('The number of species should be greater than 1 and nodataframe can be exported')
   }
 }
@@ -87,7 +82,7 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to check_names():")
-  #message("DEBUG:   data    = ", mergealldfs)
+  #message("DEBUG:   data    = ", species_names_or_df)
   message("DEBUG:   colsp   = ", in_colname_species)
   message("DEBUG:   pct     = ", in_percent_correctness)
   message("DEBUG:   merge   = ", in_bool_merge)
@@ -99,8 +94,8 @@ if (in_bool_verbose) {
 
 if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')
 cleannames_df <- check_names(
-  data = mergealldfs,
-  colsp = in_species_names,
+  data = species_names_or_df,
+  colsp = in_colname_species,
   pct = in_percent_correctness,
   merge = in_bool_merge,
   verbose = in_bool_verbose,
