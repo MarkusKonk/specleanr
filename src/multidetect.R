@@ -159,9 +159,9 @@ if (tolower(in_threshold_clean) == 'null') {
 }
 
 
-##############################
-### Run specleanr function ###
-##############################
+###############################
+### Run specleanr functions ###
+###############################
 
 # Run multidetect
 # print(paste('Running specleanr::multidetect...'))
@@ -192,7 +192,7 @@ outlieriris_mult <- multidetect(
   silence_true_errors = in_silence_true_errors,
   sdm             = in_sdm_bool,
   na.inform       = in_na.inform_bool
-  )
+)
 message('DEBUG: Running specleanr::multidetect... DONE.')
 
 
@@ -204,14 +204,14 @@ if(!in_autoextract){
   message('DEBUG: Autoextract is set to ', in_autoextract, ': Run classify_data...')
   message('DEBUG: Running specleanr::classify_data...')
   cleandata2 <- classify_data(
-  refdata     = dfinal,
-  outliers    = outlieriris_mult,
-  var_col     = in_group_colname,
-  warn        = in_warn_bool,
-  verbose     = in_verbose_bool,
-  classify    = in_classifymode,
-  EIF         = in_eif_bool
-)
+    refdata     = dfinal,
+    outliers    = outlieriris_mult,
+    var_col     = in_group_colname,
+    warn        = in_warn_bool,
+    verbose     = in_verbose_bool,
+    classify    = in_classifymode,
+    EIF         = in_eif_bool
+  )
   message('DEBUG: Running specleanr::classify_data... DONE.')
 
 }else{
