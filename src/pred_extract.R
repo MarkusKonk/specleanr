@@ -82,9 +82,19 @@ if (in_bool_verbose) message('DEBUG: Reading input data from shapefile... DONE.'
 ### to R data types          ###
 ################################
 
+# Make numeric from string:
+in_min_pts = as.numeric(in_min_pts)
+
 # Make boolean from string:
 in_bool_merge = tolower(in_bool_merge) == 'true'
 in_bool_list = tolower(in_bool_list) == 'true'
+in_bool_verbose = tolower(in_bool_verbose) == 'true'
+in_bool_warn = tolower(in_bool_warn) == 'true'
+in_bool_coords = tolower(in_bool_coords) == 'true'
+in_na_inform = tolower(in_na_inform) == 'true'
+in_na_rm = tolower(in_na_rm) == 'true'
+in_rm_duplicates = tolower(in_rm_duplicates) == 'true'
+in_minimumpts_rm = tolower(in_minimumpts_rm) == 'true'
 
 
 ##############################
@@ -121,7 +131,7 @@ multiprecleaned <- pred_extract(
   colsp = in_colname_species,
   bbox  = study_area,  
   list = in_bool_list, 
-  minpts = as.numeric(in_min_pts),
+  minpts = in_min_pts,
   mp     = in_minimumpts_rm,
   rm_duplicates = in_rm_duplicates,
   merge = in_bool_merge,
