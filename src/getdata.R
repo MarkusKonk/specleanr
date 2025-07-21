@@ -36,10 +36,10 @@ in_synonym_check    = args[10] #allow synoymns or not from FishBase
 in_warn_check       = args[11] #logical
 out_result_path     = args[12]
 
-##################################
-### Read input data from file: ###
-### study_area                 ###
-##################################
+########################
+### Read input data: ###
+### study_area       ###
+########################
 
 # Check if the bounding box is NULL,
 # or provided in a form of named vector (xmin, ymin, xmax, ymax).
@@ -55,11 +55,12 @@ if(tolower(in_extent)=='null'){
 
   # If the URL points to a zipped shapefile, download and unzip before we can read it:
   if (startsWith(in_extent, 'http') & endsWith(in_extent, 'zip')) {
-    message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
+    message("DEBUG: Downloading and unzipping zipped shapefile: ", in_bbox_path)
     temp_zip <- tempfile(fileext = ".zip")
     download.file(in_extent, temp_zip, mode = "wb")
     unzip(temp_zip, exdir = tempdir())
     in_extent <- list.files(tempdir(), pattern = "\\.shp$", full.names = TRUE)
+    message("DEBUG: Downloading and unzipping zipped shapefile... DONE.")
 
   # If the URL points to a non-zipped shapefile, throw error:
   } else if (startsWith(in_extent, 'http') & endsWith(in_extent, 'shp')) {
@@ -71,6 +72,7 @@ if(tolower(in_extent)=='null'){
   message('DEBUG: Reading input data from shapefile or GeoJSON:',in_extent)
   #message('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", "))
   study_area <- sf::st_read(in_extent, quiet=TRUE)
+  message('DEBUG: Reading input data from shapefile or GeoJSON... DONE.')
 
 # study area is a bounding box:
 }else{
@@ -78,14 +80,16 @@ if(tolower(in_extent)=='null'){
   study_area = eval(parse(text = paste0("list(", in_extent, ")")))
 }
 
-##################################
-### Read input data from file: ###
-### speciesdata                ###
-##################################
+########################
+### Read input data: ###
+### speciesdata      ###
+########################
 
 # if species data is a file, read it:
 if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
+  message("DEBUG: Reading speciesdata from: ", in_data_path)
   speciesdata <- data.table::fread(in_data_path)
+  message("DEBUG: Reading speciesdata... DONE.")
 
 # if species are given as a comma-separated list, remove spaces and split:
 }else{
@@ -93,6 +97,7 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
   in_data_path = gsub(", ", ",", in_data_path, fixed = TRUE)
   in_data_path = gsub(" ,", ",", in_data_path, fixed = TRUE)
   speciesdata = strsplit(in_data_path, ",")[[1]]
+  message('DEBUG: Splitted input arg species names: ', paste(speciesdata, collapse="+"))
 }
 
 ################################
@@ -104,6 +109,7 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 in_database = gsub(", ", ",", in_database, fixed = TRUE)
 in_database = gsub(" ,", ",", in_database, fixed = TRUE)
 in_database = strsplit(in_database, ",")[[1]]
+message('DEBUG: Splitted input arg database names: ', paste(in_database, collapse="+"))
 
 # Make numerics from string:
 in_gbif_lim = as.numeric(in_gbif_lim)
@@ -120,6 +126,20 @@ in_warn_check    = tolower(in_warn_check) == 'true'
 ##############################
 ### Run specleanr function ###
 ##############################
+
+if (FALSE) {
+  message("DEBUG: Logging all input args to getdata():")
+  message("DEBUG:   data = ", speciesdata)
+  message("DEBUG:   colsp = ", in_species_column)
+  message("DEBUG:   extent = ", study_area)
+  message("DEBUG:   db = ", in_database)
+  message("DEBUG:   lims = ", paste(in_gbif_lim, in_vert_lim, in_inat_lim, collapse=", "))
+  message("DEBUG:   verbose = ", in_verbose)
+  message("DEBUG:   in_synonym_check = ", in_synonym_check)
+  message("DEBUG:   in_warn_check = ", in_warn_check)
+  message("DEBUG:   in_percent_correct = ", in_percent_correct)
+  message('DEBUG:   Running specleanr::getdata...')
+}
 
 message('DEBUG: Running specleanr::getdata...')
 df_online <- getdata(
@@ -141,3 +161,5 @@ message('DEBUG: Running specleanr::getdata... DONE.')
 # Write the result to csv file:
 message('DEBUG: Write result to csv file: ', out_result_path)
 data.table::fwrite(df_online , file = out_result_path)
+message('DEBUG: Write result to csv file... DONE.')
+message('DEBUG: Finished wrapper script getdata.R.')
