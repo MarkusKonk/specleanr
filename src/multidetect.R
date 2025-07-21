@@ -94,6 +94,8 @@ in_methods = gsub(", ", ",", in_methods, fixed = TRUE)
 in_methods = gsub(" ,", ",", in_methods, fixed = TRUE)
 in_methods = strsplit(in_methods, ",")[[1]]
 
+
+# Remove spaces and split:
 if(!in_colnames_exclude==tolower('null')){
   in_colnames_exclude = gsub(", ", ",", in_colnames_exclude, fixed = TRUE)
   in_colnames_exclude = gsub(" ,", ",", in_colnames_exclude, fixed = TRUE)
@@ -203,13 +205,13 @@ if(tolower(in_autoextract)=='false'){
 
   if (tolower(in_threshold_clean) == 'null') {
     # if loess=TRUE, then no threshold!
-    message('DEBUG: Threshold is null, using loess=TRUE...')
+    message('DEBUG: Threshold is null, setting loess to TRUE...')
     in_threshold_clean <- NULL
     in_bool_loess <- TRUE
   } else if (!(is.na(as.numeric(in_threshold_clean)))) {
     # if loess=FALSE, then set threshold!
     in_threshold_clean <- as.numeric(in_threshold_clean)
-    message(paste0('DEBUG: Threshold is a number (', in_threshold_clean, '), using loess=FALSE...'))
+    message(paste0('DEBUG: Threshold is a number (', in_threshold_clean, '), setting loess to FALSE...'))
     in_bool_loess <- FALSE
   }
 
