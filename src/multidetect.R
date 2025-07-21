@@ -124,6 +124,7 @@ in_verbose_bool            = tolower(in_verbose_bool) == 'true'
 in_pca_settings_quiet      = tolower(in_pca_settings_quiet) == 'true'
 in_bool_loess              = tolower(in_bool_loess ) == 'true'
 in_eif_bool                = tolower(in_eif_bool) == 'true'
+in_autoextract             = tolower(in_autoextract) == 'true'
 
 # Assemble required lists:
 in_bootSettings = list(
@@ -146,6 +147,15 @@ in_pc = list(
 if (!in_bool_multiple_species) {
   message('DEBUG: Setting group column name to NULL (only needed in case of multiple groups).')
   in_group_colname <- NULL
+}
+
+# Dealing with 'null'
+if (tolower(in_threshold_clean) == 'null') {
+  in_threshold_clean <- NULL
+} else if (!(is.na(as.numeric(in_threshold_clean)))) {
+  in_threshold_clean <- as.numeric(in_threshold_clean)
+} else {
+  stop("Could not understand 'threshold_clean', expected number or 'null', got: ", in_threshold_clean, " of type ", typeof(in_threshold_clean))
 }
 
 
@@ -185,8 +195,13 @@ outlieriris_mult <- multidetect(
   )
 message('DEBUG: Running specleanr::multidetect... DONE.')
 
-if(tolower(in_autoextract)=='false'){
 
+# Depending on in_autoextract, run classify_data or extract_clean_data...
+# If in_autoextract is FALSE, run classify_data.
+# Otherwise, run extract_clean_data.
+
+if(!in_autoextract){
+  message('DEBUG: Autoextract is set to ', in_autoextract, ': Run classify_data...')
   message('DEBUG: Running specleanr::classify_data...')
   cleandata2 <- classify_data(
   refdata     = dfinal,
@@ -199,22 +214,21 @@ if(tolower(in_autoextract)=='false'){
 )
   message('DEBUG: Running specleanr::classify_data... DONE.')
 
-
-# Otherwise, run extract_clean_data...
 }else{
+  message('DEBUG: Autoextract is set to ', in_autoextract, ': Run extract_clean_data...')
 
-  if (tolower(in_threshold_clean) == 'null') {
-    # if loess=TRUE, then no threshold!
+  # First, possibly set the boolean value loess, depending on threshold_clean...
+  # if loess=TRUE,  then no threshold!
+  # if loess=FALSE, then set threshold!
+  if (is.null(in_threshold_clean)) {
     message('DEBUG: Threshold is null, setting loess to TRUE...')
-    in_threshold_clean <- NULL
     in_bool_loess <- TRUE
-  } else if (!(is.na(as.numeric(in_threshold_clean)))) {
-    # if loess=FALSE, then set threshold!
-    in_threshold_clean <- as.numeric(in_threshold_clean)
+  } else if (is.numeric(in_threshold_clean)) {
     message(paste0('DEBUG: Threshold is a number (', in_threshold_clean, '), setting loess to FALSE...'))
     in_bool_loess <- FALSE
   }
 
+  # Now, run extract_clean_data...
   message('DEBUG: Running specleanr::extract_clean_data...')
   cleandata2 <- extract_clean_data(
     refdata             = dfinal,
