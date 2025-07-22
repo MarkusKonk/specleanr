@@ -64,7 +64,9 @@
 #'
 #'
 
-pred_extract <- function(data, raster, lat = NULL, lon = NULL, bbox = NULL, colsp, minpts = 10, mp = TRUE,
+pred_extract <- function(data, raster, lat = NULL,
+                         lon = NULL, bbox = NULL,
+                         colsp, minpts = 10, mp = TRUE,
                          rm_duplicates = TRUE,
                          na.rm = TRUE,
                          na.inform = FALSE,
