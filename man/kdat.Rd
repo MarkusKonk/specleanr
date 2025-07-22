@@ -24,9 +24,6 @@ data("kdat")
 kdat
 }
 
-
-
-
 }
 \references{
 Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.

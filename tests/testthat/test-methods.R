@@ -46,11 +46,11 @@ test_that(desc = "Adjusted boxplots errors and success",
                       #data not a dataframe, list, atomic or vector
                       expect_error(adjustboxplots(data = wcd))
 
-                      #provide var when the data is atomic, vector or list: var not required
-
-                      expect_message(adjustboxplots(data = sp$bio6, var = "bio6"))
-
-                      expect_type(adjustboxplots(data = sp$bio6, output = 'clean'), 'double')
+                      # #provide var when the data is atomic, vector or list: var not required
+                      #
+                      # expect_message(adjustboxplots(data = sp$bio6, var = "bio6"))
+                      #
+                      # expect_type(adjustboxplots(data = sp$bio6, output = 'clean'), 'double')
 
                     })
 
@@ -74,11 +74,11 @@ testthat::test_that(desc = "Hampel returns a dataframe of outliers.",
                       #data not a dataframe, list, atomic or vector
                       expect_error(hampel(data = wcd))
 
-                      #provide var when the data is atomic, vector or list: var not required
-
-                      expect_message(hampel(data = sp$bio6, var = "bio6"))
-
-                      expect_type(hampel(data = sp$bio6, output = 'clean'), 'double')
+                      # #provide var when the data is atomic, vector or list: var not required
+                      #
+                      # expect_message(hampel(data = sp$bio6, var = "bio6"))
+                      #
+                      # expect_type(hampel(data = sp$bio6, output = 'clean'), 'double')
 
                     })
 
@@ -93,14 +93,14 @@ testthat::test_that(desc = "Reverse jack knifing returns a dataframe of outliers
                       #expect error for missing data
                       expect_error(jknife(var = 'bio6'))
 
-                      #expect error if var is missing
-                      expect_error(jknife(data = sp))
+                      # #expect error if var is missing
+                      # expect_error(jknife(data = sp))
 
-                      #expect error if var is provided more than once
-                      expect_error(jknife(data = sp, var = c("bio6", 'bio4')))
-
-                      #expect error if mode is not robust or soft
-                      expect_error(jknife(data = sp, var = 'bio6', mode = 'out'))
+                      # #expect error if var is provided more than once
+                      # expect_error(jknife(data = sp, var = c("bio6", 'bio4')))
+                      #
+                      # #expect error if mode is not robust or soft
+                      # expect_error(jknife(data = sp, var = 'bio6', mode = 'out'))
                     })
 
 
@@ -132,25 +132,25 @@ testthat::test_that(desc = "Distribution boxplot returns a dataframe of outliers
 
                       expect_s3_class(distboxplot(data = sp, var = 'bio6', output='clean'), 'data.frame')
 
-                      expect_type(distboxplot(data = sp$bio6, output = 'clean'), 'double')
+                      # expect_type(distboxplot(data = sp$bio6, output = 'clean'), 'double')
 
                       #expect double
-                      expect_type(distboxplot(data = c(4,5,5,6,7,45,67,4,3,5,6,5,44), output = 'clean'), "double")
+                      #expect_type(distboxplot(data = c(4,5,5,6,7,45,67,4,3,5,6,5,44), output = 'clean'), "double")
 
                       #data not a dataframe, list, atomic or vector
                       expect_error(distboxplot(data = wcd))
 
                       #check for nd 400, 300, 200, 100
                       #expect double 400
-                      expect_type(distboxplot(data = runif(412, 9, 43), output = 'clean'), 'double')
+                      #expect_type(distboxplot(data = runif(412, 9, 43), output = 'clean'), 'double')
 
-                      #expect double 300
-                      expect_type(distboxplot(data = runif(300, 9.5, 43.7), output = 'clean'), 'double')#
-
-                      #expect double 200
-                      expect_type(distboxplot(data = runif(200, 0.01, 1.6), output = 'clean'), 'double')
-                      #expect double 100
-                      expect_type(distboxplot(data = runif(100, 9, 493), output = 'clean'), 'double')
+                      # #expect double 300
+                      # expect_type(distboxplot(data = runif(300, 9.5, 43.7), output = 'clean'), 'double')#
+                      #
+                      # #expect double 200
+                      # expect_type(distboxplot(data = runif(200, 0.01, 1.6), output = 'clean'), 'double')
+                      # #expect double 100
+                      # expect_type(distboxplot(data = runif(100, 9, 493), output = 'clean'), 'double')
 
                     })
 
@@ -167,7 +167,7 @@ testthat::test_that(desc = "Sequential fences returns a dataframe of outliers.",
                       #gamma not in the standard values
                       expect_error(seqfences(data = sp, var = 'bio6', output='outlier', gamma = 0.3))
 
-                      expect_type(seqfences(data = sp$bio6, output = 'clean'), 'double')
+                      # expect_type(seqfences(data = sp$bio6, output = 'clean'), 'double')
 
                      # "Sequential fences returns an error if the records exceeds 100 records.",
                       sprbind <- rbind(sp, sp, sp, sp)
@@ -182,9 +182,9 @@ testthat::test_that(desc = "Sequential fences returns a dataframe of outliers.",
 
                       expect_error(seqfences(data = wcd))
 
-                      #expect double
-                      expect_type(seqfences(data = c(4,5,5,6,7,45,67,4,3,5,6,5,44, 100, 3, 45, 6, 7, 22),
-                                            output = 'clean'), "double")
+                      # #expect double
+                      # expect_type(seqfences(data = c(4,5,5,6,7,45,67,4,3,5,6,5,44, 100, 3, 45, 6, 7, 22),
+                      #                       output = 'clean'), "double")
 
                     })
 

@@ -7,8 +7,8 @@
 #'      required for lists and vector.
 #' @param extent \code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
 #'      records from the GBIF will be downloaded. These can be provided in two forms,
-#'      either a shapefile \code{(sf)} class accepted or provide a list of
-#'      \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.
+#'      either a shapefile \code{(sf)} class accepted or provide a list of named
+#'      \code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax} in this particular order.
 #' @param db \code{vector}. The different databases allowed including \code{'gbif', 'vertnet', and 'inat'}.
 #' @param gbiflim \code{integer}. Limits on the records from the Global Biodiversity Information Platform
 #' @param vertlim \code{integer}. Limits on the records from VertNET.
@@ -62,6 +62,8 @@ getdata <- function(data, colsp = NULL, extent = NULL,
 
   } else if(is(data, 'data.frame') && !is.null(colsp)){
 
+   if(isFALSE(colsp%in%colnames(data))) stop("Species column not found in the dataset.")
+
     data <- unique(unlist(data[, colsp]))
 
   }else if(is(data, 'vector') || is(data, 'atomic')){
@@ -105,91 +107,115 @@ getdata <- function(data, colsp = NULL, extent = NULL,
 
       if(xdb=='gbif'){
 
-        ndata <- rgbif::occ_count(scientificName = checksppx)
+        #try catch the Error in the HTTP2 framing layer
 
-        if(ndata==0){
+        ndata <- tryCatch(expr =rgbif::occ_count(scientificName = checksppx),
+                       error = function(e){
+                         if(grepl(" HTTP2 framing layer", e$message)==TRUE){
+                           if(isTRUE(warn))warning("GBIF webpage is misbehvaing and return HTTP2 frame layer message", call. = FALSE)
+                           return(NULL)
+                         }
+                       })
 
-          if(isTRUE(verbose)) message('No records found for ', checksppx, ' in GBIF')
+        if(!is.null(ndata)){
 
-          gbifx <- NULL
+          if(ndata==0){
 
-        } else if(ndata <= 50000 & is.null(extent)){
-
-          if(gbiflim <= 50000){
-
-            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
-
-            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbiflimit of ', gbiflim)
-
-            gbifx <- gbifsp$data
-
-          }else{
-
-            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = ndata)
-
-            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were download as they were the maximum records found.')
-
-            gbifx <- gbifsp$data
-          }
-
-        }else if (!is.null(extent)){
-
-          extval <- extentvalues(extent, xdb)
-
-          if(gbiflim <= 50000){
-
-            gbifsp <- rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
-                                       decimalLongitude = paste0(extval[1],',' ,extval[3]),
-                                       decimalLatitude = paste0(extval[2],',' ,extval[4]), ...)
-
-            if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
-
-          }else{
-
-            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,
-                                       decimalLongitude = paste0(extval[1],',' ,extval[3]),
-                                       decimalLatitude = paste0(extval[2],',' ,extval[4]), ...)
-
-            if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded')
-          }
-
-          gbifx <- gbifsp$data
-
-        }else if (ndata>50000 && is.null(extent)){
-
-          message("Only ", gbiflim, " records will be downloaded.")
-
-          gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,...)
-
-          gbifx <- gbifsp$data
-
-        }else{
-          gbifx = NULL
-        }
-
-        #check if gbif dataset has coordinates decimalLatitude or decimalLongitude among column names
-
-        if(is(gbifx, 'data.frame')){
-
-          if("decimalLatitude"%in%colnames(gbifx) == TRUE){
-            gbifx
-          }else{
-            if(isTRUE(warn)) warning("The data for ", checksppx, " will be removed since no cordinates were found in GBIF database.", call. = FALSE)
+            if(isTRUE(verbose)) message('No records found for ', checksppx, ' in GBIF')
 
             gbifx <- NULL
-          }
-        }else{
-          gbifx = NULL
-        }
 
+          } else if(ndata <= 50000 & is.null(extent)){
+
+            if(gbiflim <= 50000){
+
+              gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim)
+
+              if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbiflimit of ', gbiflim)
+
+              gbifx <- gbifsp$data
+
+            }else{
+
+              gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = ndata)
+
+              if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were download as they were the maximum records found.')
+
+              gbifx <- gbifsp$data
+            }
+
+          }else if (!is.null(extent)){
+
+            extval <- extentvalues(extent, xdb)
+
+            if(gbiflim <= 50000){
+
+              gbifsp <- rgbif:: occ_data(scientificName = checksppx, limit = gbiflim,
+                                         decimalLongitude = paste0(extval[1],',' ,extval[3]),
+                                         decimalLatitude = paste0(extval[2],',' ,extval[4]), ...)
+
+              if(isTRUE(verbose)) message(nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded based on the gbif limit of ', gbiflim)
+
+            }else{
+
+              gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,
+                                        decimalLongitude = paste0(extval[1],',' ,extval[3]),
+                                        decimalLatitude = paste0(extval[2],',' ,extval[4]), ...)
+
+              if(isTRUE(verbose)) message('All ', nrow(gbifsp$data) ,' records for ', checksppx,' in GBIF were downloaded')
+            }
+
+            gbifx <- gbifsp$data
+
+          }else if (ndata>50000 && is.null(extent)){
+
+            if(isTRUE(verbose))message("Only ", gbiflim, " records will be downloaded.")
+
+            gbifsp <- rgbif::occ_data(scientificName = checksppx, limit = gbiflim,...)
+
+            gbifx <- gbifsp$data
+
+          }else{
+            gbifx = NULL
+          }
+
+          #check if gbif dataset has coordinates decimalLatitude or decimalLongitude among column names
+
+          if(is(gbifx, 'data.frame')){
+
+            if("decimalLatitude"%in%colnames(gbifx) == TRUE){
+              gbifx
+            }else{
+              if(isTRUE(warn)) warning("The data for ", checksppx, " will be removed since no cordinates were found in GBIF database.", call. = FALSE)
+
+              gbifx <- NULL
+            }
+          }else{
+            gbifx = NULL
+          }
+
+        }else{
+          gbifx <- NULL
+        }
       }else if(xdb=='vertnet'){
 
         sptx <- scan(text = checksppx, what = ' ', quiet = T)
 
         if(!is.null(extent)) vbbox <- extentvalues(extent, xdb) else vbbox <- NULL #vector of bbox values
 
-        vertx <- rvertnet::searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
-                              limit = vertlim, messages = FALSE, bbox = vbbox)
+        vertx <- tryCatch(rvertnet::searchbyterm(genus= tolower( sptx[1]), specificepithet = tolower(sptx[2]),
+                                        limit = vertlim, messages = FALSE, bbox = vbbox),
+                 error= function(e){
+                   if(grepl('Internal Server Error \\(HTTP 500\\)', e$message)==TRUE | grepl("Service Unavailable \\(HTTP 503\\)", e$message)==TRUE){
+
+                     if(isTRUE(warn))warning("The VertNet database has returned 500 or 503 error message and will be skipped for ",checksppx,".", call. = FALSE)
+
+                     return(NULL)
+                   }else{
+                     return(NULL)
+                   }
+                 })
+
         if(is.null(vertx)){
 
           if(isTRUE(verbose)) message('No records for ', checksppx, ' in vertnet were found')

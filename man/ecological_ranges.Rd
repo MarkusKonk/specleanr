@@ -100,14 +100,15 @@ datafinal <- match_datasets(datasets = list(jds = jdsdata, efi=efidata),
 
 gbd <- check_names(data = datafinal, colsp='species', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
                         colsp = 'speciescheck',
                        bbox = db,
-                        multiple = TRUE,
                         minpts = 10)
 
 saldata <- refdata[['Salmo trutta']]

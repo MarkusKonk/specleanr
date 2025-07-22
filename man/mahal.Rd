@@ -11,10 +11,10 @@ mahal(
   mode = "soft",
   pdf = 0.95,
   tol = 1e-20,
-  pc,
-  boot,
+  pc = FALSE,
+  boot = FALSE,
   var,
-  pcvar
+  pcvar = NULL
 )
 }
 \arguments{
@@ -36,6 +36,14 @@ instead of mean. Default mode is \code{soft}.}
 
 \item{tol}{\code{numeric} tolernce value when the inverse calculation are too
 small. Default \code{1e-20}.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
+
+\item{var}{The variable of concern, which is vital for univariate outlier detection methods}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
 }
 \value{
 Either clean or outliers dataset
@@ -51,7 +59,9 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
@@ -60,7 +70,6 @@ refdata <- pred_extract(data = gbd, raster= wcd ,
                        lon= 'decimalLongitude',
                        colsp = 'speciescheck',
                       bbox = db,
-                       multiple = TRUE,
                        minpts = 10)
 
 #outliers

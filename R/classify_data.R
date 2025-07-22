@@ -183,6 +183,7 @@ classify <- function(refdata, outliers, sp = NULL,
 #' @param verbose \code{logical}. Produces messages or not. Default \strong{FALSE}.
 #' @param classify \code{string}. Categorize data base on the correlation coefficient manner based on \code{Akoglu 2018}. For
 #'        more information check in the details section.
+#' @param EIF \code{logical} To calculate the empirical influence function for each value.
 #'
 #' @details
 #'

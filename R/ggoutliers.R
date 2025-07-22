@@ -7,6 +7,10 @@
 #'      For example if the species are more than 10, the plot will be done in batches.
 #' @param desc \code{logical} To either arrange the bars in ascending or descending order.
 #'
+#' @param ncol,nrow \code{integer} If number of groups are greater than 1, then number of rows and columns can be set.
+#'      Check ggplot2 facet parameters on how the columns are set.
+
+#'
 #' @title Visualize the outliers identified by each method
 #'
 #' @importFrom stats aggregate
@@ -16,7 +20,12 @@
 #' @export
 #'
 #'
-ggoutliers <-  function(x, select = NULL, color='purple', desc = TRUE){##sci mode--italicise
+ggoutliers <-  function(x,
+                        select = NULL,
+                        color='purple',
+                        desc = TRUE,
+                        ncol = 2,
+                        nrow = 2){##sci mode--italicise
 
   outdf <- extractoutliers(x)
 
@@ -39,6 +48,13 @@ ggoutliers <-  function(x, select = NULL, color='purple', desc = TRUE){##sci mod
       meanval <- aggregate(totaloutliers~groups, data = outdf, mean)
 
       colnames(meanval) <- c('groups', 'meanvalue')
+
+      totfacets <-  ncol*nrow
+
+      ngroups <- length(unique(outdf$groups))
+
+      if(totfacets<ngroups)stop("The total number of ncol and nrow are not enough to enable facets. Adjust ncol and nrow to a equal a product of ", ngroups, ".")
+
     }
 
   if(nrow(outdf)>=7) {
@@ -60,7 +76,7 @@ ggoutliers <-  function(x, select = NULL, color='purple', desc = TRUE){##sci mod
 
     ggplot2::theme_bw()+
 
-    {if(x@mode==TRUE) ggplot2::facet_wrap(~groups, scales = 'free')}+
+    {if(x@mode==TRUE) ggplot2::facet_wrap(~groups, scales = 'free', ncol = ncol, nrow = nrow)}+
 
     {if(x@mode==TRUE) tidytext::scale_x_reordered()} +
 

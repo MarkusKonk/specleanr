@@ -24,15 +24,11 @@
 #' }
 #'
 #'
-#'
-#'
 #' @references Logez M, Belliard J, Melcher A, Kremser H, Pletterbauer F, Schmutz S, Gorges G, Delaigue O, Pont D. 2012.
 #' Deliverable D5.1-3: BQEs sensitivity to global/climate change in European rivers: implications for reference conditions
 #' and pressure-impact-recovery chains.
 #'
 "efidata"
-
-
 
 #' @title Joint Danube Survey Data
 #'
@@ -57,8 +53,6 @@
 #' data("jdsdata")
 #' jdsdata
 #' }
-#'
-#'
 #'
 #'
 #' @references https://www.danubesurvey.org/jds4/about
@@ -88,9 +82,6 @@
 #' data("kdat")
 #' kdat
 #' }
-#'
-#'
-#'
 #'
 #' @references Schwertman NC, de Silva R. 2007. Identifying outliers with sequential fences.
 #' Computational Statistics and Data Analysis 51:3800–3810.
@@ -159,7 +150,7 @@
 #"naturalist"
 
 
-#' @title Salmo trutta fario species data from GBIF and iNaturalist
+#' @title Alburnoides bipunctatus species data from GBIF and iNaturalist
 #'
 #' @description A \code{tibble} Data from GBIF (https://www.gbif.org/) and iNaturalist (https://www.inaturalist.org/)
 #'
@@ -167,27 +158,23 @@
 #'
 #' @details The species data was collated from the Global Biodiversity Information Facility and iNaturalist
 #'
-#' @usage data(troutdata)
+#' @usage data(abdata)
 #'
 #' @keywords freshwater information platform datasets
 #'
-#' @format A \code{tibble} 1100 rows and 7 columns.
+#' @format A \code{tibble} 2130 rows and 3 columns.
 #'
 #'
 #' @examples
 #'
 #' \dontrun{
 #'
-#' data("troutdata")
-#' troutdata
+#' data("abdata")
+#' abdata
 #' }
 #'
 #'
-#'
-#'
-#' @references https://www.danubesurvey.org/jds4/about
-#'
-"jdsdata"
+"abdata"
 
 
 

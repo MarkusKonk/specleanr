@@ -8,3 +8,5 @@
 ^docs$
 ^pkgdown$
 testfolder
+httptests
+.Rhistory

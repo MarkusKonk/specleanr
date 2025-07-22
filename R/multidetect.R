@@ -225,22 +225,27 @@ detect <- function(x,
     #pc and bootstrap parameters
     defaults_pc <- list(exec=FALSE, q=T, npc = 3, pcvar = 'PC1')
 
-    pc <- modifyList(defaults_pc, pc)
-    pcs <- pc$exec
-    npc <- pc$npc
-    quiet <- pc$q
-    pcvar <- pc$pcvar
+    pc     <- modifyList(defaults_pc, pc)
+    pcs    <- pc$exec
+    npc    <- pc$npc
+    quiet  <- pc$q
+    pcvar  <- pc$pcvar
     #boots
-    defaults_boot <- list(run=FALSE, nb= 100, maxrecords = 30,  seed=1135)
+    defaults_boot <- list(run=FALSE, nb= 100, maxrecords = 30,  seed=1135, th = 0.6)
 
     bootSettings <- modifyList(defaults_boot, bootSettings)
 
-    boot <- bootSettings$run
-    maxrecords <- bootSettings$maxrecords
-    nboots <- bootSettings$nb
-    nbootseed <- bootSettings$seed
+    boot        <- bootSettings$run
+    maxrecords  <- bootSettings$maxrecords
+    nboots      <- bootSettings$nb
+    nbootseed   <- bootSettings$seed
+    th          <-  bootSettings$th
 
     if(isTRUE(pcs)){
+      #stop if ecological ranges is used when PCA is set to TRUE
+
+      if("optimal" %in%methods == TRUE) stop("If PCA is set to TRUE, remove optimal method from the list to detect outliers.")
+
       #try catch pca errors
       df <- tryCatch(pca(df, npc = npc, q= quiet),
                      error=function(e){
@@ -248,12 +253,16 @@ detect <- function(x,
                          if(isTRUE(warn))warning('PCA not computed due to cannot rescale a constant/zero error')
 
                          df
+                       }else{
+                         if(grepl("he number of columns", e$message)==TRUE)stop('Numeric data variabales are less than or equal to ', npc,'. Either reduce the npc to 2 or the data is not highly dimensional.',call. = FALSE)
                          }
                      }
       )
+      if(is.null(df)) stop("PCA was not properly computed, so set it FALSE and continue.")
 
       if(isTRUE(boot)){
         if(!is.data.frame(df)) {
+
           NROWDF <- nrow(df[[1]])
           } else{
 
@@ -278,11 +287,14 @@ detect <- function(x,
         if(nrow(df)  <= maxrecords){
 
         df <- boots(df, boots = nboots, seed = nbootseed, pca = pcs)
+
         }else{
           df
-          warning('If bootstrapping is to be computed increase the maximum number records to be less than the numer of rows in a dataframe, otherwise bootsrapping is not implemnted.')
+          boot <- FALSE
+          warning('To run bootstrapping increase maxrecords to < nrows in reference DF, or bootsrapping is not run.', call. = FALSE)
         }
       }else{
+        boot <- FALSE
         df
       }
     }
@@ -342,12 +354,16 @@ detect <- function(x,
 
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
+        listout <- lapply(seq_along(df), function(bb){
 
-          mout  <-  suppressMessages(handle_true_errors(func =  adjustboxplots(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+          mout  <-  suppressMessages(handle_true_errors(func =  adjustboxplots(data = df[[bb]], var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                                              fname = imx, verbose = verbose, spname = spname,
                                                              warn=warn, silence_true_errors = silence_true_errors))
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+          })
+
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
         methodout  <-  suppressMessages(handle_true_errors(func =  adjustboxplots(data = df, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
@@ -358,12 +374,16 @@ detect <- function(x,
     }else if(imx=='zscore'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
+        listout <- lapply(seq_along(df), function(bb){
 
-          mout <-  handle_true_errors(func = zscore(data = bb, var = var, output = output, mode = zpar$mode, type = zpar$type, pc=pcs, pcvar = pcvar, boot = boot),
+          mout <-  handle_true_errors(func = zscore(data = df[[bb]], var = var, output = output, mode = zpar$mode, type = zpar$type, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -373,13 +393,19 @@ detect <- function(x,
       }
 
     }else if(imx=='iqr'){
+
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          mout <-  handle_true_errors(func =  interquartile(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func =  interquartile(data = df[[bb]], var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -391,11 +417,15 @@ detect <- function(x,
     }else if(imx=='semiqr'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func =  semiIQR(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func =  semiIQR(data = df[[bb]], var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -407,12 +437,16 @@ detect <- function(x,
     }else if(imx=='hampel'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
+        listout <- lapply(seq_along(df), function(bb){
 
-          out <-  handle_true_errors(func = hampel(data = bb, var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+          mout <-  handle_true_errors(func = hampel(data = df[[bb]], var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                      fname = imx, verbose = verbose, spname = spname,
                                      warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -425,12 +459,16 @@ detect <- function(x,
 
       if(isTRUE(boot)){
 
-        methodout  <- Reduce(rbind, lapply(df, function(bb){
+        listout  <- lapply(seq_along(df), function(bb){
 
-          out <-  handle_true_errors(func = jknife(data = bb, var = var, output = output, mode = jkpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
+          mout <-  handle_true_errors(func = jknife(data = df[[bb]], var = var, output = output, mode = jkpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
       methodout <-  handle_true_errors(func = jknife(data = df, var = var, output = output, mode = jkpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
@@ -441,11 +479,14 @@ detect <- function(x,
     }else if(imx=='mahal'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          out = handle_true_errors(func = mahal(data = bb, exclude = exclude, output = output, mode=mahalpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+          mout = handle_true_errors(func = mahal(data = df[[bb]], exclude = exclude, output = output, mode=mahalpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
                                          fname = imx, verbose = verbose, spname = spname,
                                          warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -457,13 +498,16 @@ detect <- function(x,
     }else if(imx=='kmeans'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
+        listout <- lapply(seq_along(df), function(bb){
 
-          out <-  handle_true_errors(func = xkmeans(data = bb, k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
+          mout <-  handle_true_errors(func = xkmeans(data = df[[bb]], k= kmpar$k, exclude = exclude, output = output, mode = kmpar$mode,
                                                           method = kmpar$method, verbose=verbose, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -475,12 +519,15 @@ detect <- function(x,
     }else if(imx=='iforest'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          out <-  handle_true_errors(func = isoforest(data = bb, size = ifpar$size, output=output, pc=pcs, pcvar = pcvar, boot = boot,
+        listout <- lapply(seq_along(df), function(bb){
+          mout <-  handle_true_errors(func = isoforest(data = df[[bb]], size = ifpar$size, output=output, pc=pcs, pcvar = pcvar, boot = boot,
                                                       cutoff = ifpar$cutoff, exclude = exclude),
                                      fname = imx, verbose = verbose, spname = spname,
                                      warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -493,11 +540,14 @@ detect <- function(x,
     }else if(imx=='onesvm'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          out <-  handle_true_errors(func = onesvm(data = bb,  exclude = exclude, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+          mout <-  handle_true_errors(func = onesvm(data = df[[bb]],  exclude = exclude, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                      fname = imx, verbose = verbose, spname = spname,
                                      warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -509,12 +559,15 @@ detect <- function(x,
     }else if(imx=='lof'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          out <-  handle_true_errors(func = xlof(data = bb, output =output, minPts = lofpar$minPts,
+        listout <- lapply(seq_along(df), function(bb){
+          mout <-  handle_true_errors(func = xlof(data = df[[bb]], output =output, minPts = lofpar$minPts,
                                                  exclude = exclude, metric = lofpar$metric, mode=lofpar$mode, pc=pcs, pcvar = pcvar, boot = boot),
                                      fname = imx, verbose = verbose, spname = spname,
                                      warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -527,11 +580,15 @@ detect <- function(x,
     }else if(imx=='logboxplot'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func = logboxplot(data = bb,  var = var, output = output, x= 1.5, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func = logboxplot(data = df[[bb]],  var = var, output = output, x= 1.5, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -543,11 +600,14 @@ detect <- function(x,
     }else if(imx=='medianrule'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func = logboxplot(data = bb,  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+          mout <-  handle_true_errors(func = logboxplot(data = df[[bb]],  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -559,11 +619,15 @@ detect <- function(x,
     }else if(imx=='distboxplot'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func = distboxplot(data = bb,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func = distboxplot(data = df[[bb]],  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -575,11 +639,15 @@ detect <- function(x,
     }else if(imx=='seqfences'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func = seqfences(data = bb,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func = seqfences(data = df[[bb]],  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -591,11 +659,15 @@ detect <- function(x,
     }else if(imx=='mixediqr'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          ethodout <-  handle_true_errors(func = mixediqr(data = bb,  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func = mixediqr(data = df[[bb]],  var = var, output = output, pc=pcs, pcvar = pcvar, boot = boot),
                                           fname = imx, verbose = verbose, spname = spname,
                                           warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -607,12 +679,16 @@ detect <- function(x,
     }else if(imx=='glosh'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func = xglosh(data = bb, k = gloshpar$k,  output = output, metric = gloshpar$metric,
+        listout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func = xglosh(data = df[[bb]], k = gloshpar$k,  output = output, metric = gloshpar$metric,
                                                          mode=gloshpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -625,12 +701,16 @@ detect <- function(x,
     }else if(imx=='knn'){
       if(isTRUE(boot)){
 
-        methodout <- Reduce(rbind, lapply(df, function(bb){
-          methodout <-  handle_true_errors(func = xknn(data = bb, output = output, metric = knnpar$metric,
+        mout <- lapply(seq_along(df), function(bb){
+
+          mout <-  handle_true_errors(func = xknn(data = df[[bb]], output = output, metric = knnpar$metric,
                                                        mode=knnpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
                                            fname = imx, verbose = verbose, spname = spname,
                                            warn=warn, silence_true_errors = silence_true_errors)
-        }))
+          if(nrow(mout)>=1) mout$id = bb
+          mout
+        })
+        methodout <- bootopt(x = listout, var = var, nboots = nboots, th = th)
 
       }else{
 
@@ -695,6 +775,11 @@ detect <- function(x,
 #'      in the data but the variable of concern will checked if its numeric. Also, only univariate methods are allowed. Check
 #'      \code{\link{broad_classify}} for the broad categories of the methods allowed.
 #' @param na.inform \code{logical} Inform on the NAs removed in executing general datasets. Default \code{FALSE}.
+#' @param bootSettings \code{list}. A list of parameters to implement bootstrapping mostly for records below 30.
+#'      For details checks \code{\link{boots}}.
+#' @param pc \code{list}. A list of parameters to implement principal component analysis for dimesnion reduction.
+#'      For details checks \code{\link{pca}}.
+#'
 #'
 #' @details
 #' This function computes different outlier detection methods including univariate, multivariate and species
@@ -737,7 +822,7 @@ detect <- function(x,
 #'                             country = c('JDS4_site_ID'))
 #'
 #'
-#'datacheck <- check_names(matchdata, var_col= 'species', pct = 90, merge =TRUE)
+#'datacheck <- check_names(matchdata, colsp = 'species', pct = 90, merge =TRUE)
 #'
 #'
 #' danube <- system.file('extdata/danube.shp.zip', package='specleanr')
@@ -750,13 +835,12 @@ detect <- function(x,
 #'rdata <- pred_extract(data = datacheck,
 #'                      raster= worldclim ,
 #'                      lat = 'decimalLatitude',
-#'                     lon= 'decimalLongitude',
-#'                     colsp = 'speciescheck',
-#'                     bbox = db,
-#'                      multiple = TRUE,
-#'                     minpts = 10,
-#'                     list=TRUE,
-#'                     merge=F)
+#'                      lon= 'decimalLongitude',
+#'                      colsp = 'speciescheck',
+#'                      bbox = db,
+#'                      minpts = 10,
+#'                      list=TRUE,
+#'                      merge=F)
 #'
 #'
 #'out_df <- multidetect(data = rdata, multiple = TRUE,
@@ -823,10 +907,13 @@ multidetect <- function(data,
                         knnpar = list(metric='manhattan', mode='soft'),
                         lofpar = list(metric='manhattan', mode='soft', minPts= 10),
                         methods,
-                        bootSettings = list(run=FALSE, nb=5, maxrecords = 30, seed=1135),
+                        bootSettings = list(run=FALSE, nb=5, maxrecords = 30, seed=1135, th = 0.6),
                         pc = list(exec = FALSE, npc=2, q = T, pcvar = 'PC1'),
                         verbose=FALSE, spname=NULL,warn=FALSE,
-                        missingness = 0.1, silence_true_errors = TRUE, sdm = TRUE, na.inform = FALSE){
+                        missingness = 0.1,
+                        silence_true_errors = TRUE,
+                        sdm = TRUE,
+                        na.inform = FALSE){
 
   #check if var is the excluded strings
 

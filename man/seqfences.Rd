@@ -4,7 +4,16 @@
 \alias{seqfences}
 \title{Sequential fences method}
 \usage{
-seqfences(data, var, output, gamma = 0.95, mode = "eo", pc, pcvar, boot)
+seqfences(
+  data,
+  var,
+  output,
+  gamma = 0.95,
+  mode = "eo",
+  pc = FALSE,
+  pcvar = NULL,
+  boot = FALSE
+)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}
@@ -18,6 +27,12 @@ for outlier data frame or vectors.}
 the extremeness is the outlier \code{Schwertman & de Silva 2007}.}
 
 \item{mode}{\code{string}. Indicates the extremeness of the outlier.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
 }
 \value{
 Dataframe or vector with or without outliers
@@ -37,14 +52,15 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
                           colsp = 'speciescheck',
                           bbox = db,
-                          multiple = TRUE,
                           minpts = 10)
 
  sqout <- seqfences(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')

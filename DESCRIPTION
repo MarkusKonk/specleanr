@@ -1,7 +1,7 @@
 Package: specleanr
 Type: Package
 Title: Detecting Environmental Outliers in Biogeographical Modeling Workflows
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(person('Anthony', 'Basooma', email='anthonybasooma@boku.ac.at', role =c('aut', 'cre'), 
     comment=c('0')))
 Description: A framework used to detect and remove environmental outliers in species distribution models across taxa 
@@ -25,10 +25,11 @@ Suggests:
     rvertnet,
     rgbif,
     curl,
-    rfishbase,
+    rfishbase (>= 5.0.1),
     sf,
     terra,
-    tidytext
+    tidytext,
+    scatterplot3d
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 

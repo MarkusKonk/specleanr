@@ -8,7 +8,7 @@
 #' @param merge \code{logical}. Default is \strong{FALSE}, not to merge the cleaned species column on to the data frame but rather only two columns
 #' returned.
 #' @param ecosystem \code{logical} Returns whether the species is freshwater, marine , or brackish or a combination for
-#'      for esturaine loving species.
+#'      for estuarine loving species.
 #'@param rm_duplicates \code{logical}. If TRUE, removes all duplicate species names especially when a dataframe is
 #'      is the output from the function.
 #' @param sn \code{logical}. Whether to consider synonyms. Default FALSE so accepted names will be considered from

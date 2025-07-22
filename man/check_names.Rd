@@ -32,7 +32,7 @@ returned.}
 FishBase database.}
 
 \item{ecosystem}{\code{logical} Returns whether the species is freshwater, marine , or brackish or a combination for
-for esturaine loving species.}
+for estuarine loving species.}
 
 \item{rm_duplicates}{\code{logical}. If TRUE, removes all duplicate species names especially when a dataframe is
 is the output from the function.}

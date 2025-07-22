@@ -9,6 +9,8 @@
 #' @param var_col \code{string}. A column with species names if \code{dataset} for species is a dataframe not a list.
 #'        See \code{\link{pred_extract}} for extracting environmental data.
 #' @param verbose \code{logical}. If true, then messages about the outlier flagging will be displayed.
+#' @param useropt \code{numeric} The default is 0.8, to ensure that the loess maximum does not fall below user optima if it is not properly searched
+#'      using the loess model.
 #' @importFrom stats loess
 #' @return Returns \code{numeric} of most suitable threshold at maxima of the loess smoothing.
 #'
@@ -17,7 +19,8 @@
 search_threshold <- function(data, outliers,  sp = NULL, plot=FALSE, var_col = NULL,
                              warn=FALSE,
                              verbose=FALSE,
-                             colors = c('darkblue', 'orange')){
+                             colors = c('darkblue', 'orange'),
+                             useropt= 0.8){
 
   var <- outliers@varused
 
@@ -93,6 +96,8 @@ search_threshold <- function(data, outliers,  sp = NULL, plot=FALSE, var_col = N
 
     optimalmin<- elout$th[which.max(firstdirev)]
 
+    if(optimalmax<useropt) optimalmax <- useropt
+
     if(isTRUE(plot)){
       #get values to dodge the curves
       rangeval <- maximaval-minimalval
@@ -155,7 +160,7 @@ search_threshold <- function(data, outliers,  sp = NULL, plot=FALSE, var_col = N
     return(c(minima = optimalmin, maxima = optimalmax))
 
   } else{
-    message('The group ', sp, ' has fewer records and less than 2 methods returned outliers. Original data will be returned.')
+   if(isTRUE(verbose)) message('The group ', sp, ' has fewer records and less than 2 methods returned outliers. Original data will be returned.')
     return(elout)
   }
 }
@@ -243,7 +248,7 @@ optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, ver
       if(length(splist)!= length(outliers@result)) stop('Number of species in in data and outlier detection are not equal')
 
     }else{
-      stop('Only list or dataframe of species occurences accepted or set the `var_col parameter`.')
+      stop('Only list or dataframe of species occurences accepted or set the var_col parameter.')
     }
     spdata <- list()
 
@@ -256,7 +261,7 @@ optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, ver
       minmax <- search_threshold(data = data2, outliers = outliers, sp = spnames, plot = FALSE, var_col = var_col,
                               warn=warn, verbose=verbose)
 
-      spdata[[opt]] <- data.frame(minima = unname(minmax[1]), maxima= unname(minmax[2]))
+      if(!is.null(minmax)) spdata[[opt]] <- data.frame(minima = unname(minmax[1]), maxima= unname(minmax[2])) else spdata[[opt]] <- data.frame(minima = NA, maxima = NA)
 
       spdata[[opt]]['species'] <- spnames
 

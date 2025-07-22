@@ -143,7 +143,7 @@ getdiff <- function(x, y, full=FALSE){
 }
 
 
-#' Check for packages to install and reposnd to use
+#' Check for packages to install and respond to use
 #'
 #' @param pkgs list of packages to install
 #'
@@ -159,7 +159,6 @@ check_packages <- function(pkgs){
 
   invisible(pkgs)
 }
-
 
 
 #' To check for a bounding box
@@ -259,7 +258,7 @@ boots <- function(data, boots, seed, pca){
 #' @param var The variable of concern, which is vital for univariate outlier detection methods
 #' @param pc Whether principal component analysis will be computed. Default \code{FALSE}
 #' @param boot Whether bootstrapping will be computed. Default \code{FALSE}
-#' @param pcvar Principal component analysis to e used for outlier detection after PCA. Deafult \code{PC1}
+#' @param pcvar Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}
 #'
 pcboot <- function(pb, var, pc, boot, pcvar){
 
@@ -290,6 +289,46 @@ pcboot <- function(pb, var, pc, boot, pcvar){
 
   }
   return(list(data = data, varc= varc, var = var, pcdf= pcdf))
+}
+
+
+#' @title Handle false flagging of records as outliers in bootstrap samples
+#' @noRd
+#'
+bootopt <- function(x, var, nboots, th =0.6){
+
+  if(all(sapply(x, function(xx)nrow(xx))==0)){
+
+    out <- x[[1]] #pick one list since they all returned no data
+  }else{
+
+    xf <- Reduce(rbind, x)
+
+    outdf <- xf[!duplicated(xf),]
+
+    varc <- unlist(outdf[,var])
+
+    values <- unique(varc)
+
+    lv <- lapply(values, function(vv) length(which(varc == vv))/nboots)
+
+    valin <- values[which(lv>=th)]
+
+    btout <- which(varc%in%valin==TRUE)
+
+    #get out data
+    xout <- outdf[btout,]
+
+    #retun non duplicates bootstraps
+
+    out <- xout[!duplicated(xout[,var]),]
+
+    #remove id column
+    out$id <- NULL
+
+    return(out)
+
+  }
 }
 
 

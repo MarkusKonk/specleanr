@@ -4,7 +4,7 @@
 \alias{logboxplot}
 \title{Log boxplot based for outlier detection.}
 \usage{
-logboxplot(data, var, output, x = 1.5, pc, pcvar, boot)
+logboxplot(data, var, output, x = 1.5, pc = FALSE, pcvar = NULL, boot = FALSE)
 }
 \arguments{
 \item{data}{Dataframe or vector where to check outliers.}
@@ -15,6 +15,12 @@ logboxplot(data, var, output, x = 1.5, pc, pcvar, boot)
 for outlier data frame or vectors.}
 
 \item{x}{The constant for creating lower and upper fences. Extreme is 3, but default is 1.5.}
+
+\item{pc}{Whether principal component analysis will be computed. Default \code{FALSE}}
+
+\item{pcvar}{Principal component analysis to e used for outlier detection after PCA. Default \code{PC1}}
+
+\item{boot}{Whether bootstrapping will be computed. Default \code{FALSE}}
 }
 \value{
 Dataframe with our without outliers depending on the output.
@@ -50,14 +56,15 @@ data("efidata")
 
 gbd <- check_names(data = efidata, colsp='scientificName', pct=90, merge=TRUE)
 
-db <- sf::st_read(system.file('extdata/danube/basinfinal.shp', package='specleanr'), quiet = TRUE)
+danube <- system.file('extdata/danube.shp.zip', package='specleanr')
+
+db <- sf::st_read(danube, quiet=TRUE)
 
 wcd <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
 refdata <- pred_extract(data = gbd, raster= wcd , lat = 'decimalLatitude', lon= 'decimalLongitude',
                           colsp = 'speciescheck',
                           bbox = db,
-                          multiple = TRUE,
                           minpts = 10)
 
  logout <- logboxplot(data = refdata[['Salmo trutta']], var = 'bio6', output='outlier')

@@ -12,7 +12,8 @@ search_threshold(
   var_col = NULL,
   warn = FALSE,
   verbose = FALSE,
-  colors = c("darkblue", "orange")
+  colors = c("darkblue", "orange"),
+  useropt = 0.8
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 \item{verbose}{\code{logical}. If true, then messages about the outlier flagging will be displayed.}
 
 \item{colors}{\code{vector}. Colors for both the true data and the loess fitted data lines.}
+
+\item{useropt}{\code{numeric} The default is 0.8, to ensure that the loess maximum does not fall below user optima if it is not properly searched
+using the loess model.}
 }
 \value{
 Returns \code{numeric} of most suitable threshold at maxima of the loess smoothing.

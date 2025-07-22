@@ -4,7 +4,7 @@
 \alias{ggoutliers}
 \title{Visualize the outliers identified by each method}
 \usage{
-ggoutliers(x, select = NULL, color = "purple", desc = TRUE)
+ggoutliers(x, select = NULL, color = "purple", desc = TRUE, ncol = 2, nrow = 2)
 }
 \arguments{
 \item{x}{. the datacleaner object}
@@ -15,6 +15,9 @@ For example if the species are more than 10, the plot will be done in batches.}
 \item{color}{\code{string}. Color of the bars. Default is \code{grey}.}
 
 \item{desc}{\code{logical} To either arrange the bars in ascending or descending order.}
+
+\item{ncol, nrow}{\code{integer} If number of groups are greater than 1, then number of rows and columns can be set.
+Check ggplot2 facet parameters on how the columns are set.}
 }
 \value{
 ggplot object indicating outlier detection methods and number of outlier flagged.

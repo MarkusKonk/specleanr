@@ -7,10 +7,12 @@ specleanr package for outlier detection
 [![License](https://img.shields.io/badge/License-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AnthonyBasooma/specleanr/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/AnthonyBasooma/specleanr/graph/badge.svg?token=M9431LXVLG)](https://codecov.io/gh/AnthonyBasooma/specleanr)
+[![GitHub
+Downloads](https://img.shields.io/github/downloads/AnthonyBasooma/specleanr/repo/total.svg)](https://github.com/AnthonyBasooma/specleanr/repo/releases)
 
 <!-- badges: end -->
 
-<img src = "man/figures/specleanrlogo.png" align ="right" alt="logo" width="150" height="190" />
+<img src = "man/figures/specleanlogo.png" align ="right" alt="logo" width="150" height="190" />
 
 `specleanr` The package aims to improve the reliability and
 acceptability of biogeographical models, including species distribution
@@ -36,7 +38,7 @@ The process of identifying environmental outliers is generally
 classified into **five steps** as detailed below (Figure 1);
 
 <figure>
-<img src="man/figures/specleanrworkflow.png"
+<img src="man/figures/Figure1.png"
 alt="Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation." />
 <figcaption aria-hidden="true">Figure 1. Workflow for processing species
 occurrence data within the specleanr R-package for environmental outlier
@@ -152,11 +154,6 @@ optimal threshold.
   threshold beyond 0.6 to highlight records flagged in at least 50% of
   the methods.
 
-- **Autothreshold**: When the user sets **`autothreshold`** to TRUE in
-  **`extract_clean_data()`**, it automatically searches a threshold
-  between 0.5 to 1 and identifies a threshold with the mean number of
-  records retained.
-
 - **loess method**: we apply local regression (locally
   estimated/weighted scatterplot smoothing) to identify the optimal
   threshold, a non-parametric smoothing method that uses local
@@ -183,18 +180,9 @@ methods (in terms of the outliers flagged) can be used.
   improvement in the model performance before and after environmental
   outlier removal. The following function can be used.
   </p>
-- `sdmfit()` fit Generalized Linear Model (GLM) or Random Forest (RF).
-- `modelcomparison()` to compare model performance before and outlier
-  removal using threshold-dependent and independent metrics such as Area
-  Under the Curve, true skill statistics, specificity, sensitivity,
-  kappa, and accuracy.
-- `get_performance()` to obtain the dataset with the performance values
-  for both scenarios.
-- `ggperform()` for ploting the threshold results from
-  **`modelcomparison()`** output.
 
 **Package website** To access the details of this package, please check
-it website on <https://AnthonyBasooma.github.io/specleanr/>
+it website on [specleanr](https://AnthonyBasooma.github.io/specleanr/)
 
 ### Package citation
 

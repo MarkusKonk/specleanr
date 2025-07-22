@@ -33,7 +33,7 @@
 #' DEFAULT TRUE.
 #' @param na.inform \code{logical} If TRUE, the missing values will be discarded after data extracted and message will
 #'    be returned. DEFAULT FALSE.
-#'  @param coords \code{logical}. If TRUE, the original coordinates are also returned attached on the extracted dataset. Default FALSE.
+#' @param coords \code{logical}. If TRUE, the original coordinates are also returned attached on the extracted dataset. Default FALSE.
 #'
 #' @return \code{dataframe} or \code{list} of precleaned data sets for single or multiple species.
 #' @export
@@ -64,7 +64,9 @@
 #'
 #'
 
-pred_extract <- function(data, raster, lat = NULL, lon = NULL, bbox = NULL, colsp, minpts = 10, mp = TRUE,
+pred_extract <- function(data, raster, lat = NULL,
+                         lon = NULL, bbox = NULL,
+                         colsp, minpts = 10, mp = TRUE,
                          rm_duplicates = TRUE,
                          na.rm = TRUE,
                          na.inform = FALSE,
