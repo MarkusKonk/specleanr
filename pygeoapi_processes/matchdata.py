@@ -52,7 +52,7 @@ class DataMatchProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'matchdata.R'
-        self.image_name = 'specleanr:20250716'
+        self.image_name = 'specleanr:20250722'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
