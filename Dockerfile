@@ -22,6 +22,10 @@ RUN apt-get update && apt-get install -y \
 COPY /.binder/install.R /src/install.R
 RUN Rscript /src/install.R
 
+# Install those packages that did not get installed via install.R
+# TODO Fix this!
+RUN R -e "install.packages(c('s2', 'units', 'sf'))"
+
 # Copy the scripts to be called by the OGC processes:
 COPY src /src
 WORKDIR /src
