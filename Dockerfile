@@ -30,6 +30,12 @@ RUN R -e "install.packages(c('s2', 'units', 'sf'))"
 COPY src /src
 WORKDIR /src
 
+# If the specleanr was updated, install it here again by
+# uncommenting this before building.
+# Once the version is fixed, it will be handled by install.R.
+#RUN R -e 'remotes::install_github("AnthonyBasooma/specleanr")'
+
+
 # Add an entrypoint that can deal with CLI arguments that contain spaces:
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
