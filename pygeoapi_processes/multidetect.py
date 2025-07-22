@@ -57,7 +57,7 @@ class MultiDetectProcessor(BaseProcessor):
         self.supports_outputs = True
         self.job_id = 'job-id-not-set'
         self.r_script = 'multidetect.R'
-        self.image_name = 'specleanr:20250716'
+        self.image_name = 'specleanr:20250722'
 
         # Set config:
         config_file_path = os.environ.get('AQUAINFRA_CONFIG_FILE', "./config.json")
@@ -81,15 +81,15 @@ class MultiDetectProcessor(BaseProcessor):
         #################################
 
         # Get user inputs
+        # This below is the order in which it has to be passed to the docker!
         in_data_path_or_url               = data.get('input_data')
         in_var_ofinterest                 = data.get('colname_variable')
+        in_select_var                     = data.get('select_columns')
         in_bool_multiple_species          = data.get('multiple_species')
+        in_output_type                    = data.get('output_type') #clean or outlier/ Defualt outliers
         in_group_colname                  = data.get('group_colname', 'not_provided')
         in_colnames_exclude               = data.get('colname_exclude')
         in_methods                        = data.get('methods')
-        in_missingness                    = data.get('missingness')
-        in_select_var                     = data.get('select_columns')
-        in_output_type                    = data.get('output_type') #clean or outlier/ Defualt outliers
         in_silence_true_errors            = data.get('silence_true_errors')
         in_boot_settings_run_bool         = data.get('boot_run')
         in_boot_settings_maxrecords       = data.get('boot_maxrecords')
@@ -100,21 +100,18 @@ class MultiDetectProcessor(BaseProcessor):
         in_pca_settings_npc               = data.get('number_of_pca')
         in_pca_settings_quiet             = data.get('pca_silence')
         in_pca_settings_pcvar             = data.get('pcavariable')
+        #in_verbose_bool                  = True # not to be set by user!
+        #in_warn_bool                     = True # not to be set by user!
         in_sdm_bool                       = data.get('sdm_data') #multivaritate data, sdm must be TRUE
         in_na_inform_bool                 = data.get('inform_na_outlier')
-
-        ###=========
-        #Extrain clean data
-        #===========
-        in_bool_loess                      = data.get('bool_loess')
-        in_threshold_clean                 = data.get('threshold_clean')
-        in_mode_clean                      = data.get('outlierweights_mode')
-        #classifying data
-        in_classifymode                    = data.get('classifymode') #med
-        in_eif_bool                        = data.get('eif_bool') #empirical influence function
-
-        #whether to run a classify to auto removal 
-        in_autoextract                     = data.get('classify_or_autoremove')
+        in_missingness                    = data.get('missingness')
+        in_bool_loess                     = data.get('bool_loess')
+        in_threshold_clean                = data.get('threshold_clean')
+        in_mode_clean                     = data.get('outlierweights_mode')
+        in_classifymode                   = data.get('classifymode') #med
+        in_eif_bool                       = data.get('eif_bool') #empirical influence function
+        in_autoextract                    = data.get('classify_or_autoremove')
+        #out_result_path # to be defined by this process.
 
         # Checks
         if in_data_path_or_url is None:
