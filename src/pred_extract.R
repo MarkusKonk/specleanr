@@ -80,7 +80,6 @@ if (in_bool_verbose) message('DEBUG: Reading input raster... DONE.')
 
 
 # (3) Read bbox from shapefile
-# TODO: Whole shapefile just for bbox? Better?
 # If the URL points to a zipped shape, download and unzip before we can read it:
 if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip'))
   if (in_bool_verbose) message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
@@ -92,7 +91,7 @@ if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip'))
   stop('If you specify a remote shapefile as input, please zip it...')
 }
 
-if (in_bool_verbose) message('DEBUG: Reading input data from shapefile, from:', in_bbox_path)
+if (in_bool_verbose) message('DEBUG: Reading input data from shapefile or GeoJSON:', in_bbox_path)
 study_area <- sf::st_read(in_bbox_path, quiet=TRUE)
 if (in_bool_verbose) message('DEBUG: Reading input data from shapefile... DONE.')
 

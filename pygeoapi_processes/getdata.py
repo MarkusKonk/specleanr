@@ -194,7 +194,6 @@ class DataRetrievalProcessor(BaseProcessor):
                 west  = study_area_bbox["bbox"][1],
                 north = study_area_bbox["bbox"][2],
                 east  = study_area_bbox["bbox"][3]
-                "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
             )
 
         else:

@@ -73,7 +73,6 @@ if(tolower(in_extent)=='null'){
   }
 
   # Read data from shapefile
-  # TODO Test, can st_read also read GeoJSON? It should?
   message('DEBUG: Reading input data from shapefile or GeoJSON:',in_extent)
   #message('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", "))
   study_area <- sf::st_read(in_extent, quiet=TRUE)
