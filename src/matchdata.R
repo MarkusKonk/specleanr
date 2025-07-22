@@ -95,7 +95,7 @@ if (in_verbose_bool) {
   message("DEBUG:   lons     = ", in_colnames_lon)
   message("DEBUG:   species  = ", in_colnames_species_names)
   message("DEBUG:   date     = ", in_colnames_date)
-  message("DEBUG:   verbose  = ", in_bool_verbose)
+  message("DEBUG:   verbose  = ", in_verbose_bool)
 }
 
 if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets...')

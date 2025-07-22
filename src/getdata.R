@@ -60,7 +60,7 @@ if(tolower(in_extent)=='null'){
 
   # If the URL points to a zipped shapefile, download and unzip before we can read it:
   if (startsWith(in_extent, 'http') & endsWith(in_extent, 'zip')) {
-    message("DEBUG: Downloading and unzipping zipped shapefile: ", in_bbox_path)
+    message("DEBUG: Downloading and unzipping zipped shapefile: ", in_extent)
     temp_zip <- tempfile(fileext = ".zip")
     download.file(in_extent, temp_zip, mode = "wb")
     unzip(temp_zip, exdir = tempdir())
