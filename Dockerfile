@@ -13,18 +13,20 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libssl-dev \
     libxml2-dev \
+    gdal-bin \
     make \
+    libabsl-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    cmake \
     g++ \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+
 # Install R dependencies:
 COPY /.binder/install.R /src/install.R
 RUN Rscript /src/install.R
-
-# Install those packages that did not get installed via install.R
-# TODO Fix this!
-RUN R -e "install.packages(c('s2', 'units', 'sf'))"
 
 # Copy the scripts to be called by the OGC processes:
 COPY src /src
@@ -34,7 +36,6 @@ WORKDIR /src
 # uncommenting this before building.
 # Once the version is fixed, it will be handled by install.R.
 #RUN R -e 'remotes::install_github("AnthonyBasooma/specleanr")'
-
 
 # Add an entrypoint that can deal with CLI arguments that contain spaces:
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
