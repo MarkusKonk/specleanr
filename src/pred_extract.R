@@ -81,7 +81,7 @@ if (in_bool_verbose) message('DEBUG: Reading input raster... DONE.')
 
 # (3) Read bbox from shapefile
 # If the URL points to a zipped shape, download and unzip before we can read it:
-if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip'))
+if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip')) {
   if (in_bool_verbose) message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
   temp_zip <- tempfile(fileext = ".zip")
   download.file(in_bbox_path, temp_zip, mode = "wb")
