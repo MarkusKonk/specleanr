@@ -136,7 +136,7 @@ multiprecleaned <- pred_extract(
   warn = in_bool_warn,
   verbose= in_bool_verbose,
   coords = in_bool_coords,
-  na.inform = in_na.inform,
+  na.inform = in_na_inform,
   na.rm = in_na_rm)
 if (in_bool_verbose) message('DEBUG: Running specleanr::pred_extract... DONE.')
 
