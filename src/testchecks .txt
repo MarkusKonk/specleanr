@@ -1,0 +1,121 @@
+
+$ cd Documents/forks/specleanr/aquaboku/
+
+ cd src/
+$ export PATH="/c/Program Files/R/R-4.4.1/bin:$PATH" gitbash script
+
+
+#run getdata
+#works suing danube bbounding box.. can be changed
+#GBIF has temporarily issues 
+Rscript getdata.R "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "NA" "gbif,inat,vertnet" "20" "20" "20" "true" "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500" "30" "TRUE" "TRUE" "./result_getdata.csv"
+
+#using no bounding box
+Rscript getdata.R "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "NA" "gbif,inat,vertnet" "20" "20" "20" "TRUE" "null" "30" "TRUE" "TRUE" "./result_getdata.csv"
+#Run R use R
+
+#using dnaube shapefile as the extent
+Rscript getdata.R "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "NA" "gbif,inat,vertnet" "20" "20" "20" "true" "danube/danube.shp" "30" "TRUE" "TRUE" "./result_getdata.csv"
+
+#test with dataset
+Rscript getdata.R "jdsdata.csv" "speciesname" "inat,vertnet" "20" "20" "20" "true" "danube/danube.shp" "30" "TRUE" "TRUE" "./result_getdata.csv"
+
+
+Rscript getdata.R \
+"https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_occurrences_short.csv" "species" \
+"gbif,inat,vertnet" "20" "20" "20" "TRUE" \
+"https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
+"30" "TRUE" "TRUE" "./result_getdata.csv"; date
+
+
+#get the head of the data frame
+$ head result_matchdata.csv
+
+#check names
+
+Rscript checknames.R "result_matchdata.csv" "species" "70" "true" "true" "true" "true" "true" "./result_checknames.csv"
+
+#test with only one species if returns an errors
+
+Rscript checknames.R "abramis burama" "species" "70" "false" "true" "true" "true" "true" "./result_checknames.csv"
+
+
+#multidetect check
+, lof, mahal
+# with in_bool_loess "true" (this provides optimal threshold)
+Rscript multidetect.R "iris1.csv" "Sepal.Length" "null" "true" "outlier" \
+"Species" "null" "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" "false" "false" \
+"30" "5" "1125" "0.6" "true" \
+"2" "true" "PC1" "false" "false" "true" "true" "1.0" "true" "null" "abs" "med" "false" "true" "./result_multidetect.csv"
+
+#loess to false and threshold 0.8
+Rscript multidetect.R "iris1.csv" "Sepal.Length" "null" "true" "outlier" \
+"Species" "null" "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" "false" "false" \
+"30" "5" "1125" "0.6" "true" \
+"2" "true" "PC1" "false" "false" "true" "true" "1.0" "false" "0.8" "abs" "med" "false" "true" "./result_multidetect.csv"
+
+#loess to false and threshold 0.8
+Rscript multidetect.R "iris1.csv" "Sepal.Length" "null" "true" "outlier" \
+"Species" "null" "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" "false" "false" \
+"30" "5" "1125" "0.6" "false" \
+"2" "true" "PC1" "false" "false" "true" "true" "1.0" "false" "null" "abs" "med" "false" "false" "./result_multidetect.csv"
+
+
+in_data_path_or_url                  = args[1] # req
+in_var_ofinterest                    = args[2] # req     e.g. "Sepal.Length
+in_select_var                        = args[3] # opt     if only particular columns are needed form the datasest
+in_bool_multiple_species             = args[4] # opt     e.g. "TRUE"
+in_output_type                       = args[5] # req_set e.g., clean or outlier#defualt outlier
+in_group_colname                     = args[6] # opt     e.g. if multiple = TRUE, then its neeed. in iris data like "Species
+in_colnames_exclude                  = args[7] # opt     e.g.exclude irrelevant columns mostly important for multidimensional data e.g. ID, SN, x, y etc
+in_methods                           = args[8] # req     e.g. "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal"
+in_silence_true_errors               = args[9] # req_set e.g. "TRUE"
+in_boot_settings_run_bool            = args[10] #bool
+in_boot_settings_maxrecords          = as.numeric(args[11]) #numb or max to initate bootstraping
+in_boot_settings_nb                  = as.numeric(args[12]) #numeric e.g 30 defualt
+in_boot_settings_seed                = as.numeric(args[13]) #rnadomisation e.g 1123..
+in_boot_settings_threshold           = as.numeric(args[14]) #decimal e.g. 0.6
+in_pca_settings_exec_bool            = args[15] #bool
+in_pca_settings_npc                  = as.numeric(args[16]) #integer..number of pcs retained
+in_pca_settings_quiet                = args[17] #bool to print the cummulative variance
+in_pca_settings_pcvar                = args[18] #pc used for outlier detectiion defualt is PC1
+in_verbose_bool                      = args[19] #implementation messages
+in_warn_bool                         = args[20] #return warning msgs
+in_sdm_bool                          = args[21] # if multidimensional data then its TRUE. univariate data sdm is F
+in_na_inform_bool                    = args[22] # msgs on handling NAs defualt FALSE
+in_missingness                       = as.numeric(args[23]) #req_adj# e.g. 0.1
+
+###=========
+#Extrain clean data
+#===========
+in_bool_loess                        = args[24] #e.g.g TRUE or FALSE
+in_threshold_clean                   = args[25] #defualt is 0.8
+in_mode_clean                        = args[26]#e.g. 'abs', "best"
+
+#classifying data
+in_classifymode                      = args[27] #default med
+in_eif_bool                          = args[28] #e.g. F/T 
+in_autoextract                       = args[29] #TRUE to classfy data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

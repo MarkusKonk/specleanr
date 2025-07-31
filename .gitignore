@@ -2,8 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-*.csv
-*.txt
 testfolder
 __pycache__
 DELETE
