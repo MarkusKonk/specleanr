@@ -106,6 +106,7 @@ if(!in_select_var==tolower('null')){
   in_select_var<- NULL
 }
 
+
 # Make boolean from string:
 in_bool_multiple_species   = tolower(in_bool_multiple_species) == 'true'
 in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
@@ -173,6 +174,8 @@ if (tolower(in_threshold_clean) == 'null') {
 # print(paste('SilenceErrors:', in_silence_true_errors))
 # print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 
+print(in_verbose_bool)
+
 if (in_verbose_bool) {
   message("DEBUG: Logging all input args to match_datasets():")
   message("DEBUG:   data = ", dfinal)
@@ -207,7 +210,6 @@ outlieriris_mult <- multidetect(
   bootSettings    = in_bootSettings,
   pc              = in_pc,
   verbose         = in_verbose_bool,
-  spname          = in_spname_auto,
   warn            = in_warn_bool,
   missingness     = in_missingness,
   silence_true_errors = in_silence_true_errors,
@@ -294,7 +296,7 @@ if(!in_autoextract){
 
 # Write the result to csv file:
 #print(cleandata2)
-if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path)
+if (in_verbose_bool) message('DEBUG: Write result to csv file: ', out_result_path)
 data.table::fwrite(cleandata2 , file = out_result_path)
-if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
-if (in_bool_verbose) message('DEBUG: Finished wrapper script multidetect')
+if (in_verbose_bool) message('DEBUG: Write result to csv file... DONE.')
+if (in_verbose_bool) message('DEBUG: Finished wrapper script multidetect')
