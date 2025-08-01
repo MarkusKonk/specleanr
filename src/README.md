@@ -69,11 +69,13 @@ Works (all three tested on 2025-07-29, I only checked whether a result was retur
 Pass a list of species (and then set the second parameter, which is the column name, to "null"):
 
 ```
-Rscript getdata.R \
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "getdata test 1"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "gbif,inat" "20" "20" "20" "true" \
   "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test1.csv"
 ```
 
 **Run the Docker container:**
@@ -99,44 +101,39 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 }'
 ```
 
-### Case 2a: Test with species list (and local shp file as extent) 
+### Case 2a: Test with species list (and local shp file as extent)
 
 **From command line:**
-
-Works: Tested from command line on 2025-07-29 (Merret)
 
 Pass a list of species (and then set the second parameter, which is the column name, to "null"):
 
 ```
-Rscript getdata.R \
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "getdata test 2a"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "gbif,inat,vertnet" "20" "20" "20" "true" \
   "./danube/danube.shp" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test2a.csv"
 ```
 
 **Run the Docker container:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
-
 ```
+# Works: Tested on 2025-07-29 (Merret)
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" specleanr:20250722 "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube.shp" "80" "null" "True" "/out/biodiv-data-test.csv"
 ```
 
-**Via HTTP API:**
+**Via HTTP API:** Cannot run via HTTP API using local input file
 
-* Cannot run via HTTP API using local input file
-
-### Case 2b: Test with species list (and remote shp file as extent) 
+### Case 2b: Test with species list (and remote shp file as extent)
 
 **From command line:**
-
-Works: Tested from command line on 2025-07-30 (Merret)
 
 Pass a list of species (and then set the second parameter, which is the column name, to "null"):
 
 ```
+# Works: Tested on 2025-07-30 (Merret)
 Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "gbif,inat,vertnet" "20" "20" "20" "true" \
@@ -146,17 +143,17 @@ Rscript getdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
+TODO: This has other values for percentcorrect and syn check...
 
 ```
+# Works: Tested on 2025-07-30 (Merret)
 docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" specleanr:20250722 "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "80" "null" "True" "/out/biodiv-data-4d4e23dd-6d20-11f0-8f3f-fa163e42fba0.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -171,37 +168,34 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 }'
 ```
 
-### Case 3a: Test with species list (and local geojson file as extent) 
-
-Works: Tested from command line on 2025-07-29 (Merret)
+### Case 3a: Test with species list (and local geojson file as extent)
 
 ```
-Rscript getdata.R \
+# Works: Tested on 2025-07-29 (Merret)
+# Works: Tested on 2025-08-01 (Merret) WIP
+
+echo "getdata test 3a"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "inat" "20" "20" "20" "true" \
   "./danube_from_boku.geojson" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test3a.csv"
 ```
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "inat" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
 ```
 
-**Via HTTP API:**
+**Via HTTP API:** Cannot run via HTTP API using local input file
 
-* Cannot run via HTTP API using local input file
-
-### Case 3b: Test with species list (and remote geojson file as extent) 
+### Case 3b: Test with species list (and remote geojson file as extent)
 
 **From command line:**
 
-Works: Tested via command line on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "inat" "20" "20" "20" "true" \
@@ -211,17 +205,15 @@ Rscript getdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -240,10 +232,10 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
 ```
-Rscript getdata.R \
+# Works: Tested on 2025-07-29 (Merret)
+
+echo "getdata test 4a"; date; Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
   "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500" \
@@ -252,23 +244,19 @@ Rscript getdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-272468f6-6d26-11f0-83ba-fa163e42fba0.csv"
 ```
 
-**Via HTTP API:**
-
-* Cannot run via HTTP API using local input file
+**Via HTTP API:** Cannot run via HTTP API using local input file
 
 ### Case 4b: Test with remote species csv file (and string extent)
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
@@ -278,17 +266,16 @@ Rscript getdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-test.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -308,9 +295,9 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
 ```
+# Works: Tested on 2025-07-29 (Merret)
+
 Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
@@ -319,44 +306,53 @@ Rscript getdata.R \
 ```
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-272468f6-6d26-11f0-83ba-fa163e42fba0.csv"
 ```
 
-**Via HTTP API:**
-
-* Cannot run via HTTP API using local input file
+**Via HTTP API:** Cannot run via HTTP API using local input file
 
 ### Case 5b: Test with remote species csv file (and remote zipped shp file as extent)
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
+```
+# Works: Tested on 2025-07-29 (Merret)
+
+echo "getdata test 5b"; date; Rscript getdata.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
+  "30" "True" "True" "./result_getdata_test5b.csv"
+```
+
+Same command with a different input table:
 
 ```
-Rscript getdata.R \
-  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
-  "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "getdata test 5b"; date; Rscript getdata.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_occurrences_short.csv" "species" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "True" "True" "./result_getdata_test5b.csv"
 ```
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "80" "null" "True" "/out/biodiv-data-272468f6-6d26-11f0-83ba-fa163e42fba0.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -376,9 +372,9 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
 ```
+# Works: Tested on 2025-07-29 (Merret)
+
 Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
@@ -388,23 +384,21 @@ Rscript getdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
 ```
 
-**Via HTTP API:**
-
-* Cannot run via HTTP API using local input file
+**Via HTTP API:** Cannot run via HTTP API using local input file
 
 ### Case 6b: Test with remote species csv file (and remote geojson file as extent)
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
 ```
+# Works: Tested on 2025-07-29 (Merret)
+
 Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
@@ -414,17 +408,17 @@ Rscript getdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -452,7 +446,7 @@ These arguments are required, in this order:
 Rscript matchdata.R \
   in_data_paths_or_urls \
   in_colnames_species_names in_colnames_countries in_colnames_lat in_colnames_lon in_colnames_date \
-  in_verbose_bool out_result_path
+  in_bool_verbose out_result_path
 ```
 
 The result is stored as a CSV in `out_result_path` !
@@ -479,10 +473,10 @@ To run it using URLs for the input data, you have to store the input data somewh
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
 ```
-Rscript matchdata.R \
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "matchdata test 1a"; date; Rscript matchdata.R \
   "efidata.csv,jdsdata.csv" \
   "speciesname, scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" \
   "TRUE" "./result_matchdata.csv"
@@ -490,9 +484,9 @@ Rscript matchdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/exampledata/boku/:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "/in/efidata.csv,/in/jdsdata.csv" "speciesname,scientificName"  "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test.csv"
 ```
 
@@ -504,10 +498,10 @@ docker run -v "/var/www/nginx/exampledata/boku/:/in" -v "/var/www/nginx/download
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
 ```
-Rscript matchdata.R \
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "matchdata test 1b"; date; Rscript matchdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv" \
   "speciesname, scientificName" "JDS4_sampling_ID" "lat, lati" "lon, long" "sampling_date,Date" \
   "TRUE" "./result_matchdata.csv"
@@ -515,9 +509,9 @@ Rscript matchdata.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname,scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test.csv"
 ```
 
@@ -566,39 +560,41 @@ Just like in `getdata.R`, there are two ways to pass the input species:
 
 ### Example input data
 
-You don't necessarily need input data - you can simply use a string list as input. If you want to test with a CSV file, just take the result of `matchdata`.
+You don't necessarily need input data - you can simply use a string list as input. If you want to test with a CSV file, just take the result of `matchdata`. One example is stored here:
 
-### ALL OK: Case 1: String input, merge=False
+* https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv
 
-Also: percent correctness 70, synonym check=True, ecosystem check=True, rm duplicates True
+### Case 1: String input, merge=False
+
+* Pass a list of species (and then set the second parameter to `"null"`):
+* Also: percent correctness 70, synonym check=True, ecosystem check=True, rm duplicates=True
 
 **From command line:**
 
-Works: Tested from command line on 2025-07-29 (Merret)
-
-Pass a list of species (and then set the second parameter to `"null"`):
-
 ```
-Rscript checknames.R \
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "checknames test 1"; date; Rscript checknames.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "70" \
-  "false" "true" "true" "true" "true" \
-  "./result_checknames.csv"
+  "False" "True" \
+  "True" "True" "True" \
+  "./result_checknames_test1.csv"
 ```
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "70" "false" "true" "true" "true" "true" "/out/result_matchdata-test.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 ```
+# Works: Tested on 2025-07-30 (Merret)
+
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -613,34 +609,31 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
 }'
 ```
 
-### ALL OK: Case 2a: File input (local), merge=True
+### Case 2a: File input (local), merge=True
 
-As input, I use 
+* Pass the result CSV of `matchdata`, for example:
+* Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 **From command line:**
 
-Pass the result CSV of `matchdata`, for example:
-
-Works: Tested via command line on 2025-07-30 (Merret)
-
-Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
-
 ```
+# Works: Tested on 2025-08-01 (Merret)
+
 Rscript checknames.R \
   "matched-biodiv-data-example.csv" "species" \
   "70" \
-  "true" "true" \
-  "true" "true" "true" \
-  "./result_checknames.csv"
+  "True" "True" \
+  "True" "True" "True" \
+  "./result_checknames_test2a.csv"
 ```
 
 **Run the Docker container:**
 
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 ```
+# Works: Tested via docker on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:20250722" "/in/matched-biodiv-data-example.csv" "species" "70" "True" "True" "True" "True" "True" "/out/checked-biodiv-data-test.csv"
 ```
 
@@ -648,43 +641,42 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/
 
 * Cannot run via HTTP API using local input file
 
-### ALL OK: Case 2b: File input (remote), merge=True
+### Case 2b: File input (remote), merge=True
 
 **From command line:**
 
-Pass the result CSV of `matchdata`, for example:
-
-Works: Tested via command line on 2025-07-30 (Merret)
-
-Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
+* Pass the result CSV of `matchdata`, for example:
+* Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
-Rscript checknames.R \
+Works: Tested on 2025-08-01 (Merret)
+
+echo "checknames test 2b"; date; Rscript checknames.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
   "70" \
-  "true" "true" \
-  "true" "true" "true" \
-  "./result_checknames.csv"
+  "True" "True" \
+  "True" "True" "True" \
+  "./result_checknames_test2b.csv"
 ```
 
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
 
 ```
-Rscript checknames.R \
+echo "checknames test 2b"; date; Rscript checknames.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
   "70" \
-  "true" "true" \
-  "false" "false" "false" \
-  "./result_checknames.csv"
+  "True" "True" \
+  "False" "False" "False" \
+  "./result_checknames_test2b.csv"
 ```
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-30 (Merret)
-
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
+# Works: Tested via docker on 2025-07-30 (Merret)
+
 docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:20250722" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" "70" "True" "True" "True" "True" "True" "/out/checked-biodiv-data-test.csv"
 ```
 
