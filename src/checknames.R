@@ -81,14 +81,21 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to check_names():")
-  #message("DEBUG:   data    = ", species_names_or_df)
-  message("DEBUG:   colsp   = ", in_colname_species)
-  message("DEBUG:   pct     = ", in_percent_correctness)
-  message("DEBUG:   merge   = ", in_bool_merge)
-  message("DEBUG:   verbose = ", in_bool_verbose)
-  message("DEBUG:   sn            = ", in_synonymn_checks)
-  message("DEBUG:   ecosystem     = ", in_ecosystem_checks)
-  message("DEBUG:   rm_duplicates = ", in_rm_duplicates)
+  message('DEBUG:   data    = object of type "', typeof(species_names_or_df), '"')
+  if (data.table::is.data.table(species_names_or_df)) {
+    message("DEBUG:   data   = object of class data.table")
+    message('DEBUG:   data   = columns   : ', paste(names(species_names_or_df), collapse=','))
+    message('DEBUG:   data   = first line: ', paste(species_names_or_df[1], collapse=','))
+  } else if (typeof(species_names_or_df) == typeof(c('bla'))) {
+    message('DEBUG:   data   = ', paste(species_names_or_df, collapse=', '))
+  }
+  message('DEBUG:   colsp   = object of type "', typeof(in_colname_species), '": ', in_colname_species)
+  message('DEBUG:   pct     = object of type "', typeof(in_percent_correctness), '": ', in_percent_correctness)
+  message('DEBUG:   merge   = object of type "', typeof(in_bool_merge), '": ', in_bool_merge)
+  message('DEBUG:   verbose = object of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
+  message('DEBUG:   sn      = object of type "', typeof(in_synonymn_checks), '": ', in_synonymn_checks)
+  message('DEBUG:   ecosystem = object of type "', typeof(in_ecosystem_checks), '": ', in_ecosystem_checks)
+  message('DEBUG:   rm_duplicates = object of type "', typeof(in_rm_duplicates), '": ', in_rm_duplicates)
 }
 
 if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')

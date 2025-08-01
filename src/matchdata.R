@@ -89,12 +89,13 @@ if (in_verbose_bool) message('DEBUG: Names of input datasets (from URLs): ', pas
 
 if (in_verbose_bool) {
   message("DEBUG: Logging all input args to match_datasets():")
-  message("DEBUG:   datasets = ", all_input_datasets)
-  message("DEBUG:   country  = ", in_colnames_countries)
-  message("DEBUG:   lats     = ", in_colnames_lat)
-  message("DEBUG:   lons     = ", in_colnames_lon)
-  message("DEBUG:   species  = ", in_colnames_species_names)
-  message("DEBUG:   date     = ", in_colnames_date)
+  message("DEBUG:   datasets = list of datasets...")
+  message("DEBUG:   datasets = object of type: ", typeof(all_input_datasets))
+  message("DEBUG:   country  = ", paste(in_colnames_countries, collapse=', '))
+  message("DEBUG:   lats     = ", paste(in_colnames_lat, collapse=', '))
+  message("DEBUG:   lons     = ", paste(in_colnames_lon, collapse=', '))
+  message("DEBUG:   species  = ", paste(in_colnames_species_names, collapse=', '))
+  message("DEBUG:   date     = ", paste(in_colnames_date, collapse=', '))
   message("DEBUG:   verbose  = ", in_verbose_bool)
 }
 
