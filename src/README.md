@@ -816,17 +816,17 @@ echo "pred_extract test 1bf"; date; Rscript pred_extract.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-31 (Merret)
-
 ```
+# Works: Tested on 2025-07-31 (Merret)
+
 docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "decimalLatitude" "decimalLongitude" "species" "10" "True" "False" "True" "True" "True" "True" "True" "False" "False" "/out/result_pred_extract.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-31 (Merret)
-
 ```
+# Works: Tested on 2025-07-31 (Merret)
+
 curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -848,3 +848,546 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 }'
 ```
 
+
+
+## (5) multidetect.R
+
+### Required arguments
+
+These arguments are required, in this order:
+
+```
+Rscript multidetect.R \
+  in_data_path_or_url in_var_ofinterest \
+  in_select_var in_bool_multiple_species in_output_type \
+  in_group_colname in_colnames_exclude \
+  in_methods \
+  in_silence_true_errors in_boot_settings_run_bool \
+  in_boot_settings_maxrecords in_boot_settings_nb in_boot_settings_seed in_boot_settings_threshold in_pca_settings_exec_bool \
+  in_pca_settings_npc in_pca_settings_quiet in_pca_settings_pcvar \
+  in_bool_verbose in_warn_bool \
+  in_sdm_bool in_na_inform_bool in_missingness in_bool_loess in_threshold_clean \
+  in_mode_clean in_classifymode in_eif_bool in_autoextract \
+  out_result_path
+```
+
+The result is stored as a CSV in `out_result_path` !
+
+For convenience, here's the same but with indication how many arguments are on which line...
+
+```
+Rscript multidetect.R \
+  2 in_data_path_or_url in_var_ofinterest \
+  3 in_select_var in_bool_multiple_species in_output_type \
+  2 in_group_colname in_colnames_exclude \
+  1 in_methods \
+  2 in_silence_true_errors in_boot_settings_run_bool \
+  5 in_boot_settings_maxrecords in_boot_settings_nb in_boot_settings_seed in_boot_settings_threshold in_pca_settings_exec_bool \
+  3 in_pca_settings_npc in_pca_settings_quiet in_pca_settings_pcvar \
+  2 in_bool_verbose in_warn_bool \
+  5 in_sdm_bool in_na_inform_bool in_missingness in_bool_loess in_threshold_clean \
+  4 in_mode_clean in_classifymode in_eif_bool in_autoextract \
+  out_result_path
+```
+
+### Example data
+
+How to get input data for testing locally:
+
+```
+# download test data from BOKU, and store as "iris1.csv":
+wget https://drive.boku.ac.at/f/2a0ede9e03fe4817a9db/?dl=1
+# variable column: Sepal.Length
+# group column: Species
+```
+
+### Comparison of test cases
+
+The three test cases have the same params, except for:
+
+* in_pca_settings_exec_bool (`True` or `False`)
+* in_bool_loess (`True` or `False`)
+* in_threshold_clean (`0.8` or `null`)
+* in_autoextract (`True` or `False`)
+
+```
+Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" <in_pca_settings_exec_bool> \
+                        "True"                      \
+                        "False"                     \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" <in_bool_loess> <in_threshold_clean> \
+                      "True"          "null"               \
+                      "False"         "0.8"                \
+                      "False"         "null"               \
+  "abs" "med" "False" <in_autoextract> \
+                      "True"           \
+                      "False"          \
+  "./result_multidetect_test.csv"
+```
+
+### Case 1a: with loess "True" (this provides optimal threshold)
+
+* This runs the functions `multidetect()`, `extract_clean_data()`
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test1"; date; Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \ # The last param is True, so pca_settings_exec_bool is True!
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "True" "null" \ # The last params are True and null, so loess is True, and no threshold!
+  "abs" "med" "False" "True" \ # The last param is True, so autoextract is True!
+  "./result_multidetect_test1a.csv"
+```
+
+Without comments, good for copy-pasting:
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test1"; date; Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "True" "null" \
+  "abs" "med" "False" "True" \
+  "./result_multidetect_test1a.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "test multidetect 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+  "/in/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "True" "null" \
+  "abs" "med" "False" "True" \
+ "/out/cleaned-data-test1a.csv"
+```
+
+**Via HTTP API:** Cannot run via HTTP API using local input file
+
+### Case 1b: with loess "True" (this provides optimal threshold)
+
+* This runs the functions `multidetect()`, `extract_clean_data()`
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test1"; date; Rscript multidetect.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \ # The last param is True, so pca_settings_exec_bool is True!
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "True" "null" \ # The last params are True and null, so loess is True, and no threshold!
+  "abs" "med" "False" "True" \ # The last param is True, so autoextract is True!
+  "./result_multidetect_test1b.csv"
+```
+
+Without comments, good for copy-pasting:
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test1"; date; Rscript multidetect.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "True" "null" \
+  "abs" "med" "False" "True" \
+  "./result_multidetect_test1b.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "test multidetect 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "True" "null" \
+  "abs" "med" "False" "True" \
+ "/out/cleaned-data-test1b.csv"
+```
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv",
+        "colname_variable": "Sepal.Length",
+        "select_columns": null,
+        "multiple_species": true,
+        "output_type": "outlier",
+        "group_colname": "Species",
+        "colname_exclude": null,
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel",
+        "silence_true_errors": false,
+        "boot_run": false,
+        "boot_maxrecords": 30,
+        "number_of_boots": 5,
+        "setseed": 1125,
+        "boot_threshold": 0.6,
+        "exceute_pca": true,
+        "number_of_pca": 2,
+        "pca_silence": true,
+        "pcavariable": "PC1",
+        "sdm_data": true,
+        "inform_na_outlier": true,
+        "missingness": 1.0,
+        "bool_loess": true,
+        "threshold_clean": null,
+        "outlierweights_mode": "abs",
+        "classifymode": "med",
+        "eif_bool": false,
+        "classify_or_autoremove": true
+    }
+}'
+echo "test multidetect 1b"; date
+```
+
+### Case 2a: With loess "False" and threshold 0.8 (local input file)
+
+* This runs the functions `multidetect()`, `extract_clean_data()`
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test 2:"; date; Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  # In the previous line, the last param is True, so pca_settings_exec_bool is True! \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "0.8" \
+  # In the previous line, the last params are False and 0.8, so no loess, and threshold is 0.8! \
+  "abs" "med" "False" "True" \
+  # In the previous line, the last param is True, so autoextract is True!
+  "./result_multidetect_test2a.csv"
+```
+
+Without comments, good for copy-pasting:
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test 2:"; date; Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "0.8" \
+  "abs" "med" "False" "True" \
+  "./result_multidetect_test2a.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "test multidetect 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+  "/in/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "0.8" \
+  "abs" "med" "False" "True" \
+ "/out/cleaned-data-test2a.csv"
+```
+
+**Via HTTP API:** Cannot run via HTTP API using local input file
+
+### Case 2b: With loess "False" and threshold 0.8 (remote input files)
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test 2b:"; date; Rscript multidetect.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "0.8" \
+  "abs" "med" "False" "True" \
+  "./result_multidetect_test2b.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "test multidetect 2b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "0.8" \
+  "abs" "med" "False" "True" \
+ "/out/cleaned-data-test2b.csv"
+```
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv",
+        "colname_variable": "Sepal.Length",
+        "select_columns": null,
+        "multiple_species": true,
+        "output_type": "outlier",
+        "group_colname": "Species",
+        "colname_exclude": null,
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel",
+        "silence_true_errors": false,
+        "boot_run": false,
+        "boot_maxrecords": 30,
+        "number_of_boots": 5,
+        "setseed": 1125,
+        "boot_threshold": 0.6,
+        "exceute_pca": true,
+        "number_of_pca": 2,
+        "pca_silence": true,
+        "pcavariable": "PC1",
+        "sdm_data": true,
+        "inform_na_outlier": true,
+        "missingness": 1.0,
+        "bool_loess": false,
+        "threshold_clean": 0.8,
+        "outlierweights_mode": "abs",
+        "classifymode": "med",
+        "eif_bool": false,
+        "classify_or_autoremove": true
+    }
+}'
+echo "multidetect test 2b"; date
+```
+
+### Case 3a: With loess "False" and threshold 0.8 (local input file)
+
+* This runs the functions `multidetect()`, `classify_data()`
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test 3a:"; date; Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "False" \
+  # In the previous line, the last param is False, so no pca_settings_exec_bool! \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "null" \
+  # In the previous line, the last params are False and null, so no loess and no threshold! \
+  "abs" "med" "False" "False" \
+  # In the previous line, the last param is False, so no autoextract!
+  "./result_multidetect_test3a.csv"
+```
+
+Without comments, good for copy-pasting:
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test 3a:"; date; Rscript multidetect.R \
+  "iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "False" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "null" \
+  "abs" "med" "False" "False" \
+  "./result_multidetect_test3a.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "test multidetect 3a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+  "/in/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "null" \
+  "abs" "med" "False" "False" \
+ "/out/cleaned-data-test3a.csv"
+```
+
+**Via HTTP API:** Cannot run via HTTP API using local input file
+
+### Case 3b: With loess "False" and threshold 0.8 (remote input file)
+
+* This runs the functions `multidetect()`, `classify_data()`
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "multidetect test 3b:"; date; Rscript multidetect.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "False" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "null" \
+  "abs" "med" "False" "False" \
+  "./result_multidetect_test3b.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "test multidetect 3b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
+  "null" "True" "outlier" \
+  "Species" "null" \
+  "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel" \
+  "False" "False" \
+  "30" "5" "1125" "0.6" "True" \
+  "2" "True" "PC1" \
+  "True" "True" \
+  "True" "True" "1.0" "False" "null" \
+  "abs" "med" "False" "False" \
+ "/out/cleaned-data-test3b.csv"
+```
+**Via HTTP API:** 
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv",
+        "colname_variable": "Sepal.Length",
+        "select_columns": null,
+        "multiple_species": true,
+        "output_type": "outlier",
+        "group_colname": "Species",
+        "colname_exclude": null,
+        "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel",
+        "silence_true_errors": false,
+        "boot_run": false,
+        "boot_maxrecords": 30,
+        "number_of_boots": 5,
+        "setseed": 1125,
+        "boot_threshold": 0.6,
+        "exceute_pca": true,
+        "number_of_pca": 2,
+        "pca_silence": true,
+        "pcavariable": "PC1",
+        "sdm_data": true,
+        "inform_na_outlier": true,
+        "missingness": 1.0,
+        "bool_loess": false,
+        "threshold_clean": null,
+        "outlierweights_mode": "abs",
+        "classifymode": "med",
+        "eif_bool": false,
+        "classify_or_autoremove": false
+    }
+}'
+echo "multidetect test 3b"; date
+```
