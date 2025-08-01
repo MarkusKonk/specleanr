@@ -76,7 +76,7 @@ if(tolower(in_extent)=='null'){
   message('DEBUG: Reading input data from shapefile or GeoJSON:',in_extent)
   #message('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", "))
   study_area <- sf::st_read(in_extent, quiet=TRUE)
-  message('DEBUG: st_read resulted in an object of class "', class(study_area), '"')
+  message('DEBUG: st_read resulted in class "', class(study_area), '"')
   message('DEBUG: Reading input data from shapefile or GeoJSON... DONE.')
 
 # study area is a bounding box:
@@ -133,15 +133,15 @@ in_warn_check    = tolower(in_warn_check) == 'true'
 ### Run specleanr function ###
 ##############################
 
-message('DEBUG: Verbosity? ', in_verbose_bool)
+message('DEBUG: Verbosity? ', in_verbose)
 
 if (in_verbose) {
   message("DEBUG: Logging all input args to getdata():")
 
   # Log a data table, or a list of strings:
-  message("DEBUG:   data    = of type ", typeof(speciesdata))
+  message('DEBUG:   data    = of type "', typeof(speciesdata), '"')
   if (data.table::is.data.table(speciesdata)) {
-    message("DEBUG:   data    = object of class data.table")
+    message('DEBUG:   data    = of class "data.table"')
     message('DEBUG:   data    = columns   : ', paste(names(speciesdata), collapse=','))
     message('DEBUG:   data    = first line: ', paste(speciesdata[1], collapse=','))
   } else if (typeof(speciesdata) == typeof(c('bla'))) {
@@ -149,14 +149,14 @@ if (in_verbose) {
   }
 
   # Log other, simpler, objects:
-  message('DEBUG:   colsp   = of type "', typeof(), '": ', in_species_column)
+  message('DEBUG:   colsp   = of type "', typeof(in_species_column), '": ', in_species_column)
 
   # Log study area or bbox:
-  message("DEBUG:   extent  = of type ", typeof(study_area))
+  message('DEBUG:   extent  = of type "', typeof(study_area), '"')
   if (typeof(study_area)==typeof(list(1,2,3)) && length(study_area) == 4) {
     message('DEBUG:   extent  = "', paste(names(study_area), unlist(study_area), sep = "=", collapse = ", "), '"')
   } else if (typeof(study_area)==typeof(list(1,2,3)) && "sf" %in% class(study_area)) {
-    message('DEBUG:   extent  = object of class "sf"')
+    message('DEBUG:   extent  = of class "sf"')
   }
   message('DEBUG:   db      = of type "', typeof(in_database), '": ', paste(in_database, collapse=", "))
   message('DEBUG:   lims    = of type "', typeof(in_gbif_lim), '": ', paste(in_gbif_lim, in_vert_lim, in_inat_lim, collapse=", "))

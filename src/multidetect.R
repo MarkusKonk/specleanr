@@ -179,7 +179,7 @@ if (in_verbose_bool) {
   # Log a data table:
   message('DEBUG:   data      = of type "', typeof(dfinal), '"')
   if (data.table::is.data.table(dfinal)) {
-    message("DEBUG:   data      = object of class data.table")
+    message("DEBUG:   data      = of class data.table")
     message('DEBUG:   data      = columns   : ', paste(names(dfinal), collapse=','))
     message('DEBUG:   data      = first line: ', paste(dfinal[1], collapse=','))
   } else if (typeof(dfinal) == typeof(c('bla'))) {
@@ -233,8 +233,8 @@ if(!in_autoextract){
   message('DEBUG: Autoextract is set to ', in_autoextract, ', so we will run classify_data...')
   if (in_verbose_bool) {
     message("DEBUG: Logging all input args to classify_data():")
-    message('DEBUG:   refdata  = of type "', typeof(dfinal), '": ...')
-    message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '": ', outlieriris_mult)
+    message('DEBUG:   refdata  = of type "', typeof(dfinal), '"')
+    message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '"')
     message('DEBUG:   var_col  = of type "', typeof(in_group_colname), '": ', in_group_colname)
     message('DEBUG:   warn     = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
     message('DEBUG:   verbose  = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
@@ -271,7 +271,7 @@ if(!in_autoextract){
   if (in_verbose_bool) {
     message("DEBUG: Logging all input args to extract_clean_data():")
     message('DEBUG:   refdata  = of type "', typeof(dfinal), '"')
-    message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '": ', outlieriris_mult)
+    message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '"')
     message('DEBUG:   moden    = of type "', typeof(in_mode_clean), '": ', in_mode_clean)
     message('DEBUG:   var_col  = of type "', typeof(in_group_colname), '": ', in_group_colname)
     message('DEBUG:   warn     = of type "', typeof(in_warn_bool), '": ', in_warn_bool)

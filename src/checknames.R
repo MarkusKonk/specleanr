@@ -79,18 +79,18 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 ### Run specleanr function ###
 ##############################
 
-message('DEBUG: Verbosity? ', in_verbose_bool)
+message('DEBUG: Verbosity? ', in_bool_verbose)
 
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to check_names():")
   # Log a data table, or a list of strings:
-  message('DEBUG:   data   = of type "', typeof(species_names_or_df), '"')
+  message('DEBUG:   data    = of type "', typeof(species_names_or_df), '"')
   if (data.table::is.data.table(species_names_or_df)) {
-    message("DEBUG:   data   = object of class data.table")
-    message('DEBUG:   data   = columns: ', paste(names(species_names_or_df), collapse=','))
-    message('DEBUG:   data   = first line: ', paste(species_names_or_df[1], collapse=','))
+    message('DEBUG:   data    = of class "data.table"')
+    message('DEBUG:   data    = columns: ', paste(names(species_names_or_df), collapse=','))
+    message('DEBUG:   data    = first line: ', paste(species_names_or_df[1], collapse=','))
   } else if (typeof(species_names_or_df) == typeof(c('bla'))) {
-    message('DEBUG:   data   = ', paste(species_names_or_df, collapse=', '))
+    message('DEBUG:   data    = ', paste(species_names_or_df, collapse=', '))
   }
   # Log all other, simpler, objects:
   message('DEBUG:   colsp   = of type "', typeof(in_colname_species), '": ', in_colname_species)
@@ -117,7 +117,7 @@ if (in_bool_verbose) message('DEBUG: Running specleanr::check_names... DONE.')
 
 
 # Write the results to csv file:
-if (in_bool_verbose) message(paste0('Write result (cleannames_df) to csv file: ', out_result_path_names))
+if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path_names)
 data.table::fwrite(cleannames_df , file = out_result_path_names)
 if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
 if (in_bool_verbose) message('DEBUG: Finished wrapper script checknames.')

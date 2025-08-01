@@ -101,14 +101,14 @@ if (in_bool_verbose) message('DEBUG: Reading study area from shapefile or GeoJSO
 ### Run specleanr function ###
 ##############################
 
-message('DEBUG: Verbosity? ', in_verbose_bool)
+message('DEBUG: Verbosity? ', in_bool_verbose)
 
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to pred_extract():")
   # Log data table:
   message('DEBUG:   data = of type "', typeof(speciesfiltered), '"')
   if (data.table::is.data.table(speciesfiltered)) {
-    message("DEBUG:   data = of class data.table")
+    message('DEBUG:   data = of class "data.table"')
     message('DEBUG:   data = columns: ', paste(names(speciesfiltered), collapse=','))
     message('DEBUG:   data = first line: ', paste(speciesfiltered[1], collapse=','))
   } else {

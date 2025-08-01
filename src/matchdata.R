@@ -91,8 +91,8 @@ message('DEBUG: Verbosity? ', in_verbose_bool)
 
 if (in_verbose_bool) {
   message('DEBUG: Logging all input args to match_datasets():')
-  message('DEBUG:   datasets = list of datasets...')
-  message('DEBUG:   datasets = of type: "', typeof(all_input_datasets), '": ...'))
+  message('DEBUG:   datasets = list of datasets! (Not logging every single one here)')
+  message('DEBUG:   datasets = of type: "', typeof(all_input_datasets), '": [...]')
   message('DEBUG:   country  = of type: "', typeof(in_colnames_countries), '": ', paste(in_colnames_countries, collapse=', '))
   message('DEBUG:   lats     = of type: "', typeof(in_colnames_lat), '": ', paste(in_colnames_lat, collapse=', '))
   message('DEBUG:   lons     = of type: "', typeof(in_colnames_lon), '": ', paste(in_colnames_lon, collapse=', '))
