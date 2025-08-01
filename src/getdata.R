@@ -76,6 +76,7 @@ if(tolower(in_extent)=='null'){
   message('DEBUG: Reading input data from shapefile or GeoJSON:',in_extent)
   #message('DEBUG: Content of directory ', dirname(in_data_path), ':', paste(list.files(dirname(in_data_path)), collapse=", "))
   study_area <- sf::st_read(in_extent, quiet=TRUE)
+  message('DEBUG: st_read resulted in an object of class "', class(study_area), '"')
   message('DEBUG: Reading input data from shapefile or GeoJSON... DONE.')
 
 # study area is a bounding box:
@@ -134,10 +135,22 @@ in_warn_check    = tolower(in_warn_check) == 'true'
 
 if (in_verbose) {
   message("DEBUG: Logging all input args to getdata():")
-  message("DEBUG:   data = ", speciesdata)
+  message("DEBUG:   data = object of type ", typeof(speciesdata))
+  if (data.table::is.data.table(speciesdata)) {
+    message("DEBUG:   data = object of class data.table")
+    message('DEBUG:   data = columns   : ', paste(names(speciesdata), collapse=','))
+    message('DEBUG:   data = first line: ', paste(speciesdata[1], collapse=','))
+  } else if (typeof(speciesdata) == typeof(c('bla'))) {
+    message('DEBUG:   data = ', paste(speciesdata, collapse=', '))
+  }
   message("DEBUG:   colsp = ", in_species_column)
-  message("DEBUG:   extent = ", study_area)
-  message("DEBUG:   db = ", in_database)
+  message("DEBUG:   extent = object of type ", typeof(study_area))
+  if (typeof(study_area)==typeof(list(1,2,3)) && length(study_area) == 4) {
+    message('DEBUG:   extent = "', paste(names(study_area), unlist(study_area), sep = "=", collapse = ", "), '"')
+  } else if (typeof(study_area)==typeof(list(1,2,3)) && "sf" %in% class(study_area)) {
+    message('DEBUG:   extent = object of class "sf"')
+  }
+  message("DEBUG:   db = ", paste(in_database, collapse=", "))
   message("DEBUG:   lims = ", paste(in_gbif_lim, in_vert_lim, in_inat_lim, collapse=", "))
   message("DEBUG:   verbose = ", in_verbose)
   message("DEBUG:   in_synonym_check = ", in_synonym_check)

@@ -129,8 +129,7 @@ in_bootSettings = list(
   seed= in_boot_settings_seed,
   th = in_boot_settings_threshold
 )
-message('DEBUG: List "in_bootSettings":')
-message(paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
+#message('DEBUG: List "in_bootSettings":', paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
 
 
 # Assemble required list:
@@ -140,8 +139,7 @@ in_pc = list(
   q = in_pca_settings_quiet,
   pcvar = in_pca_settings_pcvar
 )
-message('DEBUG: List "in_pc":')
-message(paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
+#message('DEBUG: List "in_pc":', paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
 
 
 # Only provide column name for group if multiple = FALSE
@@ -174,26 +172,26 @@ if (tolower(in_threshold_clean) == 'null') {
 # print(paste('SilenceErrors:', in_silence_true_errors))
 # print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 
-print(in_verbose_bool)
+message('DEBUG: Verbosity? ', in_verbose_bool)
 
 if (in_verbose_bool) {
   message("DEBUG: Logging all input args to match_datasets():")
-  message("DEBUG:   data = ", dfinal)
-  message("DEBUG:   var  = ", in_var_ofinterest)
-  message("DEBUG:   select = ", in_select_var)
-  message("DEBUG:   output     = ", in_output_type)
-  message("DEBUG:   exclude  = ", in_colnames_exclude)
-  message("DEBUG:   multiple     = ", in_bool_multiple_species)
-  message("DEBUG:   var_col  = ", in_group_colname)
-  message("DEBUG:   methods  = ", in_methods)
-  message("DEBUG:   bootSettings  = ", in_bootSettings)
-  message("DEBUG:   pc  = ", in_pc)
-  message("DEBUG:   verbose  = ", in_verbose_bool)
-  message("DEBUG:   warn  = ", in_warn_bool)
+  message('DEBUG:   data      = object of type "', typeof(dfinal), '"')
+  message("DEBUG:   var       = ", in_var_ofinterest)
+  message("DEBUG:   select    = ", in_select_var)
+  message("DEBUG:   output    = ", in_output_type)
+  message("DEBUG:   exclude   = ", in_colnames_exclude)
+  message("DEBUG:   multiple  = ", in_bool_multiple_species)
+  message("DEBUG:   var_col   = ", in_group_colname)
+  message("DEBUG:   methods   = ", paste(in_methods, collapse=', '))
+  message('DEBUG:   bootSettings = object of type "', typeof(in_bootSettings), '": ', paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
+  message('DEBUG:   pc           = object of type "', typeof(in_pc), '": ', paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
+  message("DEBUG:   verbose      = ", in_verbose_bool)
+  message("DEBUG:   warn         = ", in_warn_bool)
   message("DEBUG:   missingness  = ", in_missingness)
-  message("DEBUG:   silence_true_errors  = ", in_silence_true_errors)
-  message("DEBUG:   sdm  = ", in_sdm_bool)
-  message("DEBUG:   na.inform  = ", in_na_inform_bool)
+  message("DEBUG:   silence_true_errors = ", in_silence_true_errors)
+  message("DEBUG:   sdm          = ", in_sdm_bool)
+  message("DEBUG:   na.inform    = ", in_na_inform_bool)
 }
 
 message('DEBUG: Running specleanr::multidetect...')
@@ -216,7 +214,7 @@ outlieriris_mult <- multidetect(
   na.inform       = in_na_inform_bool
 )
 message('DEBUG: Running specleanr::multidetect... DONE.')
-
+message('DEBUG: Result is an object of type "', typeof(outlieriris_mult), '"')
 
 # Depending on in_autoextract, run classify_data or extract_clean_data...
 # If in_autoextract is FALSE, run classify_data.
@@ -226,13 +224,13 @@ if(!in_autoextract){
   message('DEBUG: Autoextract is set to ', in_autoextract, ', so we will run classify_data...')
   if (in_verbose_bool) {
     message("DEBUG: Logging all input args to classify_data():")
-    message("DEBUG:   refdata = ", dfinal)
-    message("DEBUG:   outliers  = ", outlieriris_mult)
-    message("DEBUG:   var_col = ", in_group_colname)
+    message('DEBUG:   refdata  = object of type "', typeof(dfinal), '"')
+    message('DEBUG:   outliers = object of type "', typeof(outlieriris_mult), '"')
+    message("DEBUG:   var_col  = ", in_group_colname)
     message("DEBUG:   warn     = ", in_warn_bool)
     message("DEBUG:   verbose  = ", in_verbose_bool)
-    message("DEBUG:   classify     = ", in_classifymode)
-    message("DEBUG:   EIF  = ", in_eif_bool)
+    message("DEBUG:   classify = ", in_classifymode)
+    message("DEBUG:   EIF      = ", in_eif_bool)
   }
   message('DEBUG: Running specleanr::classify_data...')
   cleandata2 <- classify_data(
@@ -263,13 +261,13 @@ if(!in_autoextract){
   # Now, run extract_clean_data...
   if (in_verbose_bool) {
     message("DEBUG: Logging all input args to extract_clean_data():")
-    message("DEBUG:   refdata = ", dfinal)
-    message("DEBUG:   outliers  = ", outlieriris_mult)
-    message("DEBUG:   mode = ", in_mode_clean)
-    message("DEBUG:   var_col = ", in_group_colname)
+    message('DEBUG:   refdata  = object of type "', typeof(dfinal), '"')
+    message('DEBUG:   outliers = object of type "', typeof(outlieriris_mult), '"')
+    message("DEBUG:   moden    = ", in_mode_clean)
+    message("DEBUG:   var_col  = ", in_group_colname)
     message("DEBUG:   warn     = ", in_warn_bool)
     message("DEBUG:   verbose  = ", in_verbose_bool)
-    message("DEBUG:   loess     = ", in_bool_loess)
+    message("DEBUG:   loess    = ", in_bool_loess)
   }
   message('DEBUG: Running specleanr::extract_clean_data...')
   cleandata2 <- extract_clean_data(
