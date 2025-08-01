@@ -189,7 +189,6 @@ if (in_verbose_bool) {
   message("DEBUG:   bootSettings  = ", in_bootSettings)
   message("DEBUG:   pc  = ", in_pc)
   message("DEBUG:   verbose  = ", in_verbose_bool)
-  message("DEBUG:   spname  = ", in_spname_auto)
   message("DEBUG:   warn  = ", in_warn_bool)
   message("DEBUG:   missingness  = ", in_missingness)
   message("DEBUG:   silence_true_errors  = ", in_silence_true_errors)
