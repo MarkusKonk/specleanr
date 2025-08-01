@@ -724,3 +724,127 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
 }'
 ```
 
+
+
+## (4) pred_extract.R
+
+### Required arguments
+
+These arguments are required, in this order:
+
+```
+Rscript pred_extract.R \
+  in_data_path_or_url \
+  in_raster_path \
+  in_bbox_path \
+  in_colname_lat in_colname_lon in_colname_species \
+  in_min_pts \
+  in_bool_merge in_bool_list in_bool_verbose \
+  in_bool_warn in_bool_coords \
+  in_na_inform in_na_rm \
+  in_rm_duplicates in_minimumpts_rm \
+  out_result_path
+```
+
+Then, the result is stored as a CSV in `out_result_path` !
+
+### Example input data
+
+Get the path to raster file from the _specleanr_ package, by installing the package and then running:
+
+```
+system.file('extdata/worldclim.tiff', package='specleanr')
+```
+
+Download these files:
+
+* Use as input GeoJSON: https://services-eu1.arcgis.com/bzJgidEyiimiAx34/arcgis/rest/services/danube_shp/FeatureServer/0/query?where=1%3D1&outFields=*&f=geojson
+* Use as input species data: https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv
+* Use as input species data: https://drive.boku.ac.at/seafhttp/files/62946130-51b1-4d00-98cf-8d79ff46d5db/jdshttptest.csv (link expired)
+
+### Case 1a: All local input files
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "pred_extract test 1a"; date; Rscript pred_extract.R \
+  "./species_for_pred_extract.csv" \
+  "./worldclim.tiff" \
+  "./danube_from_boku.geojson" \
+  "decimalLatitude" "decimalLongitude" "species" \
+  "10" \
+  "True" "False" "True" \
+  "True" "True" \
+  "True" "True" \
+  "False" "False" \
+  "./result_pred_extract_test1a.csv"
+```
+
+**Run the Docker container:**
+
+Works: Tested via docker on 2025-07-31 (Merret)
+
+```
+docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" "/in/species_for_pred_extract.csv" "/in/worldclim.tiff" "/in/danube_from_boku.geojson" "decimalLatitude" "decimalLongitude" "species" "10" "True" "False" "True" "True" "True" "True" "True" "False" "False" "/out/result_pred_extract.csv"
+```
+
+**Via HTTP API:**
+
+* Cannot run via HTTP API using local input file
+
+### Case 1b: All remote input files
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-01 (Merret)
+
+echo "pred_extract test 1bf"; date; Rscript pred_extract.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
+  "decimalLatitude" "decimalLongitude" "species" \
+  "10" \
+  "True" "False" "True" \
+  "True" "True" \
+  "True" "True" \
+  "False" "False" \
+  "./result_pred_extract_test1b.csv"
+```
+
+**Run the Docker container:**
+
+Works: Tested via docker on 2025-07-31 (Merret)
+
+```
+docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "decimalLatitude" "decimalLongitude" "species" "10" "True" "False" "True" "True" "True" "True" "True" "False" "False" "/out/result_pred_extract.csv"
+```
+
+**Via HTTP API:**
+
+Works: Tested via pygeoapi on 2025-07-31 (Merret)
+
+```
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff",
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "bool_merge": true,
+        "bool_list": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": false,
+        "minimum_sprecordsallow": false
+    }
+}'
+```
+
