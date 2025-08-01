@@ -79,23 +79,27 @@ if(startsWith(in_data_path, 'http') | file.exists(in_data_path)) {
 ### Run specleanr function ###
 ##############################
 
+message('DEBUG: Verbosity? ', in_verbose_bool)
+
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to check_names():")
-  message('DEBUG:   data    = object of type "', typeof(species_names_or_df), '"')
+  # Log a data table, or a list of strings:
+  message('DEBUG:   data   = of type "', typeof(species_names_or_df), '"')
   if (data.table::is.data.table(species_names_or_df)) {
     message("DEBUG:   data   = object of class data.table")
-    message('DEBUG:   data   = columns   : ', paste(names(species_names_or_df), collapse=','))
+    message('DEBUG:   data   = columns: ', paste(names(species_names_or_df), collapse=','))
     message('DEBUG:   data   = first line: ', paste(species_names_or_df[1], collapse=','))
   } else if (typeof(species_names_or_df) == typeof(c('bla'))) {
     message('DEBUG:   data   = ', paste(species_names_or_df, collapse=', '))
   }
-  message('DEBUG:   colsp   = object of type "', typeof(in_colname_species), '": ', in_colname_species)
-  message('DEBUG:   pct     = object of type "', typeof(in_percent_correctness), '": ', in_percent_correctness)
-  message('DEBUG:   merge   = object of type "', typeof(in_bool_merge), '": ', in_bool_merge)
-  message('DEBUG:   verbose = object of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
-  message('DEBUG:   sn      = object of type "', typeof(in_synonymn_checks), '": ', in_synonymn_checks)
-  message('DEBUG:   ecosystem = object of type "', typeof(in_ecosystem_checks), '": ', in_ecosystem_checks)
-  message('DEBUG:   rm_duplicates = object of type "', typeof(in_rm_duplicates), '": ', in_rm_duplicates)
+  # Log all other, simpler, objects:
+  message('DEBUG:   colsp   = of type "', typeof(in_colname_species), '": ', in_colname_species)
+  message('DEBUG:   pct     = of type "', typeof(in_percent_correctness), '": ', in_percent_correctness)
+  message('DEBUG:   merge   = of type "', typeof(in_bool_merge), '": ', in_bool_merge)
+  message('DEBUG:   verbose = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
+  message('DEBUG:   sn      = of type "', typeof(in_synonymn_checks), '": ', in_synonymn_checks)
+  message('DEBUG:   ecosystem = of type "', typeof(in_ecosystem_checks), '": ', in_ecosystem_checks)
+  message('DEBUG:   rm_duplicates = of type "', typeof(in_rm_duplicates), '": ', in_rm_duplicates)
 }
 
 if (in_bool_verbose) message('DEBUG: Running specleanr::check_names...')

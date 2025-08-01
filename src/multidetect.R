@@ -176,22 +176,31 @@ message('DEBUG: Verbosity? ', in_verbose_bool)
 
 if (in_verbose_bool) {
   message("DEBUG: Logging all input args to match_datasets():")
-  message('DEBUG:   data      = object of type "', typeof(dfinal), '"')
-  message("DEBUG:   var       = ", in_var_ofinterest)
-  message("DEBUG:   select    = ", in_select_var)
-  message("DEBUG:   output    = ", in_output_type)
-  message("DEBUG:   exclude   = ", in_colnames_exclude)
-  message("DEBUG:   multiple  = ", in_bool_multiple_species)
-  message("DEBUG:   var_col   = ", in_group_colname)
-  message("DEBUG:   methods   = ", paste(in_methods, collapse=', '))
-  message('DEBUG:   bootSettings = object of type "', typeof(in_bootSettings), '": ', paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
-  message('DEBUG:   pc           = object of type "', typeof(in_pc), '": ', paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
-  message("DEBUG:   verbose      = ", in_verbose_bool)
-  message("DEBUG:   warn         = ", in_warn_bool)
-  message("DEBUG:   missingness  = ", in_missingness)
-  message("DEBUG:   silence_true_errors = ", in_silence_true_errors)
-  message("DEBUG:   sdm          = ", in_sdm_bool)
-  message("DEBUG:   na.inform    = ", in_na_inform_bool)
+  # Log a data table:
+  message('DEBUG:   data      = of type "', typeof(dfinal), '"')
+  if (data.table::is.data.table(dfinal)) {
+    message("DEBUG:   data      = object of class data.table")
+    message('DEBUG:   data      = columns   : ', paste(names(dfinal), collapse=','))
+    message('DEBUG:   data      = first line: ', paste(dfinal[1], collapse=','))
+  } else if (typeof(dfinal) == typeof(c('bla'))) {
+    message('DEBUG:   data      = ', paste(dfinal, collapse=', '))
+  }
+  # Log all other, simpler objects:
+  message('DEBUG:   var       = of type "', typeof(in_var_ofinterest), '": ', in_var_ofinterest)
+  message('DEBUG:   select    = of type "', typeof(in_select_var), '": ', in_select_var)
+  message('DEBUG:   output    = of type "', typeof(in_output_type), '": ', in_output_type)
+  message('DEBUG:   exclude   = of type "', typeof(in_colnames_exclude), '": ', in_colnames_exclude)
+  message('DEBUG:   multiple  = of type "', typeof(in_bool_multiple_species), '": ', in_bool_multiple_species)
+  message('DEBUG:   var_col   = of type "', typeof(in_group_colname), '": ', in_group_colname)
+  message('DEBUG:   methods   = of type "', typeof(in_methods), '": ', paste(in_methods, collapse=', '))
+  message('DEBUG:   bootSettings = of type "', typeof(in_bootSettings), '": ', paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
+  message('DEBUG:   pc           = of type "', typeof(in_pc), '": ', paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
+  message('DEBUG:   verbose      = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
+  message('DEBUG:   warn         = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
+  message('DEBUG:   missingness  = of type "', typeof(in_missingness), '": ', in_missingness)
+  message('DEBUG:   silence_true_errors = of type "', typeof(in_silence_true_errors), '": ', in_silence_true_errors)
+  message('DEBUG:   sdm          = of type "', typeof(in_sdm_bool), '": ', in_sdm_bool)
+  message('DEBUG:   na.inform    = of type "', typeof(in_na_inform_bool), '": ', in_na_inform_bool)
 }
 
 message('DEBUG: Running specleanr::multidetect...')
@@ -214,7 +223,7 @@ outlieriris_mult <- multidetect(
   na.inform       = in_na_inform_bool
 )
 message('DEBUG: Running specleanr::multidetect... DONE.')
-message('DEBUG: Result is an object of type "', typeof(outlieriris_mult), '"')
+message('DEBUG: Result is of type "', typeof(outlieriris_mult), '"')
 
 # Depending on in_autoextract, run classify_data or extract_clean_data...
 # If in_autoextract is FALSE, run classify_data.
@@ -224,13 +233,13 @@ if(!in_autoextract){
   message('DEBUG: Autoextract is set to ', in_autoextract, ', so we will run classify_data...')
   if (in_verbose_bool) {
     message("DEBUG: Logging all input args to classify_data():")
-    message('DEBUG:   refdata  = object of type "', typeof(dfinal), '"')
-    message('DEBUG:   outliers = object of type "', typeof(outlieriris_mult), '"')
-    message("DEBUG:   var_col  = ", in_group_colname)
-    message("DEBUG:   warn     = ", in_warn_bool)
-    message("DEBUG:   verbose  = ", in_verbose_bool)
-    message("DEBUG:   classify = ", in_classifymode)
-    message("DEBUG:   EIF      = ", in_eif_bool)
+    message('DEBUG:   refdata  = of type "', typeof(dfinal), '": ...')
+    message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '": ', outlieriris_mult)
+    message('DEBUG:   var_col  = of type "', typeof(in_group_colname), '": ', in_group_colname)
+    message('DEBUG:   warn     = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
+    message('DEBUG:   verbose  = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
+    message('DEBUG:   classify = of type "', typeof(in_classifymode), '": ', in_classifymode)
+    message('DEBUG:   EIF      = of type "', typeof(in_eif_bool), '": ', in_eif_bool)
   }
   message('DEBUG: Running specleanr::classify_data...')
   cleandata2 <- classify_data(
@@ -261,13 +270,13 @@ if(!in_autoextract){
   # Now, run extract_clean_data...
   if (in_verbose_bool) {
     message("DEBUG: Logging all input args to extract_clean_data():")
-    message('DEBUG:   refdata  = object of type "', typeof(dfinal), '"')
-    message('DEBUG:   outliers = object of type "', typeof(outlieriris_mult), '"')
-    message("DEBUG:   moden    = ", in_mode_clean)
-    message("DEBUG:   var_col  = ", in_group_colname)
-    message("DEBUG:   warn     = ", in_warn_bool)
-    message("DEBUG:   verbose  = ", in_verbose_bool)
-    message("DEBUG:   loess    = ", in_bool_loess)
+    message('DEBUG:   refdata  = of type "', typeof(dfinal), '"')
+    message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '": ', outlieriris_mult)
+    message('DEBUG:   moden    = of type "', typeof(in_mode_clean), '": ', in_mode_clean)
+    message('DEBUG:   var_col  = of type "', typeof(in_group_colname), '": ', in_group_colname)
+    message('DEBUG:   warn     = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
+    message('DEBUG:   verbose  = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
+    message('DEBUG:   loess    = of type "', typeof(in_bool_loess), '"; ', in_bool_loess)
   }
   message('DEBUG: Running specleanr::extract_clean_data...')
   cleandata2 <- extract_clean_data(

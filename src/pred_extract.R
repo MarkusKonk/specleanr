@@ -101,36 +101,40 @@ if (in_bool_verbose) message('DEBUG: Reading study area from shapefile or GeoJSO
 ### Run specleanr function ###
 ##############################
 
+message('DEBUG: Verbosity? ', in_verbose_bool)
+
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to pred_extract():")
-  message('DEBUG:   data = object of type "', typeof(speciesfiltered), '"')
+  # Log data table:
+  message('DEBUG:   data = of type "', typeof(speciesfiltered), '"')
   if (data.table::is.data.table(speciesfiltered)) {
-    message("DEBUG:   data = object of class data.table")
+    message("DEBUG:   data = of class data.table")
     message('DEBUG:   data = columns: ', paste(names(speciesfiltered), collapse=','))
     message('DEBUG:   data = first line: ', paste(speciesfiltered[1], collapse=','))
   } else {
-    message('DEBUG:   data = not an object of class data.table!')
+    message('DEBUG:   data = not of class data.table!')
   }
-  message('DEBUG:   raster = ', worldclim)
-  message('DEBUG:   lat    = ', in_colname_lat)
-  message('DEBUG:   lon    = ', in_colname_lon)
-  message('DEBUG:   colsp  = ', in_colname_species)
-  message('DEBUG:   bbox   = object of type "', typeof(study_area), '"')
-  if (typeof(study_area)==typeof(list(1,2,3)) && length(study_area) == 4) {
+  message('DEBUG:   raster = of type "', typeof(worldclim), '": ', worldclim)
+  message('DEBUG:   lat    = of type "', typeof(in_colname_lat), '": ', in_colname_lat)
+  message('DEBUG:   lon    = of type "', typeof(in_colname_lon), '": ', in_colname_lon)
+  message('DEBUG:   colsp  = of type "', typeof(in_colname_species), '": ', in_colname_species)
+  # Log spatial:
+  message('DEBUG:   bbox   = of type "', typeof(study_area), '"')
+  if (typeof(study_area)==typeof(list(1,2,3)) && "sf" %in% class(study_area)) {
+    message('DEBUG:   bbox   = of class "sf"')
+  } else if (typeof(study_area)==typeof(list(1,2,3)) && length(study_area) == 4) {
     message('DEBUG:   bbox   = "', paste(names(study_area), unlist(study_area), sep = "=", collapse = ", "), '"')
-  } else if (typeof(study_area)==typeof(list(1,2,3)) && "sf" %in% class(study_area)) {
-    message('DEBUG:   bbox   = object of class "sf"')
   }
-  message('DEBUG:   list   = ', in_bool_list)
-  message('DEBUG:   minpts = ', in_min_pts)
-  message('DEBUG:   mp     = ', in_minimumpts_rm)
-  message('DEBUG:   rm_duplicates = ', in_rm_duplicates)
-  message('DEBUG:   merge     = ', in_bool_merge)
-  message('DEBUG:   warn      = ', in_bool_warn)
-  message('DEBUG:   verbose   = ', in_bool_verbose)
-  message('DEBUG:   coords    = ', in_bool_coords)
-  message('DEBUG:   na.inform = ', in_na_inform)
-  message('DEBUG:   na.rm     = ', in_na_rm)
+  message('DEBUG:   list   = of type "', typeof(in_bool_list), '": ', in_bool_list)
+  message('DEBUG:   minpts = of type "', typeof(in_min_pts), '": ', in_min_pts)
+  message('DEBUG:   mp     = of type "', typeof(in_minimumpts_rm), '": ', in_minimumpts_rm)
+  message('DEBUG:   rm_duplicates = of type "', typeof(in_rm_duplicates), '": ', in_rm_duplicates)
+  message('DEBUG:   merge     = of type "', typeof(in_bool_merge), '": ', in_bool_merge)
+  message('DEBUG:   warn      = of type "', typeof(in_bool_warn), '": ', in_bool_warn)
+  message('DEBUG:   verbose   = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
+  message('DEBUG:   coords    = of type "', typeof(in_bool_coords), '": ', in_bool_coords)
+  message('DEBUG:   na.inform = of type "', typeof(in_na_inform), '": ', in_na_inform)
+  message('DEBUG:   na.rm     = of type "', typeof(in_na_rm), '": ', in_na_rm)
 }
 
 if (in_bool_verbose) message('DEBUG: Running specleanr::pred_extract...')

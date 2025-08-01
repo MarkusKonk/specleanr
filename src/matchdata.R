@@ -87,16 +87,18 @@ if (in_verbose_bool) message('DEBUG: Names of input datasets (from URLs): ', pas
 ### Run specleanr function ###
 ##############################
 
+message('DEBUG: Verbosity? ', in_verbose_bool)
+
 if (in_verbose_bool) {
-  message("DEBUG: Logging all input args to match_datasets():")
-  message("DEBUG:   datasets = list of datasets...")
-  message("DEBUG:   datasets = object of type: ", typeof(all_input_datasets))
-  message("DEBUG:   country  = ", paste(in_colnames_countries, collapse=', '))
-  message("DEBUG:   lats     = ", paste(in_colnames_lat, collapse=', '))
-  message("DEBUG:   lons     = ", paste(in_colnames_lon, collapse=', '))
-  message("DEBUG:   species  = ", paste(in_colnames_species_names, collapse=', '))
-  message("DEBUG:   date     = ", paste(in_colnames_date, collapse=', '))
-  message("DEBUG:   verbose  = ", in_verbose_bool)
+  message('DEBUG: Logging all input args to match_datasets():')
+  message('DEBUG:   datasets = list of datasets...')
+  message('DEBUG:   datasets = of type: "', typeof(all_input_datasets), '": ...'))
+  message('DEBUG:   country  = of type: "', typeof(in_colnames_countries), '": ', paste(in_colnames_countries, collapse=', '))
+  message('DEBUG:   lats     = of type: "', typeof(in_colnames_lat), '": ', paste(in_colnames_lat, collapse=', '))
+  message('DEBUG:   lons     = of type: "', typeof(in_colnames_lon), '": ', paste(in_colnames_lon, collapse=', '))
+  message('DEBUG:   species  = of type: "', typeof(in_colnames_species_names), '": ', paste(in_colnames_species_names, collapse=', '))
+  message('DEBUG:   date     = of type: "', typeof(in_colnames_date), '": ', paste(in_colnames_date, collapse=', '))
+  message('DEBUG:   verbose  = of type: "', typeof(in_verbose_bool), '": ', in_verbose_bool)
 }
 
 if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets...')
