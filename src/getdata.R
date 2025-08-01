@@ -34,7 +34,7 @@ in_database         = args[3] # list of databases to consider (gbif, inat, and v
 in_gbif_lim         = args[4] # e.g. "50"
 in_inat_lim         = args[5] # e.g. "50"
 in_vert_lim         = args[6] # e.g. "50"
-in_verbose          = args[7] # logical: verbose or not
+in_bool_verbose     = args[7] # logical: verbose or not
 in_extent           = args[8] # provide either "null" or shapefile or geojson (to act as a polygon bounding box) or a bounding box (xmin, ymin, xmax, ymax)
 in_percent_correct  = args[9] # allowed percentage correctness of species names. Used for checknames fn
 in_synonym_check    = args[10] # logical: allow synoymns or not from FishBase
@@ -124,7 +124,7 @@ in_vert_lim = as.numeric(in_vert_lim)
 in_percent_correct = as.numeric(in_percent_correct)
 
 # Make booleans from string:
-in_verbose       = tolower(in_verbose) == 'true'
+in_bool_verbose  = tolower(in_bool_verbose) == 'true'
 in_synonym_check = tolower(in_synonym_check) == 'true'
 in_warn_check    = tolower(in_warn_check) == 'true'
 
@@ -133,9 +133,9 @@ in_warn_check    = tolower(in_warn_check) == 'true'
 ### Run specleanr function ###
 ##############################
 
-message('DEBUG: Verbosity? ', in_verbose)
+message('DEBUG: Verbosity? ', in_bool_verbose)
 
-if (in_verbose) {
+if (in_bool_verbose) {
   message("DEBUG: Logging all input args to getdata():")
 
   # Log a data table, or a list of strings:
@@ -160,7 +160,7 @@ if (in_verbose) {
   }
   message('DEBUG:   db      = of type "', typeof(in_database), '": ', paste(in_database, collapse=", "))
   message('DEBUG:   lims    = of type "', typeof(in_gbif_lim), '": ', paste(in_gbif_lim, in_vert_lim, in_inat_lim, collapse=", "))
-  message('DEBUG:   verbose = of type "', typeof(in_verbose), '": ', in_verbose)
+  message('DEBUG:   verbose = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
   message('DEBUG:   sn      = of type "', typeof(in_synonym_check), '": ', in_synonym_check)
   message('DEBUG:   warn    = of type "', typeof(in_warn_check), '": ', in_warn_check)
   message('DEBUG:   pct     = of type "', typeof(in_percent_correct), '": ', in_percent_correct)
@@ -176,7 +176,7 @@ df_online <- getdata(
   gbiflim  = in_gbif_lim,
   inatlim  = in_inat_lim,
   vertlim  = in_vert_lim,
-  verbose  = in_verbose,
+  verbose  = in_bool_verbose,
   sn   = in_synonym_check,
   warn = in_warn_check,
   pct  = in_percent_correct

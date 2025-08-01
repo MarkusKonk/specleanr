@@ -37,7 +37,7 @@ in_colnames_countries        = args[3] # e.g. "JDS4_sampling_ID, country"
 in_colnames_lat              = args[4] # e.g. "lat, lati"
 in_colnames_lon              = args[5] # e.g. "lon, long"
 in_colnames_date             = args[6] # e.g. "sampling_date,Date"
-in_verbose_bool              = args[7] # e.g. "true"
+in_bool_verbose              = args[7] # e.g. "true"
 out_result_path              = args[8] # path where output CSV will be written
 
 
@@ -47,10 +47,10 @@ out_result_path              = args[8] # path where output CSV will be written
 ################################
 
 # Make boolean from string:
-in_verbose_bool = tolower(in_verbose_bool) == 'true'
+in_bool_verbose = tolower(in_bool_verbose) == 'true'
 
 # Remove spaces and split:
-if (in_verbose_bool) message('DEBUG: Splitting input args that are lists...')
+if (in_bool_verbose) message('DEBUG: Splitting input args that are lists...')
 in_data_paths_or_urls = gsub(", ", ",", in_data_paths_or_urls, fixed = TRUE)
 in_data_paths_or_urls = gsub(" ,", ",", in_data_paths_or_urls, fixed = TRUE)
 in_data_paths_or_urls = strsplit(in_data_paths_or_urls, ",")[[1]]
@@ -76,20 +76,20 @@ in_colnames_date = strsplit(in_colnames_date, ",")[[1]]
 ########################
 
 # Read data from CSV or from URL
-if (in_verbose_bool) message('DEBUG: Reading input data from CSV...')
-if (in_verbose_bool) message('DEBUG: Inputs data URLs (or paths): ', paste(in_data_paths_or_urls, collapse=' + '))
+if (in_bool_verbose) message('DEBUG: Reading input data from CSV...')
+if (in_bool_verbose) message('DEBUG: Inputs data URLs (or paths): ', paste(in_data_paths_or_urls, collapse=' + '))
 all_input_datasets <- lapply(in_data_paths_or_urls, data.table::fread)
 names(all_input_datasets) <- basename(in_data_paths_or_urls)
-if (in_verbose_bool) message('DEBUG: Names of input datasets (from URLs): ', paste(names(all_input_datasets), collapse=' + '))
+if (in_bool_verbose) message('DEBUG: Names of input datasets (from URLs): ', paste(names(all_input_datasets), collapse=' + '))
 
 
 ##############################
 ### Run specleanr function ###
 ##############################
 
-message('DEBUG: Verbosity? ', in_verbose_bool)
+message('DEBUG: Verbosity? ', in_bool_verbose)
 
-if (in_verbose_bool) {
+if (in_bool_verbose) {
   message('DEBUG: Logging all input args to match_datasets():')
   message('DEBUG:   datasets = list of datasets! (Not logging every single one here)')
   message('DEBUG:   datasets = of type: "', typeof(all_input_datasets), '": [...]')
@@ -98,10 +98,10 @@ if (in_verbose_bool) {
   message('DEBUG:   lons     = of type: "', typeof(in_colnames_lon), '": ', paste(in_colnames_lon, collapse=', '))
   message('DEBUG:   species  = of type: "', typeof(in_colnames_species_names), '": ', paste(in_colnames_species_names, collapse=', '))
   message('DEBUG:   date     = of type: "', typeof(in_colnames_date), '": ', paste(in_colnames_date, collapse=', '))
-  message('DEBUG:   verbose  = of type: "', typeof(in_verbose_bool), '": ', in_verbose_bool)
+  message('DEBUG:   verbose  = of type: "', typeof(in_bool_verbose), '": ', in_bool_verbose)
 }
 
-if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets...')
+if (in_bool_verbose) message('DEBUG: Running specleanr::match_datasets...')
 mergealldfs <- match_datasets(
   datasets = all_input_datasets,
   country = in_colnames_countries,
@@ -109,12 +109,12 @@ mergealldfs <- match_datasets(
   lons = in_colnames_lon,
   species = in_colnames_species_names,
   date = in_colnames_date,
-  verbose = in_verbose_bool)
-if (in_verbose_bool) message('DEBUG: Running specleanr::match_datasets... DONE.')
+  verbose = in_bool_verbose)
+if (in_bool_verbose) message('DEBUG: Running specleanr::match_datasets... DONE.')
 
 
 # Write the result to csv file:
-if (in_verbose_bool) message(paste0('DEBUG: Write result to csv file: ', out_result_path))
+if (in_bool_verbose) message(paste0('DEBUG: Write result to csv file: ', out_result_path))
 data.table::fwrite(mergealldfs , file = out_result_path)
-if (in_verbose_bool) message('DEBUG: Write result to csv file... DONE.')
-if (in_verbose_bool) message('DEBUG: Finished wrapper script matchdata')
+if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script matchdata')

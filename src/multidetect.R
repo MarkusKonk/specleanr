@@ -47,10 +47,10 @@ in_pca_settings_exec_bool            = args[15] # logical
 in_pca_settings_npc                  = as.numeric(args[16]) # integer..number of pcs retained
 in_pca_settings_quiet                = args[17] # logical, bool to print the cummulative variance
 in_pca_settings_pcvar                = args[18] # pc used for outlier detectiion defualt is PC1 (stays string)
-in_verbose_bool                      = args[19] # logical, implementation messages
-in_warn_bool                         = args[20] # logicla, return warning msgs
-in_sdm_bool                          = args[21] # logical, if multidimensional data then its TRUE. univariate data sdm is F
-in_na_inform_bool                    = args[22] # logical, msgs on handling NAs defualt FALSE
+in_bool_verbose                      = args[19] # logical, implementation messages
+in_bool_warn                         = args[20] # logicla, return warning msgs
+in_bool_sdm                          = args[21] # logical, if multidimensional data then its TRUE. univariate data sdm is F
+in_bool_na_inform                    = args[22] # logical, msgs on handling NAs defualt FALSE
 in_missingness                       = as.numeric(args[23]) #req_adj# e.g. 0.1
 
 #Extrain clean data
@@ -60,7 +60,7 @@ in_mode_clean                        = args[26]#e.g. 'abs', "best" (stays string
 
 #classifying data
 in_classifymode                      = args[27] #default med (stays string)
-in_eif_bool                          = args[28] #logical, e.g. F/T 
+in_bool_eif                          = args[28] #logical, e.g. F/T 
 in_autoextract                       = args[29] #TRUE to classfy data
 
 #output
@@ -110,15 +110,15 @@ if(!in_select_var==tolower('null')){
 # Make boolean from string:
 in_bool_multiple_species   = tolower(in_bool_multiple_species) == 'true'
 in_silence_true_errors     = tolower(in_silence_true_errors) == 'true'
-in_warn_bool               = tolower(in_warn_bool) == 'true'
-in_na_inform_bool          = tolower(in_na_inform_bool) == 'true'
-in_sdm_bool                = tolower(in_sdm_bool) == 'true'
+in_bool_warn               = tolower(in_bool_warn) == 'true'
+in_bool_na_inform          = tolower(in_bool_na_inform) == 'true'
+in_bool_sdm                = tolower(in_bool_sdm) == 'true'
 in_pca_settings_exec_bool  = tolower(in_pca_settings_exec_bool) == 'true'
 in_boot_settings_run_bool  = tolower(in_boot_settings_run_bool) == 'true'
-in_verbose_bool            = tolower(in_verbose_bool) == 'true'
+in_bool_verbose            = tolower(in_bool_verbose) == 'true'
 in_pca_settings_quiet      = tolower(in_pca_settings_quiet) == 'true'
 in_bool_loess              = tolower(in_bool_loess ) == 'true'
-in_eif_bool                = tolower(in_eif_bool) == 'true'
+in_bool_eif                = tolower(in_bool_eif) == 'true'
 in_autoextract             = tolower(in_autoextract) == 'true'
 
 # Assemble required list:
@@ -172,9 +172,9 @@ if (tolower(in_threshold_clean) == 'null') {
 # print(paste('SilenceErrors:', in_silence_true_errors))
 # print(paste('Methods:', paste0(in_methods, collapse=' + ')))
 
-message('DEBUG: Verbosity? ', in_verbose_bool)
+message('DEBUG: Verbosity? ', in_bool_verbose)
 
-if (in_verbose_bool) {
+if (in_bool_verbose) {
   message("DEBUG: Logging all input args to match_datasets():")
   # Log a data table:
   message('DEBUG:   data      = of type "', typeof(dfinal), '"')
@@ -195,12 +195,12 @@ if (in_verbose_bool) {
   message('DEBUG:   methods   = of type "', typeof(in_methods), '": ', paste(in_methods, collapse=', '))
   message('DEBUG:   bootSettings = of type "', typeof(in_bootSettings), '": ', paste(names(in_bootSettings), unlist(in_bootSettings), sep = "=", collapse = ", "))
   message('DEBUG:   pc           = of type "', typeof(in_pc), '": ', paste(names(in_pc), unlist(in_pc), sep = "=", collapse = ", "))
-  message('DEBUG:   verbose      = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
-  message('DEBUG:   warn         = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
+  message('DEBUG:   verbose      = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
+  message('DEBUG:   warn         = of type "', typeof(in_bool_warn), '": ', in_bool_warn)
   message('DEBUG:   missingness  = of type "', typeof(in_missingness), '": ', in_missingness)
   message('DEBUG:   silence_true_errors = of type "', typeof(in_silence_true_errors), '": ', in_silence_true_errors)
-  message('DEBUG:   sdm          = of type "', typeof(in_sdm_bool), '": ', in_sdm_bool)
-  message('DEBUG:   na.inform    = of type "', typeof(in_na_inform_bool), '": ', in_na_inform_bool)
+  message('DEBUG:   sdm          = of type "', typeof(in_bool_sdm), '": ', in_bool_sdm)
+  message('DEBUG:   na.inform    = of type "', typeof(in_bool_na_inform), '": ', in_bool_na_inform)
 }
 
 message('DEBUG: Running specleanr::multidetect...')
@@ -215,12 +215,12 @@ outlieriris_mult <- multidetect(
   methods         = in_methods,
   bootSettings    = in_bootSettings,
   pc              = in_pc,
-  verbose         = in_verbose_bool,
-  warn            = in_warn_bool,
+  verbose         = in_bool_verbose,
+  warn            = in_bool_warn,
   missingness     = in_missingness,
   silence_true_errors = in_silence_true_errors,
-  sdm             = in_sdm_bool,
-  na.inform       = in_na_inform_bool
+  sdm             = in_bool_sdm,
+  na.inform       = in_bool_na_inform
 )
 message('DEBUG: Running specleanr::multidetect... DONE.')
 message('DEBUG: Result is of type "', typeof(outlieriris_mult), '"')
@@ -231,25 +231,25 @@ message('DEBUG: Result is of type "', typeof(outlieriris_mult), '"')
 
 if(!in_autoextract){
   message('DEBUG: Autoextract is set to ', in_autoextract, ', so we will run classify_data...')
-  if (in_verbose_bool) {
+  if (in_bool_verbose) {
     message("DEBUG: Logging all input args to classify_data():")
     message('DEBUG:   refdata  = of type "', typeof(dfinal), '"')
     message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '"')
     message('DEBUG:   var_col  = of type "', typeof(in_group_colname), '": ', in_group_colname)
-    message('DEBUG:   warn     = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
-    message('DEBUG:   verbose  = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
+    message('DEBUG:   warn     = of type "', typeof(in_bool_warn), '": ', in_bool_warn)
+    message('DEBUG:   verbose  = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
     message('DEBUG:   classify = of type "', typeof(in_classifymode), '": ', in_classifymode)
-    message('DEBUG:   EIF      = of type "', typeof(in_eif_bool), '": ', in_eif_bool)
+    message('DEBUG:   EIF      = of type "', typeof(in_bool_eif), '": ', in_bool_eif)
   }
   message('DEBUG: Running specleanr::classify_data...')
   cleandata2 <- classify_data(
     refdata     = dfinal,
     outliers    = outlieriris_mult,
     var_col     = in_group_colname,
-    warn        = in_warn_bool,
-    verbose     = in_verbose_bool,
+    warn        = in_bool_warn,
+    verbose     = in_bool_verbose,
     classify    = in_classifymode,
-    EIF         = in_eif_bool
+    EIF         = in_bool_eif
   )
   message('DEBUG: Running specleanr::classify_data... DONE.')
 
@@ -268,14 +268,14 @@ if(!in_autoextract){
   }
 
   # Now, run extract_clean_data...
-  if (in_verbose_bool) {
+  if (in_bool_verbose) {
     message("DEBUG: Logging all input args to extract_clean_data():")
     message('DEBUG:   refdata  = of type "', typeof(dfinal), '"')
     message('DEBUG:   outliers = of type "', typeof(outlieriris_mult), '"')
     message('DEBUG:   moden    = of type "', typeof(in_mode_clean), '": ', in_mode_clean)
     message('DEBUG:   var_col  = of type "', typeof(in_group_colname), '": ', in_group_colname)
-    message('DEBUG:   warn     = of type "', typeof(in_warn_bool), '": ', in_warn_bool)
-    message('DEBUG:   verbose  = of type "', typeof(in_verbose_bool), '": ', in_verbose_bool)
+    message('DEBUG:   warn     = of type "', typeof(in_bool_warn), '": ', in_bool_warn)
+    message('DEBUG:   verbose  = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
     message('DEBUG:   loess    = of type "', typeof(in_bool_loess), '"; ', in_bool_loess)
   }
   message('DEBUG: Running specleanr::extract_clean_data...')
@@ -285,8 +285,8 @@ if(!in_autoextract){
     mode                = in_mode_clean,
     var_col             = in_group_colname,
     threshold           = in_threshold_clean,
-    warn                = in_warn_bool,
-    verbose             = in_verbose_bool,
+    warn                = in_bool_warn,
+    verbose             = in_bool_verbose,
     loess               = in_bool_loess
   )
   message('DEBUG: Running specleanr::extract_clean_data... DONE.')
@@ -302,7 +302,7 @@ if(!in_autoextract){
 
 # Write the result to csv file:
 #print(cleandata2)
-if (in_verbose_bool) message('DEBUG: Write result to csv file: ', out_result_path)
+if (in_bool_verbose) message('DEBUG: Write result to csv file: ', out_result_path)
 data.table::fwrite(cleandata2 , file = out_result_path)
-if (in_verbose_bool) message('DEBUG: Write result to csv file... DONE.')
-if (in_verbose_bool) message('DEBUG: Finished wrapper script multidetect')
+if (in_bool_verbose) message('DEBUG: Write result to csv file... DONE.')
+if (in_bool_verbose) message('DEBUG: Finished wrapper script multidetect')
