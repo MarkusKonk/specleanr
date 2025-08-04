@@ -81,22 +81,28 @@ echo "getdata test 1"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-docker run -v './in:/in" "-v" "./out:/out' -e 'R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-test.csv'
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run "-v" "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test1.csv"
 ```
 
 **Via HTTP API:**
 
 ```
+# Works: Tested on 2025-08-04 (Merret)
+
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
         "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
-        "inaturalist_limit": 20
+        "inaturalist_limit": 20,
+        "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
+        "percentage_correctness": 30,
+        "synonym_check": true
     }
 }'
 ```
@@ -120,8 +126,9 @@ echo "getdata test 2a"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-29 (Merret)
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" specleanr:20250722 "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube.shp" "80" "null" "True" "/out/biodiv-data-test.csv"
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run -v "/var/www/nginx/exampledata/boku:/in" "-v" "./out:/out" -e "R_SCRIPT=getdata.R" specleanr:latest "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube.shp" "30" "True" "True" "/out/biodiv-data-test2a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -134,45 +141,48 @@ Pass a list of species (and then set the second parameter, which is the column n
 
 ```
 # Works: Tested on 2025-07-30 (Merret)
-Rscript getdata.R \
+
+echo "getdata test 2"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "gbif,inat,vertnet" "20" "20" "20" "true" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test2b.csv"
 ```
 
 **Run the Docker container:**
 
-TODO: This has other values for percentcorrect and syn check...
-
 ```
-# Works: Tested on 2025-07-30 (Merret)
-docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" specleanr:20250722 "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "80" "null" "True" "/out/biodiv-data-4d4e23dd-6d20-11f0-8f3f-fa163e42fba0.csv"
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" specleanr:latest "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "30" "True" "True" "/out/biodiv-data-test2b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
+
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "study_area_shapefile": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip",
         "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
-        "inaturalist_limit": 20
+        "inaturalist_limit": 20,
+        "study_area_shapefile": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip",
+        "percentage_correctness": 30,
+        "synonym_check": true
     }
 }'
+echo "this was getdata, test case 2b"; date
 ```
 
 ### Case 3a: Test with species list (and local geojson file as extent)
 
 ```
-# Works: Tested on 2025-07-29 (Merret)
-# Works: Tested on 2025-08-01 (Merret) WIP
+# Works: Tested on 2025-08-04 (Merret)
 
 echo "getdata test 3a"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
@@ -184,8 +194,9 @@ echo "getdata test 3a"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "inat" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "inat" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test3a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -196,36 +207,42 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/
 
 ```
 # Works: Tested on 2025-07-30 (Merret)
-Rscript getdata.R \
+
+echo "getdata test 3b"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "inat" "20" "20" "20" "true" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata3b.csv"
 ```
 
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test3b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
+
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
         "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
-        "inaturalist_limit": 20
+        "inaturalist_limit": 20,
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "percentage_correctness": 30,
+        "synonym_check": true
     }
 }'
+echo "this was getdata, test case 3b"; date
 ```
 
 ### Case 4a: Test with local species csv file (and string extent)
@@ -245,8 +262,9 @@ echo "getdata test 4a"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-272468f6-6d26-11f0-83ba-fa163e42fba0.csv"
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test4a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -257,24 +275,26 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/
 
 ```
 # Works: Tested on 2025-07-30 (Merret)
-Rscript getdata.R \
+
+echo "getdata test 4b"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
   "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test4b.csv"
 ```
 
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-test.csv"
+# Works: Tested on 2025-08-04 (Merret)
+
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test4b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -286,9 +306,12 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
-        "inaturalist_limit": 20
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": true
     }
 }'
+echo "this was getdata, test case 4b"; date
 ```
 
 ### Case 5a: Test with local species csv file (and local shp file as extent)
@@ -298,18 +321,18 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 ```
 # Works: Tested on 2025-07-29 (Merret)
 
-Rscript getdata.R \
+echo "getdata test 5a"; date; Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
   "./danube/danube.shp" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test5a.csv"
 ```
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "80" "null" "True" "/out/biodiv-data-272468f6-6d26-11f0-83ba-fa163e42fba0.csv"
+docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test5a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -343,15 +366,15 @@ echo "getdata test 5b"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "80" "null" "True" "/out/biodiv-data-272468f6-6d26-11f0-83ba-fa163e42fba0.csv"
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "30" "True" "True" "/out/biodiv-data-test5b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -363,9 +386,12 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
-        "inaturalist_limit": 20
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": true
     }
 }'
+echo "this was getdata, test case 5b"; date
 ```
 
 ### Case 6a: Test with remote species csv file (and local geojson file as extent)
@@ -373,21 +399,21 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-29 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
-Rscript getdata.R \
+echo "getdata test 6a"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
   "./danube_from_boku.geojson" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata6a.csv"
 ```
 
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
+docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test6a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -399,25 +425,25 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/
 ```
 # Works: Tested on 2025-07-29 (Merret)
 
-Rscript getdata.R \
+echo "getdata test 6b"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test6b.csv"
 ```
 
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "80" "null" "True" "/out/biodiv-data-test.csv"
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test6b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-04 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
