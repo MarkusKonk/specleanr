@@ -3,7 +3,7 @@
     "id": "check-names",
     "use_case": "BOKU",
     "title": {
-        "en": "Check species names in biodiversity data from separate sources (3/5)"
+        "en": "Check species names in biodiversity data from separate sources"
     },
     "description": {
         "en": "This process XYZ HERE PLEASE, from the sources GBIF, iNaturalist and VertNet, with data provided by the user or other sources. For more details, please ask BOKU."
@@ -24,7 +24,7 @@
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 0,
+            "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": ["csv"]
         },
@@ -51,16 +51,6 @@
         "bool_merge": {
             "title": "True or False: Merge?",
             "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false. Please put a Boolean value, not a string.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
-        "bool_verbose": {
-            "title": "True or False: Merge?",
-            "description": "Return messages for species checks from FishBase.",
             "schema": {
                 "type": "boolean"
             },
@@ -115,12 +105,9 @@
             "colname_species": "species",
             "percent_correctness": 90,
             "bool_merge": true,
-            "bool_verbose": true,
             "bool_synonym": true,
             "bool_ecosystem_type": true,
             "bool_rm_duplicates": true
-
-
         }
     }
 }

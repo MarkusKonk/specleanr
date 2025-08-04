@@ -3,7 +3,7 @@
     "id": "retrieve-biodiversity-data",
     "use_case": "BOKU",
     "title": {
-        "en": "Retrieve biodiversity data from the web (1/5)"
+        "en": "Retrieve biodiversity data from the web"
     },
     "description": {
         "en": "This process retrieves biodiveryity data, i.e. occurrences for various species, from the sources GBIF, iNaturalist and VertNet. For more details, please ask BOKU."
@@ -104,8 +104,9 @@
             "schema": {
                 "type": "integer"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 80,
             "keywords": ["percentagecorrectness"]
         },
         "gbif_limit": {
@@ -114,8 +115,9 @@
             "schema": {
                 "type": "integer"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 50,
             "keywords": []
         },
         "inaturalist_limit": {
@@ -124,8 +126,9 @@
             "schema": {
                 "type": "integer"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 50,
             "keywords": []
         },
         "vertnet_limit": {
@@ -134,8 +137,9 @@
             "schema": {
                 "type": "integer"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 50,
             "keywords": []
         }
     },
@@ -156,7 +160,9 @@
             "databases": ["gbif", "inat", "vertnet"],
             "gbif_limit": 50,
             "vertnet_limit": 50,
-            "inaturalist_limit": 50
+            "inaturalist_limit": 50,
+            "percentage_correctness": 30,
+            "synonym_check": true
         }
     }
 }

@@ -86,19 +86,29 @@ class NameCheckProcessor(BaseProcessor):
         ### Get user inputs and check ###
         #################################
 
+        # In the order that the docker/R-script needs them:
         in_data_path           = data.get('input_data') # either one URL, or comma-separated list of strings (species names)
-        in_colname_species     = data.get('colname_species') # just one string
+        in_colname_species     = data.get('colname_species', 'null') # opt. just one string
         in_percent_correctness = data.get('percent_correctness') # number
         in_bool_merge          = data.get('bool_merge')
+        in_bool_verbose = True # (no effect on client, so not defined by client)
         in_synonymn_checks     = data.get('bool_synonym')
         in_ecosystem_checks    = data.get('bool_ecosystem_type')
         in_rm_duplicates       = data.get('bool_rm_duplicates')
 
         # Checks
+        if in_data_path is None:
+            raise ProcessorExecuteError('Missing parameter "input_data".')
         if in_percent_correctness is None:
             raise ProcessorExecuteError('Missing parameter "percent_correctness". Please provide a number.')
         if in_bool_merge is None:
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
+        if in_synonymn_checks is None:
+            raise ProcessorExecuteError('Missing parameter "bool_synonym". Please provide "true" or "false".')
+        if in_ecosystem_checks is None:
+            raise ProcessorExecuteError('Missing parameter "bool_ecosystem_type". Please provide "true" or "false".')
+        if in_rm_duplicates is None:
+            raise ProcessorExecuteError('Missing parameter "bool_rm_duplicates". Please provide "true" or "false".')
 
         #################################
         ### Input and output          ###
@@ -114,13 +124,11 @@ class NameCheckProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        if in_colname_species is None:
-            in_colname_species = "null"
+        # Nothing to do-.
 
         ####################################
         ### Assemble args and run docker ###
         ####################################
-        in_bool_verbose = True
 
         # Assemble args for R script:
         r_args = [

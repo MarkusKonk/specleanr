@@ -8,6 +8,24 @@ import warnings
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
+# Works: Test 2025-08-04 (Merret)
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "databases": ["gbif", "inat"],
+        "gbif_limit": 20,
+        "vertnet_limit": 20,
+        "inaturalist_limit": 20,
+        "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
+        "percentage_correctness": 30,
+        "synonym_check": true
+    }
+}'
+
+
+# What about these?
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -15,9 +33,9 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
         "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "databases": ["gbif", "inat", "vertnet"],
-        "gbif_limit": 50,
-        "vertnet_limit": 50,
-        "inaturalist_limit": 50
+        "gbif_limit": 10,
+        "vertnet_limit": 10,
+        "inaturalist_limit": 10
     }
 }'
 
@@ -116,23 +134,35 @@ class DataRetrievalProcessor(BaseProcessor):
         ### Get user inputs and check ###
         #################################
 
+        # In the order that the docker/R-script needs them:
         in_data_path = data.get("input_data")
-        in_species_column = data.get("colname_species")
+        in_species_column = data.get("colname_species", 'null')
         in_database = data.get("databases")
         in_gbif_lim = data.get('gbif_limit', 50)
         in_inat_lim = data.get('inaturalist_limit', 50)
         in_vert_lim = data.get('vertnet_limit', 50)
-        in_percent_correct = data.get("percentage_correctness", 80)
-        in_synonym_check    = data.get("synonym_check")
-        # Three ways of passing the bounding box:
+        in_verbose = True # (no effect on client, so not defined by client)
+        # Different ways of passing the extent/bounding box:
         study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
         study_area_bbox = data.get('study_area_bbox')
+        in_percent_correct = data.get("percentage_correctness", 80)
+        in_synonym_check    = data.get("synonym_check") # boolean
+        in_warn_check = True # (no effect on client, so not defined by client)
 
         # Checks
         if in_data_path is None:
-            raise ProcessorExecuteError('Provide the input data in either string or CSV format.')
+            raise ProcessorExecuteError('Missing parameter "input_data".')
+        if in_database is None:
+            raise ProcessorExecuteError('Missing parameter "databases".')
+        if in_synonym_check is None:
+            raise ProcessorExecuteError('Missing parameter "synonym_check". Please provide "true" or "false".')
+        if (study_area_shp_url is None or
+            study_area_bbox is None or
+            study_area_geojson is None or
+            study_area_geojson_url is None):
+            raise ProcessorExecuteError('Missing parameter "study_area_...". Please provide the study area in some way.')
 
         #################################
         ### Input and output          ###
@@ -155,12 +185,6 @@ class DataRetrievalProcessor(BaseProcessor):
         ##################################################
         ### Convert user inputs to what R script needs ###
         ##################################################
-
-        if in_species_column is None:
-            in_species_column = 'null'
-
-        if in_synonym_check is None:
-            in_synonym_check = 'null'
 
         # Join database strings:
         in_database = ','.join(in_database)
@@ -203,8 +227,6 @@ class DataRetrievalProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
-        in_verbose = True
-        in_warn_check = True
 
         # Assemble args for R script: ###
         #THIS ARRANGMENT MUST MATCH THE SOURCE CODE NUMBERING
