@@ -455,7 +455,103 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
-        "inaturalist_limit": 20
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": true
+    }
+}'
+echo "this was getdata, test case 6b"; date
+```
+
+### Case 7: Case with synonym check false...
+
+**From command line:**
+
+```
+# Works: Tested on 2025-08-04 (Merret)
+# TODO Ask Anthony whether this case makes sense...
+
+echo "getdata test 7"; date; Rscript getdata.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
+  "./danube_from_boku.geojson" \
+  "30" "FALSE" "TRUE" "./result_getdata_test7.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-04 (Merret)
+# TODO Ask Anthony whether this case makes sense...
+
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "30" "False" "True" "/out/biodiv-data-test7.csv"
+```
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-04 (Merret)
+# TODO Ask Anthony whether this case makes sense...
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "colname_species": "speciesname",
+        "databases": ["gbif", "inat"],
+        "gbif_limit": 20,
+        "vertnet_limit": 20,
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": false
+    }
+}'
+echo "this was getdata, test case 7"; date
+```
+
+### Case 8: Test with different percentage correctness...
+
+```
+# Works: Tested on 2025-08-04 (Merret)
+# TODO Ask Anthony whether this case makes sense...
+
+echo "getdata test 8"; date; Rscript getdata.R \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat" "20" "20" "20" "TRUE" \
+  "./danube_from_boku.geojson" \
+  "90" "TRUE" "TRUE" "./result_getdata_test8.csv"
+```
+
+**Run the Docker container:**
+
+```
+# Works: Tested on 2025-08-04 (Merret)
+# TODO Ask Anthony whether this case makes sense...
+
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "90" "True" "True" "/out/biodiv-data-test8.csv"
+```
+
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-04 (Merret)
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "colname_species": "speciesname",
+        "databases": ["gbif", "inat"],
+        "gbif_limit": 20,
+        "vertnet_limit": 20,
+        "inaturalist_limit": 20,
+        "percentage_correctness": 90,
+        "synonym_check": true
     }
 }'
 ```
