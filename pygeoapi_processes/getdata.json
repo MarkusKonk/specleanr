@@ -92,7 +92,7 @@
             "title": "Either consider synonym from standard databases like FishBase.",
             "description": "Logical, TRUE if synoymns species names should be returned during data checks before data download.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,

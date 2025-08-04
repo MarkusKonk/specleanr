@@ -36,7 +36,7 @@
             "keywords": ["table", "csv"]
         },
         "colname_variable": {
-            "title": "Variable of interest.",
+            "title": "Variable of interest",
             "description": "Column name identifying the variable of interest where outliers will be checked from by the univariate outlier detection methods, Z-score, mixed interquantile range, reverse jackknifing etc... In species distribution modeling, the variable of interest to be used should have direct effects to the species such as maximum temperature of the coldest month for bioclimatic variables (IUCN Standards and Petitions Committee, 2022) or stream power index for hydromorphological parameters (Logez et al., 2012).",
             "schema": {
                 "type": "string"
@@ -132,7 +132,7 @@
             "title": "bool",
             "description": "If set to true, then bootstrapping will be done for small samples.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -182,7 +182,7 @@
             "title": "Execute Principal Component Analysis.",
             "description": "If true, then PCA will be intiated.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -202,7 +202,7 @@
             "title": "Message during PCA analysis",
             "description": "Messages during PCA analyis are returned if set to false. Default is true to silence the messages like the variance explainedf from the total PCs selected.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -222,7 +222,7 @@
             "title": "Methods successes and failure messages",
             "description": "If set to true, each method successfuly implemented will be displayed. Defualt is FALSE.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -232,7 +232,7 @@
             "title": "Methods warning messages",
             "description": "If set to true, each method warnings implemented will be displayed. Defualt is FALSE.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -242,7 +242,7 @@
             "title": "Changes the outlier detection routine",
             "description": "If univariate data then sdm should set to false. All data that requires multivariate analysis such as using kmeans, isolation forest, or Mahalanobis distance, sdm must be set to true. Defualt is true.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -252,7 +252,7 @@
             "title": "inform NAs removal",
             "description": "If set to true then NAs removed will be displayed for each group variable. Defualt is FALSE.",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -262,7 +262,7 @@
             "title": "Data extraction parameter",
             "description": "If set to true then the local regression method for data extraction will be used. Check Basooma et al., 2025",
             "schema": {
-                "type": "logical"
+                "type": "boolean"
             },
             "minOccurs": 1,
             "maxOccurs": 1,

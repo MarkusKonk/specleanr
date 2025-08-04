@@ -1264,6 +1264,9 @@ echo "multidetect test 2:"; date; Rscript multidetect.R \
   "./result_multidetect_test2a.csv"
 ```
 
+Warning: `In FUN(X[[i]], ...) : The 3 rows for Setosa are less than variables and some methods may not function properly.`
+
+
 **Run the Docker container:**
 
 ```
@@ -1288,6 +1291,8 @@ echo "test multidetect 2a"; date; docker run -v "/var/www/nginx/exampledata/boku
 ### Case 2b: With loess "False" and threshold 0.8 (remote input files)
 
 **From command line:**
+
+This gives out a warning: `Warning message: In FUN(X[[i]], ...) : The 3 rows for Setosa are less than variables and some methods may not function properly.`
 
 ```
 # Works: Tested on 2025-08-01 (Merret)
@@ -1326,6 +1331,8 @@ echo "test multidetect 2b"; date; docker run -v "/var/www/nginx/download/out:/ou
 ```
 
 **Via HTTP API:**
+
+TODO Anthony: The warning is not sent to the user!
 
 ```
 # Works: Tested on 2025-08-01 (Merret)
@@ -1513,3 +1520,4 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
 }'
 echo "multidetect test 3b"; date
 ```
+
