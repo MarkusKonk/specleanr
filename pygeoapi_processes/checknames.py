@@ -7,40 +7,29 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
+# Pass a csv containing species
+# Works: Tested on 2025-08-05
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://localhost:5000/download/out/matched-biodiv-data.csv",
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": true,
-        "bool_synonymn": true
-    }
-}'
-
-# Pass a list of species
-curl --location 'http://localhost:5000/processes/check-names/execution' \
---header 'Content-Type: application/json' \
---data '{
-    "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
-        "percent_correctness": 70,
-        "bool_merge": false,
-        "bool_verbose": true,
         "bool_synonym": true,
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
 }'
 
-# Pass a csv containing species
+# Pass a list of species
+# Works: Tested on 2025-08-05
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "http://exampleserver.com/bla.csv",
-        "colname_species": "species",
+        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "percent_correctness": 70,
         "bool_merge": false,
         "bool_synonym": true,
@@ -88,7 +77,7 @@ class NameCheckProcessor(BaseProcessor):
 
         # In the order that the docker/R-script needs them:
         in_data_path           = data.get('input_data') # either one URL, or comma-separated list of strings (species names)
-        in_colname_species     = data.get('colname_species', 'null') # opt. just one string
+        in_colname_species     = data.get('colname_species', 'null') # OPTIONAL. just one string
         in_percent_correctness = data.get('percent_correctness') # number
         in_bool_merge          = data.get('bool_merge')
         in_bool_verbose = True # (no effect on client, so not defined by client)
@@ -96,7 +85,7 @@ class NameCheckProcessor(BaseProcessor):
         in_ecosystem_checks    = data.get('bool_ecosystem_type')
         in_rm_duplicates       = data.get('bool_rm_duplicates')
 
-        # Checks
+        # Checking for all mandatory input params:
         if in_data_path is None:
             raise ProcessorExecuteError('Missing parameter "input_data".')
         if in_percent_correctness is None:
@@ -124,7 +113,10 @@ class NameCheckProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # Nothing to do-.
+        # Nothing to do.
+        # Note: If the booleans were not mandatory, then their value would be None,
+        # so we would have to make sure to translate None to "False" or to "null",
+        # or make sure the R script can deal with a string "None".
 
         ####################################
         ### Assemble args and run docker ###
