@@ -84,26 +84,27 @@ def run_docker_container(
     # Define paths inside the container
     container_in = '/in'
     container_out = '/out'
+    LOGGER.debug('Mounted dirs in/out, inside container:  %s, %s' % (container_in, container_out))
 
-    # Define local paths
-    local_in = os.path.join(download_dir, "in")
-    local_out = os.path.join(download_dir, "out")
-    LOGGER.debug('Local in/out: %s, %s' % (local_in, local_out))
+    # Define paths outside the container
+    host_in = os.path.join(download_dir, "in")
+    host_out = os.path.join(download_dir, "out")
+    LOGGER.debug('Mounted dirs in/out, outside container: %s, %s' % (host_in, host_out))
 
     # Ensure directories exist
-    os.makedirs(local_in, exist_ok=True)
-    os.makedirs(local_out, exist_ok=True)
+    os.makedirs(host_in, exist_ok=True)
+    os.makedirs(host_out, exist_ok=True)
 
     # Replace paths in args:
     LOGGER.debug('Script args: %s' % script_args)
     sanitized_args = []
     for arg in script_args:
         newarg = arg
-        if local_in in arg:
-            newarg = arg.replace(local_in, container_in)
+        if host_in in arg:
+            newarg = arg.replace(host_in, container_in)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif local_out in arg:
-            newarg = arg.replace(local_out, container_out)
+        elif host_out in arg:
+            newarg = arg.replace(host_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
         elif arg == 'None' or arg is None:
             # R scripts may be more familiar with receiving "null" than "None"
@@ -117,8 +118,8 @@ def run_docker_container(
         docker_executable, "run",
         "--rm",
         "--name", container_name,
-        "-v", f"{local_in}:{container_in}:ro",
-        "-v", f"{local_out}:{container_out}",
+        "-v", f"{host_in}:{container_in}:ro",
+        "-v", f"{host_out}:{container_out}",
         "-e", f"R_SCRIPT={script_name}",
         image_name,
     ]
