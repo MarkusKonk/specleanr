@@ -95,9 +95,9 @@ class PredExtractProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input csv.')
         if in_raster_path is None:
             raise ProcessorExecuteError('Missing parameter "input_raster_url_or_name". Please provide a name or URL of your input raster.')
-        if (study_area_shp_url is None or
-            study_area_bbox is None or
-            study_area_geojson is None or
+        if (study_area_shp_url is None and
+            study_area_bbox is None and
+            study_area_geojson is None and
             study_area_geojson_url is None):
             err_msg = 'Missing parameter "study_area_...". Please provide the study area as (zipped) shapefile or geojson or as a bounding box.'
             raise ProcessorExecuteError(err_msg)
