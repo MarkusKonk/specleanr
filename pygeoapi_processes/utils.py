@@ -105,6 +105,10 @@ def run_docker_container(
         elif local_out in arg:
             newarg = arg.replace(local_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        elif arg == 'None' or arg is None:
+            # R scripts may be more familiar with receiving "null" than "None"
+            # But they still have to parse them to a proper NULL data type.
+            newarg = 'null'
         sanitized_args.append(newarg)
 
     # Prepare container command
