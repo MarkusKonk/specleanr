@@ -69,7 +69,7 @@ Works (all three tested on 2025-07-29, I only checked whether a result was retur
 Pass a list of species (and then set the second parameter, which is the column name, to "null"):
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "getdata test 1"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
@@ -83,13 +83,17 @@ echo "getdata test 1"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run "-v" "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test1.csv"
+echo "getdata test 1"; date; docker run "-v" "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+  "gbif,inat" "20" "20" "20" "True" \
+  "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" \
+  "30" "True" "True" "/out/biodiv-data-test1.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -126,9 +130,13 @@ echo "getdata test 2a"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" "-v" "./out:/out" -e "R_SCRIPT=getdata.R" specleanr:latest "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube.shp" "30" "True" "True" "/out/biodiv-data-test2a.csv"
+echo "getdata test 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" "-v" "./out:/out" -e "R_SCRIPT=getdata.R" specleanr:latest \
+  "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "/in/danube.shp" \
+  "30" "True" "True" "/out/biodiv-data-test2a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -140,9 +148,9 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" "-v" "./out:/out" -e "R_SCRI
 Pass a list of species (and then set the second parameter, which is the column name, to "null"):
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-echo "getdata test 2"; date; Rscript getdata.R \
+echo "getdata test 2b"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "gbif,inat,vertnet" "20" "20" "20" "true" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
@@ -152,15 +160,19 @@ echo "getdata test 2"; date; Rscript getdata.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" specleanr:latest "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "30" "True" "True" "/out/biodiv-data-test2b.csv"
+echo "getdata test 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" specleanr:latest \
+  "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
+  "30" "True" "True" "/out/biodiv-data-test2b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -196,7 +208,11 @@ echo "getdata test 3a"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "inat" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test3a.csv"
+echo "getdata test 3a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+  "inat" "20" "20" "20" "True" \
+  "/in/danube_from_boku.geojson" \
+  "30" "True" "True" "/out/biodiv-data-test3a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -206,11 +222,11 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "getdata test 3b"; date; Rscript getdata.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
-  "inat" "20" "20" "20" "true" \
+  "gbif,inat,vertnet" "20" "20" "20" "true" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
   "30" "TRUE" "TRUE" "./result_getdata3b.csv"
 ```
@@ -220,13 +236,17 @@ echo "getdata test 3b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test3b.csv"
+echo "getdata test 3b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
+  "30" "True" "True" "/out/biodiv-data-test3b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -250,13 +270,13 @@ echo "this was getdata, test case 3b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-29 (Merret)
+# Works: Tested on 2025-07-29 (Merret) WIP
 
 echo "getdata test 4a"; date; Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
   "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500" \
-  "30" "TRUE" "TRUE" "./result_getdata.csv"
+  "30" "TRUE" "TRUE" "./result_getdata_test4a.csv"
 ```
 
 **Run the Docker container:**
@@ -264,7 +284,11 @@ echo "getdata test 4a"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test4a.csv"
+echo "getdata test 4a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "/in/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" \
+  "30" "True" "True" "/out/biodiv-data-test4a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -274,7 +298,7 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-07-30 (Merret) WIP
 
 echo "getdata test 4b"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
@@ -288,13 +312,17 @@ echo "getdata test 4b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test4b.csv"
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" }
+  "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" \
+  "30" "True" "True" "/out/biodiv-data-test4b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-04 (Merret) WIP
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -319,7 +347,7 @@ echo "this was getdata, test case 4b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-29 (Merret)
+# Works: Tested on 2025-07-29 (Merret) NEXT
 
 echo "getdata test 5a"; date; Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
@@ -332,7 +360,11 @@ echo "getdata test 5a"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "/in/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" "30" "True" "True" "/out/biodiv-data-test5a.csv"
+echo "getdata test 5a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "/in/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" \
+  "30" "True" "True" "/out/biodiv-data-test5a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -368,7 +400,11 @@ echo "getdata test 5b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" "30" "True" "True" "/out/biodiv-data-test5b.csv"
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
+  "30" "True" "True" "/out/biodiv-data-test5b.csv"
 ```
 
 **Via HTTP API:**
@@ -413,7 +449,11 @@ echo "getdata test 6a"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "/in/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test6a.csv"
+docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "/in/danube_from_boku.geojson" \
+  "30" "True" "True" "/out/biodiv-data-test6a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -437,7 +477,11 @@ echo "getdata test 6b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "30" "True" "True" "/out/biodiv-data-test6b.csv"
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
+  "30" "True" "True" "/out/biodiv-data-test6b.csv"
 ```
 
 **Via HTTP API:**
@@ -463,18 +507,20 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 echo "this was getdata, test case 6b"; date
 ```
 
-### Case 7: Case with synonym check false...
+### Case 7: Test with synonym check false...
+
+(TODO: Ask Anthony whether this case makes sense...)
 
 **From command line:**
 
 ```
 # Works: Tested on 2025-08-04 (Merret)
-# TODO Ask Anthony whether this case makes sense...
+# TODO RUN
 
 echo "getdata test 7"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
-  "./danube_from_boku.geojson" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
   "30" "FALSE" "TRUE" "./result_getdata_test7.csv"
 ```
 
@@ -482,9 +528,12 @@ echo "getdata test 7"; date; Rscript getdata.R \
 
 ```
 # Works: Tested on 2025-08-04 (Merret)
-# TODO Ask Anthony whether this case makes sense...
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat,vertnet" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "30" "False" "True" "/out/biodiv-data-test7.csv"
+docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
+  "30" "False" "True" "/out/biodiv-data-test7.csv"
 ```
 
 **Via HTTP API:**
@@ -515,12 +564,12 @@ echo "this was getdata, test case 7"; date
 
 ```
 # Works: Tested on 2025-08-04 (Merret)
-# TODO Ask Anthony whether this case makes sense...
+# Fails on 2025-08-05 due to HTTP 429
 
 echo "getdata test 8"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat" "20" "20" "20" "TRUE" \
-  "./danube_from_boku.geojson" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
   "90" "TRUE" "TRUE" "./result_getdata_test8.csv"
 ```
 
@@ -530,7 +579,11 @@ echo "getdata test 8"; date; Rscript getdata.R \
 # Works: Tested on 2025-08-04 (Merret)
 # TODO Ask Anthony whether this case makes sense...
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" "gbif,inat" "20" "20" "20" "True" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "90" "True" "True" "/out/biodiv-data-test8.csv"
+echo "getdata test 8"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
+  "gbif,inat" "20" "20" "20" "True" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
+  "90" "True" "True" "/out/biodiv-data-test8.csv"
 ```
 
 
@@ -596,52 +649,50 @@ To run it using URLs for the input data, you have to store the input data somewh
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "matchdata test 1a"; date; Rscript matchdata.R \
   "efidata.csv,jdsdata.csv" \
   "speciesname, scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" \
-  "TRUE" "./result_matchdata.csv"
+  "TRUE" "./result_matchdata_test2a.csv"
 ```
 
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku/:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "/in/efidata.csv,/in/jdsdata.csv" "speciesname,scientificName"  "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test.csv"
+echo "matchdata test 1a"; date; docker run -v "/var/www/nginx/exampledata/boku/:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "/in/efidata.csv,/in/jdsdata.csv" "speciesname,scientificName"  "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test2a.csv"
 ```
 
-**Via HTTP API:**
-
-* Cannot run via HTTP API using local input file
+**Via HTTP API:** Cannot run via HTTP API using local input file
 
 ### Case 1b: Remote CSV input
 
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "matchdata test 1b"; date; Rscript matchdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv" \
   "speciesname, scientificName" "JDS4_sampling_ID" "lat, lati" "lon, long" "sampling_date,Date" \
-  "TRUE" "./result_matchdata.csv"
+  "TRUE" "./result_matchdata_test1b.csv"
 ```
 
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname,scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test.csv"
+echo "matchdata test 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname,scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test1b.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 ```
+Works: Tested on 2025-08-05 (Merret)
+
 curl --location 'http://localhost:5000/processes/match-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{ 
@@ -654,6 +705,7 @@ curl --location 'http://localhost:5000/processes/match-data/execution' \
         "colnames_date": ["Date", "sampling_date"]
     }
 }'
+echo "This was matchdata, test 1b"; date
 ```
 
 
@@ -694,7 +746,7 @@ You don't necessarily need input data - you can simply use a string list as inpu
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "checknames test 1"; date; Rscript checknames.R \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
@@ -707,15 +759,20 @@ echo "checknames test 1"; date; Rscript checknames.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" "70" "false" "true" "true" "true" "true" "/out/result_matchdata-test.csv"
+echo "checknames test 1"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+  "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
+  "70" \
+  "false" "true" \
+  "true" "true" "true" \
+  "/out/result_matchdata-test1.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
@@ -724,11 +781,12 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "percent_correctness": 70,
         "bool_merge": false,
-        "bool_synonymn": true,
+        "bool_synonym": true,
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
 }'
+echo "This was checknames, test 1", date
 ```
 
 ### Case 2a: File input (local), merge=True
@@ -739,9 +797,9 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-Rscript checknames.R \
+echo "checknames test 2a"; date; Rscript checknames.R \
   "matched-biodiv-data-example.csv" "species" \
   "70" \
   "True" "True" \
@@ -754,9 +812,14 @@ Rscript checknames.R \
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
-# Works: Tested via docker on 2025-07-30 (Merret)
+# Works: Tested via docker on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:20250722" "/in/matched-biodiv-data-example.csv" "species" "70" "True" "True" "True" "True" "True" "/out/checked-biodiv-data-test.csv"
+echo "checknames test 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+  "/in/matched-biodiv-data-example.csv" "species" \
+  "70" \
+  "True" "True" \
+  "True" "True" "True" \
+  "/out/checked-biodiv-data-test2a.csv"
 ```
 
 **Via HTTP API:**
@@ -771,7 +834,7 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/
 * Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
-Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "checknames test 2b"; date; Rscript checknames.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
@@ -784,6 +847,8 @@ echo "checknames test 2b"; date; Rscript checknames.R \
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
 
 ```
+# Works: Tested on 2025-08-05 (Merret)
+
 echo "checknames test 2b"; date; Rscript checknames.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
   "70" \
@@ -797,24 +862,36 @@ echo "checknames test 2b"; date; Rscript checknames.R \
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
-# Works: Tested via docker on 2025-07-30 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:20250722" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" "70" "True" "True" "True" "True" "True" "/out/checked-biodiv-data-test.csv"
+echo "checknames test 2b"; date; docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
+  "70" \
+  "True" "True" \
+  "True" "True" "True" \
+  "/out/checked-biodiv-data-test2b.csv"
 ```
 
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
 
 ```
-docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:20250722" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" "70" "True" "True" "False" "False" "False" "/out/checked-biodiv-data-test.csv"
+# Works: Tested on 2025-08-05 (Merret)
+
+echo "checknames test 2b"; date; docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
+  "70" \
+  "True" "True" \
+  "False" "False" "False" \
+  "/out/checked-biodiv-data-test2b.csv"
 ```
 
 **Via HTTP API:**
 
-Works: Tested via pygeoapi on 2025-07-30 (Merret)
-
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
+# Works: Tested on 2025-08-05 (Merret)
+
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -833,6 +910,8 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
 
 ```
+# Works: Tested on 2025-08-05 (Merret)
+
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -841,7 +920,9 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": true,
-        "bool_synonymn": true
+        "bool_synonym": false,
+        "bool_ecosystem_type": false,
+        "bool_rm_duplicates": false
     }
 }'
 ```
@@ -906,10 +987,20 @@ echo "pred_extract test 1a"; date; Rscript pred_extract.R \
 
 **Run the Docker container:**
 
-Works: Tested via docker on 2025-07-31 (Merret)
-
 ```
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" "/in/species_for_pred_extract.csv" "/in/worldclim.tiff" "/in/danube_from_boku.geojson" "decimalLatitude" "decimalLongitude" "species" "10" "True" "False" "True" "True" "True" "True" "True" "False" "False" "/out/result_pred_extract.csv"
+Works: Tested on 2025-07-31 (Merret)
+
+echo "pred_extract test 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" \
+  "/in/species_for_pred_extract.csv" \
+  "/in/worldclim.tiff" \
+  "/in/danube_from_boku.geojson" \
+  "decimalLatitude" "decimalLongitude" "species" \
+  "10" \
+  "True" "False" "True" \
+  "True" "True" \
+  "True" "True" \
+  "False" "False" \
+  "/out/result_pred_extract_test1a.csv"
 ```
 
 **Via HTTP API:**
@@ -921,9 +1012,9 @@ docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-echo "pred_extract test 1bf"; date; Rscript pred_extract.R \
+echo "pred_extract test 1b"; date; Rscript pred_extract.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
@@ -939,15 +1030,25 @@ echo "pred_extract test 1bf"; date; Rscript pred_extract.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-07-31 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" "decimalLatitude" "decimalLongitude" "species" "10" "True" "False" "True" "True" "True" "True" "True" "False" "False" "/out/result_pred_extract.csv"
+echo "pred_extract test 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
+  "decimalLatitude" "decimalLongitude" "species" \
+  "10" \
+  "True" "False" "True" \
+  "True" "True" \
+  "True" "True" \
+  "False" "False" \
+  "/out/result_pred_extract_test1b.csv"
 ```
 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-07-31 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
@@ -1061,7 +1162,7 @@ Rscript multidetect.R \
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Not run (will fail due to comments):
 
 echo "multidetect test1"; date; Rscript multidetect.R \
   "iris1.csv" "Sepal.Length" \
@@ -1080,7 +1181,7 @@ echo "multidetect test1"; date; Rscript multidetect.R \
 Without comments, good for copy-pasting:
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "multidetect test1"; date; Rscript multidetect.R \
   "iris1.csv" "Sepal.Length" \
@@ -1099,7 +1200,7 @@ echo "multidetect test1"; date; Rscript multidetect.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "test multidetect 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "/in/iris1.csv" "Sepal.Length" \
@@ -1124,9 +1225,9 @@ echo "test multidetect 1a"; date; docker run -v "/var/www/nginx/exampledata/boku
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Not run (will fail due to comments):
 
-echo "multidetect test1"; date; Rscript multidetect.R \
+echo "multidetect test 1b"; date; Rscript multidetect.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1143,9 +1244,9 @@ echo "multidetect test1"; date; Rscript multidetect.R \
 Without comments, good for copy-pasting:
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-echo "multidetect test1"; date; Rscript multidetect.R \
+echo "multidetect test 1b"; date; Rscript multidetect.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1162,7 +1263,7 @@ echo "multidetect test1"; date; Rscript multidetect.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "test multidetect 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
@@ -1181,7 +1282,7 @@ echo "test multidetect 1b"; date; docker run -v "/var/www/nginx/download/out:/ou
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
 --header 'Content-Type: application/json' \
@@ -1226,9 +1327,9 @@ echo "test multidetect 1b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Not run (will fail due to comments):
 
-echo "multidetect test 2:"; date; Rscript multidetect.R \
+echo "multidetect test 2a:"; date; Rscript multidetect.R \
   "iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1248,9 +1349,9 @@ echo "multidetect test 2:"; date; Rscript multidetect.R \
 Without comments, good for copy-pasting:
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
-echo "multidetect test 2:"; date; Rscript multidetect.R \
+echo "multidetect test 2a:"; date; Rscript multidetect.R \
   "iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1270,7 +1371,7 @@ Warning: `In FUN(X[[i]], ...) : The 3 rows for Setosa are less than variables an
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "test multidetect 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "/in/iris1.csv" "Sepal.Length" \
@@ -1295,7 +1396,7 @@ echo "test multidetect 2a"; date; docker run -v "/var/www/nginx/exampledata/boku
 This gives out a warning: `Warning message: In FUN(X[[i]], ...) : The 3 rows for Setosa are less than variables and some methods may not function properly.`
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "multidetect test 2b:"; date; Rscript multidetect.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
@@ -1314,7 +1415,7 @@ echo "multidetect test 2b:"; date; Rscript multidetect.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "test multidetect 2b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
@@ -1332,10 +1433,10 @@ echo "test multidetect 2b"; date; docker run -v "/var/www/nginx/download/out:/ou
 
 **Via HTTP API:**
 
-TODO Anthony: The warning is not sent to the user!
+TODO Anthony: The warning is not sent to the user - ok?
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
 --header 'Content-Type: application/json' \
@@ -1380,7 +1481,7 @@ echo "multidetect test 2b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Not run (will fail due to comments):
 
 echo "multidetect test 3a:"; date; Rscript multidetect.R \
   "iris1.csv" "Sepal.Length" \
@@ -1402,7 +1503,7 @@ echo "multidetect test 3a:"; date; Rscript multidetect.R \
 Without comments, good for copy-pasting:
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "multidetect test 3a:"; date; Rscript multidetect.R \
   "iris1.csv" "Sepal.Length" \
@@ -1418,10 +1519,22 @@ echo "multidetect test 3a:"; date; Rscript multidetect.R \
   "./result_multidetect_test3a.csv"
 ```
 
+Warnings:
+
+```
+Warning messages:
+1: In ocindex(x = outliers, sp = sp, props = TRUE, absolute = TRUE,  :
+  The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.
+2: In ocindex(x = outliers, sp = sp, props = TRUE, absolute = TRUE,  :
+  The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.
+3: In ocindex(x = outliers, sp = sp, props = TRUE, absolute = TRUE,  :
+  The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.
+```
+
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "test multidetect 3a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "/in/iris1.csv" "Sepal.Length" \
@@ -1443,10 +1556,22 @@ echo "test multidetect 3a"; date; docker run -v "/var/www/nginx/exampledata/boku
 
 * This runs the functions `multidetect()`, `classify_data()`
 
+This causes warning, which is not visible to the user when they use the API:
+
+```
+Warning messages:
+1: In ocindex(x = outliers, sp = sp, props = TRUE, absolute = TRUE,  :
+  The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.
+2: In ocindex(x = outliers, sp = sp, props = TRUE, absolute = TRUE,  :
+  The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.
+3: In ocindex(x = outliers, sp = sp, props = TRUE, absolute = TRUE,  :
+  The absolute outliers found are suspicious since they are shared by less than 50% of the methods used.
+```
+
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "multidetect test 3b:"; date; Rscript multidetect.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
@@ -1465,7 +1590,7 @@ echo "multidetect test 3b:"; date; Rscript multidetect.R \
 **Run the Docker container:**
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "test multidetect 3b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
@@ -1483,7 +1608,7 @@ echo "test multidetect 3b"; date; docker run -v "/var/www/nginx/download/out:/ou
 **Via HTTP API:** 
 
 ```
-# Works: Tested on 2025-08-01 (Merret)
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
 --header 'Content-Type: application/json' \
