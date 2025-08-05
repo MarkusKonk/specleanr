@@ -88,7 +88,7 @@ class MultiDetectProcessor(BaseProcessor):
         in_var_ofinterest                 = data.get('colname_variable') # Required
         in_select_var                     = data.get('select_columns', 'null') # Optional
         in_bool_multiple_species          = data.get('multiple_species') # Required
-        in_output_type                    = data.get('output_type', 'null') # OPTIONAL clean or outlier/ Defualt outliers ?? TODO ASK
+        in_output_type                    = data.get('output_type', 'outlier') # OPTIONAL clean or outlier/ Defualt outliers
         in_group_colname                  = data.get('group_colname', 'null') # OPTIONAL (I think)
         in_colnames_exclude               = data.get('colname_exclude', 'null') # OPTIONAL
         in_methods                        = data.get('methods') # Required
