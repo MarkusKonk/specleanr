@@ -29,6 +29,50 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "minimum_sprecordsallow": false
     }
 }'
+
+# Example using CSV and GeoJSON (passed directly) and GeoTIFF (static, on the server) input
+# Works: Tested on 2025-08-05 (Merret)
+
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "worldclim",
+        "study_area_geojson": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[
+                        [ 9.3593826329501, 50.15015768185512],
+                        [ 7.9191189516121, 47.12117448155652],
+                        [ 9.3089855398883, 45.44042789489441],
+                        [11.3163007857614, 46.07905231554338],
+                        [19.8679225896241, 41.37556228149228],
+                        [28.1073844852147, 42.03408100365081],
+                        [30.8463783248204, 45.85409918874026],
+                        [28.2557360912777, 49.13596193751451],
+                        [20.1314141836580, 50.32119604024012],
+                        [ 9.3593826329502, 50.15015768185512]
+                    ]]
+                }
+            }]
+        },
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "bool_merge": true,
+        "bool_list": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": false,
+        "minimum_sprecordsallow": false
+    }
+}'
 '''
 
 LOGGER = logging.getLogger(__name__)
