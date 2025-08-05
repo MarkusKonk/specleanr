@@ -157,6 +157,10 @@ if (tolower(in_threshold_clean) == 'null') {
   stop("Could not understand 'threshold_clean', expected number or 'null', got: ", in_threshold_clean, " of type ", typeof(in_threshold_clean))
 }
 
+if (tolower(in_output_type) == 'null') {
+  in_output_type <- NULL
+}
+
 
 ###############################
 ### Run specleanr functions ###
