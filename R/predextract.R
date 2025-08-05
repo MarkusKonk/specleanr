@@ -100,6 +100,8 @@ pred_extract <- function(data, raster, lat = NULL,
     species_lon_df <- dfnew[complete.cases(dfnew[ , c(lat, lon, colsp)]), ]
 
     spdata_new <- species_lon_df |> sf::st_as_sf(coords = c(lon, lat), crs = sf::st_crs(4326))
+    
+    print(nrow(spdata_new))
 
   }else{
     #no need to indicate the geometry since the geometry already has no NA,
@@ -140,6 +142,7 @@ pred_extract <- function(data, raster, lat = NULL,
   }else{
     dupdata <- as.data.frame(basin_df)
   }
+  if(nrow(dupdata)<1)stop('The shapefile used or bounding box returned no data. Process stopped.')
 
   #check there is enough species data after duplicate removal for at some species
 
