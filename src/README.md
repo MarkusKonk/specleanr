@@ -270,7 +270,7 @@ echo "this was getdata, test case 3b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-29 (Merret) WIP
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "getdata test 4a"; date; Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
@@ -298,7 +298,7 @@ echo "getdata test 4a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-30 (Merret) WIP
+# Works: Tested on 2025-07-30 (Merret)
 
 echo "getdata test 4b"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
@@ -322,7 +322,7 @@ docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret) WIP
+# Works: Tested on 2025-08-05 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -347,7 +347,7 @@ echo "this was getdata, test case 4b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-07-29 (Merret) NEXT
+# Works: Tested on 2025-07-29 (Merret)
 
 echo "getdata test 5a"; date; Rscript getdata.R \
   "./jdsdata.csv" "speciesname" \
@@ -514,12 +514,11 @@ echo "this was getdata, test case 6b"; date
 **From command line:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
-# TODO RUN
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "getdata test 7"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
-  "gbif,inat,vertnet" "20" "20" "20" "TRUE" \
+  "gbif,inat,vertnet" "5" "5" "5" "TRUE" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
   "30" "FALSE" "TRUE" "./result_getdata_test7.csv"
 ```
@@ -531,7 +530,7 @@ echo "getdata test 7"; date; Rscript getdata.R \
 
 docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
-  "gbif,inat,vertnet" "20" "20" "20" "True" \
+  "gbif,inat,vertnet" "5" "5" "5" "TRUE" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
   "30" "False" "True" "/out/biodiv-data-test7.csv"
 ```
@@ -540,7 +539,6 @@ docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
 
 ```
 # Works: Tested on 2025-08-04 (Merret)
-# TODO Ask Anthony whether this case makes sense...
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
@@ -550,9 +548,9 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
         "colname_species": "speciesname",
         "databases": ["gbif", "inat"],
-        "gbif_limit": 20,
-        "vertnet_limit": 20,
-        "inaturalist_limit": 20,
+        "gbif_limit": 5,
+        "vertnet_limit": 5,
+        "inaturalist_limit": 5,
         "percentage_correctness": 30,
         "synonym_check": false
     }
@@ -562,9 +560,12 @@ echo "this was getdata, test case 7"; date
 
 ### Case 8: Test with different percentage correctness...
 
+(TODO: Ask Anthony whether this case makes sense...)
+
+**From command line:**
+
 ```
-# Works: Tested on 2025-08-04 (Merret)
-# Fails on 2025-08-05 due to HTTP 429
+# Works: Tested on 2025-08-05 (Merret)
 
 echo "getdata test 8"; date; Rscript getdata.R \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
@@ -577,7 +578,6 @@ echo "getdata test 8"; date; Rscript getdata.R \
 
 ```
 # Works: Tested on 2025-08-04 (Merret)
-# TODO Ask Anthony whether this case makes sense...
 
 echo "getdata test 8"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
@@ -585,7 +585,6 @@ echo "getdata test 8"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" 
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
   "90" "True" "True" "/out/biodiv-data-test8.csv"
 ```
-
 
 **Via HTTP API:**
 
