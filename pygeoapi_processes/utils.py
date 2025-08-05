@@ -117,7 +117,7 @@ def run_docker_container(
         docker_executable, "run",
         "--rm",
         "--name", container_name,
-        "-v", f"{local_in}:{container_in}",
+        "-v", f"{local_in}:{container_in}:ro",
         "-v", f"{local_out}:{container_out}",
         "-e", f"R_SCRIPT={script_name}",
         image_name,
