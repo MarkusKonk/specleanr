@@ -3,7 +3,7 @@
     "id": "match-data",
     "use_case": "BOKU",
     "title": {
-        "en": "Combine and match biodiversity data from separate sources (2/5)"
+        "en": "Combine and match biodiversity data from separate sources"
     },
     "description": {
         "en": "This process combines and matches biodiveryity data, i.e. occurrences for various species, from the sources GBIF, iNaturalist and VertNet, with data provided by the user or other sources. For more details, please ask BOKU."
@@ -35,7 +35,7 @@
                 "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 100,
+            "maxOccurs": 1,
             "keywords": []
         },
         "colnames_countries": {
@@ -45,7 +45,7 @@
                 "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 100,
+            "maxOccurs": 1,
             "keywords": []
         },
         "colnames_lat": {
@@ -55,7 +55,7 @@
                 "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 100,
+            "maxOccurs": 1,
             "keywords": []
         },
         "colnames_lon": {
@@ -65,7 +65,7 @@
                 "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 100,
+            "maxOccurs": 1,
             "keywords": []
         },
         "colnames_date": {
@@ -75,7 +75,7 @@
                 "type": "array"
             },
             "minOccurs": 1,
-            "maxOccurs": 100,
+            "maxOccurs": 1,
             "keywords": []
         }
     },

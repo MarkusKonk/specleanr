@@ -7,36 +7,22 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'http://localhost:5000/processes/match-data/execution' \
---header 'Content-Type: application/json' \
---data '{ 
-    "inputs": {
-        "input_datasets": ["https://localhost/download/out/biodiv-data.csv", "https://localhost/referencedata/specleanr/efidata.csv"],
-        "colnames_species_names": ["speciesname", "scientificName"],
-        "colnames_countries": ["JDS4_sampling_ID"],
-        "colnames_lat": ["lat", "latitude"],
-        "colnames_lon": ["lon", "long", "longitude"],
-        "colnames_date": ["Date", "sampling_date"],
-        "verbose": true
-    }
-}'
-
+# Works: Tested on 2025-08-05 (Merret)
 curl --location 'http://localhost:5000/processes/match-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_datasets": ["https://exampleserver.com/exampledata/boku/jdsdata.csv",
-                           "https://exampleserver.com/exampledata/boku/efidata.csv"],
+        "input_datasets": [
+            "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv",
+            "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv"
+        ],
         "colnames_species_names": ["speciesname", "scientificName"],
         "colnames_countries": ["JDS4_sampling_ID"],
         "colnames_lat": ["lat", "latitude"],
         "colnames_lon": ["lon", "long", "longitude"],
-        "colnames_date": ["Date", "sampling_date"],
-        "verbose": true
+        "colnames_date": ["Date", "sampling_date"]
     }
 }'
-
-
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -75,14 +61,16 @@ class DataMatchProcessor(BaseProcessor):
         ### Get user inputs and check ###
         #################################
 
+        # In the order that the docker/R-script needs them:
         in_data_paths_or_urls = data.get('input_datasets')
         in_colnames_species_names = data.get('colnames_species_names')
         in_colnames_countries = data.get('colnames_countries')
         in_colnames_lat = data.get('colnames_lat')
         in_colnames_lon = data.get('colnames_lon')
         in_colnames_date = data.get('colnames_date') #appears in JSON file
+        in_verbose = True  # (no effect on client, so not defined by client)
 
-        # Checks
+        # Checking for all mandatory input params:
         if in_data_paths_or_urls is None:
             raise ProcessorExecuteError('Missing parameter "input_datasets". Please provide URL(s) to your input csv file(s).')
         if in_colnames_species_names is None:
@@ -124,7 +112,6 @@ class DataMatchProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
-        in_verbose = True
 
         # Assemble args for R script:
         r_args = [
