@@ -1069,8 +1069,41 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "minimum_sprecordsallow": false
     }
 }'
+echo "this was pred_extract test 1b"; date;
 ```
 
+### Case 2: Static raster on server
+
+**From command line:** Not available
+
+**Run the Docker container:** Not available
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-05 (Merret)
+
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "worldclim",
+        "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "bool_merge": true,
+        "bool_list": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": false,
+        "minimum_sprecordsallow": false
+    }
+}'
+echo "This was pred_extract case 2"; date
+```
 
 
 ## (5) multidetect.R

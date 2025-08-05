@@ -219,6 +219,7 @@ class PredExtractProcessor(BaseProcessor):
             self.image_name,
             self.r_script,
             self.download_dir,
+            self.input_raster_dir,
             r_args
         )
 
@@ -278,6 +279,7 @@ def run_docker_container(
         image_name,
         script_name,
         download_dir,
+        readonly_dir,
         script_args
     ):
     LOGGER.debug('Prepare running docker container')
@@ -290,10 +292,12 @@ def run_docker_container(
     # Define paths inside the container
     container_in = '/in'
     container_out = '/out'
+    container_readonly = '/readonly'
 
     # Define local paths
     local_in = os.path.join(download_dir, "in")
     local_out = os.path.join(download_dir, "out")
+    local_readonly = readonly_dir.rstrip('/')
 
     # Ensure directories exist
     os.makedirs(local_in, exist_ok=True)
@@ -309,6 +313,10 @@ def run_docker_container(
         elif local_out in arg:
             newarg = arg.replace(local_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+        elif local_readonly in arg:
+            newarg = arg.replace(local_readonly, container_readonly)
+            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
+
         sanitized_args.append(newarg)
 
     # Prepare container command
@@ -317,8 +325,9 @@ def run_docker_container(
         docker_executable, "run",
         "--rm",
         "--name", container_name,
-        "-v", f"{local_in}:{container_in}",
+        "-v", f"{local_in}:{container_in}:ro",
         "-v", f"{local_out}:{container_out}",
+        "-v", f"{readonly_dir}:{container_readonly}:ro",
         "-e", f"R_SCRIPT={script_name}",
         image_name,
     ]
