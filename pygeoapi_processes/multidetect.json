@@ -3,7 +3,7 @@
     "id": "multidetect-and-clean",
     "use_case": "BOKU",
     "title": {
-        "en": "Run multidetect and clean the data (5/5)"
+        "en": "Run multidetect and clean the data"
     },
     "description": {
         "en": "This process detects outliers using various methods and cleans the data: Ensemble multiple outlier detection methods to ably compare the outliers flagged by each method; then extract final clean data using either absolute or best method generated outliers. For more details, please ask BOKU."
@@ -45,6 +45,16 @@
             "maxOccurs": 1,
             "keywords": ["column"]
         },
+        "select_columns": {
+            "title": "Select columns",
+            "description": "In a multivariate dataset, if only particular columns needs to be checked then they should be indicated here. Otherwise all columns will be considerd in outlier detection.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": []
+        },
         "multiple_species": {
             "title": ": Distinguish between multiple species",
             "description": "If \"false\", then only a single species dataset is expected. However, if multiple species are considered, then the parameter must be set to \"true\". The \"colsp\" is also required to set the column with species names. If the data is a list of indivudual data, then \"colsp\" is not a required parameter.",
@@ -55,13 +65,23 @@
             "maxOccurs": 1,
             "keywords": []
         },
+        "output_type": {
+            "title": "Output type",
+            "description": "Set whether you want to return ourliers or clean dataset. The Defualt is outlier to return outliers from each method.",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": []
+        },
         "group_colname": {
             "title": ": Required for multiple groups",
             "description": "For multiple groups in a dataframe, provide the column name containing the groups to be checked. For example, a column name with species name in a dataset.",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
@@ -71,7 +91,7 @@
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": ["column"]
         },
@@ -84,39 +104,6 @@
             "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": ["column"]
-        },
-        "missingness": {
-            "title": "Missingness",
-            "description": "Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if a column has more than 10 % missing values, then it will be removed from the dataset rather than the rows.",
-            "schema": {
-                "type": "number"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "default": 0.1,
-            "keywords": []
-        },
-        "select_columns": {
-            "title": "Select columns",
-            "description": "In a multivariate dataset, if only particular columns needs to be checked then they should be indicated here. Otherwise all columns will be considerd in outlier detection.",
-            "schema": {
-                "type": "string"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "default": 0.1,
-            "keywords": []
-        },
-        "output_type": {
-            "title": "Output type",
-            "description": "Set whether you want to return ourliers or clean dataset. The Defualt is outlier to return outliers from each method.",
-            "schema": {
-                "type": "string"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "default": 0.1,
-            "keywords": []
         },
         "silence_true_errors": {
             "title": "True or False",
@@ -144,8 +131,9 @@
             "schema": {
                 "type": "number"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 30,
             "keywords": ["column"]
         },
         "number_of_boots": {
@@ -154,8 +142,9 @@
             "schema": {
                 "type": "number"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 10,
             "keywords": ["column"]
         },
         "setseed": {
@@ -174,8 +163,9 @@
             "schema": {
                 "type": "decimal"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 0.6,
             "keywords": ["column"]
         },
         "exceute_pca": {
@@ -194,8 +184,9 @@
             "schema": {
                 "type": "number"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 5,
             "keywords": []
         },
         "pca_silence": {
@@ -204,7 +195,7 @@
             "schema": {
                 "type": "boolean"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
@@ -214,48 +205,40 @@
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "default": "PCA1",
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
-        "verbose_outlier": {
-            "title": "Methods successes and failure messages",
-            "description": "If set to true, each method successfuly implemented will be displayed. Defualt is FALSE.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
-        "warn_outlier": {
-            "title": "Methods warning messages",
-            "description": "If set to true, each method warnings implemented will be displayed. Defualt is FALSE.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
-        "sdm_bool": {
+        "sdm_data": {
             "title": "Changes the outlier detection routine",
             "description": "If univariate data then sdm should set to false. All data that requires multivariate analysis such as using kmeans, isolation forest, or Mahalanobis distance, sdm must be set to true. Defualt is true.",
             "schema": {
                 "type": "boolean"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
-        "na_inform_bool": {
+        "inform_na_outlier": {
             "title": "inform NAs removal",
             "description": "If set to true then NAs removed will be displayed for each group variable. Defualt is FALSE.",
             "schema": {
                 "type": "boolean"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "keywords": []
+        },
+        "missingness": {
+            "title": "Missingness",
+            "description": "Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if a column has more than 10 % missing values, then it will be removed from the dataset rather than the rows.",
+            "schema": {
+                "type": "number"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "default": 0.1,
             "keywords": []
         },
         "bool_loess ": {
@@ -274,8 +257,9 @@
             "schema": {
                 "type": "number"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": 0.8,
             "keywords": []
         },
         "outlierweights_mode": {
@@ -284,8 +268,9 @@
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
+            "default": "abs",
             "keywords": []
         },
         "classifymode": {
@@ -296,6 +281,7 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
+            "default": "med",
             "keywords": []
         },
         "eif_bool": {
@@ -304,9 +290,20 @@
             "schema": {
                 "type": "logcial"
             },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "default": false,
+            "keywords": ["column"]
+        },
+        "classify_or_autoremove": {
+            "title": "Title missing",
+            "description": "Description missing",
+            "schema": {
+                "type": "boolean"
+            },
             "minOccurs": 1,
             "maxOccurs": 1,
-            "keywords": ["column"]
+            "keywords": []
         }
     },
     "outputs": {
@@ -321,15 +318,33 @@
     },
     "example": {
         "inputs": {
-            "input_data": "https://localhost/download/out/multiprecleaned.csv",
-            "colname_variable": "bio6",
+            "input_data": "https://example.com/multiprecleaned.csv",
+            "colname_variable": "Sepal.Length",
+            "select_columns": null,
             "multiple_species": true,
-            "colname_exclude": "x,y",
-            "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal",
-            "silence_true_errors": true,
-            "missingness": 0.1,
-            "threshold_clean": 0.7,
-            "group_colname": "species"
+            "output_type": "outlier",
+            "group_colname": "Species",
+            "colname_exclude": null,
+            "methods": "mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel",
+            "silence_true_errors": false,
+            "boot_run": false,
+            "boot_maxrecords": 30,
+            "number_of_boots": 5,
+            "setseed": 1125,
+            "boot_threshold": 0.6,
+            "exceute_pca": true,
+            "number_of_pca": 2,
+            "pca_silence": true,
+            "pcavariable": "PC1",
+            "sdm_data": true,
+            "inform_na_outlier": true,
+            "missingness": 1.0,
+            "bool_loess": true,
+            "threshold_clean": null,
+            "outlierweights_mode": "abs",
+            "classifymode": "med",
+            "eif_bool": false,
+            "classify_or_autoremove": true
         }
     }
 }

@@ -8,11 +8,13 @@ from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
 
+## Pass all possible variables
+## Works. Tested 2025-08-01
 curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://example.com/exampledata/boku/iris1.csv",
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv",
         "colname_variable": "Sepal.Length",
         "select_columns": null,
         "multiple_species": true,
@@ -81,51 +83,76 @@ class MultiDetectProcessor(BaseProcessor):
         #################################
 
         # Get user inputs
-        # This below is the order in which it has to be passed to the docker!
-        in_data_path_or_url               = data.get('input_data')
-        in_var_ofinterest                 = data.get('colname_variable')
-        in_select_var                     = data.get('select_columns')
-        in_bool_multiple_species          = data.get('multiple_species')
-        in_output_type                    = data.get('output_type') #clean or outlier/ Defualt outliers
-        in_group_colname                  = data.get('group_colname', 'not_provided')
-        in_colnames_exclude               = data.get('colname_exclude')
-        in_methods                        = data.get('methods')
+        # In the order that the docker/R-script needs them:
+        in_data_path_or_url               = data.get('input_data') # Required
+        in_var_ofinterest                 = data.get('colname_variable') # Required
+        in_select_var                     = data.get('select_columns', 'null') # Optional
+        in_bool_multiple_species          = data.get('multiple_species') # Required
+        in_output_type                    = data.get('output_type', 'null') # OPTIONAL clean or outlier/ Defualt outliers ?? TODO ASK
+        in_group_colname                  = data.get('group_colname', 'null') # OPTIONAL (I think)
+        in_colnames_exclude               = data.get('colname_exclude', 'null') # OPTIONAL
+        in_methods                        = data.get('methods') # Required
         in_silence_true_errors            = data.get('silence_true_errors')
         in_boot_settings_run_bool         = data.get('boot_run')
-        in_boot_settings_maxrecords       = data.get('boot_maxrecords')
-        in_boot_settings_nb               = data.get('number_of_boots')
+        in_boot_settings_maxrecords       = data.get('boot_maxrecords', 30)
+        in_boot_settings_nb               = data.get('number_of_boots', 10)
         in_boot_settings_seed             = data.get('setseed')
-        in_boot_settings_threshold        = data.get('boot_threshold')
-        in_pca_settings_exec_bool         = data.get('exceute_pca')
-        in_pca_settings_npc               = data.get('number_of_pca')
-        in_pca_settings_quiet             = data.get('pca_silence')
-        in_pca_settings_pcvar             = data.get('pcavariable')
-        #in_verbose_bool                  = True # not to be set by user!
-        #in_warn_bool                     = True # not to be set by user!
-        in_sdm_bool                       = data.get('sdm_data') #multivaritate data, sdm must be TRUE
-        in_na_inform_bool                 = data.get('inform_na_outlier')
-        in_missingness                    = data.get('missingness')
+        in_boot_settings_threshold        = data.get('boot_threshold', 0.6)
+        in_pca_settings_exec_bool         = data.get('exceute_pca') # Boolean
+        in_pca_settings_npc               = data.get('number_of_pca', 5)
+        in_pca_settings_quiet             = data.get('pca_silence', True)
+        in_pca_settings_pcvar             = data.get('pcavariable', "PCA1")
+        in_verbose_bool = True  # (no effect on client, so not defined by client)
+        in_warn_bool = True  # (no effect on client, so not defined by client)
+        in_sdm_bool                       = data.get('sdm_data', True) #multivaritate data, sdm must be TRUE
+        in_na_inform_bool                 = data.get('inform_na_outlier', False)
+        in_missingness                    = data.get('missingness', 0.1) # OPT
         in_bool_loess                     = data.get('bool_loess')
-        in_threshold_clean                = data.get('threshold_clean')
-        in_mode_clean                     = data.get('outlierweights_mode')
-        in_classifymode                   = data.get('classifymode') #med
-        in_eif_bool                       = data.get('eif_bool') #empirical influence function
+        in_threshold_clean                = data.get('threshold_clean', 0.8)
+        in_mode_clean                     = data.get('outlierweights_mode', "abs")
+        in_classifymode                   = data.get('classifymode', "med") #med
+        in_eif_bool                       = data.get('eif_bool', False) #empirical influence function
         in_autoextract                    = data.get('classify_or_autoremove')
         #out_result_path # to be defined by this process.
 
-        # Checks
+        # Checking for all mandatory input params:
+
         if in_data_path_or_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input table.')
         if in_var_ofinterest is None:
             raise ProcessorExecuteError('Missing parameter "colname_variable". Please provide a column name.')
+        # OPT in_select_var
         if in_bool_multiple_species is None:
-            raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide \"true\" or \"false\".')
+            raise ProcessorExecuteError('Missing parameter "multiple_species". Please provide "true" or "false".')
+        # OPT in_output_type
+        # OPT in_group_colname
         if in_methods is None:
             raise ProcessorExecuteError('Missing parameter "methods". Please provide a value.')
-        #if in_silence_true_errors is None:
-            #raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide \"true\" or \"false\".') defualt is there
-        if in_missingness is None:
-            raise ProcessorExecuteError('Missing parameter "missingness". Please provide a value.')
+        if in_silence_true_errors is None:
+            raise ProcessorExecuteError('Missing parameter "silence_true_errors". Please provide "true" or "false".')
+        if in_boot_settings_run_bool is None:
+            raise ProcessorExecuteError('Missing parameter "boot_run". Please provide "true" or "false".')
+        # OPT in_boot_settings_maxrecords
+        # OPT in_boot_settings_nb
+        if in_boot_settings_seed is None:
+            raise ProcessorExecuteError('Missing parameter "setseed". Please provide a value.')
+        # OPT in_boot_settings_threshold
+        if in_pca_settings_exec_bool is None:
+            raise ProcessorExecuteError('Missing parameter "exceute_pca". Please provide "true" or "false".')
+        # OPT in_pca_settings_npc
+        # OPT in_pca_settings_quiet
+        # OPT in_pca_settings_pcvar
+        # OPT in_sdm_bool
+        # OPT in_na_inform_bool
+        if in_bool_loess is None:
+            raise ProcessorExecuteError('Missing parameter "bool_loess". Please provide "true" or "false".')
+        # OPT in_threshold_clean
+        # OPT in_mode_clean
+        # OPT in_classifymode
+        # OPT in_eif_bool
+        if in_autoextract is None:
+            raise ProcessorExecuteError('Missing parameter "classify_or_autoremove". Please provide "true" or "false".')
+
 
         #################################
         ### Input and output          ###
@@ -142,15 +169,20 @@ class MultiDetectProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # Nothing to do here...
+        # Nothing to do.
+
+        # Note: If the booleans were not mandatory, then their value would be None,
+        # so we would have to make sure to translate None to "False" or to "null",
+        # or make sure the R script can deal with a string "None".
+        # E.g. in_bool_multiple_species, in_silence_true_errors, in_boot_settings_run_bool,
+        # in_pca_settings_exec_bool, in_sdm_bool, in_eif_bool etc.
+
 
         ####################################
         ### Assemble args and run docker ###
         ####################################
 
         # Assemble args for R script:
-        in_verbose_bool = True
-        in_warn_bool = True
         r_args = [
             in_data_path_or_url,
             str(in_var_ofinterest),
