@@ -7,22 +7,8 @@ import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 
 '''
-curl --location 'http://localhost:5000/processes/pred-extract/execution' \
---header 'Content-Type: application/json' \
---data '{
-    "inputs": {
-        "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-        "input_raster_url_or_name": "worldclim",
-        "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
-        "colname_lat": "decimalLatitude",
-        "colname_lon": "decimalLongitude",
-        "colname_species": "speciescheck",
-        "min_pts": 10,
-        "bool_multiple_species": true,
-        "bool_merge": false,
-        "bool_list": false
-    }
-}'
+# Example using CSV and GeoJSON and GeoTIFF input
+# Works: Tested on 2025-07-31 (Merret)
 
 curl --location 'http://localhost:5000/processes/pred-extract/execution' \
 --header 'Content-Type: application/json' \
@@ -35,70 +21,14 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "colname_lon": "decimalLongitude",
         "colname_species": "species",
         "mininmum_sprecords": 10,
-        "minimum_sprecordsallow": 10,
+        "bool_merge": true,
         "bool_list": false,
-        "bool_merge": false,
         "bool_coords": true,
         "bool_remove_nas": true,
-        "bool_remove_duplicates": true
+        "bool_remove_duplicates": false,
+        "minimum_sprecordsallow": false
     }
 }'
-
-### Same request, but with GeoJSON study area, instead of shapefile.
-curl --location 'http://localhost:5000/processes/pred-extract/execution' \
---header 'Content-Type: application/json' \
---data '{
-    "inputs": {
-        "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-        "input_raster_url_or_name": "worldclim",
-        "study_area_geojson_url": "https://vm4072.kaj.pouta.csc.fi/ddas/oapif/collections/hydro90-basin/items?f=json&basin_id=1293067",
-        "colname_lat": "decimalLatitude",
-        "colname_lon": "decimalLongitude",
-        "colname_species": "speciescheck",
-        "mininmum_sprecords": 10,
-        "minimum_sprecordsallow": xx,
-        "bool_multiple_species": true,
-        "bool_merge": false,
-        "bool_list": false
-    }
-}'
-
-
-### Same request, but with GeoJSON study area directly posted in the HTTP POST payload.
-### Note: This area is too small to yield meaningful results!
-curl --location 'https://localhost/processes/pred-extract/execution' \
---header 'Content-Type: application/json' \
---data '{
-    "inputs": {
-        "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-        "input_raster_url_or_name": "worldclim",
-        "study_area_geojson": {
-            "type": "FeatureCollection",
-            "features": [{
-                "type": "Feature",
-                "properties": {},
-                "geometry": {
-                    "coordinates": [[
-                        [ 15.067916439922868, 48.71725768072221],
-                        [ 15.067916439922868, 48.09522635300115],
-                        [ 16.295486613797266, 48.09522635300115],
-                        [ 16.295486613797266, 48.71725768072221],
-                        [ 15.067916439922868, 48.71725768072221]
-                    ]],
-                    "type": "Polygon"
-                }
-            }]
-        },
-        "colname_lat": "decimalLatitude",
-        "colname_lon": "decimalLongitude",
-        "colname_species": "speciescheck",
-        "min_pts": 10,
-        "bool_multiple_species": true,
-        "bool_merge": false,
-        "bool_list": false
-    }
-}'
-
 '''
 
 LOGGER = logging.getLogger(__name__)
@@ -139,30 +69,38 @@ class PredExtractProcessor(BaseProcessor):
         #################################
 
         # Get user inputs
+        # In the order that the docker/R-script needs them:
         in_data_path_or_url = data.get('input_data')
-        in_raster_path = data.get('input_raster_url_or_name') # TODO: Get from data lake?
+        in_raster_path = data.get('input_raster_url_or_name') # TODO: Get raster from data lake?
         study_area_shp_url = data.get('study_area_shapefile')
         study_area_geojson_url = data.get('study_area_geojson_url')
         study_area_geojson = data.get('study_area_geojson')
         study_area_bbox = data.get('study_area_bbox')
-        in_colname_lat = data.get('colname_lat')
-        in_colname_lon = data.get('colname_lon')
-        in_colname_species = data.get('colname_species')
-        in_min_pts = data.get('mininmum_sprecords')
-        in_minimumpts_rm = data.get("minimum_sprecordsallow")
-        in_rm_duplicates = data.get("bool_remove_duplicates")
-        in_na_rm = data.get('bool_remove_nas')
-        in_bool_list = data.get('bool_list')
-        in_bool_merge = data.get('bool_merge')
-        in_bool_coords = data.get('bool_coords')
+        in_colname_lat = data.get('colname_lat') # string
+        in_colname_lon = data.get('colname_lon') # string
+        in_colname_species = data.get('colname_species') # string
+        in_min_pts = data.get('mininmum_sprecords') # number
+        in_bool_merge = data.get('bool_merge') # boolean
+        in_bool_list = data.get('bool_list') # boolean
+        in_bool_verbose = True # (no effect on client, so not defined by client)
+        in_bool_warn = True # (no effect on client, so not defined by client)
+        in_bool_coords = data.get('bool_coords') # boolean
+        in_na_inform = True # (no effect on client, so not defined by client)
+        in_na_rm = data.get('bool_remove_nas') # boolean
+        in_rm_duplicates = data.get("bool_remove_duplicates") # boolean
+        in_minimumpts_rm = data.get("minimum_sprecordsallow") # boolean
 
-        # Checks
+        # Checking for all mandatory input params:
         if in_data_path_or_url is None:
             raise ProcessorExecuteError('Missing parameter "input_data". Please provide a URL to your input csv.')
-        if study_area_shp_url is None and study_area_geojson_url is None and study_area_geojson is None:
-            raise ProcessorExecuteError('Missing parameter "study_area". Please provide a URL to your input study area as zipped shapefile, as geojson (or just post geojson)...')
         if in_raster_path is None:
             raise ProcessorExecuteError('Missing parameter "input_raster_url_or_name". Please provide a name or URL of your input raster.')
+        if (study_area_shp_url is None or
+            study_area_bbox is None or
+            study_area_geojson is None or
+            study_area_geojson_url is None):
+            err_msg = 'Missing parameter "study_area_...". Please provide the study area as (zipped) shapefile or geojson or as a bounding box.'
+            raise ProcessorExecuteError(err_msg)
         if in_colname_lat is None:
             raise ProcessorExecuteError('Missing parameter "colname_lat". Please provide a column name.')
         if in_colname_lon is None:
@@ -175,6 +113,14 @@ class PredExtractProcessor(BaseProcessor):
             raise ProcessorExecuteError('Missing parameter "bool_merge". Please provide "true" or "false".')
         if in_bool_list is None:
             raise ProcessorExecuteError('Missing parameter "bool_list". Please provide "true" or "false".')
+        if in_bool_coords is None:
+            raise ProcessorExecuteError('Missing parameter "bool_coords". Please provide "true" or "false".')
+        if in_na_rm is None:
+            raise ProcessorExecuteError('Missing parameter "bool_remove_nas". Please provide "true" or "false".')
+        if in_rm_duplicates is None:
+            raise ProcessorExecuteError('Missing parameter "bool_remove_duplicates". Please provide "true" or "false".')
+        if in_minimumpts_rm is None:
+            raise ProcessorExecuteError('Missing parameter "minimum_sprecordsallow". Please provide "true" or "false".')
 
         #################################
         ### Input and output          ###
@@ -233,6 +179,7 @@ class PredExtractProcessor(BaseProcessor):
         else:
             LOGGER.debug('Using static raster on the server...')
             # TODO: Maybe remove this option at some point?
+            # TODO: Currently does not work, as the input dir is not mounted into the docker container.
             if in_raster_path == 'worldclim':
                 in_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
             else:
@@ -244,10 +191,6 @@ class PredExtractProcessor(BaseProcessor):
         ####################################
         ### Assemble args and run docker ###
         ####################################
-
-        in_bool_verbose = True
-        in_na_inform = True
-        in_bool_warn = True
 
         # Assemble args for R script:
         r_args = [

@@ -6,7 +6,7 @@
         "en": "pred extract for extraction of environmnetal data"
     },
     "description": {
-        "en": "pred_extract (4/5). For extraction of environmental data used for species distribution modeling."
+        "en": "pred_extract. For extraction of environmental data used for species distribution modeling."
     },
     "jobControlOptions": ["sync-execute", "async-execute"],
     "keywords": ["pan-european use case", "AquaINFRA", "R"],
@@ -108,16 +108,6 @@
             "maxOccurs": 1,
             "keywords": []
         },
-        "minimum_sprecordsallow": {
-            "title": "Logical to either species with fewer records",
-            "description": "In species distribution models, species with fewer records needs to be removed but normal data extraction this parameter should be set to FALSE to retain all species.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
-        },
         "bool_merge": {
             "title": "Merge extracted data",
             "description": "This allows to return the full dataset with merged with extracted data.",
@@ -167,6 +157,16 @@
             "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": []
+        },
+        "minimum_sprecordsallow": {
+            "title": "Logical to either species with fewer records",
+            "description": "In species distribution models, species with fewer records needs to be removed but normal data extraction this parameter should be set to FALSE to retain all species.",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": []
         }
     },
     "outputs": {
@@ -181,16 +181,19 @@
     },
     "example": {
         "inputs": {
-            "input_data": "https://localhost/download/out/filtered-biodiv-data.csv",
-            "input_raster_name": "worldclim",
-            "study_area": "https://localhost/referencedata/specleanr/basinfinal.zip",
+            "input_data": "https://example.com/filtered-biodiv-data.csv",
+            "input_raster_url_or_name": "worldclim",
+            "study_area_geojson_url": "https://example.com/danube.geojson",
             "colname_lat": "decimalLatitude",
             "colname_lon": "decimalLongitude",
-            "colname_species": "speciescheck",
-            "min_pts": 10,
-            "bool_multiple_species": true,
-            "bool_merge": false,
-            "bool_list": false
+            "colname_species": "species",
+            "mininmum_sprecords": 10,
+            "bool_merge": true,
+            "bool_list": false,
+            "bool_coords": true,
+            "bool_remove_nas": true,
+            "bool_remove_duplicates": false,
+            "minimum_sprecordsallow": false
         }
     }
 }
