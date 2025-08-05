@@ -72,27 +72,29 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
+        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "databases": ["gbif", "inat"],
+        "gbif_limit": 20,
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": true,
         "study_area_geojson": {
             "type": "FeatureCollection",
             "features": [{
                 "type": "Feature",
                 "properties": {},
                 "geometry": {
+                    "type": "Polygon",
                     "coordinates": [[
-                        [ 15.067916439922868, 48.71725768072221],
-                        [ 15.067916439922868, 48.09522635300115],
-                        [ 16.295486613797266, 48.09522635300115],
-                        [ 16.295486613797266, 48.71725768072221],
-                        [ 15.067916439922868, 48.71725768072221]
-                    ]],
-                    "type": "Polygon"
+                        [15.067916439922868,48.71725768072221],
+                        [15.067916439922868,48.09522635300115],
+                        [16.295486613797266,48.09522635300115],
+                        [16.295486613797266,48.71725768072221],
+                        [15.067916439922868,48.71725768072221]
+                    ]]
                 }
             }]
-        },
-        "species_names": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
-        "gbif_limit": 50,
-        "vertnet_limit": 50,
-        "inaturalist_limit": 50
+        }
     }
 }'
 

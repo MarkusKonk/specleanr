@@ -265,6 +265,49 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 echo "this was getdata, test case 3b"; date
 ```
 
+### Case 3c: Test with species list (and direct geojson)
+
+**From command line:** Same as test 3a, because it just reads the raster from the local file system.
+
+**Run the Docker container:** Same as test 3a, because it just reads the raster from the local file system.
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-05 (Merret)
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "databases": ["gbif", "inat"],
+        "gbif_limit": 20,
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": true,
+        "study_area_geojson": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[
+                        [15.067916439922868,48.71725768072221],
+                        [15.067916439922868,48.09522635300115],
+                        [16.295486613797266,48.09522635300115],
+                        [16.295486613797266,48.71725768072221],
+                        [15.067916439922868,48.71725768072221]
+                    ]]
+                }
+            }]
+        }
+    }
+}'
+echo "this was getdata, test case 3c"; date
+```
+
 ### Case 4a: Test with local species csv file (and string extent)
 
 **From command line:**
