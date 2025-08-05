@@ -151,18 +151,22 @@ class DataRetrievalProcessor(BaseProcessor):
         in_synonym_check    = data.get("synonym_check") # boolean
         in_warn_check = True # (no effect on client, so not defined by client)
 
-        # Checks
+        # Checking for all mandatory input params:
         if in_data_path is None:
             raise ProcessorExecuteError('Missing parameter "input_data".')
+        # OPT in_species_column
         if in_database is None:
-            raise ProcessorExecuteError('Missing parameter "databases".')
-        if in_synonym_check is None:
-            raise ProcessorExecuteError('Missing parameter "synonym_check". Please provide "true" or "false".')
+            raise ProcessorExecuteError('Missing parameter "databases". Please provide list of databases to query.')
+        # OPT in_gbif_lim in_inat_lim in_vert_lim
         if (study_area_shp_url is None or
             study_area_bbox is None or
             study_area_geojson is None or
             study_area_geojson_url is None):
-            raise ProcessorExecuteError('Missing parameter "study_area_...". Please provide the study area in some way.')
+            err_msg = 'Missing parameter "study_area_...". Please provide the study area as (zipped) shapefile or geojson or as a bounding box.'
+            raise ProcessorExecuteError(err_msg)
+        # OPT in_percent_correct#
+        if in_synonym_check is None:
+            raise ProcessorExecuteError('Missing parameter "synonym_check". Please provide "true" or "false".')
 
         #################################
         ### Input and output          ###
@@ -223,6 +227,9 @@ class DataRetrievalProcessor(BaseProcessor):
         else:
             in_extent = "null"
 
+        # Note: If the boolean "in_synonym_check" was not mandatory, then its value would be None,
+        # so we would have to make sure to translate None to "False" or to "null",
+        # or make sure the R script can deal with a string "None".
 
         ####################################
         ### Assemble args and run docker ###

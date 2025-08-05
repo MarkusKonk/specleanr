@@ -38,6 +38,49 @@
             "maxOccurs": 1,
             "keywords": ["string"]
         },
+        "databases": {
+            "title": "Database names",
+            "description": "List of databases to consider. Only \"gbif, inat, and vertnet\" supported",
+            "schema": {
+                "type": "array"
+            },
+            "minOccurs": 1,
+            "maxOccurs": 1,
+            "keywords": ["databases"]
+        },
+        "gbif_limit": {
+            "title": "Max number (GBIF)",
+            "description": "The maximum number of data points that are being retrieved from GBIF. For details ask Anthony/BOKU.",
+            "schema": {
+                "type": "integer"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "default": 50,
+            "keywords": []
+        },
+        "inaturalist_limit": {
+            "title": "Max number (iNaturalist)",
+            "description": "The maximum number of data points that are being retrieved from iNaturalist. For details ask Anthony/BOKU.",
+            "schema": {
+                "type": "integer"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "default": 50,
+            "keywords": []
+        },
+        "vertnet_limit": {
+            "title": "Max number (VertNet)",
+            "description": "The maximum number of data points that are being retrieved from VertNet. For details ask Anthony/BOKU.",
+            "schema": {
+                "type": "integer"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "default": 50,
+            "keywords": []
+        },
         "study_area_bbox": {
             "title": "Area of Interest (Bounding study_area_bbox)",
             "description": "A bounding box: {'bbox': [south, west, north, east]} (see https://docs.ogc.org/is/18-062r2/18-062r2.html#bounding-box-value)",
@@ -78,26 +121,6 @@
             "maxOccurs": 1,
             "keywords": ["JSON", "GeoJSON"]
         },
-        "databases": {
-            "title": "Database names",
-            "description": "List of databases to consider. Only \"gbif, inat, and vertnet\" supported",
-            "schema": {
-                "type": "array"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": ["databases"]
-        },
-        "synonym_checks": {
-            "title": "Either consider synonym from standard databases like FishBase.",
-            "description": "Logical, TRUE if synoymns species names should be returned during data checks before data download.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": ["synonym"]
-        },
         "percentage_correctness": {
             "title": "Allowed percentage name correctness.",
             "description": "An integer indicating the percentage of species name corretness that should be allowed to be replaced. High values ensures a perfect match from the standard database.",
@@ -109,38 +132,15 @@
             "default": 80,
             "keywords": ["percentagecorrectness"]
         },
-        "gbif_limit": {
-            "title": "Max number (GBIF)",
-            "description": "The maximum number of data points that are being retrieved from GBIF. For details ask Anthony/BOKU.",
+        "synonym_checks": {
+            "title": "Either consider synonym from standard databases like FishBase.",
+            "description": "Logical, TRUE if synoymns species names should be returned during data checks before data download.",
             "schema": {
-                "type": "integer"
+                "type": "boolean"
             },
-            "minOccurs": 0,
+            "minOccurs": 1,
             "maxOccurs": 1,
-            "default": 50,
-            "keywords": []
-        },
-        "inaturalist_limit": {
-            "title": "Max number (iNaturalist)",
-            "description": "The maximum number of data points that are being retrieved from iNaturalist. For details ask Anthony/BOKU.",
-            "schema": {
-                "type": "integer"
-            },
-            "minOccurs": 0,
-            "maxOccurs": 1,
-            "default": 50,
-            "keywords": []
-        },
-        "vertnet_limit": {
-            "title": "Max number (VertNet)",
-            "description": "The maximum number of data points that are being retrieved from VertNet. For details ask Anthony/BOKU.",
-            "schema": {
-                "type": "integer"
-            },
-            "minOccurs": 0,
-            "maxOccurs": 1,
-            "default": 50,
-            "keywords": []
+            "keywords": ["synonym"]
         }
     },
     "outputs": {
