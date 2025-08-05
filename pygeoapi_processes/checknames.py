@@ -280,7 +280,7 @@ def get_error_message_from_docker_stderr(stderr, log_all_lines = True):
 
         # When R error messages end with a colon, they will be continued on
         # the next line, independently of their indentation I guess!
-        elif colon_on_previous_line:
+        elif colon_on_previous_line and error_on_previous_line:
             #LOGGER.debug('### Found line following a colon: %s' % line.strip())
             user_err_msg += " "+line.strip()
             error_on_previous_line = True
