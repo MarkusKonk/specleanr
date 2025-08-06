@@ -6,94 +6,6 @@ import os
 LOGGER = logging.getLogger(__name__)
 
 
-
-
-def run_docker_container(
-        docker_executable,
-        image_name,
-        script_name,
-        input_dir_on_host,
-        output_dir_on_host,
-        script_args
-    ):
-    LOGGER.debug('Prepare running docker container')
-
-    # Create container name
-    # Note: Only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed
-    # TODO: Use job-id?
-    container_name = "%s_%s" % (image_name.split(':')[0], os.urandom(5).hex())
-
-    # Define paths inside the container
-    container_in = '/in'
-    container_out = '/out'
-    LOGGER.debug('Mounted dirs in/out, inside container:  %s, %s' % (container_in, container_out))
-
-    # Define paths outside the container
-    host_in = input_dir_on_host
-    host_out = output_dir_on_host
-    LOGGER.debug('Mounted dirs in/out, outside container: %s, %s' % (host_in, host_out))
-
-    # Replace paths in args:
-    LOGGER.debug('Script args: %s' % script_args)
-    sanitized_args = []
-    for arg in script_args:
-        newarg = arg
-        if host_in is not None and host_in in arg:
-            newarg = arg.replace(host_in, container_in)
-            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif host_out in arg:
-            newarg = arg.replace(host_out, container_out)
-            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif arg == 'None' or arg is None:
-            # R scripts may be more familiar with receiving "null" than "None"
-            # But they still have to parse them to a proper NULL data type.
-            newarg = 'null'
-        sanitized_args.append(newarg)
-
-    # Prepare container command
-    # (mount volumes etc.)
-    docker_args = [
-        docker_executable, "run",
-        "--rm",
-        "--name", container_name
-    ]
-    if host_in is not None:
-        docker_args = docker_args + ["-v", f"{host_in}:{container_in}:ro"]
-    if host_out is not None:
-        docker_args = docker_args + ["-v", f"{host_out}:{container_out}:rw"]
-    docker_args = docker_args + ["-e", f"R_SCRIPT={script_name}", image_name]
-    docker_command = docker_args + sanitized_args
-    LOGGER.debug('Docker command: %s' % docker_command)
-    
-    # Run container
-    try:
-        LOGGER.debug('Start running docker container')
-        result = subprocess.run(docker_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout = result.stdout.decode()
-        stderr = result.stderr.decode()
-        LOGGER.debug('Finished running docker container')
-
-        # Print docker output:
-        for line in stdout.split('\n'):
-            if not line: continue
-            LOGGER.debug('Docker stdout: %s' % line.strip())
-            # output of print() in R-script
-        for line in stderr.split('\n'):
-            if not line: continue
-            LOGGER.debug('Docker stderr: %s' % line.strip())
-            # output of message() in R-script
-
-        return result.returncode, stdout, stderr, "no error"
-
-    except subprocess.CalledProcessError as e:
-        returncode = e.returncode
-        stdout = e.stdout.decode()
-        stderr = e.stderr.decode()
-        LOGGER.error('Failed running docker container (exit code %s)' % returncode)
-        user_err_msg = get_error_message_from_docker_stderr(stderr)
-        return returncode, stdout, stderr, user_err_msg
-
-
 def get_error_message_from_docker_stderr(stderr, log_all_lines = True):
     '''
     We would like to return meaningful messages to users. For example, by
@@ -159,8 +71,7 @@ def get_error_message_from_docker_stderr(stderr, log_all_lines = True):
     return user_err_msg
 
 
-
-def run_docker_container_with_readonly(
+def run_docker_container(
         docker_executable,
         image_name,
         script_name,

@@ -5,7 +5,7 @@ import os
 import requests
 import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
-from pygeoapi.process.specleanr.pygeoapi_processes.utils import run_docker_container_with_readonly
+from pygeoapi.process.specleanr.pygeoapi_processes.utils import run_docker_container
 from pygeoapi.process.specleanr.pygeoapi_processes.utils import store_geojson
 
 
@@ -272,7 +272,7 @@ class PredExtractProcessor(BaseProcessor):
         ]
 
         # Run the docker:
-        returncode, stdout, stderr, user_err_msg = run_docker_container_with_readonly(
+        returncode, stdout, stderr, user_err_msg = run_docker_container(
             self.docker_executable,
             self.image_name,
             self.r_script,

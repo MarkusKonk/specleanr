@@ -155,6 +155,7 @@ class NameCheckProcessor(BaseProcessor):
             self.r_script,
             input_dir,
             output_dir,
+            None,
             r_args
         )
 

@@ -145,6 +145,7 @@ class DataMatchProcessor(BaseProcessor):
             self.r_script,
             input_dir,
             output_dir,
+            None,
             r_args
         )
 
