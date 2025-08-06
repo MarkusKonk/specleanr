@@ -182,12 +182,12 @@ class DataRetrievalProcessor(BaseProcessor):
         # Here, downloaded inputs will be stored by pygeoapi.
         # It will be mounted as read-only into the docker.
         # This process may store GeoJSON data there that it received in HTTP POST!
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
+        input_dir = self.download_dir+'/in/specleanr_job_%s' % self.job_id
 
         # Where to store output data
         output_dir = os.path.join(self.download_dir, "out")
-        output_dir = self.download_dir+'/out/job_%s' % self.job_id
-        output_url = self.download_url+'/out/job_%s' % self.job_id
+        output_dir = self.download_dir+'/out/specleanr_job_%s' % self.job_id
+        output_url = self.download_url+'/out/specleanr_job_%s' % self.job_id
         result_filename = 'biodiv-data-%s.csv' % self.job_id
         result_filepath     = output_dir+'/'+result_filename
         result_downloadlink = output_url+'/'+result_filename
