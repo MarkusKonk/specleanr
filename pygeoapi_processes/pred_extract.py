@@ -6,6 +6,7 @@ import requests
 import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
 from pygeoapi.process.specleanr.pygeoapi_processes.utils import run_docker_container_with_readonly
+from pygeoapi.process.specleanr.pygeoapi_processes.utils import store_geojson
 
 
 '''
@@ -298,26 +299,4 @@ class PredExtractProcessor(BaseProcessor):
         }
 
         return 'application/json', response_object
-
-
-
-def store_geojson(geojson, input_dir, ending=None):
-
-    # Make sure the dir exists:
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    # How should the downloaded file be named?
-    # If the URL includes a name: TODO can we trust this name?
-    #filename = os.path.basename(input_url_geojson)
-    filename = "geojson%s" % os.urandom(5).hex()
-    filename = filename if ending is None else filename+ending
-    input_file_path = '%s/%s' % (input_dir, filename)
-    LOGGER.debug('Storing input geojson file to: %s' % input_file_path)
-
-    with open(input_file_path, 'w') as myfile:
-        json.dump(geojson, myfile)
-
-    return input_file_path
-
 

@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import json
 import os
 
 LOGGER = logging.getLogger(__name__)
@@ -321,3 +322,35 @@ def run_docker_container_with_readonly(
         user_err_msg = get_error_message_from_docker_stderr(stderr)
         return returncode, stdout, stderr, user_err_msg
 
+
+def download_geojson(input_url_geojson, input_dir, ending=None):
+    # Not needed in getdata and pred_extract, as they now just pass on the URL.
+    # But keeping it here, maybe needed at some point...
+
+    # Download file into given dir:
+    LOGGER.debug('Downloading input geojson file: %s' % input_url_geojson)
+    resp = requests.get(input_url_geojson)
+    if not resp.status_code == 200:
+        raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
+
+    return store_geojson(resp.json(), input_dir, ending=ending)
+
+
+def store_geojson(geojson, input_dir, ending=None):
+
+    # Make sure the dir exists:
+    if not os.path.exists(input_dir):
+        os.makedirs(input_dir)
+
+    # How should the downloaded file be named?
+    # If the URL includes a name: TODO can we trust this name?
+    #filename = os.path.basename(input_url_geojson)
+    filename = "geojson%s" % os.urandom(5).hex()
+    filename = filename if ending is None else filename+ending
+    input_file_path = '%s/%s' % (input_dir, filename)
+    LOGGER.debug('Storing input geojson file to: %s' % input_file_path)
+
+    with open(input_file_path, 'w') as myfile:
+        json.dump(geojson, myfile)
+
+    return input_file_path
