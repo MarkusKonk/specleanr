@@ -71,7 +71,8 @@ def run_docker_container(
         docker_executable,
         image_name,
         script_name,
-        download_dir,
+        input_dir_on_host,
+        output_dir_on_host,
         script_args
     ):
     LOGGER.debug('Prepare running docker container')
@@ -87,20 +88,16 @@ def run_docker_container(
     LOGGER.debug('Mounted dirs in/out, inside container:  %s, %s' % (container_in, container_out))
 
     # Define paths outside the container
-    host_in = os.path.join(download_dir, "in")
-    host_out = os.path.join(download_dir, "out")
+    host_in = input_dir_on_host
+    host_out = output_dir_on_host
     LOGGER.debug('Mounted dirs in/out, outside container: %s, %s' % (host_in, host_out))
-
-    # Ensure directories exist
-    os.makedirs(host_in, exist_ok=True)
-    os.makedirs(host_out, exist_ok=True)
 
     # Replace paths in args:
     LOGGER.debug('Script args: %s' % script_args)
     sanitized_args = []
     for arg in script_args:
         newarg = arg
-        if host_in in arg:
+        if host_in is not None and host_in in arg:
             newarg = arg.replace(host_in, container_in)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
         elif host_out in arg:
@@ -117,12 +114,13 @@ def run_docker_container(
     docker_args = [
         docker_executable, "run",
         "--rm",
-        "--name", container_name,
-        "-v", f"{host_in}:{container_in}:ro",
-        "-v", f"{host_out}:{container_out}",
-        "-e", f"R_SCRIPT={script_name}",
-        image_name,
+        "--name", container_name
     ]
+    if host_in is not None:
+        docker_args = docker_args + ["-v", f"{host_in}:{container_in}:ro"]
+    if host_out is not None:
+        docker_args = docker_args + ["-v", f"{host_out}:{container_out}:rw"]
+    docker_args = docker_args + ["-e", f"R_SCRIPT={script_name}", image_name]
     docker_command = docker_args + sanitized_args
     LOGGER.debug('Docker command: %s' % docker_command)
     
@@ -214,8 +212,9 @@ def run_docker_container_with_readonly(
         docker_executable,
         image_name,
         script_name,
-        download_dir,
-        readonly_dir,
+        input_dir_on_host,
+        output_dir_on_host,
+        readonly_dir_on_host,
         script_args
     ):
     LOGGER.debug('Prepare running docker container')
@@ -232,27 +231,30 @@ def run_docker_container_with_readonly(
     LOGGER.debug('Mounted dirs in/out/readonly, inside container:  %s, %s, %s' % (container_in, container_out, container_readonly))
 
     # Define local paths
-    host_in = os.path.join(download_dir, "in")
-    host_out = os.path.join(download_dir, "out")
-    host_readonly = readonly_dir.rstrip('/')
-    LOGGER.debug('Mounted dirs in/out/readonly, outside container: %s, %s' % (host_in, host_out, host_readonly))
+    #host_in = os.path.join(download_dir, "in")
+    #host_out = os.path.join(download_dir, "out")
+    #host_readonly = readonly_dir.rstrip('/')
+    host_in = input_dir_on_host
+    host_out = output_dir_on_host
+    host_readonly = readonly_dir_on_host
+    LOGGER.debug('Mounted dirs in/out/readonly, outside container: %s, %s, %s' % (host_in, host_out, host_readonly))
 
     # Ensure directories exist
-    os.makedirs(host_in, exist_ok=True)
-    os.makedirs(host_out, exist_ok=True)
+    #os.makedirs(host_in, exist_ok=True)
+    #os.makedirs(host_out, exist_ok=True)
 
     # Replace paths in args:
     LOGGER.debug('Script args: %s' % script_args)
     sanitized_args = []
     for arg in script_args:
         newarg = arg
-        if host_in in arg:
+        if host_in is not None and host_in in arg:
             newarg = arg.replace(host_in, container_in)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
         elif host_out in arg:
             newarg = arg.replace(host_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif host_readonly in arg:
+        elif host_readonly is not None and host_readonly in arg:
             newarg = arg.replace(host_readonly, container_readonly)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
         elif arg == 'None' or arg is None:
@@ -266,12 +268,16 @@ def run_docker_container_with_readonly(
     docker_args = [
         docker_executable, "run",
         "--rm",
-        "--name", container_name,
-        "-v", f"{host_in}:{container_in}:ro",
-        "-v", f"{host_out}:{container_out}",
-        "-v", f"{readonly_dir}:{container_readonly}:ro",
+        "--name", container_name
+    ]
+    if host_in is not None:
+        docker_args = docker_args + ["-v", f"{host_in}:{container_in}:ro"]
+    if host_readonly is not None:
+        docker_args = docker_args + ["-v", f"{host_readonly}:{container_readonly}:ro"]
+    docker_args = docker_args + [
+        "-v", f"{host_out}:{container_out}:rw",
         "-e", f"R_SCRIPT={script_name}",
-        image_name,
+        image_name
     ]
     docker_command = docker_args + sanitized_args
     LOGGER.debug('Docker command: %s' % docker_command)
@@ -292,3 +298,4 @@ def run_docker_container_with_readonly(
         LOGGER.error('Failed running docker container (exit code %s)' % returncode)
         user_err_msg = get_error_message_from_docker_stderr(stderr)
         return returncode, stdout, stderr, user_err_msg
+

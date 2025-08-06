@@ -173,32 +173,41 @@ class PredExtractProcessor(BaseProcessor):
         ### storage/download location ###
         #################################
 
+        # Where to store input data
+        # Here, downloaded inputs will be stored by pygeoapi.
+        # It will be mounted as read-only into the docker.
+        input_dir = self.download_dir+'/in/job_%s' % self.job_id
+
         # Where to store output data
+        output_dir = self.download_dir+'/out/job_%s' % self.job_id
+        output_url = self.download_url+'/out/job_%s' % self.job_id
         result_filename = 'multiprecleaned-%s.csv' % self.job_id
-        result_filepath     = self.download_dir+'/out/'+result_filename
-        result_downloadlink = self.download_url+'/out/'+result_filename
+        result_filepath     = output_dir+'/'+result_filename
+        result_downloadlink = output_url+'/'+result_filename
+        os.makedirs(output_dir, exist_ok=True)
+
 
         ##################################################
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # Input csv file passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-
         # Input study area passed by user:
         # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
         if study_area_shp_url is not None:
             in_bbox_path = input_polygons_path
+            input_dir = None # No need to mount, so set to None
 
         # OR download and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
         elif study_area_geojson_url is not None:
+            os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
             in_bbox_path = input_polygons_path
 
         # OR receive and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
         elif study_area_geojson is not None:
+            os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
             in_bbox_path = input_polygons_path
 
@@ -215,9 +224,11 @@ class PredExtractProcessor(BaseProcessor):
                 north = study_area_bbox["bbox"][2],
                 east  = study_area_bbox["bbox"][3]
             )
+            input_dir = None # No need to mount, so set to None
 
         else:
             in_bbox_path = "null"
+            input_dir = None # No need to mount, so set to None
 
         # Input raster:
         if in_raster_path.startswith('http'):
@@ -225,7 +236,6 @@ class PredExtractProcessor(BaseProcessor):
         else:
             LOGGER.debug('Using static raster on the server...')
             # TODO: Maybe remove this option at some point?
-            # TODO: Currently does not work, as the input dir is not mounted into the docker container.
             if in_raster_path == 'worldclim':
                 in_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
             else:
@@ -264,7 +274,8 @@ class PredExtractProcessor(BaseProcessor):
             self.docker_executable,
             self.image_name,
             self.r_script,
-            self.download_dir,
+            input_dir,
+            output_dir,
             self.input_raster_dir,
             r_args
         )
@@ -318,4 +329,5 @@ def download_geojson(input_url_geojson, input_dir, ending=None):
         raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
 
     return store_geojson(resp.json(), input_dir, ending=ending)
+
 

@@ -30,7 +30,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "input_data": "Alburnus alburnus, Esox lucius",
         "percent_correctness": 70,
         "bool_merge": false,
         "bool_synonym": true,
@@ -105,10 +105,21 @@ class NameCheckProcessor(BaseProcessor):
         ### storage/download location ###
         #################################
 
+        # Where to store input data
+        # Here, downloaded inputs will be stored by pygeoapi.
+        # It will be mounted as read-only into the docker.
+        #input_dir = self.download_dir+'/in/job_%s' % self.job_id
+        # This process does not need it, so set to None, so nothing will be created/mounted:
+        input_dir = None
+
         # Where to store output data
-        result_filename1 = 'checked-biodiv-data-%s.csv' % self.job_id
-        result_filepath1     = self.download_dir+'/out/'+result_filename1
-        result_downloadlink1 = self.download_url+'/out/'+result_filename1
+        output_dir = os.path.join(self.download_dir, "out")
+        output_dir = self.download_dir+'/out/job_%s' % self.job_id
+        output_url = self.download_url+'/out/job_%s' % self.job_id
+        result_filename = 'checked-biodiv-data-%s.csv' % self.job_id
+        result_filepath     = output_dir+'/'+result_filename
+        result_downloadlink = output_url+'/'+result_filename
+        os.makedirs(output_dir, exist_ok=True)
 
         ##################################################
         ### Convert user inputs to what R script needs ###
@@ -133,7 +144,7 @@ class NameCheckProcessor(BaseProcessor):
             str(in_synonymn_checks),
             str(in_ecosystem_checks),
             str(in_rm_duplicates),
-            result_filepath1
+            result_filepath
         ]
         LOGGER.debug('r_args: %s' % r_args)
 
@@ -142,7 +153,8 @@ class NameCheckProcessor(BaseProcessor):
             self.docker_executable,
             self.image_name,
             self.r_script,
-            self.download_dir,
+            input_dir,
+            output_dir,
             r_args
         )
 
@@ -157,10 +169,11 @@ class NameCheckProcessor(BaseProcessor):
                 "cleannames_df": {
                     "title": self.metadata['outputs']['cleannames_df']['title'],
                     "description": self.metadata['outputs']['cleannames_df']['description'],
-                    "href": result_downloadlink1
+                    "href": result_downloadlink
                 }
             }
         }
 
         return 'application/json', response_object
+
 

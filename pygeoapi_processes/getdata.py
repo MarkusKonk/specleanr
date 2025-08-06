@@ -176,18 +176,20 @@ class DataRetrievalProcessor(BaseProcessor):
         ### storage/download location ###
         #################################
 
-        # Input files passed by user:
-        # Download and unzip shapefile:
+        # Where to store input data
+        # Here, downloaded inputs will be stored by pygeoapi.
+        # It will be mounted as read-only into the docker.
+        # This process may store GeoJSON data there that it received in HTTP POST!
         input_dir = self.download_dir+'/in/job_%s' % self.job_id
-        # TODO: Come up with a good plan to have unique dirs for the jobs, so we separate
-        # users' inputs properly! But the /in has to be there I guess to be mounted...
-        # Maybe /in will not be exposed publicly, while /out will??? Do we need to separate /in and /out?
 
         # Where to store output data
+        output_dir = os.path.join(self.download_dir, "out")
+        output_dir = self.download_dir+'/out/job_%s' % self.job_id
+        output_url = self.download_url+'/out/job_%s' % self.job_id
         result_filename = 'biodiv-data-%s.csv' % self.job_id
-        result_filepath     = self.download_dir+'/out/'+result_filename
-        result_downloadlink = self.download_url+'/out/'+result_filename
-
+        result_filepath     = output_dir+'/'+result_filename
+        result_downloadlink = output_url+'/'+result_filename
+        os.makedirs(output_dir, exist_ok=True)
 
         ##################################################
         ### Convert user inputs to what R script needs ###
@@ -200,20 +202,24 @@ class DataRetrievalProcessor(BaseProcessor):
         if study_area_shp_url is not None:
             input_polygons_path = study_area_shp_url
             in_extent = input_polygons_path
+            input_dir = None # No need to mount, so set to None
 
         # OR download and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
         elif study_area_geojson_url is not None:
+            os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
             in_extent = input_polygons_path
 
         # OR receive and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
         elif study_area_geojson is not None:
+            os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
             in_extent = input_polygons_path
 
         elif study_area_bbox is not None:
+            input_dir = None # No need to mount, so set to None
             # R script needs: "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
             # OGC API spec:
             # "boundingBoxInput": {
@@ -229,6 +235,7 @@ class DataRetrievalProcessor(BaseProcessor):
 
         else:
             in_extent = "null"
+            input_dir = None # No need to mount, so set to None
 
         # Note: If the boolean "in_synonym_check" was not mandatory, then its value would be None,
         # so we would have to make sure to translate None to "False" or to "null",
@@ -261,7 +268,8 @@ class DataRetrievalProcessor(BaseProcessor):
             self.docker_executable,
             self.image_name,
             self.r_script,
-            self.download_dir,
+            input_dir,
+            output_dir,
             r_args
         )
 
@@ -313,4 +321,5 @@ def download_geojson(input_url_geojson, input_dir, ending=None):
         raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
 
     return store_geojson(resp.json(), input_dir, ending=ending)
+
 

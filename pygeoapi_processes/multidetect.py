@@ -160,10 +160,21 @@ class MultiDetectProcessor(BaseProcessor):
         ### storage/download location ###
         #################################
 
+        # Where to store input data
+        # Here, downloaded inputs will be stored by pygeoapi.
+        # It will be mounted as read-only into the docker.
+        #input_dir = self.download_dir+'/in/job_%s' % self.job_id
+        # This process does not need it, so set to None, so nothing will be created/mounted:
+        input_dir = None
+
         # Where to store output data
+        output_dir = os.path.join(self.download_dir, "out")
+        output_dir = self.download_dir+'/out/job_%s' % self.job_id
+        output_url = self.download_url+'/out/job_%s' % self.job_id
         result_filename = 'cleaned-data-%s.csv' % self.job_id
-        result_filepath     = self.download_dir+'/out/'+result_filename
-        result_downloadlink = self.download_url+'/out/'+result_filename
+        result_filepath     = output_dir+'/'+result_filename
+        result_downloadlink = output_url+'/'+result_filename
+        os.makedirs(output_dir, exist_ok=True)
 
 
         ##################################################
@@ -222,7 +233,8 @@ class MultiDetectProcessor(BaseProcessor):
             self.docker_executable,
             self.image_name,
             self.r_script,
-            self.download_dir,
+            input_dir,
+            output_dir,
             r_args
         )
 
@@ -243,4 +255,5 @@ class MultiDetectProcessor(BaseProcessor):
         }
 
         return 'application/json', response_object
+
 
