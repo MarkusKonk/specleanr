@@ -108,7 +108,26 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
+}'; date; echo "this was getdata test 1"
+```
+
+Quicker, just one species, just one database, small bbox...
+
+```
+# Works: Tested on 2025-08-05 (Merret) WIP
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "Esox lucius",
+        "databases": ["gbif"],
+        "gbif_limit": 10,
+        "study_area_bbox": {"bbox": [43.0, 8.5, 44.5, 12.5]},
+        "percentage_correctness": 30,
+        "synonym_check": true
+    }
+}'; date; echo "this was getdata test 1"
 ```
 
 ### Case 2a: Test with species list (and local shp file as extent)
@@ -187,8 +206,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 2b"; date
+}'; date; echo "this was getdata test 2b"
 ```
 
 ### Case 3a: Test with species list (and local geojson file as extent)
@@ -261,8 +279,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 3b"; date
+}'; date; echo "this was getdata, test case 3b"
 ```
 
 ### Case 3c: Test with species list (and direct geojson)
@@ -304,8 +321,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
             }]
         }
     }
-}'
-echo "this was getdata, test case 3c"; date
+}'; date; echo "this was getdata, test case 3c"
 ```
 
 ### Case 4a: Test with local species csv file (and string extent)
@@ -381,8 +397,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 4b"; date
+}'; date; echo "this was getdata, test case 4b"
 ```
 
 ### Case 5a: Test with local species csv file (and local shp file as extent)
@@ -469,8 +484,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 5b"; date
+}'; date; echo "this was getdata, test case 5b"
 ```
 
 ### Case 6a: Test with remote species csv file (and local geojson file as extent)
@@ -546,8 +560,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 6b"; date
+}'; date; echo "this was getdata, test case 6b"
 ```
 
 ### Case 7: Test with synonym check false...
@@ -597,8 +610,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": false
     }
-}'
-echo "this was getdata, test case 7"; date
+}'; date; echo "this was getdata, test case 7"
 ```
 
 ### Case 8: Test with different percentage correctness...
@@ -648,7 +660,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 90,
         "synonym_check": true
     }
-}'
+}'; date; echo "this was getdata, test case 8"
 ```
 
 
@@ -752,8 +764,7 @@ curl --location 'http://localhost:5000/processes/match-data/execution' \
         "colnames_lon": ["lon", "long", "longitude"],
         "colnames_date": ["Date", "sampling_date"]
     }
-}'
-echo "This was matchdata, test 1b"; date
+}'; date; echo "This was matchdata, test 1b"
 ```
 
 
@@ -833,8 +844,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
-}'
-echo "This was checknames, test 1", date
+}'; date; echo "This was checknames, test 1"
 ```
 
 ### Case 2a: File input (local), merge=True
@@ -952,7 +962,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
-}'
+}'; date; "this was checknames test case 2b"
 ```
 
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
@@ -972,7 +982,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": false,
         "bool_rm_duplicates": false
     }
-}'
+}'; date; "this was checknames test case 2b"
 ```
 
 
@@ -1116,8 +1126,7 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "bool_remove_duplicates": false,
         "minimum_sprecordsallow": false
     }
-}'
-echo "this was pred_extract test 1b"; date;
+}', date; echo "this was pred_extract test 1b";
 ```
 
 ### Case 2: Static raster on server
@@ -1149,8 +1158,7 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "bool_remove_duplicates": false,
         "minimum_sprecordsallow": false
     }
-}'
-echo "This was pred_extract case 2"; date
+}'; date; echo "This was pred_extract case 2"
 ```
 
 ### Case 3: Test passing GeoJSON directly
@@ -1203,7 +1211,7 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "bool_remove_duplicates": false,
         "minimum_sprecordsallow": false
     }
-}'
+}'; date; echo "This was pred_extract case 3"
 ```
 
 
@@ -1450,8 +1458,7 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "eif_bool": false,
         "classify_or_autoremove": true
     }
-}'
-echo "test multidetect 1b"; date
+}'; date; echo "this was multidetect test 1b"
 ```
 
 ### Case 2a: With loess "False" and threshold 0.8 (local input file)
@@ -1604,8 +1611,7 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "eif_bool": false,
         "classify_or_autoremove": true
     }
-}'
-echo "multidetect test 2b"; date
+}'; date; echo "this was multidetect test 2b"
 ```
 
 ### Case 3a: With loess "False" and threshold 0.8 (local input file)
@@ -1776,7 +1782,6 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "eif_bool": false,
         "classify_or_autoremove": false
     }
-}'
-echo "multidetect test 3b"; date
+}'; date; echo "this was multidetect test 3b";
 ```
 
