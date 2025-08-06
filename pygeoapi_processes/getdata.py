@@ -198,10 +198,11 @@ class DataRetrievalProcessor(BaseProcessor):
         # Join database strings:
         in_database = ','.join(in_database)
 
-        # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
+        # Input study area passed by user:
+        # If user provided link to a shapefile, pass it to the package
+        # (it can deal with remote shapefiles, as long as they are zipped):
         if study_area_shp_url is not None:
-            input_polygons_path = study_area_shp_url
-            in_extent = input_polygons_path
+            in_extent = study_area_shp_url
             input_dir = None # No need to mount, so set to None
 
         # OR if user provided link to a GeoJSON file, pass it to the package
@@ -210,13 +211,14 @@ class DataRetrievalProcessor(BaseProcessor):
             in_extent = study_area_geojson_url
             input_dir = None # No need to mount, so set to None
 
-        # OR receive and store GeoJSON:
+        # OR extract GeoJSON from HTTP POST payload and store it:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
         elif study_area_geojson is not None:
             os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
             in_extent = input_polygons_path
 
+        # OR extract a JSON bounding box and convert to R format:
         elif study_area_bbox is not None:
             input_dir = None # No need to mount, so set to None
             # R script needs: "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
@@ -236,9 +238,6 @@ class DataRetrievalProcessor(BaseProcessor):
             in_extent = "null"
             input_dir = None # No need to mount, so set to None
 
-        # Note: If the boolean "in_synonym_check" was not mandatory, then its value would be None,
-        # so we would have to make sure to translate None to "False" or to "null",
-        # or make sure the R script can deal with a string "None".
 
         ####################################
         ### Assemble args and run docker ###

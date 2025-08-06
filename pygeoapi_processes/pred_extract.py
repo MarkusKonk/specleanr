@@ -192,7 +192,8 @@ class PredExtractProcessor(BaseProcessor):
         ##################################################
 
         # Input study area passed by user:
-        # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
+        # If user provided link to a shapefile, pass it to the package
+        # (it can deal with remote shapefiles, as long as they are zipped):
         if study_area_shp_url is not None:
             in_bbox_path = input_polygons_path
             input_dir = None # No need to mount, so set to None
@@ -203,13 +204,14 @@ class PredExtractProcessor(BaseProcessor):
             in_bbox_path = study_area_geojson_url
             input_dir = None # No need to mount, so set to None
 
-        # OR receive and store GeoJSON:
+        # OR extract GeoJSON from HTTP POST payload and store it:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
         elif study_area_geojson is not None:
             os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
             in_bbox_path = input_polygons_path
 
+        # OR extract a JSON bounding box and convert to R format:
         elif study_area_bbox is not None:
             # R script needs: "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
             # OGC API spec:

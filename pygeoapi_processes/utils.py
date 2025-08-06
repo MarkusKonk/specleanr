@@ -131,6 +131,17 @@ def run_docker_container(
         stdout = result.stdout.decode()
         stderr = result.stderr.decode()
         LOGGER.debug('Finished running docker container')
+
+        # Print docker output:
+        for line in stdout.split('\n'):
+            if not line: continue
+            LOGGER.debug('Docker stdout: %s' % line.strip())
+            # output of print() in R-script
+        for line in stderr.split('\n'):
+            if not line: continue
+            LOGGER.debug('Docker stderr: %s' % line.strip())
+            # output of message() in R-script
+
         return result.returncode, stdout, stderr, "no error"
 
     except subprocess.CalledProcessError as e:
@@ -289,6 +300,17 @@ def run_docker_container_with_readonly(
         stdout = result.stdout.decode()
         stderr = result.stderr.decode()
         LOGGER.debug('Finished running docker container')
+
+        # Print docker output:
+        for line in stdout.split('\n'):
+            if not line: continue
+            LOGGER.debug('Docker stdout: %s' % line.strip())
+            # output of print() in R-script
+        for line in stderr.split('\n'):
+            if not line: continue
+            LOGGER.debug('Docker stderr: %s' % line.strip())
+            # output of message() in R-script
+
         return result.returncode, stdout, stderr, "no error"
 
     except subprocess.CalledProcessError as e:
