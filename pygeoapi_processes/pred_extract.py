@@ -197,12 +197,11 @@ class PredExtractProcessor(BaseProcessor):
             in_bbox_path = input_polygons_path
             input_dir = None # No need to mount, so set to None
 
-        # OR download and store GeoJSON:
-        # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
+        # OR if user provided link to a GeoJSON file, pass it to the package
+        # (it can deal with remote GeoJSON file):
         elif study_area_geojson_url is not None:
-            os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
-            input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
-            in_bbox_path = input_polygons_path
+            in_bbox_path = study_area_geojson_url
+            input_dir = None # No need to mount, so set to None
 
         # OR receive and store GeoJSON:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
@@ -318,16 +317,5 @@ def store_geojson(geojson, input_dir, ending=None):
         json.dump(geojson, myfile)
 
     return input_file_path
-
-
-def download_geojson(input_url_geojson, input_dir, ending=None):
-
-    # Download file into given dir:
-    LOGGER.debug('Downloading input geojson file: %s' % input_url_geojson)
-    resp = requests.get(input_url_geojson)
-    if not resp.status_code == 200:
-        raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
-
-    return store_geojson(resp.json(), input_dir, ending=ending)
 
 
