@@ -177,25 +177,21 @@ def run_docker_container_with_readonly(
     container_name = "%s_%s" % (image_name.split(':')[0], os.urandom(5).hex())
 
     # Define paths inside the container
-    container_in = '/in'
     container_out = '/out'
+    container_in = '/in'
     container_readonly = '/readonly'
-    LOGGER.debug('Mounted dirs in/out/readonly, inside container:  %s, %s, %s' % (container_in, container_out, container_readonly))
+    LOGGER.debug('Mounted dirs /out,/in,/readonly, inside container:  %s, %s, %s' %
+        (container_out, container_in, container_readonly))
 
-    # Define local paths
-    #host_in = os.path.join(download_dir, "in")
-    #host_out = os.path.join(download_dir, "out")
-    #host_readonly = readonly_dir.rstrip('/')
+    # Define paths outside the container
     host_in = input_dir_on_host
     host_out = output_dir_on_host
     host_readonly = readonly_dir_on_host
-    LOGGER.debug('Mounted dirs in/out/readonly, outside container: %s, %s, %s' % (host_in, host_out, host_readonly))
+    LOGGER.debug('Mounted dirs /out,/in,/readonly, outside container: %s, %s, %s' %
+        (host_out, host_in, host_readonly))
 
-    # Ensure directories exist
-    #os.makedirs(host_in, exist_ok=True)
-    #os.makedirs(host_out, exist_ok=True)
-
-    # Replace paths in args:
+    # Replace paths in args, convert args to formats that can be passed to
+    # docker and understood/parsed in R script inside docker:
     LOGGER.debug('Script args: %s' % script_args)
     sanitized_args = []
     for arg in script_args:
@@ -203,7 +199,7 @@ def run_docker_container_with_readonly(
         if host_in is not None and host_in in arg:
             newarg = arg.replace(host_in, container_in)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif host_out in arg:
+        elif host_out is not None and host_out in arg:
             newarg = arg.replace(host_out, container_out)
             LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
         elif host_readonly is not None and host_readonly in arg:
@@ -216,21 +212,23 @@ def run_docker_container_with_readonly(
         sanitized_args.append(newarg)
 
     # Prepare container command
-    # (mount volumes etc.)
     docker_args = [
-        docker_executable, "run",
-        "--rm",
+        docker_executable, "run", "--rm",
         "--name", container_name
     ]
+    # Add the mounts for three directories (-v) (ro and rw):
+    if host_out is not None:
+        docker_args = docker_args + ["-v", f"{host_out}:{container_out}:rw"]
     if host_in is not None:
         docker_args = docker_args + ["-v", f"{host_in}:{container_in}:ro"]
     if host_readonly is not None:
         docker_args = docker_args + ["-v", f"{host_readonly}:{container_readonly}:ro"]
+    # Add the name of the script to be called (-e), and the name of the image
     docker_args = docker_args + [
-        "-v", f"{host_out}:{container_out}:rw",
         "-e", f"R_SCRIPT={script_name}",
         image_name
     ]
+    # Add the arguments to be passed to the R script:
     docker_command = docker_args + sanitized_args
     LOGGER.debug('Docker command: %s' % docker_command)
 
