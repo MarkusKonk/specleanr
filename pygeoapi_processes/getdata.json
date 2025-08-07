@@ -50,7 +50,7 @@
         },
         "gbif_limit": {
             "title": "Max number (GBIF)",
-            "description": "The maximum number of data points that are being retrieved from GBIF. For details ask Anthony/BOKU.",
+            "description": "The maximum number of data points that are being retrieved from GBIF.",
             "schema": {
                 "type": "integer"
             },
@@ -61,7 +61,7 @@
         },
         "inaturalist_limit": {
             "title": "Max number (iNaturalist)",
-            "description": "The maximum number of data points that are being retrieved from iNaturalist. For details ask Anthony/BOKU.",
+            "description": "The maximum number of data points that are being retrieved from iNaturalist.",
             "schema": {
                 "type": "integer"
             },
@@ -72,7 +72,7 @@
         },
         "vertnet_limit": {
             "title": "Max number (VertNet)",
-            "description": "The maximum number of data points that are being retrieved from VertNet. For details ask Anthony/BOKU.",
+            "description": "The maximum number of data points that are being retrieved from VertNet.",
             "schema": {
                 "type": "integer"
             },
