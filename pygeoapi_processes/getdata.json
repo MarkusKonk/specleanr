@@ -132,7 +132,7 @@
             "default": 80,
             "keywords": ["percentagecorrectness"]
         },
-        "synonym_checks": {
+        "synonym_check": {
             "title": "Either consider synonym from standard databases like FishBase.",
             "description": "Logical, TRUE if synoymns species names should be returned during data checks before data download.",
             "schema": {
