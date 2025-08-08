@@ -49,7 +49,7 @@
             "keywords": []
         },
         "bool_merge": {
-            "title": "True or False: Merge?",
+            "title": "Add checked names on dataset",
             "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false. Please put a Boolean value, not a string.",
             "schema": {
                 "type": "boolean"
@@ -59,7 +59,7 @@
             "keywords": []
         },
         "bool_synonym": {
-            "title": "True or False: Merge?",
+            "title": "Synonyn checks",
             "description": "Return synoymn checks from FishBase.",
             "schema": {
                 "type": "boolean"
@@ -69,7 +69,7 @@
             "keywords": []
         },
         "bool_ecosystem_type": {
-            "title": "True or False: Merge?",
+            "title": "Output ecosytem types",
             "description": "Return ecoystem checks for species from FishBase including marine, freshwater, and brackish.",
             "schema": {
                 "type": "boolean"
@@ -79,7 +79,7 @@
             "keywords": []
         },
         "bool_rm_duplicates": {
-            "title": "True or False: Merge?",
+            "title": "Remove duplicates",
             "description": "Remove duplicates from the dataset. Default is FALSE.",
             "schema": {
                 "type": "boolean"
