@@ -197,6 +197,11 @@ class DataRetrievalProcessor(BaseProcessor):
         ### Convert user inputs to what R script needs ###
         ##################################################
 
+        # R refuses to send lists, if the list contains only one object, and just sends
+        # the object instead. So I have to check whether the list really is a list:
+        if type(in_database) == type("bla"):
+            in_database = [in_database]
+
         # Join database strings:
         in_database = ','.join(in_database)
 
