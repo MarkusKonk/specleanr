@@ -5,6 +5,9 @@ import os
 import requests
 import zipfile
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
+from pygeoapi.process.specleanr.pygeoapi_processes.utils import run_docker_container
+from pygeoapi.process.specleanr.pygeoapi_processes.utils import store_geojson
+
 
 '''
 # Example using CSV and GeoJSON and GeoTIFF input
@@ -17,6 +20,50 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
         "input_raster_url_or_name": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff",
         "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "bool_merge": true,
+        "bool_list": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": false,
+        "minimum_sprecordsallow": false
+    }
+}'
+
+# Example using CSV and GeoJSON (passed directly) and GeoTIFF (static, on the server) input
+# Works: Tested on 2025-08-05 (Merret)
+
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "worldclim",
+        "study_area_geojson": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[
+                        [ 9.3593826329501, 50.15015768185512],
+                        [ 7.9191189516121, 47.12117448155652],
+                        [ 9.3089855398883, 45.44042789489441],
+                        [11.3163007857614, 46.07905231554338],
+                        [19.8679225896241, 41.37556228149228],
+                        [28.1073844852147, 42.03408100365081],
+                        [30.8463783248204, 45.85409918874026],
+                        [28.2557360912777, 49.13596193751451],
+                        [20.1314141836580, 50.32119604024012],
+                        [ 9.3593826329502, 50.15015768185512]
+                    ]]
+                }
+            }]
+        },
         "colname_lat": "decimalLatitude",
         "colname_lon": "decimalLongitude",
         "colname_species": "species",
@@ -127,35 +174,45 @@ class PredExtractProcessor(BaseProcessor):
         ### storage/download location ###
         #################################
 
+        # Where to store input data
+        # Here, downloaded inputs will be stored by pygeoapi.
+        # It will be mounted as read-only into the docker.
+        input_dir = self.download_dir+'/in/specleanr_job_%s' % self.job_id
+
         # Where to store output data
+        output_dir = self.download_dir+'/out/specleanr_job_%s' % self.job_id
+        output_url = self.download_url+'/out/specleanr_job_%s' % self.job_id
         result_filename = 'multiprecleaned-%s.csv' % self.job_id
-        result_filepath     = self.download_dir+'/out/'+result_filename
-        result_downloadlink = self.download_url+'/out/'+result_filename
+        result_filepath     = output_dir+'/'+result_filename
+        result_downloadlink = output_url+'/'+result_filename
+        os.makedirs(output_dir, exist_ok=True)
+
 
         ##################################################
         ### Convert user inputs to what R script needs ###
         ##################################################
 
-        # Input csv file passed by user:
-        input_dir = self.download_dir+'/in/job_%s' % self.job_id
-
         # Input study area passed by user:
-        # If the user provided a link to a zipped shapefile, the R package will download and unzip it...
+        # If user provided link to a shapefile, pass it to the package
+        # (it can deal with remote shapefiles, as long as they are zipped):
         if study_area_shp_url is not None:
             in_bbox_path = input_polygons_path
+            input_dir = None # No need to mount, so set to None
 
-        # OR download and store GeoJSON:
-        # TODO Probably storing to disk is not needed, instead read directly from HTTP response...
+        # OR if user provided link to a GeoJSON file, pass it to the package
+        # (it can deal with remote GeoJSON file):
         elif study_area_geojson_url is not None:
-            input_polygons_path = download_geojson(study_area_geojson_url, input_dir, '.json')
-            in_bbox_path = input_polygons_path
+            in_bbox_path = study_area_geojson_url
+            input_dir = None # No need to mount, so set to None
 
-        # OR receive and store GeoJSON:
+        # OR extract GeoJSON from HTTP POST payload and store it:
         # TODO Probably storing to disk is not needed, instead read directly from HTTP payload...
         elif study_area_geojson is not None:
+            os.makedirs(input_dir, exist_ok=True) # create the job-specific dir
             input_polygons_path = store_geojson(study_area_geojson, input_dir, '.json')
             in_bbox_path = input_polygons_path
 
+        # OR extract a JSON bounding box and convert to R format:
         elif study_area_bbox is not None:
             # R script needs: "xmin=8.15250, ymin=42.08333, xmax=29.73583, ymax=50.24500"
             # OGC API spec:
@@ -169,9 +226,11 @@ class PredExtractProcessor(BaseProcessor):
                 north = study_area_bbox["bbox"][2],
                 east  = study_area_bbox["bbox"][3]
             )
+            input_dir = None # No need to mount, so set to None
 
         else:
             in_bbox_path = "null"
+            input_dir = None # No need to mount, so set to None
 
         # Input raster:
         if in_raster_path.startswith('http'):
@@ -179,7 +238,6 @@ class PredExtractProcessor(BaseProcessor):
         else:
             LOGGER.debug('Using static raster on the server...')
             # TODO: Maybe remove this option at some point?
-            # TODO: Currently does not work, as the input dir is not mounted into the docker container.
             if in_raster_path == 'worldclim':
                 in_raster_path = '%s/worldclim.tiff' % self.input_raster_dir
             else:
@@ -218,7 +276,8 @@ class PredExtractProcessor(BaseProcessor):
             self.docker_executable,
             self.image_name,
             self.r_script,
-            self.download_dir,
+            input_dir,
+            output_dir,
             self.input_raster_dir,
             r_args
         )
@@ -241,177 +300,3 @@ class PredExtractProcessor(BaseProcessor):
 
         return 'application/json', response_object
 
-
-
-def store_geojson(geojson, input_dir, ending=None):
-
-    # Make sure the dir exists:
-    if not os.path.exists(input_dir):
-        os.makedirs(input_dir)
-
-    # How should the downloaded file be named?
-    # If the URL includes a name: TODO can we trust this name?
-    #filename = os.path.basename(input_url_geojson)
-    filename = "geojson%s" % os.urandom(5).hex()
-    filename = filename if ending is None else filename+ending
-    input_file_path = '%s/%s' % (input_dir, filename)
-    LOGGER.debug('Storing input geojson file to: %s' % input_file_path)
-
-    with open(input_file_path, 'w') as myfile:
-        json.dump(geojson, myfile)
-
-    return input_file_path
-
-
-def download_geojson(input_url_geojson, input_dir, ending=None):
-
-    # Download file into given dir:
-    LOGGER.debug('Downloading input geojson file: %s' % input_url_geojson)
-    resp = requests.get(input_url_geojson)
-    if not resp.status_code == 200:
-        raise ProcessorExecuteError('Could not download input geojson file (HTTP status %s): %s' % (resp.status_code, input_url_geojson))
-
-    return store_geojson(resp.json(), input_dir, ending=ending)
-
-
-def run_docker_container(
-        docker_executable,
-        image_name,
-        script_name,
-        download_dir,
-        readonly_dir,
-        script_args
-    ):
-    LOGGER.debug('Prepare running docker container')
-
-    # Create container name
-    # Note: Only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed
-    # TODO: Use job-id?
-    container_name = "%s_%s" % (image_name.split(':')[0], os.urandom(5).hex())
-
-    # Define paths inside the container
-    container_in = '/in'
-    container_out = '/out'
-    container_readonly = '/readonly'
-
-    # Define local paths
-    local_in = os.path.join(download_dir, "in")
-    local_out = os.path.join(download_dir, "out")
-    local_readonly = readonly_dir.rstrip('/')
-
-    # Ensure directories exist
-    os.makedirs(local_in, exist_ok=True)
-    os.makedirs(local_out, exist_ok=True)
-
-    # Replace paths in args:
-    sanitized_args = []
-    for arg in script_args:
-        newarg = arg
-        if local_in in arg:
-            newarg = arg.replace(local_in, container_in)
-            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif local_out in arg:
-            newarg = arg.replace(local_out, container_out)
-            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-        elif local_readonly in arg:
-            newarg = arg.replace(local_readonly, container_readonly)
-            LOGGER.debug("Replaced argument %s by %s..." % (arg, newarg))
-
-        sanitized_args.append(newarg)
-
-    # Prepare container command
-    # (mount volumes etc.)
-    docker_args = [
-        docker_executable, "run",
-        "--rm",
-        "--name", container_name,
-        "-v", f"{local_in}:{container_in}:ro",
-        "-v", f"{local_out}:{container_out}",
-        "-v", f"{readonly_dir}:{container_readonly}:ro",
-        "-e", f"R_SCRIPT={script_name}",
-        image_name,
-    ]
-    docker_command = docker_args + sanitized_args
-    LOGGER.debug('Docker command: %s' % docker_command)
-    
-    # Run container
-    try:
-        LOGGER.debug('Start running docker container')
-        result = subprocess.run(docker_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout = result.stdout.decode()
-        stderr = result.stderr.decode()
-        LOGGER.debug('Finished running docker container')
-        return result.returncode, stdout, stderr, "no error"
-
-    except subprocess.CalledProcessError as e:
-        returncode = e.returncode
-        stdout = e.stdout.decode()
-        stderr = e.stderr.decode()
-        LOGGER.error('Failed running docker container (exit code %s)' % returncode)
-        user_err_msg = get_error_message_from_docker_stderr(stderr)
-        return returncode, stdout, stderr, user_err_msg
-
-
-def get_error_message_from_docker_stderr(stderr, log_all_lines = True):
-    '''
-    We would like to return meaningful messages to users. For example, by
-    printing ALL stderr lines, we get the following:
-
-    ERROR - Docker stderr: Error in if (zz[which.max(zz)] < minpts) stop("All species do not have enough data after removing missing values and duplicates.") : 
-    ERROR - Docker stderr:   argument is of length zero
-    ERROR - Docker stderr: Calls: pred_extract
-    ERROR - Docker stderr: Execution halted
-
-    ERROR - Docker stderr: Error in pred_extract(data = speciesfiltered, raster = worldclim, lat = in_colname_lat,  : 
-    ERROR - Docker stderr:   All species do not have enough data after removing missing values and duplicates.
-    ERROR - Docker stderr: Execution halted
-
-    Now, how to capture the meaningful part of that, which we want to return
-    to the user? Here is a first attempt:
-    '''
-
-    user_err_msg = ""
-    error_on_previous_line = False
-    colon_on_previous_line = False
-    for line in stderr.split('\n'):
-
-        # Skip empty lines:
-        if not line:
-            continue
-
-        # Print all non-empty lines to log:
-        if log_all_lines:
-            LOGGER.error('Docker stderr: %s' % line)
-
-        # R error messages may start with the word "Error"
-        if line.startswith("Error"):
-            #LOGGER.debug('### Found explicit error line: %s' % line.strip())
-            user_err_msg += line.strip()
-            error_on_previous_line = True
-
-        # When R error messages are continued on another line, they may be
-        # indented by two spaces.
-        elif line.startswith("  ") and error_on_previous_line:
-            #LOGGER.debug('### Found indented line following an error: %s' % line.strip())
-            user_err_msg += " "+line.strip()
-            error_on_previous_line = True
-
-        # When R error messages end with a colon, they will be continued on
-        # the next line, independently of their indentation I guess!
-        elif colon_on_previous_line:
-            #LOGGER.debug('### Found line following a colon: %s' % line.strip())
-            user_err_msg += " "+line.strip()
-            error_on_previous_line = True
-
-        else:
-            #LOGGER.debug('### Do not pass back to user: %s' % line.strip())
-            error_on_previous_line = False
-
-        # Remember whether this line ended with a colon, indicating that the
-        # next line will continue with the error message:
-        colon_on_previous_line = False
-        if line.strip().endswith(":"):
-            #LOGGER.debug('### Found a colon, next line will still be error!')
-            colon_on_previous_line = True
-
-    return user_err_msg

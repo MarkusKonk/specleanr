@@ -108,7 +108,26 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
+}'; date; echo "this was getdata test 1"
+```
+
+Quicker, just one species, just one database, small bbox...
+
+```
+# Works: Tested on 2025-08-05 (Merret) WIP
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "Esox lucius",
+        "databases": ["gbif"],
+        "gbif_limit": 10,
+        "study_area_bbox": {"bbox": [43.0, 8.5, 44.5, 12.5]},
+        "percentage_correctness": 30,
+        "synonym_check": true
+    }
+}'; date; echo "this was getdata test 1"
 ```
 
 ### Case 2a: Test with species list (and local shp file as extent)
@@ -187,8 +206,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 2b"; date
+}'; date; echo "this was getdata test 2b"
 ```
 
 ### Case 3a: Test with species list (and local geojson file as extent)
@@ -261,8 +279,49 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 3b"; date
+}'; date; echo "this was getdata, test case 3b"
+```
+
+### Case 3c: Test with species list (and direct geojson)
+
+**From command line:** Same as test 3a, because it just reads the raster from the local file system.
+
+**Run the Docker container:** Same as test 3a, because it just reads the raster from the local file system.
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-05 (Merret)
+
+curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "databases": ["gbif", "inat"],
+        "gbif_limit": 20,
+        "inaturalist_limit": 20,
+        "percentage_correctness": 30,
+        "synonym_check": true,
+        "study_area_geojson": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[
+                        [15.067916439922868,48.71725768072221],
+                        [15.067916439922868,48.09522635300115],
+                        [16.295486613797266,48.09522635300115],
+                        [16.295486613797266,48.71725768072221],
+                        [15.067916439922868,48.71725768072221]
+                    ]]
+                }
+            }]
+        }
+    }
+}'; date; echo "this was getdata, test case 3c"
 ```
 
 ### Case 4a: Test with local species csv file (and string extent)
@@ -312,7 +371,7 @@ echo "getdata test 4b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+echo "getdata test 4b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "True" }
   "xmin=8.1525, ymin=42.08333, xmax=29.73583, ymax=50.245" \
@@ -338,8 +397,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 4b"; date
+}'; date; echo "this was getdata, test case 4b"
 ```
 
 ### Case 5a: Test with local species csv file (and local shp file as extent)
@@ -400,7 +458,7 @@ echo "getdata test 5b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+echo "getdata test 5b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "True" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip" \
@@ -426,8 +484,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 5b"; date
+}'; date; echo "this was getdata, test case 5b"
 ```
 
 ### Case 6a: Test with remote species csv file (and local geojson file as extent)
@@ -449,7 +506,7 @@ echo "getdata test 6a"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+echo "getdata test 6a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "True" \
   "/in/danube_from_boku.geojson" \
@@ -477,7 +534,7 @@ echo "getdata test 6b"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+echo "getdata test 6b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "20" "20" "20" "True" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
@@ -503,8 +560,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": true
     }
-}'
-echo "this was getdata, test case 6b"; date
+}'; date; echo "this was getdata, test case 6b"
 ```
 
 ### Case 7: Test with synonym check false...
@@ -528,7 +584,7 @@ echo "getdata test 7"; date; Rscript getdata.R \
 ```
 # Works: Tested on 2025-08-04 (Merret)
 
-docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
+echo "getdata test 7"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname" \
   "gbif,inat,vertnet" "5" "5" "5" "TRUE" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
@@ -554,8 +610,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 30,
         "synonym_check": false
     }
-}'
-echo "this was getdata, test case 7"; date
+}'; date; echo "this was getdata, test case 7"
 ```
 
 ### Case 8: Test with different percentage correctness...
@@ -605,7 +660,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
         "percentage_correctness": 90,
         "synonym_check": true
     }
-}'
+}'; date; echo "this was getdata, test case 8"
 ```
 
 
@@ -661,7 +716,10 @@ echo "matchdata test 1a"; date; Rscript matchdata.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "matchdata test 1a"; date; docker run -v "/var/www/nginx/exampledata/boku/:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "/in/efidata.csv,/in/jdsdata.csv" "speciesname,scientificName"  "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test2a.csv"
+echo "matchdata test 1a"; date; docker run -v "/var/www/nginx/exampledata/boku/:/in" -v "./out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" \
+  "/in/efidata.csv,/in/jdsdata.csv" \
+  "speciesname,scientificName"  "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" \
+  "TRUE" "/out/result_matchdata-test2a.csv"
 ```
 
 **Via HTTP API:** Cannot run via HTTP API using local input file
@@ -684,7 +742,10 @@ echo "matchdata test 1b"; date; Rscript matchdata.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "matchdata test 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" "speciesname,scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" "TRUE" "/out/result_matchdata-test1b.csv"
+echo "matchdata test 1b"; date; docker run -v "./out:/out" -e "R_SCRIPT=matchdata.R" "specleanr:latest" \
+  "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/efidata.csv,https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv" \
+  "speciesname,scientificName" "JDS4_sampling_ID, country" "lat, lati" "lon, long" "sampling_date,Date" \
+  "TRUE" "/out/result_matchdata-test1b.csv"
 ```
 
 **Via HTTP API:**
@@ -703,8 +764,7 @@ curl --location 'http://localhost:5000/processes/match-data/execution' \
         "colnames_lon": ["lon", "long", "longitude"],
         "colnames_date": ["Date", "sampling_date"]
     }
-}'
-echo "This was matchdata, test 1b"; date
+}'; date; echo "This was matchdata, test 1b"
 ```
 
 
@@ -760,7 +820,7 @@ echo "checknames test 1"; date; Rscript checknames.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "checknames test 1"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+echo "checknames test 1"; date; docker run -v "./out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
   "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius" "null" \
   "70" \
   "false" "true" \
@@ -784,8 +844,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
-}'
-echo "This was checknames, test 1", date
+}'; date; echo "This was checknames, test 1"
 ```
 
 ### Case 2a: File input (local), merge=True
@@ -813,7 +872,7 @@ Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 ```
 # Works: Tested via docker on 2025-08-05 (Merret)
 
-echo "checknames test 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+echo "checknames test 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
   "/in/matched-biodiv-data-example.csv" "species" \
   "70" \
   "True" "True" \
@@ -863,7 +922,7 @@ Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "checknames test 2b"; date; docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+echo "checknames test 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
   "70" \
   "True" "True" \
@@ -876,7 +935,7 @@ Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "checknames test 2b"; date; docker run -v "/var/www/nginx/download/in:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
+echo "checknames test 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=checknames.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv" "species" \
   "70" \
   "True" "True" \
@@ -903,7 +962,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
-}'
+}'; date; "this was checknames test case 2b"
 ```
 
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
@@ -923,7 +982,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": false,
         "bool_rm_duplicates": false
     }
-}'
+}'; date; "this was checknames test case 2b"
 ```
 
 
@@ -989,7 +1048,7 @@ echo "pred_extract test 1a"; date; Rscript pred_extract.R \
 ```
 Works: Tested on 2025-07-31 (Merret)
 
-echo "pred_extract test 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" \
+echo "pred_extract test 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" \
   "/in/species_for_pred_extract.csv" \
   "/in/worldclim.tiff" \
   "/in/danube_from_boku.geojson" \
@@ -1031,7 +1090,7 @@ echo "pred_extract test 1b"; date; Rscript pred_extract.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "pred_extract test 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" \
+echo "pred_extract test 1b"; date; docker run -v "./out:/out" -e "R_SCRIPT=pred_extract.R" "specleanr:latest" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff" \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson" \
@@ -1067,15 +1126,14 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "bool_remove_duplicates": false,
         "minimum_sprecordsallow": false
     }
-}'
-echo "this was pred_extract test 1b"; date;
+}', date; echo "this was pred_extract test 1b";
 ```
 
 ### Case 2: Static raster on server
 
-**From command line:** Not available
+**From command line:** Same as test 2a, because it just reads the raster from the local file system.
 
-**Run the Docker container:** Not available
+**Run the Docker container:** Same as test 2a, because it just reads the raster from the local file system.
 
 **Via HTTP API:**
 
@@ -1100,8 +1158,60 @@ curl --location 'http://localhost:5000/processes/pred-extract/execution' \
         "bool_remove_duplicates": false,
         "minimum_sprecordsallow": false
     }
-}'
-echo "This was pred_extract case 2"; date
+}'; date; echo "This was pred_extract case 2"
+```
+
+### Case 3: Test passing GeoJSON directly
+
+**From command line:** Same as test 2a, because it just reads the raster from the local file system.
+
+**Run the Docker container:** Same as test 2a, because it just reads the raster from the local file system.
+
+**Via HTTP API:**
+
+```
+# Works: Tested on 2025-08-05 (Merret)
+
+curl --location 'http://localhost:5000/processes/pred-extract/execution' \
+--header 'Content-Type: application/json' \
+--data '{
+    "inputs": {
+        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/species_for_pred_extract.csv",
+        "input_raster_url_or_name": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/worldclim.tiff",
+        "study_area_geojson": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[
+                        [ 9.3593826329501, 50.15015768185512],
+                        [ 7.9191189516121, 47.12117448155652],
+                        [ 9.3089855398883, 45.44042789489441],
+                        [11.3163007857614, 46.07905231554338],
+                        [19.8679225896241, 41.37556228149228],
+                        [28.1073844852147, 42.03408100365081],
+                        [30.8463783248204, 45.85409918874026],
+                        [28.2557360912777, 49.13596193751451],
+                        [20.1314141836580, 50.32119604024012],
+                        [ 9.3593826329502, 50.15015768185512]
+                    ]]
+                }
+            }]
+        },
+        "colname_lat": "decimalLatitude",
+        "colname_lon": "decimalLongitude",
+        "colname_species": "species",
+        "mininmum_sprecords": 10,
+        "bool_merge": true,
+        "bool_list": false,
+        "bool_coords": true,
+        "bool_remove_nas": true,
+        "bool_remove_duplicates": false,
+        "minimum_sprecordsallow": false
+    }
+}'; date; echo "This was pred_extract case 3"
 ```
 
 
@@ -1234,7 +1344,7 @@ echo "multidetect test1"; date; Rscript multidetect.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "test multidetect 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+echo "test multidetect 1a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "/in/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1297,7 +1407,7 @@ echo "multidetect test 1b"; date; Rscript multidetect.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "test multidetect 1b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+echo "test multidetect 1b"; date; docker run -v "./out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1348,8 +1458,7 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "eif_bool": false,
         "classify_or_autoremove": true
     }
-}'
-echo "test multidetect 1b"; date
+}'; date; echo "this was multidetect test 1b"
 ```
 
 ### Case 2a: With loess "False" and threshold 0.8 (local input file)
@@ -1405,7 +1514,7 @@ Warning: `In FUN(X[[i]], ...) : The 3 rows for Setosa are less than variables an
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "test multidetect 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+echo "test multidetect 2a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "/in/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1449,7 +1558,7 @@ echo "multidetect test 2b:"; date; Rscript multidetect.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "test multidetect 2b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+echo "test multidetect 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1502,8 +1611,7 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "eif_bool": false,
         "classify_or_autoremove": true
     }
-}'
-echo "multidetect test 2b"; date
+}'; date; echo "this was multidetect test 2b"
 ```
 
 ### Case 3a: With loess "False" and threshold 0.8 (local input file)
@@ -1568,7 +1676,7 @@ Warning messages:
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "test multidetect 3a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+echo "test multidetect 3a"; date; docker run -v "/var/www/nginx/exampledata/boku:/in" -v "./out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "/in/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1624,7 +1732,7 @@ echo "multidetect test 3b:"; date; Rscript multidetect.R \
 ```
 # Works: Tested on 2025-08-05 (Merret)
 
-echo "test multidetect 3b"; date; docker run -v "/var/www/nginx/download/out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
+echo "test multidetect 3b"; date; docker run -v "./out:/out" -e "R_SCRIPT=multidetect.R" specleanr:latest \
   "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/iris1.csv" "Sepal.Length" \
   "null" "True" "outlier" \
   "Species" "null" \
@@ -1674,7 +1782,6 @@ curl --location 'http://localhost:5000/processes/multidetect-and-clean/execution
         "eif_bool": false,
         "classify_or_autoremove": false
     }
-}'
-echo "multidetect test 3b"; date
+}'; date; echo "this was multidetect test 3b";
 ```
 
