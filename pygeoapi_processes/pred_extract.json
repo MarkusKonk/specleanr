@@ -20,7 +20,7 @@
     "inputs": {
         "input_data": {
             "title": "Occurrence data",
-            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the checknames process.",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the check-names process.",
             "schema": {
                 "type": "string"
             },
@@ -62,7 +62,7 @@
             "title": "Area of Interest (GeoJSON, directly)",
             "description": "Directly post the GeoJSON containing the study areas inside which you would like to delineate the bounding box or extent for study area.",
             "schema": {
-                "type": "string"
+                "type": "object"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
@@ -100,9 +100,9 @@
         },
         "mininmum_sprecords": {
             "title": "Min pts to consider the species dataframe.",
-            "description": "The minimum number of points in a dataframe to allow aspecies retained in the dataframe. Example: 10, is species dataset is less than 10 records will be rejected.",
+            "description": "The minimum number of points in a dataframe to allow species retained in the dataframe. Example: 10, is species dataset is less than 10 records will be rejected.",
             "schema": {
-                "type": "number"
+                "type": "integer"
             },
             "minOccurs": 1,
             "maxOccurs": 1,

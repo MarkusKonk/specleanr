@@ -56,7 +56,7 @@
             "keywords": []
         },
         "multiple_species": {
-            "title": ": Distinguish between multiple species",
+            "title": "Distinguish between multiple species",
             "description": "If \"false\", then only a single species dataset is expected. However, if multiple species are considered, then the parameter must be set to \"true\". The \"colsp\" is also required to set the column with species names. If the data is a list of indivudual data, then \"colsp\" is not a required parameter.",
             "schema": {
                 "type": "boolean"
@@ -76,7 +76,7 @@
             "keywords": []
         },
         "group_colname": {
-            "title": ": Required for multiple groups",
+            "title": "Required for multiple groups",
             "description": "For multiple groups in a dataframe, provide the column name containing the groups to be checked. For example, a column name with species name in a dataset.",
             "schema": {
                 "type": "string"
@@ -97,7 +97,7 @@
         },
         "methods": {
             "title": "Methods",
-            "description": "The name of methods for Outlier detection to be used, as a comma-separated string. Outlier detection methods considered. Use extractMethods (TODO how to link to that) to get outlier detection methods implemented in this package. Example = \"mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal\" (TODO: Any others? Complete set?)",
+            "description": "The name of methods for Outlier detection to be used, as a comma-separated string. Outlier detection methods considered. Use extractMethods to get outlier detection methods implemented in this package. Example = \"mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal\" (TODO: Any others? Complete set?)",
             "schema": {
                 "type": "string"
             },
@@ -129,7 +129,7 @@
             "title": "Maximum records",
             "description": "The user can adjust the maximum records were to initiate bootstrapping. Default is 30. So data will N more than 30 will not be bootstrapped.",
             "schema": {
-                "type": "number"
+                "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
@@ -140,7 +140,7 @@
             "title": "Number of bootstraps",
             "description": "The number of bootstraps to generate during bootstrapping. The defualt is 10.",
             "schema": {
-                "type": "number"
+                "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
@@ -151,7 +151,7 @@
             "title": "Set seed",
             "description": "Durring bootstrapping, random samples are generated that requires to set a seed for reproducibility.",
             "schema": {
-                "type": "number"
+                "type": "integer"
             },
             "minOccurs": 1,
             "maxOccurs": 1,
@@ -161,7 +161,7 @@
             "title": "Threshold value to flag a record from bootstrap samples.",
             "description": "As a record is flagged in multiple bootstrap samples, a threshold is required to extract an outlier. Default is 0.6, meaning if a record is flagged 6 of the 10 bootsraps, will be flagged as an outlier.",
             "schema": {
-                "type": "decimal"
+                "type": "number"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
@@ -182,7 +182,7 @@
             "title": "Number of PCs to retain.",
             "description": "The user can indicate the maximum number of PCs to retain in the outlier detection. The Defualt is 5.",
             "schema": {
-                "type": "number"
+                "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
@@ -241,7 +241,7 @@
             "default": 0.1,
             "keywords": []
         },
-        "bool_loess ": {
+        "bool_loess": {
             "title": "Data extraction parameter",
             "description": "If set to true then the local regression method for data extraction will be used. Check Basooma et al., 2025",
             "schema": {
@@ -277,7 +277,7 @@
             "title": "Cuts data into classess",
             "description": "Categorize data base on the correlation coefficient manner based on Akoglu 2018",
             "schema": {
-                "type": "number"
+                "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
@@ -288,7 +288,7 @@
             "title": "Emprical Influence Function",
             "description": "Computes the Emprical Influence Fucntion for classified outlier. Defualt is FALSE",
             "schema": {
-                "type": "logcial"
+                "type": "boolean"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
