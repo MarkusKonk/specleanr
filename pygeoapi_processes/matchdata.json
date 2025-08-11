@@ -22,7 +22,7 @@
             "title": "Occurrence data (GBIF, iNaturalist, VertNet, or from any other source)",
             "description": "URL to CSV tables containing the occurrences from GBIF, iNaturalist and VertNet. This can be the outcome of the getdata process.",
             "schema": {
-                "type": "array"
+                "type": "string"
             },
             "minOccurs": 1,
             "maxOccurs": 1,

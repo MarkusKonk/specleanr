@@ -20,7 +20,7 @@
     "inputs": {
         "input_data": {
             "title": "Occurrence data",
-            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the matchdata process. Optional. Instead, you can provide a list of species ('species_names').",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the match-data process.",
             "schema": {
                 "type": "string"
             },
@@ -50,7 +50,7 @@
         },
         "bool_merge": {
             "title": "Add checked names on dataset",
-            "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false. Please put a Boolean value, not a string.",
+            "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false.",
             "schema": {
                 "type": "boolean"
             },
