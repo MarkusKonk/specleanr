@@ -296,8 +296,8 @@
             "keywords": ["column"]
         },
         "classify_or_autoremove": {
-            "title": "Title missing",
-            "description": "Description missing",
+            "title": "Either use outlier classification or autoremoval with threshold and LOESS method",
+            "description": "The parameter allows to switch from outlification that labels all records as perfect outlier to fair outliers to allows further scrutiny. Otherwise, the outliers will be dropped based on a threshold set naively or using LOESS method.",
             "schema": {
                 "type": "boolean"
             },
