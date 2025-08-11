@@ -16,7 +16,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
@@ -34,7 +34,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 --data '{
     "inputs": {
         "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
-        "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "species_names_list": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 10,
         "vertnet_limit": 10,
@@ -47,7 +47,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 --data '{
     "inputs": {
         "study_area_shapefile": "http://localhost/referencedata/specleanr/basinfinal.zip",
-        "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "species_names_list": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 50,
         "vertnet_limit": 50,
@@ -61,7 +61,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 --data '{
     "inputs": {
         "study_area_geojson_url": "https://vm4072.kaj.pouta.csc.fi/ddas/oapif/collections/hydro90-basin/items?f=json&basin_id=1293067",
-        "input_data": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
+        "species_names_list": "Squalius cephalus, Salmo trutta, Thymallus thymallus, Anguilla anguilla",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 50,
         "vertnet_limit": 50,
@@ -75,7 +75,7 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat"],
         "gbif_limit": 20,
         "inaturalist_limit": 20,
@@ -140,7 +140,9 @@ class DataRetrievalProcessor(BaseProcessor):
         #################################
 
         # In the order that the docker/R-script needs them:
-        in_data_path = data.get("input_data")
+        species_names_url  = data.get('species_names_url', None)  # URL (csv with species names)
+        species_names_list = data.get('species_names_list', None) # ... or comma-separated list of strings (species names)
+        #in_data_path = data.get("input_data")
         in_species_column = data.get("colname_species", 'null')
         in_database = data.get("databases")
         in_gbif_lim = data.get('gbif_limit', 50)
@@ -157,8 +159,8 @@ class DataRetrievalProcessor(BaseProcessor):
         in_warn_check = True # (no effect on client, so not defined by client)
 
         # Checking for all mandatory input params:
-        if in_data_path is None:
-            raise ProcessorExecuteError('Missing parameter "input_data".')
+        # OPT species_names_url
+        # OPT species_names_list
         # OPT in_species_column
         if in_database is None:
             raise ProcessorExecuteError('Missing parameter "databases". Please provide list of databases to query.')
@@ -196,6 +198,20 @@ class DataRetrievalProcessor(BaseProcessor):
         ##################################################
         ### Convert user inputs to what R script needs ###
         ##################################################
+
+        # Input species: Either species list or species CSV URL plus column name:
+        if species_names_list is not None:
+            in_data_path = species_names_list
+            in_species_column = 'null'
+        elif species_names_url is not None:
+            in_data_path = species_names_url
+            if in_species_column is None:
+                err_msg = 'Missing parameter "colname_species". Please provide a column name.'
+                LOGGER.error(err_msg)
+                raise ProcessorExecuteError(err_msg)
+        else:
+            err_msg = 'Missing input species. Please provide either a URL to a CSV (species_names_url) or a list of species names (species_names_list).'
+            LOGGER.error(err_msg)
 
         # R refuses to send lists, if the list contains only one object, and just sends
         # the object instead. So I have to check whether the list really is a list:
