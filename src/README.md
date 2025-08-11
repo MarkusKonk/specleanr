@@ -831,13 +831,13 @@ echo "checknames test 1"; date; docker run -v "./out:/out" -e "R_SCRIPT=checknam
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "percent_correctness": 70,
         "bool_merge": false,
         "bool_synonym": true,
@@ -948,13 +948,13 @@ echo "checknames test 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=checkna
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": true,
@@ -962,19 +962,19 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
-}'; date; "this was checknames test case 2b"
+}'; date; echo "this was checknames test case 2b"
 ```
 
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": true,
@@ -982,7 +982,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": false,
         "bool_rm_duplicates": false
     }
-}'; date; "this was checknames test case 2b"
+}'; date; echo "this was checknames test case 2b"
 ```
 
 
