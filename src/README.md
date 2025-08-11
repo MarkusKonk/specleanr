@@ -93,13 +93,13 @@ echo "getdata test 1"; date; docker run "-v" "./out:/out" -e "R_SCRIPT=getdata.R
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
@@ -114,13 +114,13 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 Quicker, just one species, just one database, small bbox...
 
 ```
-# Works: Tested on 2025-08-05 (Merret) WIP
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Esox lucius",
+        "species_names_list": "Esox lucius",
         "databases": ["gbif"],
         "gbif_limit": 10,
         "study_area_bbox": {"bbox": [43.0, 8.5, 44.5, 12.5]},
@@ -191,13 +191,13 @@ echo "getdata test 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R"
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-05 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
@@ -264,13 +264,13 @@ echo "getdata test 3b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R"
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-05 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
         "vertnet_limit": 20,
@@ -291,13 +291,13 @@ curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/exec
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-05 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "databases": ["gbif", "inat"],
         "gbif_limit": 20,
         "inaturalist_limit": 20,
@@ -381,14 +381,14 @@ echo "getdata test 4b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R"
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
         "study_area_bbox": {"bbox": [42.08333, 8.15250, 50.24500, 29.73583]},
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
         "colname_species": "speciesname",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
@@ -468,14 +468,14 @@ echo "getdata test 5b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R"
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-04 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
         "study_area_shapefile": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/basinfinal.zip",
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
         "colname_species": "speciesname",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
@@ -544,14 +544,14 @@ echo "getdata test 6b"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R"
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-04 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
         "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
         "colname_species": "speciesname",
         "databases": ["gbif", "inat", "vertnet"],
         "gbif_limit": 20,
@@ -594,14 +594,14 @@ echo "getdata test 7"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-04 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
         "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
         "colname_species": "speciesname",
         "databases": ["gbif", "inat"],
         "gbif_limit": 5,
@@ -644,14 +644,14 @@ echo "getdata test 8"; date; docker run -v "./out:/out" -e "R_SCRIPT=getdata.R" 
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-04 (Merret)
+# Works: Tested on 2025-08-04 (Merret) TODO test again with new param name
 
 curl --location 'http://localhost:5000/processes/retrieve-biodiversity-data/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
         "study_area_geojson_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/danube_from_boku.geojson",
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/jdsdata.csv",
         "colname_species": "speciesname",
         "databases": ["gbif", "inat"],
         "gbif_limit": 20,
@@ -831,13 +831,13 @@ echo "checknames test 1"; date; docker run -v "./out:/out" -e "R_SCRIPT=checknam
 **Via HTTP API:**
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
+        "species_names_list": "Alburnus alburnus, Abramis brama, Cyprinus carpio, Esox lucius",
         "percent_correctness": 70,
         "bool_merge": false,
         "bool_synonym": true,
@@ -948,13 +948,13 @@ echo "checknames test 2b"; date; docker run -v "./out:/out" -e "R_SCRIPT=checkna
 Here we set synonymn_checks, ecosystem_checks, rm_duplicates to `true`:
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": true,
@@ -962,19 +962,19 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": true,
         "bool_rm_duplicates": true
     }
-}'; date; "this was checknames test case 2b"
+}'; date; echo "this was checknames test case 2b"
 ```
 
 Also works if we set synonymn_checks, ecosystem_checks, rm_duplicates to `false`:
 
 ```
-# Works: Tested on 2025-08-05 (Merret)
+# Works: Tested on 2025-08-11 (Merret)
 
 curl --location 'http://localhost:5000/processes/check-names/execution' \
 --header 'Content-Type: application/json' \
 --data '{
     "inputs": {
-        "input_data": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
+        "species_names_url": "https://aquainfra.ogc.igb-berlin.de/exampledata/boku/matched-biodiv-data-example.csv",
         "colname_species": "species",
         "percent_correctness": 70,
         "bool_merge": true,
@@ -982,7 +982,7 @@ curl --location 'http://localhost:5000/processes/check-names/execution' \
         "bool_ecosystem_type": false,
         "bool_rm_duplicates": false
     }
-}'; date; "this was checknames test case 2b"
+}'; date; echo "this was checknames test case 2b"
 ```
 
 

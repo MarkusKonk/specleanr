@@ -18,15 +18,25 @@
         "hreflang": "en-US"
     }],
     "inputs": {
-        "input_data": {
-            "title": "Data with species names to download",
-            "description": "URL to the input dataframe or directly indicating a vector of species names. If dataframe, provide species column names",
+        "species_names_list": {
+            "title": "Species names to download (list of species)",
+            "description": "List of species. Optional. Instead, you can provide a CSV table of species ('species_names_url')",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
             "maxOccurs": 1,
-            "keywords": ["dataframe", "string"]
+            "keywords": []
+        },
+        "species_names_url": {
+            "title": "Data with species names to download (CSV table / URL)",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the matchdata process. Optional. Instead, you can provide a list of species ('species_names_list').",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": ["csv"]
         },
         "colname_species": {
             "title": "Species column name",

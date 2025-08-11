@@ -18,13 +18,23 @@
         "hreflang": "en-US"
     }],
     "inputs": {
-        "input_data": {
-            "title": "Occurrence data",
-            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the match-data process.",
+        "species_names_list": {
+            "title": "Occurrence data (list of species)",
+            "description": "List of species. Optional. Instead, you can provide a CSV table of species ('species_names_url')",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 1,
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": []
+        },
+        "species_names_url": {
+            "title": "Occurrence data (CSV table / URL)",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the match-data process. Optional. Instead, you can provide a list of species ('species_names_list').",
+            "schema": {
+                "type": "string"
+            },
+            "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": ["csv"]
         },
