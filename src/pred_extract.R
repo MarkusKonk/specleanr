@@ -67,20 +67,19 @@ in_minimumpts_rm = tolower(in_minimumpts_rm) == 'true'
 ########################
 
 # (1) Read data from CSV or from URL
-if (in_bool_verbose) message('DEBUG: Reading input data table from: ', in_data_path_or_url)
+if (in_bool_verbose) message('DEBUG: Reading input data from CSV, from:', in_data_path_or_url)
 speciesfiltered <- data.table::fread(in_data_path_or_url)
-if (in_bool_verbose) message('DEBUG: Reading input data table... DONE.')
+if (in_bool_verbose) message('DEBUG: Reading input data from CSV... DONE.')
 
 
 # (2) Read raster from ...
-if (in_bool_verbose) message('DEBUG: Reading input raster from: ', in_raster_path)
+if (in_bool_verbose) message('DEBUG: Reading input raster, from:', in_raster_path)
 worldclim <- terra::rast(in_raster_path)
 #worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package = 'specleanr'))
 if (in_bool_verbose) message('DEBUG: Reading input raster... DONE.')
 
 
 # (3) Read bbox from shapefile
-message("DEBUG: Reading study area from: ", in_bbox_path)
 # If the URL points to a zipped shape, download and unzip before we can read it:
 if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip')) {
   if (in_bool_verbose) message("DEBUG: Downloading zipped shapefile: ", in_bbox_path)
@@ -92,49 +91,34 @@ if (startsWith(in_bbox_path, 'http') & endsWith(in_bbox_path, 'zip')) {
   stop('If you specify a remote shapefile as input, please zip it...')
 }
 
-if (in_bool_verbose) message('DEBUG: Reading input data from shapefile or GeoJSON: ', in_bbox_path)
+if (in_bool_verbose) message('DEBUG: Reading input data from shapefile or GeoJSON:', in_bbox_path)
 study_area <- sf::st_read(in_bbox_path, quiet=TRUE)
-if (in_bool_verbose) message('DEBUG: Reading study area from shapefile or GeoJSON... DONE.')
+if (in_bool_verbose) message('DEBUG: Reading input data from shapefile... DONE.')
+
 
 
 ##############################
 ### Run specleanr function ###
 ##############################
 
-message('DEBUG: Verbosity? ', in_bool_verbose)
-
 if (in_bool_verbose) {
   message("DEBUG: Logging all input args to pred_extract():")
-  # Log data table:
-  message('DEBUG:   data = of type "', typeof(speciesfiltered), '"')
-  if (data.table::is.data.table(speciesfiltered)) {
-    message('DEBUG:   data = of class "data.table"')
-    message('DEBUG:   data = columns: ', paste(names(speciesfiltered), collapse=','))
-    message('DEBUG:   data = first line: ', paste(speciesfiltered[1], collapse=','))
-  } else {
-    message('DEBUG:   data = not of class data.table!')
-  }
-  message('DEBUG:   raster = of type "', typeof(worldclim), '": ', worldclim)
-  message('DEBUG:   lat    = of type "', typeof(in_colname_lat), '": ', in_colname_lat)
-  message('DEBUG:   lon    = of type "', typeof(in_colname_lon), '": ', in_colname_lon)
-  message('DEBUG:   colsp  = of type "', typeof(in_colname_species), '": ', in_colname_species)
-  # Log spatial:
-  message('DEBUG:   bbox   = of type "', typeof(study_area), '"')
-  if (typeof(study_area)==typeof(list(1,2,3)) && "sf" %in% class(study_area)) {
-    message('DEBUG:   bbox   = of class "sf"')
-  } else if (typeof(study_area)==typeof(list(1,2,3)) && length(study_area) == 4) {
-    message('DEBUG:   bbox   = "', paste(names(study_area), unlist(study_area), sep = "=", collapse = ", "), '"')
-  }
-  message('DEBUG:   list   = of type "', typeof(in_bool_list), '": ', in_bool_list)
-  message('DEBUG:   minpts = of type "', typeof(in_min_pts), '": ', in_min_pts)
-  message('DEBUG:   mp     = of type "', typeof(in_minimumpts_rm), '": ', in_minimumpts_rm)
-  message('DEBUG:   rm_duplicates = of type "', typeof(in_rm_duplicates), '": ', in_rm_duplicates)
-  message('DEBUG:   merge     = of type "', typeof(in_bool_merge), '": ', in_bool_merge)
-  message('DEBUG:   warn      = of type "', typeof(in_bool_warn), '": ', in_bool_warn)
-  message('DEBUG:   verbose   = of type "', typeof(in_bool_verbose), '": ', in_bool_verbose)
-  message('DEBUG:   coords    = of type "', typeof(in_bool_coords), '": ', in_bool_coords)
-  message('DEBUG:   na.inform = of type "', typeof(in_na_inform), '": ', in_na_inform)
-  message('DEBUG:   na.rm     = of type "', typeof(in_na_rm), '": ', in_na_rm)
+  #message("DEBUG: data   = ", speciesfiltered)
+  message('DEBUG: raster = ', worldclim)
+  message('DEBUG: lat    = ', in_colname_lat)
+  message('DEBUG: lon    = ', in_colname_lon)
+  message('DEBUG: colsp  = ', in_colname_species)
+  message('DEBUG: bbox   = ', study_area)
+  message('DEBUG: list   = ', in_bool_list)
+  message('DEBUG: minpts = ', in_min_pts)
+  message('DEBUG: mp     = ', in_minimumpts_rm)
+  message('DEBUG: rm_duplicates = ', in_rm_duplicates)
+  message('DEBUG: merge     = ', in_bool_merge)
+  message('DEBUG: warn      = ', in_bool_warn)
+  message('DEBUG: verbose   = ', in_bool_verbose)
+  message('DEBUG: coords    = ', in_bool_coords)
+  message('DEBUG: na.inform = ', in_na_inform)
+  message('DEBUG: na.rm     = ', in_na_rm)
 }
 
 if (in_bool_verbose) message('DEBUG: Running specleanr::pred_extract...')

@@ -152,14 +152,7 @@ def run_docker_container(
         LOGGER.debug('Finished running docker container')
 
         # Print docker output:
-        for line in stdout.split('\n'):
-            if not line: continue
-            LOGGER.debug('Docker stdout: %s' % line.strip())
-            # output of print() in R-script
-        for line in stderr.split('\n'):
-            if not line: continue
-            LOGGER.debug('Docker stderr: %s' % line.strip())
-            # output of message() in R-script
+        log_docker_output(stdout, stderr)
 
         return result.returncode, stdout, stderr, "no error"
 
@@ -168,8 +161,21 @@ def run_docker_container(
         stdout = e.stdout.decode()
         stderr = e.stderr.decode()
         LOGGER.error('Failed running docker container (exit code %s)' % returncode)
+        log_docker_output(stdout, stderr)
         user_err_msg = get_error_message_from_docker_stderr(stderr)
         return returncode, stdout, stderr, user_err_msg
+
+
+def log_docker_output(stdout, stderr):
+    # Print docker output:
+    for line in stdout.split('\n'):
+        if not line: continue
+        LOGGER.debug('Docker stdout: %s' % line.strip())
+        # output of print() in R-script
+    for line in stderr.split('\n'):
+        if not line: continue
+        LOGGER.debug('Docker stderr: %s' % line.strip())
+        # output of message() in R-script
 
 
 def download_geojson(input_url_geojson, input_dir, ending=None):

@@ -86,6 +86,25 @@ class DataMatchProcessor(BaseProcessor):
         if in_colnames_date is None:
             raise ProcessorExecuteError('Missing parameter "colnames_date". Please provide a list of column names.')
 
+        # R refuses to send lists, if the list contains only one object, and just sends
+        # the object instead. So I have to check whether the list really is a list:
+        if type(in_data_paths_or_urls) == type("bla"):
+            in_data_paths_or_urls = [in_data_paths_or_urls]
+
+        if type(in_colnames_species_names) == type("bla"):
+            in_colnames_species_names = [in_colnames_species_names]
+
+        if type(in_colnames_countries) == type("bla"):
+            in_colnames_countries = [in_colnames_countries]
+
+        if type(in_colnames_lat) == type("bla"):
+            in_colnames_lat = [in_colnames_lat]
+
+        if type(in_colnames_lon) == type("bla"):
+            in_colnames_lon = [in_colnames_lon]
+
+        if type(in_colnames_date) == type("bla"):
+            in_colnames_date = [in_colnames_date]
 
         #################################
         ### Input and output          ###
