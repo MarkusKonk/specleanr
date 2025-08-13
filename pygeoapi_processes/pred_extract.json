@@ -39,7 +39,7 @@
             "keywords": []
         },
         "study_area_extent": {
-            "title": "Area of Interest (Shapefile)",
+            "title": "Area of Interest as a Shapefile",
             "description": "URL to the input shapefile containing the study areas inside which you would like to delineate the bounding box or extent for study area.",
             "schema": {
                 "type": "string"
@@ -49,7 +49,7 @@
             "keywords": ["shapefile"]
         },
         "study_area_geojson_url": {
-            "title": "Area of Interest (GeoJSON)",
+            "title": "Area of Interest as a GeoJSON",
             "description": "URL to the input GeoJSON file containing the study areas inside which you would like to delineate the bounding box or extent for study area.",
             "schema": {
                 "type": "string"
@@ -59,7 +59,7 @@
             "keywords": ["JSON", "GeoJSON"]
         },
         "study_area_geojson": {
-            "title": "Area of Interest (GeoJSON, directly)",
+            "title": "Area of Interest as GeoJSON object",
             "description": "Directly post the GeoJSON containing the study areas inside which you would like to delineate the bounding box or extent for study area.",
             "schema": {
                 "type": "object"
@@ -69,7 +69,7 @@
             "keywords": ["JSON", "GeoJSON"]
         },
         "colname_lat": {
-            "title": "Column name: Latitude",
+            "title": "Column name including Latitude",
             "description": "Column name lat. Example: \"decimalLatitude\"",
             "schema": {
                 "type": "string"
@@ -79,7 +79,7 @@
             "keywords": []
         },
         "colname_lon": {
-            "title": "Column name: Longitude",
+            "title": "Column name including Longitude",
             "description": "Column name lon. Example: \"decimalLongitude\"",
             "schema": {
                 "type": "string"
@@ -89,7 +89,7 @@
             "keywords": []
         },
         "colname_species": {
-            "title": "Column name: Species",
+            "title": "Column name including Species",
             "description": "Column name species. Example: \"speciescheck\"",
             "schema": {
                 "type": "string"
@@ -99,8 +99,8 @@
             "keywords": []
         },
         "mininmum_sprecords": {
-            "title": "Min pts to consider the species dataframe.",
-            "description": "The minimum number of points in a dataframe to allow species retained in the dataframe. Example: 10, is species dataset is less than 10 records will be rejected.",
+            "title": "Minimum points to consider from the species dataset.",
+            "description": "The minimum number of points in a dataset to allow species retained in the dataset. Example: 10, is species dataset is less than 10 records will be ignored.",
             "schema": {
                 "type": "integer"
             },
@@ -129,8 +129,8 @@
             "keywords": []
         },
         "bool_coords": {
-            "title": "Logical to attach the original coordinates.",
-            "description": "If TRUE, the original records used for data extraction will be attached on the dataset. Easy to tract the slight changes in coordinates during data extraction.",
+            "title": "Attach the original coordinates.",
+            "description": "If YES, the original records used for data extraction will be attached on the dataset. Easy to tract the slight changes in coordinates during data extraction.",
             "schema": {
                 "type": "boolean"
             },
@@ -140,7 +140,7 @@
         },
         "bool_remove_nas": {
             "title": "Remove NAs after data extraction.",
-            "description": "If TRUE, the NAs created when the coordinates didnot retrun records and left in the dataset. Default TRUE",
+            "description": "If YES, the NAs created when the coordinates did not retrun records and left in the dataset. Default TRUE",
             "schema": {
                 "type": "boolean"
             },
@@ -159,7 +159,7 @@
             "keywords": []
         },
         "minimum_sprecordsallow": {
-            "title": "Logical to either species with fewer records",
+            "title": "Minimum species records to consider before using data in species dsitribution modeling",
             "description": "In species distribution models, species with fewer records needs to be removed but normal data extraction this parameter should be set to FALSE to retain all species.",
             "schema": {
                 "type": "boolean"

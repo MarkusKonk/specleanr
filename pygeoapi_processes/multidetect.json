@@ -27,7 +27,7 @@
     "inputs": {
         "input_data": {
             "title": "Input table",
-            "description": "URL to the input table containing the data to be cleaned from outliers: Data sets for multiple or single species after of extraction of environment predictors.",
+            "description": "URL to the input table containing the data to be cleaned from outliers: Data sets for multiple or single species from pred_extract and other sources.",
             "schema": {
                 "type": "string"
             },
@@ -37,7 +37,7 @@
         },
         "colname_variable": {
             "title": "Variable of interest",
-            "description": "Column name identifying the variable of interest where outliers will be checked from by the univariate outlier detection methods, Z-score, mixed interquantile range, reverse jackknifing etc... In species distribution modeling, the variable of interest to be used should have direct effects to the species such as maximum temperature of the coldest month for bioclimatic variables (IUCN Standards and Petitions Committee, 2022) or stream power index for hydromorphological parameters (Logez et al., 2012).",
+            "description": "Column name identifying the variable of interest where outliers will be checked from for univariate outlier detection methods such as Z-score, mixed interquantile range, reverse jackknifing",
             "schema": {
                 "type": "string"
             },
@@ -46,7 +46,7 @@
             "keywords": ["column"]
         },
         "select_columns": {
-            "title": "Select columns",
+            "title": "Specify columns to be checked",
             "description": "In a multivariate dataset, if only particular columns needs to be checked then they should be indicated here. Otherwise all columns will be considerd in outlier detection.",
             "schema": {
                 "type": "string"
@@ -57,7 +57,7 @@
         },
         "multiple_species": {
             "title": "Distinguish between multiple species",
-            "description": "If \"false\", then only a single species dataset is expected. However, if multiple species are considered, then the parameter must be set to \"true\". The \"colsp\" is also required to set the column with species names. If the data is a list of indivudual data, then \"colsp\" is not a required parameter.",
+            "description": "If NO, then only a single species dataset is expected. ",
             "schema": {
                 "type": "boolean"
             },
@@ -67,16 +67,16 @@
         },
         "output_type": {
             "title": "Output type",
-            "description": "Set whether you want to return ourliers or clean dataset. The Defualt is outlier to return outliers from each method.",
+            "description": "Set whether you want to return outliers or clean dataset. Example outlier.",
             "schema": {
                 "type": "string"
             },
-            "minOccurs": 0,
+            "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": []
         },
         "group_colname": {
-            "title": "Required for multiple groups",
+            "title": "Column name including group names",
             "description": "For multiple groups in a dataframe, provide the column name containing the groups to be checked. For example, a column name with species name in a dataset.",
             "schema": {
                 "type": "string"
@@ -86,7 +86,7 @@
             "keywords": []
         },
         "colname_exclude": {
-            "title": "Column name: Exclude",
+            "title": "Column names to exclude",
             "description": "Exclude mainly numerical variables that are not necessary in the analysis, for example x and y columns or latitude/longitude, row numbers or serial IDs. Categorical variables are removed automatically in the data preparation.",
             "schema": {
                 "type": "string"
@@ -96,8 +96,8 @@
             "keywords": ["column"]
         },
         "methods": {
-            "title": "Methods",
-            "description": "The name of methods for Outlier detection to be used, as a comma-separated string. Outlier detection methods considered. Use extractMethods to get outlier detection methods implemented in this package. Example = \"mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal\" (TODO: Any others? Complete set?)",
+            "title": "Outlier detection methods",
+            "description": "The name of methods for Outlier detection to be used, as a comma-separated string. Example = \"mixediqr, logboxplot, iqr, distboxplot, jknife, semiqr, hampel, iforest, lof, mahal\".",
             "schema": {
                 "type": "string"
             },
@@ -106,8 +106,8 @@
             "keywords": ["column"]
         },
         "silence_true_errors": {
-            "title": "True or False",
-            "description": "Show execution errors and therefore for multiple species the code will break if one of the methods fails to execute.",
+            "title": "Silence methods that geuninely fail during outlier detection",
+            "description": "If YES, Silence errors for methods that genuinely druing the outlier detection process but continue without breaking other methods.",
             "schema": {
                 "type": "boolean"
             },
@@ -116,8 +116,8 @@
             "keywords": []
         },
         "boot_run": {
-            "title": "bool",
-            "description": "If set to true, then bootstrapping will be done for small samples.",
+            "title": "Bootstrapping execution",
+            "description": "If set to YES, then bootstrapping will be done for small samples.",
             "schema": {
                 "type": "boolean"
             },
@@ -126,8 +126,8 @@
             "keywords": ["column"]
         },
         "boot_maxrecords": {
-            "title": "Maximum records",
-            "description": "The user can adjust the maximum records were to initiate bootstrapping. Default is 30. So data will N more than 30 will not be bootstrapped.",
+            "title": "Maximum records to intiate bootstrapping",
+            "description": "The user can adjust the maximum records were to be be bootstrapped. Default is 30.",
             "schema": {
                 "type": "integer"
             },
@@ -138,7 +138,7 @@
         },
         "number_of_boots": {
             "title": "Number of bootstraps",
-            "description": "The number of bootstraps to generate during bootstrapping. The defualt is 10.",
+            "description": "The number of bootstraps to generate during bootstrapping. The default is 10.",
             "schema": {
                 "type": "integer"
             },
@@ -179,8 +179,8 @@
             "keywords": []
         },
         "number_of_pca": {
-            "title": "Number of PCs to retain.",
-            "description": "The user can indicate the maximum number of PCs to retain in the outlier detection. The Defualt is 5.",
+            "title": "Number of principal components to retain.",
+            "description": "The user can indicate the maximum number of principal components to retain in the outlier detection. The Default is 5.",
             "schema": {
                 "type": "integer"
             },
@@ -190,8 +190,8 @@
             "keywords": []
         },
         "pca_silence": {
-            "title": "Message during PCA analysis",
-            "description": "Messages during PCA analyis are returned if set to false. Default is true to silence the messages like the variance explainedf from the total PCs selected.",
+            "title": "Hide messages during PCA analysis",
+            "description": "Messages during PCA analyis are returned if set to NO. Default is YES to silence the messages like the variance explained from the total PCs selected.",
             "schema": {
                 "type": "boolean"
             },
@@ -200,8 +200,8 @@
             "keywords": []
         },
         "pcavariable": {
-            "title": "Select the among retained to be used as variable of interest",
-            "description": "The PC1 is the defualt variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
+            "title": "Select the principal component among the PCs retained to be used as variable of interest",
+            "description": "PC1 is the default variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
             "schema": {
                 "type": "string"
             },
@@ -211,18 +211,18 @@
             "keywords": []
         },
         "sdm_data": {
-            "title": "Changes the outlier detection routine",
-            "description": "If univariate data then sdm should set to false. All data that requires multivariate analysis such as using kmeans, isolation forest, or Mahalanobis distance, sdm must be set to true. Defualt is true.",
+            "title": "Change the outlier detection routine based on data type",
+            "description": "If it is univariate data then, set to NO. All data that requires multivariate analysis such as using kmeans, isolation forest, set to YES. Default is YES.",
             "schema": {
                 "type": "boolean"
             },
-            "minOccurs": 0,
+            "minOccurs": 1,
             "maxOccurs": 1,
             "keywords": []
         },
         "inform_na_outlier": {
-            "title": "inform NAs removal",
-            "description": "If set to true then NAs removed will be displayed for each group variable. Defualt is FALSE.",
+            "title": "Hide messages for removing NAs",
+            "description": "If set to YES, NAs removed will be displayed for each group variable. Default is NO.",
             "schema": {
                 "type": "boolean"
             },
@@ -231,7 +231,7 @@
             "keywords": []
         },
         "missingness": {
-            "title": "Missingness",
+            "title": "Percentage missing values in a group",
             "description": "Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if a column has more than 10 % missing values, then it will be removed from the dataset rather than the rows.",
             "schema": {
                 "type": "number"
@@ -241,9 +241,9 @@
             "default": 0.1,
             "keywords": []
         },
-        "bool_loess": {
-            "title": "Data extraction parameter",
-            "description": "If set to true then the local regression method for data extraction will be used. Check Basooma et al., 2025",
+        "classify_or_autoremove": {
+            "title": "Either use outlier classification or autoremoval with threshold or LOESS method",
+            "description": "The parameter allows to switch from outlification that labels all records as perfect outlier to fair outliers to allows further scrutiny. Otherwise, the outliers will be dropped based on a threshold set naively or using LOESS method.",
             "schema": {
                 "type": "boolean"
             },
@@ -251,9 +251,19 @@
             "maxOccurs": 1,
             "keywords": []
         },
+        "bool_loess": {
+            "title": "Data extraction parameter: LOESS",
+            "description": "If set to true then the local regression method for data extraction will be used",
+            "schema": {
+                "type": "boolean"
+            },
+            "minOccurs": 0,
+            "maxOccurs": 1,
+            "keywords": []
+        },
         "threshold_clean": {
             "title": "Data extraction parameter: Threshold setting",
-            "description": "If bool_loess is not set to true, then a threshold value can be provided. Default is 0.8. The threshold will significantly determine which is flagged as an absolute outlier. Check Basooma et al., 2025",
+            "description": "If Data extraction parameter: LOESS is NO, then a threshold value can be provided. Default is 0.8. The threshold will significantly determine which is flagged as an absolute outlier.",
             "schema": {
                 "type": "number"
             },
@@ -263,8 +273,8 @@
             "keywords": []
         },
         "outlierweights_mode": {
-            "title": "Data extraction parameter: Oultier weighting",
-            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an abolute outlier. Default is abs",
+            "title": "Data extraction parameter: Outlier weighting",
+            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an absolute outlier. Default is abs",
             "schema": {
                 "type": "string"
             },
@@ -286,7 +296,7 @@
         },
         "eif_bool": {
             "title": "Emprical Influence Function",
-            "description": "Computes the Emprical Influence Fucntion for classified outlier. Defualt is FALSE",
+            "description": "Computes the Emprical Influence Function for classified outliers. Default is NO",
             "schema": {
                 "type": "boolean"
             },
@@ -294,17 +304,8 @@
             "maxOccurs": 1,
             "default": false,
             "keywords": ["column"]
-        },
-        "classify_or_autoremove": {
-            "title": "Either use outlier classification or autoremoval with threshold or LOESS method",
-            "description": "The parameter allows to switch from outlification that labels all records as perfect outlier to fair outliers to allows further scrutiny. Otherwise, the outliers will be dropped based on a threshold set naively or using LOESS method.",
-            "schema": {
-                "type": "boolean"
-            },
-            "minOccurs": 1,
-            "maxOccurs": 1,
-            "keywords": []
         }
+        
     },
     "outputs": {
         "cleaned_data": {

@@ -20,7 +20,7 @@
     "inputs": {
         "input_datasets": {
             "title": "Occurrence data (GBIF, iNaturalist, VertNet, or from any other source)",
-            "description": "URL to CSV tables containing the occurrences from GBIF, iNaturalist and VertNet. This can be the outcome of the getdata process.",
+            "description": "URL to CSV tables containing the occurrences from GBIF, iNaturalist and VertNet. This can be the outcome of the retreive biodiversity data process.",
             "schema": {
                 "type": "string"
             },
@@ -29,7 +29,7 @@
             "keywords": ["csv"]
         },
         "colnames_species_names": {
-            "title": "Column names: Species names",
+            "title": "Column names including species names",
             "description": "List of column names that indicate the Species Name in each of the provided datasets. Example: \"speciesname, scientificName\"",
             "schema": {
                 "type": "array"
@@ -39,7 +39,7 @@
             "keywords": []
         },
         "colnames_countries": {
-            "title": "Column names: Country",
+            "title": "Column names including country",
             "description": "List of column names that indicate the Country in each of the provided datasets. Example: \"JDS4_sampling_ID\"",
             "schema": {
                 "type": "array"
@@ -49,7 +49,7 @@
             "keywords": []
         },
         "colnames_lat": {
-            "title": "Column names: Latitude",
+            "title": "Column names including Latitude",
             "description": "List of column names that indicate the Latitude in each of the provided datasets. Example: \"lat, latitude\"",
             "schema": {
                 "type": "array"
@@ -59,7 +59,7 @@
             "keywords": []
         },
         "colnames_lon": {
-            "title": "Column names: Longitude",
+            "title": "Column names including Longitude",
             "description": "List of column names that indicate the Longitude in each of the provided datasets. Example: \"lon, long, longitude\"",
             "schema": {
                 "type": "array"
@@ -69,7 +69,7 @@
             "keywords": []
         },
         "colnames_date": {
-            "title": "Column names: Dates",
+            "title": "Column names including Dates",
             "description": "List of column names that indicate the dates in each of the provided datasets. Example: \"Date, sampling_date\"",
             "schema": {
                 "type": "array"

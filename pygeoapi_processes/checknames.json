@@ -19,8 +19,8 @@
     }],
     "inputs": {
         "species_names_list": {
-            "title": "Occurrence data (list of species)",
-            "description": "List of species. Optional. Instead, you can provide a CSV table of species ('species_names_url')",
+            "title": "Species names (List of species)",
+            "description": "List of species names to check from the standard database (FishBase).",
             "schema": {
                 "type": "string"
             },
@@ -29,8 +29,8 @@
             "keywords": []
         },
         "species_names_url": {
-            "title": "Occurrence data (CSV table / URL)",
-            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the match-data process. Optional. Instead, you can provide a list of species ('species_names_list').",
+            "title": "Species names to check",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the match-data process.",
             "schema": {
                 "type": "string"
             },
@@ -39,8 +39,8 @@
             "keywords": ["csv"]
         },
         "colname_species": {
-            "title": "Column name: Species",
-            "description": "Column name that indicate the Species in the provided dataset. Only required you provide tabular occurrence data ('input_data'). Example: \"species\"",
+            "title": "Column name including species names",
+            "description": "Column name that indicate the Species in the provided dataset. Only required you provide tabular occurrence data. Example: \"species\"",
             "schema": {
                 "type": "string"
             },
@@ -49,8 +49,8 @@
             "keywords": []
         },
         "percent_correctness": {
-            "title": "pct number",
-            "description": "The percentage that indicates the errorness for the species to be accepted for it to be replaced with the database name. Mostly fish species names are qualitt controlled.",
+            "title": "Species name correctness in percent.",
+            "description": "An number indicating the percentage of species name correctness that should be allowed to be replaced. High values ensure a perfect match from the standard database.",
             "schema": {
                 "type": "number"
             },
@@ -59,8 +59,8 @@
             "keywords": []
         },
         "bool_merge": {
-            "title": "Add checked names on dataset",
-            "description": "If a dataframe with species names is provided and merge is true, then all columns are returned. For only one species, the merge will be set automatically to false.",
+            "title": "Merge checked species names on the dataset",
+            "description": "If a dataframe with species names is provided and this is YES, then all columns are returned. For only one species, the merge will be set automatically to false.",
             "schema": {
                 "type": "boolean"
             },
@@ -69,8 +69,8 @@
             "keywords": []
         },
         "bool_synonym": {
-            "title": "Synonyn checks",
-            "description": "Return synoymn checks from FishBase.",
+            "title": "Synonym checks",
+            "description": "Return synonym checks from FishBase.",
             "schema": {
                 "type": "boolean"
             },
