@@ -443,16 +443,13 @@ mergealltts <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
                               lats = 'lat', lons = 'lon',
                               species = c('speciesname', 'scientificName'))
 
-ccdata <- check_names(data = mergealltts, colsp = 'species', pct = 90,
-                      merge = TRUE, verbose = FALSE)
-
-thymallusdata <- ccdata[ccdata[,'speciescheck'] %in%c("Thymallus thymallus"),]
+thymallusdata <- mergealltts[mergealltts[,'species'] %in%c("Thymallus thymallus"),]
 
 
 ttrefdata <-  pred_extract(data= thymallusdata, raster= wcd,
                                          lat = 'decimalLatitude',
                                          lon = 'decimalLongitude',
-                                         colsp = 'speciescheck',
+                                         colsp = 'species',
                                          bbox  = db,
                                          list= TRUE,
                                          minpts = 10)
@@ -468,7 +465,7 @@ ttpca_boot <- multidetect(data = ttrefdata,
                                       'jknife', 'onesvm','mahal', 'lof',
                                       'iforest', "mixediqr","seqfences"),
                           bootSettings = list(run = TRUE,
-                                              maxrecords = 100, nb = 10),
+                                              maxrecords = 120, nb = 10), #120 to ensure that BT works
                           pc = list(exec = TRUE, npc = 3, q = TRUE))
 
 testthat::test_that(desc = 'Check for PCA and boot out',

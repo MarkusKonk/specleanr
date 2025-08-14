@@ -11,19 +11,15 @@ matchdata <- match_datasets(datasets = list(jds = jdsdata, efi = efidata),
                             lats = 'lat',
                             lons = 'lon',
                             species = c('speciesname','scientificName'),
-                            country= c('JDS4_site_ID'),
-                            date=c('sampling_date', 'Date'))
-
-datacheck <- check_names(matchdata, colsp= 'species', pct = 90, merge =TRUE)
-
+                            country= c('JDS4_site_ID'))
 
 worldclim <- terra::rast(system.file('extdata/worldclim.tiff', package='specleanr'))
 
-rdata <- pred_extract(data = datacheck,
+rdata <- pred_extract(data = matchdata,
                       raster= worldclim ,
                       lat = 'decimalLatitude',
                       lon= 'decimalLongitude',
-                      colsp = 'speciescheck',
+                      colsp = 'species',
                       bbox = db,
                       minpts = 10,
                       list=TRUE,
@@ -48,14 +44,14 @@ test_that(desc = "Data frame of minima and maxima for 9 species",
           })
 #test for one species
 
-thymallus <- datacheck[datacheck$species=="Thymallus thymallus",]
+thymallus <- matchdata[matchdata$species=="Thymallus thymallus",]
 
 rdata1 <- pred_extract(data = thymallus,
                       raster= worldclim ,
                       lat = 'decimalLatitude',
                       lon= 'decimalLongitude',
                       bbox = db,
-                      colsp = 'speciescheck',
+                      colsp = 'species',
                       minpts = 10,
                       list=TRUE,
                       merge=F)
