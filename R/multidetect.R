@@ -75,12 +75,9 @@ broad_classify <- function(category){
 
     methodsout <- c('adjbox', 'iqr', 'hampel', 'jknife', 'seqfences','mixediqr',
                     'distboxplot','semiqr',  'zscore', 'logboxplot', "medianrule", 'optimal')
-
-  }else if(category=='mult'){
+  }else{
 
     methodsout <- c('onesvm', 'iforest','mahal', 'lof', 'knn', 'glosh','kmeans')
-  }else{
-    methodout <- "reference"
   }
   return(methodsout)
 }
@@ -249,14 +246,13 @@ detect <- function(x,
                      error=function(e){
                        if(grepl("cannot rescale a constant/zero", e$message)==TRUE | grepl("subscript out of bounds", e$message)==TRUE) {
                          if(isTRUE(warn))warning('PCA not computed due to cannot rescale a constant/zero error')
-
-                         df
+                         return(NULL)
                        }else{
                          if(grepl("he number of columns", e$message)==TRUE)stop('Numeric data variabales are less than or equal to ', npc,'. Either reduce the npc to 2 or the data is not highly dimensional.',call. = FALSE)
                        }
                      }
       )
-      if(is.null(df)) stop("PCA was not properly computed, so set it FALSE and continue.")
+      if(!is.null(df)) df else stop("PCA not computed due to cannot rescale a constant/zero error.")
 
       if(isTRUE(boot)){
 
@@ -601,7 +597,7 @@ detect <- function(x,
       if(isTRUE(boot)){
 
         listout <- lapply(seq_along(df), function(bb){
-          mout <-  handle_true_errors(func = logboxplot(data = df[[bb]],  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
+          mout <-  handle_true_errors(func = medianrule(data = df[[bb]],  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
                                       fname = imx, verbose = verbose, spname = spname,
                                       warn=warn, silence_true_errors = silence_true_errors)
           if(!is.null(mout) && isTRUE(nrow(mout)>=1)) mout$id = bb
@@ -611,7 +607,7 @@ detect <- function(x,
 
       }else{
 
-        methodout <-  handle_true_errors(func = logboxplot(data = df,  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
+        methodout <-  handle_true_errors(func = medianrule(data = df,  var = var, output = output, x= 2.3, pc=pcs, pcvar = pcvar, boot = boot),
                                          fname = imx, verbose = verbose, spname = spname,
                                          warn=warn, silence_true_errors = silence_true_errors)
       }

@@ -12,7 +12,7 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
                          species = c('scientificName', 'speciesname'),
                          date=c('sampling_date','Date'))
 
-matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
+#matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
 
 db <- sf::read_sf(system.file('extdata/danube.shp.zip',
                               package = "specleanr"), quiet = TRUE)
@@ -20,11 +20,11 @@ db <- sf::read_sf(system.file('extdata/danube.shp.zip',
 
 #extract environmental data
 
-refdata <- pred_extract(data = matchclean, raster = wcd,
+refdata <- pred_extract(data = matchd, raster = wcd,
                         lat = 'decimalLatitude',
                         lon = 'decimalLongitude',
                         bbox = db,
-                        colsp = 'speciescheck',
+                        colsp = 'species',
                         list = TRUE,
                         verbose = F,
                         minpts = 6,
@@ -32,11 +32,11 @@ refdata <- pred_extract(data = matchclean, raster = wcd,
 
 #using a dataframe of species not a list# change list to FALSE
 
-refdata_df <- pred_extract(data = matchclean, raster = wcd,
+refdata_df <- pred_extract(data = matchd, raster = wcd,
                         lat = 'decimalLatitude',
                         lon = 'decimalLongitude',
                         bbox = db,
-                        colsp = 'speciescheck',
+                        colsp = 'species',
                         list = FALSE,
                         verbose = F,
                         minpts = 6,
@@ -468,17 +468,80 @@ ttpca_boot <- multidetect(data = ttrefdata,
                                               maxrecords = 120, nb = 10), #120 to ensure that BT works
                           pc = list(exec = TRUE, npc = 3, q = TRUE))
 
+
+ttpca_boot@maxrecords>nrow(ttrefdata)
+
 testthat::test_that(desc = 'Check for PCA and boot out',
                     code = {
                       expect_true(ttpca_boot@pc)
                       expect_true(ttpca_boot@bootstrap)
                       expect_equal(length(ttpca_boot@methodsused), 18)
-
+                      expect_gt(ttpca_boot@maxrecords, nrow(ttrefdata))
                     })
 
+test_that(desc = "since PCA runs on changed dataset, stop the code if optimal is set",
+          code = {
+            expect_error(multidetect(data = ttrefdata,
+                                       multiple = FALSE,
+                                       var = 'bio6',
+                                       exclude = c('x','y'),
+                                       methods = c('adjbox','zscore','optimal'),
+                                       bootSettings = list(run = TRUE,
+                                                           maxrecords = 120, nb = 10),
+                                       pc = list(exec = TRUE, npc = 3, q = TRUE)))
+          })
 
+pcawarn <- data.frame(
+  x1 = c(1, 2, 3, 4,7,9),
+  x2 = c(5, 5, 5, 5,5,5),
+  x3 = c(5, 5, 5, 5,5,5)
+)
 
+test_that(desc = "PCA not computed for zero variance",
+          code = {
+            expect_error(multidetect(data = pcawarn,
+                                       multiple = FALSE,
+                                       var = 'x1',
+                                       methods = c('adjbox','zscore'),
+                                       pc = list(exec = TRUE, npc = 2, q = TRUE)))
+          })
 
+pcd <- data.frame(
+  x1 = c(1, 2, 3, 4,7,9),
+  x2 = c(5, 5, 5, 5,5,5)
+)
 
+test_that(desc = "Throw a warning if only two columns are provided for multivariate data ",
+          code = {
+            expect_warning(multidetect(data = pcd,
+                                       multiple = FALSE,
+                                       var = 'x1',
+                                       methods = c('adjbox','zscore'),
+                                       pc = list(exec = FALSE, npc = 2, q = TRUE)))
+          })
+
+#test ecological ranges
+sqcep <- refdata["Squalius cephalus"]
+
+optdata <- data.frame(species= c("Squalius cephalus", "Abramis brama"),
+                      mintemp = c(6, 1.6),maxtemp = c(8.588, 21),
+                      meantemp = c(8.5, 10.4), #ecoparam
+                      direction = c('greater', 'greater'))
+
+out_df <- multidetect(data = sqcep, multiple = TRUE,
+                      var = 'bio1',
+                      output = 'outlier',
+                      exclude = c('x','y'),
+                      methods = c('zscore', 'adjbox', 'optimal'),
+                      optpar = list(optdf=optdata, optspcol = 'species',
+                                    mincol = "mintemp", maxcol = "maxtemp"),
+                      missingness = 0.2)
+
+test_that(desc = "value with the ecological ranges of the species",
+          code = {
+            expect_length(out_df@result$`Squalius cephalus`$optimal$bio1, 2)
+          })
+
+expect_length(broad_classify(category = 'uni'), 12)
 
 

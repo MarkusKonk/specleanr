@@ -13,19 +13,16 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
                          species = c('scientificName', 'speciesname'),
                          date=c('sampling_date','Date'))
 
-matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
-
 db <- sf::read_sf(system.file('extdata/danube.shp.zip',
                               package = "specleanr"), quiet = TRUE)
 
-
 #extract environmental data
 
-refdata <- pred_extract(data = matchclean, raster = wcd,
+refdata <- pred_extract(data = matchd, raster = wcd,
                         lat = 'decimalLatitude',
                         lon = 'decimalLongitude',
                         bbox = db,
-                        colsp = 'speciescheck',
+                        colsp = 'species',
                         list = TRUE,
                         verbose = F,
                         minpts = 6,
@@ -33,11 +30,11 @@ refdata <- pred_extract(data = matchclean, raster = wcd,
 
 #using a dataframe of species not a list# change list to FALSE
 
-refdata_df <- pred_extract(data = matchclean, raster = wcd,
+refdata_df <- pred_extract(data = matchd, raster = wcd,
                            lat = 'decimalLatitude',
                            lon = 'decimalLongitude',
                            bbox = db,
-                           colsp = 'speciescheck',
+                           colsp = 'species',
                            list = FALSE,
                            verbose = F,
                            minpts = 6,
@@ -51,6 +48,32 @@ outlierdf <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                          multiple = TRUE,
                          methods = c('mixediqr', "iqr", "kmeans", "mahal"))
 
+
+#classify data
+
+test_that(desc = "classifying records error and messages",
+          code = {
+            #normal messages
+            expect_message(classify_data(refdata = refdata, outliers = outlierdf))
+
+            #contain label
+            expect_contains(colnames(classify_data(refdata = refdata, outliers = outlierdf, verbose = FALSE)), 'label')
+
+            #error for wrong reference data
+            expect_error(classify_data(refdata = refdatawrong, outliers = outlierdf, verbose = FALSE))
+
+            #wrong classification criteria
+            expect_error(classify_data(refdata = refdata, outliers = outlierdf, verbose = FALSE, classify = 'fg'))
+
+            #test different classification criteria
+
+            #po
+            expect_contains(colnames(classify_data(refdata = refdata, outliers = outlierdf, verbose = FALSE, classify = 'po')), 'label')
+
+            #ps
+            expect_contains(colnames(classify_data(refdata = refdata, outliers = outlierdf, verbose = FALSE, classify = 'ps')), 'label')
+
+          })
 
 #test for suitable method for all similarity measures
 test_that(desc = 'Data extraction: errors and success',
