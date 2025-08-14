@@ -468,8 +468,58 @@ ttpca_boot <- multidetect(data = ttrefdata,
                                               maxrecords = 120, nb = 10), #120 to ensure that BT works
                           pc = list(exec = TRUE, npc = 3, q = TRUE))
 
+#==================================================
+#test the graphs
+#==================================================
+test_that("output is a ggplot2 graph", {
+  skip_if_not_installed("ggplot2")
+  plt <- ggoutlieraccum(ttpca_boot, boots = 10)
+  expect_s3_class(plt, "ggplot")
+})
 
-ttpca_boot@maxrecords>nrow(ttrefdata)
+#check for environmental space
+ccl <- classify_data(refdata = ttrefdata, outliers = ttpca_boot)
+
+test_that('output is ggplot environmental space',
+          code = {
+
+            skip_if_not_installed("ggplot2")
+
+            plt <- ggenvironmentalspace(qcdata  = ccl,
+                                 xvar =  'bio1',
+                                 yvar = 'bio6',
+                                 xlab = 'Annual Mean Temperature',
+                                 ylab = 'Min Temperature of Coldest Month',
+                                 type = "2D",
+                                 scalecolor  = 'viridis',
+                                 pointsize = 2,
+                                 fontsize = 12,
+                                 themebackground = 'bw',
+                                 legend_position  = 'inside',
+                                 legend_inside =  c(0.2, 0.7)
+            )
+            expect_s3_class(plt, "ggplot")
+
+            skip_if_not_installed("scatterplot3d")
+
+            plt3d <- ggenvironmentalspace(qcdata  = ccl,
+                                         xvar =  'bio1',
+                                         yvar = 'bio6',
+                                         zvar = "bio9",
+                                         labelvar = "label",
+                                         colorvalues = 'auto',
+                                         type = "3D",
+                                         lpos3d = "top",
+                                         pch = "auto",
+                                         cexsym = 1.1,
+                                         xlab = 'Annual Mean Temperature',
+                                         ylab = 'Min Temperature of Coldest Month',
+                                         zlab = "Mean Temperature of Driest Quarter"
+            )
+            expect_type(plt3d, "list")
+          })
+#=================================================
+
 
 testthat::test_that(desc = 'Check for PCA and boot out',
                     code = {
@@ -479,8 +529,9 @@ testthat::test_that(desc = 'Check for PCA and boot out',
                       expect_gt(ttpca_boot@maxrecords, nrow(ttrefdata))
                     })
 
-test_that(desc = "since PCA runs on changed dataset, stop the code if optimal is set",
+test_that(desc = "since PCA errors and warnings",
           code = {
+            #since PCA runs on changed dataset, stop the code if optimal is set
             expect_error(multidetect(data = ttrefdata,
                                        multiple = FALSE,
                                        var = 'bio6',
@@ -489,6 +540,36 @@ test_that(desc = "since PCA runs on changed dataset, stop the code if optimal is
                                        bootSettings = list(run = TRUE,
                                                            maxrecords = 120, nb = 10),
                                        pc = list(exec = TRUE, npc = 3, q = TRUE)))
+
+            #expect warning from bootstrap about max records/bootstrap will change to FALSE
+            expect_warning(multidetect(data = ttrefdata,
+                                     multiple = FALSE,
+                                     var = 'bio6',
+                                     exclude = c('x','y'),
+                                     methods = c('adjbox','zscore','iqr'),
+                                     bootSettings = list(run = TRUE, maxrecords = 50, nb = 10),
+                                     pc = list(exec = TRUE, npc = 3, q = TRUE)))
+          })
+
+test_that(desc = "Run bootstrapping only",
+          code = {
+            expect_gt(multidetect(data = ttrefdata,
+                                     multiple = FALSE,
+                                     var = 'bio6',
+                                     exclude = c('x','y'),
+                                     methods = c('adjbox','zscore','iqr'),
+                                     bootSettings = list(run = TRUE,
+                                                         maxrecords = 120, nb = 10),
+                                     pc = list(exec = FALSE, npc = 3, q = TRUE))@maxrecords, nrow(ttrefdata))
+
+            #bootstrap will not run if the max records are less than the rows in the reference data
+            expect_warning(multidetect(data = ttrefdata,
+                                  multiple = FALSE,
+                                  var = 'bio6',
+                                  exclude = c('x','y'),
+                                  methods = c('adjbox','zscore','iqr'),
+                                  bootSettings = list(run = TRUE, maxrecords = 50, nb = 10),
+                                  pc = list(exec = FALSE, npc = 3, q = TRUE)))
           })
 
 pcawarn <- data.frame(
@@ -499,11 +580,17 @@ pcawarn <- data.frame(
 
 test_that(desc = "PCA not computed for zero variance",
           code = {
-            expect_error(multidetect(data = pcawarn,
+            expect_error(multidetect(data = c,
                                        multiple = FALSE,
                                        var = 'x1',
                                        methods = c('adjbox','zscore'),
                                        pc = list(exec = TRUE, npc = 2, q = TRUE)))
+            #expect error for npc >nrow of pcd
+            expect_error(multidetect(data = pcawarn,
+                                     multiple = FALSE,
+                                     var = 'x1',
+                                     methods = c('adjbox','zscore'),
+                                     pc = list(exec = TRUE, npc = 4, q = TRUE)))
           })
 
 pcd <- data.frame(
@@ -543,5 +630,16 @@ test_that(desc = "value with the ecological ranges of the species",
           })
 
 expect_length(broad_classify(category = 'uni'), 12)
+
+
+
+
+
+
+
+
+
+
+
 
 

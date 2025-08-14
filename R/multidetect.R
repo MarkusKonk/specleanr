@@ -245,7 +245,6 @@ detect <- function(x,
       df <- tryCatch(pca(df, npc = npc, q= quiet),
                      error=function(e){
                        if(grepl("cannot rescale a constant/zero", e$message)==TRUE | grepl("subscript out of bounds", e$message)==TRUE) {
-                         if(isTRUE(warn))warning('PCA not computed due to cannot rescale a constant/zero error')
                          return(NULL)
                        }else{
                          if(grepl("he number of columns", e$message)==TRUE)stop('Numeric data variabales are less than or equal to ', npc,'. Either reduce the npc to 2 or the data is not highly dimensional.',call. = FALSE)
@@ -271,7 +270,7 @@ detect <- function(x,
         }else{
           df
           boot <- FALSE
-          if(isTRUE(warn))warning('Increase the maxrecords ', maxrecords,' to be greater than the rows in data to run bootstrap.', call. = FALSE)
+          warning('Increase the maxrecords ', maxrecords,' to be greater than the rows in data to run bootstrap.', call. = FALSE)
         }
       }
 
@@ -286,7 +285,7 @@ detect <- function(x,
         }else{
           df
           boot <- FALSE
-          warning('To run bootstrapping increase maxrecords to < nrows in reference DF, or bootsrapping is not run.', call. = FALSE)
+          warning('To run bootstrapping increase maxrecords to < nrows in reference DF, or bootsrapping will not run.', call. = FALSE)
         }
       }else{
         boot <- FALSE
