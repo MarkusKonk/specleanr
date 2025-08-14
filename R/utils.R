@@ -331,6 +331,24 @@ bootopt <- function(x, var, nboots, th =0.6){
   }
 }
 
+#' Post checks for PCA and bootstrapping
+#'
+#' @param y list of PCA and bootstrapped output.
+#' @param nboots Number of bootstrapping
+#' @param th threshold for identifying absolute outlier from bootstrapped samples.
+#' @param var variable of interest.
+#'
+checks <- function(y, nboots, th, var){
+
+  xx <- sapply(y, function(x) all(is.na(x)))
+
+  xy <- y[!xx]
+
+  if(length(xy)>=1) vv <- bootopt(x = xy, var = var, nboots = nboots, th = th) else vv <- NA
+
+  return(vv)
+}
+
 
 #' Computes the empirical influence function for each values in the dataset
 #'

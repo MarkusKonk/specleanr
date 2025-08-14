@@ -28,8 +28,8 @@ required for lists and vector.}
 
 \item{extent}{\code{vector} or \code{sf}. Bounding box to limit the download of records within a particular area. Otherwise all
 records from the GBIF will be downloaded. These can be provided in two forms,
-either a shapefile \code{(sf)} class accepted or provide a list of
-\code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax}.}
+either a shapefile \code{(sf)} class accepted or provide a list of named
+\code{xmin}, \code{ymin}, \code{xmax}, and \code{ymax} in this particular order.}
 
 \item{db}{\code{vector}. The different databases allowed including \code{'gbif', 'vertnet', and 'inat'}.}
 
