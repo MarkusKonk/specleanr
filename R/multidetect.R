@@ -151,8 +151,6 @@ detect <- function(x,
                    bootSettings,
                    na.inform){
 
-  if(missing(x)) stop('Species data missing')
-
   if(length((colnames(x)[colnames(x)==var]))<1) stop('variable ', var, ' is  not found in the species data provided for species ', spname, ' .')
 
   #check if the variable provided to check in outliers is numeric
@@ -261,6 +259,7 @@ detect <- function(x,
       if(is.null(df)) stop("PCA was not properly computed, so set it FALSE and continue.")
 
       if(isTRUE(boot)){
+
         if(!is.data.frame(df)) {
 
           NROWDF <- nrow(df[[1]])
@@ -701,7 +700,7 @@ detect <- function(x,
     }else if(imx=='knn'){
       if(isTRUE(boot)){
 
-        mout <- lapply(seq_along(df), function(bb){
+        listout <- lapply(seq_along(df), function(bb){
 
           mout <-  handle_true_errors(func = xknn(data = df[[bb]], output = output, metric = knnpar$metric,
                                                        mode=knnpar$mode, exclude = exclude, pc=pcs, pcvar = pcvar, boot = boot),
@@ -914,6 +913,8 @@ multidetect <- function(data,
                         silence_true_errors = TRUE,
                         sdm = TRUE,
                         na.inform = FALSE){
+
+  if(missing(data)) stop('Species data missing')
 
   #check if var is the excluded strings
 

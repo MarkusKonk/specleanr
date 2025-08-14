@@ -1808,11 +1808,11 @@ mahal <- function(data, exclude = NULL, output = 'outlier', mode = 'soft', pdf =
 
     warning('vifstep uses y to fit the model and this will create an error. Rename variable y or exclude it  or vifcor will be used instead.')
 
-    df2<- usdm::exclude(df, suppressWarnings(usdm::vifcor(df)))
+    df2<- suppressWarnings(usdm::exclude(df, usdm::vifcor(df)))
 
     }else{
 
-      df2<- usdm::exclude(df, suppressWarnings(usdm::vifstep(df)))
+      df2<- suppressWarnings(usdm::exclude(df, usdm::vifstep(df)))
   }
   if(nrow(df2)<ncol(df2)){
     stop('Inverse matrix cannot be computed if number of variables are equal or greater than observations and NULL output generated')

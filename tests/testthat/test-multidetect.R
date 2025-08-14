@@ -51,6 +51,18 @@ outlist <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                                    'distboxplot','medianrule',
                                    'iforest','jknife','reference'))
 
+
+test_that(desc = "Missing data returns an error",
+          code = {
+            expect_error(multidetect(var = 'bio6', output = 'outlier',
+                                     exclude = c('x','y'),
+                                     multiple = TRUE,
+                                     methods = c('mixediqr', "iqr", "seqfences",
+                                                 "mahal", 'glosh', 'onesvm','logboxplot','knn',
+                                                 'distboxplot','medianrule',
+                                                 'iforest','jknife','reference')))
+          })
+
 test_that(desc = 'List of species with outliers produced',
                     code = {
 
@@ -422,7 +434,50 @@ testthat::test_that(desc = "Success and errors expected and checked for best met
                     })
 
 
+#tests for PCA and bootstrapping
+data("ttdata", package = 'specleanr')
 
+mergealltts <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
+                                              onlinedata = ttdata),
+                              country = c('JDS4_sampling_ID'),
+                              lats = 'lat', lons = 'lon',
+                              species = c('speciesname', 'scientificName'))
+
+ccdata <- check_names(data = mergealltts, colsp = 'species', pct = 90,
+                      merge = TRUE, verbose = FALSE)
+
+thymallusdata <- ccdata[ccdata[,'speciescheck'] %in%c("Thymallus thymallus"),]
+
+
+ttrefdata <-  pred_extract(data= thymallusdata, raster= wcd,
+                                         lat = 'decimalLatitude',
+                                         lon = 'decimalLongitude',
+                                         colsp = 'speciescheck',
+                                         bbox  = db,
+                                         list= TRUE,
+                                         minpts = 10)
+
+ttpca_boot <- multidetect(data = ttrefdata,
+                          multiple = FALSE,
+                          var = 'bio6',
+                          exclude = c('x','y'),
+                          methods = c('adjbox','zscore',
+                                      'logboxplot', 'distboxplot',
+                                      'iqr', 'semiqr',"medianrule",
+                                      'hampel','kmeans', 'glosh', 'knn',
+                                      'jknife', 'onesvm','mahal', 'lof',
+                                      'iforest', "mixediqr","seqfences"),
+                          bootSettings = list(run = TRUE,
+                                              maxrecords = 100, nb = 10),
+                          pc = list(exec = TRUE, npc = 3, q = TRUE))
+
+testthat::test_that(desc = 'Check for PCA and boot out',
+                    code = {
+                      expect_true(ttpca_boot@pc)
+                      expect_true(ttpca_boot@bootstrap)
+                      expect_equal(length(ttpca_boot@methodsused), 18)
+
+                    })
 
 
 
