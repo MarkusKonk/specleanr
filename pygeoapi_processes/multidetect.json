@@ -158,7 +158,7 @@
             "keywords": ["column"]
         },
         "boot_threshold": {
-            "title": "Threshold value to flag a record from bootstrap samples.",
+            "title": "Threshold value to flag a record from bootstrap samples",
             "description": "As a record is flagged in multiple bootstrap samples, a threshold is required to extract an outlier. Default is 0.6, meaning if a record is flagged 6 of the 10 bootsraps, will be flagged as an outlier.",
             "schema": {
                 "type": "number"
@@ -169,7 +169,7 @@
             "keywords": ["column"]
         },
         "exceute_pca": {
-            "title": "Execute Principal Component Analysis.",
+            "title": "Execute Principal Component Analysis",
             "description": "If true, then PCA will be intiated.",
             "schema": {
                 "type": "boolean"
@@ -179,7 +179,7 @@
             "keywords": []
         },
         "number_of_pca": {
-            "title": "Number of principal components to retain.",
+            "title": "Number of principal components to retain",
             "description": "The user can indicate the maximum number of principal components to retain in the outlier detection. The Default is 5.",
             "schema": {
                 "type": "integer"
