@@ -24,8 +24,6 @@ thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE,
                            synonym = fishbase(tables = 'synonym'),
                            ranges = fishbase(tables = 'ranges')){
 
-  if(missing(x)) stop('Data is not provided', call. = FALSE)
-
   if(is(x, 'data.frame') && is.null(colsp)) {
 
     stop('Species column names is not provided', call. = FALSE)
@@ -49,14 +47,9 @@ thermal_ranges <- function(x, colsp =NULL, verbose=F, pct = 90, sn =FALSE,
 
     dsplist <- check_names(data = spls, verbose = verbose, pct = pct, sn = sn)#merge is false
 
-  }else if(is(x, 'vector') || is(x, 'atomic')) {
+  }else {
 
     dsplist <- check_names(data = x, verbose = verbose, pct = pct, sn = sn)
-
-
-
-  }else{
-    stop('No data provided for species to check and merge')
   }
 
   #remove repeated species names

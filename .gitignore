@@ -6,3 +6,4 @@
 *.txt
 testfolder
 httptests
+inst/doc

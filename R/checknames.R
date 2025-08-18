@@ -67,11 +67,9 @@
 
 check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, sn=FALSE, ecosystem = FALSE, rm_duplicates= FALSE){
 
-  if(missing(data)) stop('Data is not provided', call. = FALSE)
-
   if(inherits(data, 'sf') ) {
 
-    if(!requireNamespace('sf', quietly = TRUE))stop('Please install package sf to continue.')
+    check_packages(pkgs = c('sf'))
 
     xx <- data |> sf::st_drop_geometry()
 
@@ -79,13 +77,9 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
     xx <- data
     }
 
-  if(is(xx, 'data.frame') && nrow(xx)<1)stop('Dataset provided has zero observations')
+  if(is(xx, 'data.frame') && is.null(colsp)) stop('Species column names is not provided', call. = FALSE)
 
-  if(is(xx, 'data.frame') && is.null(colsp)) {
-
-    stop('Species column names is not provided', call. = FALSE)
-
-  } else if(is(xx, 'data.frame') && !is.null(colsp)){
+  if(is(xx, 'data.frame')){
 
     if(length((colnames(xx)[colnames(xx)==colsp]))<1){
 
@@ -105,12 +99,10 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
 
     spls <- xx
 
-  }else if(is(xx, 'vector') || is(xx, 'atomic')) {
+  }else{
 
     spls <- xx
 
-  }else{
-    stop('No data provided for species to check and merge')
   }
 
   #standard species list from FishBase
@@ -189,7 +181,7 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
 
             spp <- spaccepted
 
-            if(isTRUE(verbose)) message('The synoynm ', species_clean, ' will be replaced with ',spp,' based on high synonym simialrity.')
+            if(isTRUE(verbose)) message('The synoynm ', species_clean, ' will be replaced with ',spp,' based on high synonym similarity.')
           }else{
             #consider for more accepted names, but still check for similarity
 
@@ -314,6 +306,9 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
     df_sp <- data.frame(species = species, speciescheck = speciescheck)
   }
   #data output functions
+
+  if()
+
   if(!is(data, 'data.frame') && isTRUE(merge)){
 
     stop('the parameter merge is only if the data is a dataframe not list or vector')
@@ -324,8 +319,6 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
     names(df_sp)[1] <- colsp
 
     dfinal <- merge(data, df_sp, by=colsp)
-
-    if(isTRUE(ecosystem) && isFALSE(merge)) stop('To get ecosytem types for each species turn merge to TRUE.')
 
     if(isTRUE(ecosystem)){
 

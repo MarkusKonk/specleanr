@@ -26,8 +26,6 @@ geo_ranges <- function(data, colsp =NULL, verbose=F, pct = 90,sn =FALSE, warn=FA
                        synonym = fishbase(tables = 'synonym'),
                        ranges = fishbase(tables = 'ranges')){
 
-  if(missing(data)) stop('Data is not provided', call. = FALSE)
-
   if(is(data, 'data.frame') && is.null(colsp)) {
 
     stop('Species column names is not provided', call. = FALSE)
@@ -51,13 +49,9 @@ geo_ranges <- function(data, colsp =NULL, verbose=F, pct = 90,sn =FALSE, warn=FA
 
     dsplist <- check_names(data = spls, verbose = verbose, pct = pct, sn = sn)#merge is false
 
-  }else if(is(data, 'vector') || is(data, 'atomic')) {
+  }else {
 
     dsplist <- check_names(data = data, verbose = verbose, pct = pct, sn = sn)
-
-
-  }else{
-    stop('Wrong data class for species provided.')
   }
 
   #remove repeated species names
