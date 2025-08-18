@@ -140,7 +140,7 @@
         },
         "bool_remove_nas": {
             "title": "Remove NAs after data extraction",
-            "description": "If YES, the NAs created when the coordinates did not retrun records and left in the dataset. Default TRUE",
+            "description": "If YES, the NAs created when the coordinates did not retrun records and left in the dataset.",
             "schema": {
                 "type": "boolean"
             },
@@ -150,7 +150,7 @@
         },
         "bool_remove_duplicates": {
             "title": "Remove duplicates",
-            "description": "If TRUE, duplicates records will be removed. Default TRUE",
+            "description": "If YES, duplicates records will be removed.",
             "schema": {
                 "type": "boolean"
             },
@@ -159,7 +159,7 @@
             "keywords": []
         },
         "minimum_sprecordsallow": {
-            "title": "Minimum species records to consider before using data in species dsitribution modeling",
+            "title": "Minimum species records to consider before using data in species distribution modeling",
             "description": "In species distribution models, species with fewer records needs to be removed but normal data extraction this parameter should be set to FALSE to retain all species.",
             "schema": {
                 "type": "boolean"
