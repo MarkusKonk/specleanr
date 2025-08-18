@@ -67,7 +67,7 @@
         },
         "output_type": {
             "title": "Output type",
-            "description": "Set whether you want to return outliers or clean dataset. Example outlier.",
+            "description": "Set whether you want to return outliers or clean dataset. Example: outlier.",
             "schema": {
                 "type": "string"
             },
@@ -107,7 +107,7 @@
         },
         "silence_true_errors": {
             "title": "Silence methods that geuninely fail during outlier detection",
-            "description": "If YES, Silence errors for methods that genuinely druing the outlier detection process but continue without breaking other methods.",
+            "description": "If YES, silence errors for methods that genuinely druing the outlier detection process but continue without breaking other methods.",
             "schema": {
                 "type": "boolean"
             },
@@ -127,29 +127,27 @@
         },
         "boot_maxrecords": {
             "title": "Maximum records to intiate bootstrapping",
-            "description": "The user can adjust the maximum records were to be be bootstrapped. Default is 30.",
+            "description": "The user can adjust the maximum records were to be be bootstrapped.",
             "schema": {
                 "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 30,
             "keywords": ["column"]
         },
         "number_of_boots": {
             "title": "Number of bootstraps",
-            "description": "The number of bootstraps to generate during bootstrapping. The default is 10.",
+            "description": "The number of bootstraps to generate during bootstrapping.",
             "schema": {
                 "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 10,
             "keywords": ["column"]
         },
         "setseed": {
             "title": "Set seed",
-            "description": "Durring bootstrapping, random samples are generated that requires to set a seed for reproducibility.",
+            "description": "During bootstrapping, random samples are generated that requires to set a seed for reproducibility.",
             "schema": {
                 "type": "integer"
             },
@@ -158,18 +156,17 @@
             "keywords": ["column"]
         },
         "boot_threshold": {
-            "title": "Threshold value to flag a record from bootstrap samples.",
-            "description": "As a record is flagged in multiple bootstrap samples, a threshold is required to extract an outlier. Default is 0.6, meaning if a record is flagged 6 of the 10 bootsraps, will be flagged as an outlier.",
+            "title": "Threshold value to flag a record from bootstrap samples",
+            "description": "As a record is flagged in multiple bootstrap samples, a threshold is required to extract an outlier. For instance, 0.6, meaning if a record is flagged 6 of the 10 bootsraps, will be flagged as an outlier.",
             "schema": {
                 "type": "number"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 0.6,
             "keywords": ["column"]
         },
         "exceute_pca": {
-            "title": "Execute Principal Component Analysis.",
+            "title": "Execute Principal Component Analysis",
             "description": "If true, then PCA will be intiated.",
             "schema": {
                 "type": "boolean"
@@ -179,19 +176,18 @@
             "keywords": []
         },
         "number_of_pca": {
-            "title": "Number of principal components to retain.",
-            "description": "The user can indicate the maximum number of principal components to retain in the outlier detection. The Default is 5.",
+            "title": "Number of principal components to retain",
+            "description": "The user can indicate the maximum number of principal components to retain in the outlier detection.",
             "schema": {
                 "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 5,
             "keywords": []
         },
         "pca_silence": {
             "title": "Hide messages during PCA analysis",
-            "description": "Messages during PCA analyis are returned if set to NO. Default is YES to silence the messages like the variance explained from the total PCs selected.",
+            "description": "Messages during PCA analyis are returned if set to NO. YES means to silence the messages like the variance explained from the total PCs selected.",
             "schema": {
                 "type": "boolean"
             },
@@ -201,18 +197,17 @@
         },
         "pcavariable": {
             "title": "Select the principal component among the PCs retained to be used as variable of interest",
-            "description": "PC1 is the default variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
+            "description": "PC1 is the variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
             "schema": {
                 "type": "string"
             },
-            "default": "PCA1",
             "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
         },
         "sdm_data": {
             "title": "Change the outlier detection routine based on data type",
-            "description": "If it is univariate data then, set to NO. All data that requires multivariate analysis such as using kmeans, isolation forest, set to YES. Default is YES.",
+            "description": "If it is univariate data, then set to NO. All data that requires multivariate analysis such as using kmeans, isolation forest, set to YES.",
             "schema": {
                 "type": "boolean"
             },
@@ -222,7 +217,7 @@
         },
         "inform_na_outlier": {
             "title": "Hide messages for removing NAs",
-            "description": "If set to YES, NAs removed will be displayed for each group variable. Default is NO.",
+            "description": "If set to YES, NAs removed will be displayed for each group variable.",
             "schema": {
                 "type": "boolean"
             },
@@ -232,13 +227,12 @@
         },
         "missingness": {
             "title": "Percentage missing values in a group",
-            "description": "Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. Default 0.1. Therefore, if a column has more than 10 % missing values, then it will be removed from the dataset rather than the rows.",
+            "description": "Allowed missing values in a column to allow a user decide whether to remove the individual columns or rows from the data sets. For instance, 0.1: If a column has more than 10 % missing values, then it will be removed from the dataset rather than the rows.",
             "schema": {
                 "type": "number"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 0.1,
             "keywords": []
         },
         "classify_or_autoremove": {
@@ -263,46 +257,42 @@
         },
         "threshold_clean": {
             "title": "Data extraction parameter: Threshold setting",
-            "description": "If Data extraction parameter: LOESS is NO, then a threshold value can be provided. Default is 0.8. The threshold will significantly determine which is flagged as an absolute outlier.",
+            "description": "If Data extraction parameter: LOESS is NO, then a threshold value can be provided. The threshold will significantly determine which is flagged as an absolute outlier.",
             "schema": {
                 "type": "number"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 0.8,
             "keywords": []
         },
         "outlierweights_mode": {
             "title": "Data extraction parameter: Outlier weighting",
-            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an absolute outlier. Default is abs",
+            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an absolute outlier. Example: abs",
             "schema": {
                 "type": "string"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": "abs",
             "keywords": []
         },
         "classifymode": {
             "title": "Cuts data into classess",
-            "description": "Categorize data base on the correlation coefficient manner based on Akoglu 2018",
+            "description": "Categorize data base on the correlation coefficient manner based on Akoglu 2018. Example: med",
             "schema": {
                 "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": "med",
             "keywords": []
         },
         "eif_bool": {
             "title": "Emprical Influence Function",
-            "description": "Computes the Emprical Influence Function for classified outliers. Default is NO",
+            "description": "Computes the Emprical Influence Function for classified outliers.",
             "schema": {
                 "type": "boolean"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": false,
             "keywords": ["column"]
         }
         

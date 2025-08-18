@@ -30,7 +30,7 @@
         },
         "species_names_url": {
             "title": "Data with species names to download",
-            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the matchdata process.",
+            "description": "URL to a table containing the occurrences from any source. This can be the outcome of the match-data process.",
             "schema": {
                 "type": "string"
             },
@@ -66,7 +66,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 50,
             "keywords": []
         },
         "inaturalist_limit": {
@@ -77,7 +76,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 50,
             "keywords": []
         },
         "vertnet_limit": {
@@ -88,7 +86,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 50,
             "keywords": []
         },
         "study_area_bbox": {
@@ -132,18 +129,17 @@
             "keywords": ["JSON", "GeoJSON"]
         },
         "percentage_correctness": {
-            "title": "Species name correctness in percent.",
-            "description": "An number indicating the percentage of species name correctness that should be allowed to be replaced. High values ensure a perfect match from the standard database.",
+            "title": "Species name correctness in percent",
+            "description": "A number indicating the percentage of species name correctness that should be allowed to be replaced. High values ensure a perfect match from the standard database.",
             "schema": {
                 "type": "number"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 80,
             "keywords": ["percentagecorrectness"]
         },
         "synonym_check": {
-            "title": "Consider synonyms from standard databases like FishBase.",
+            "title": "Consider synonyms from standard databases like FishBase",
             "description": "YES, if synoymns species names should be returned from FishBase during data checks before data download.",
             "schema": {
                 "type": "boolean"
