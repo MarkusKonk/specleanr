@@ -307,8 +307,6 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
   }
   #data output functions
 
-  if()
-
   if(!is(data, 'data.frame') && isTRUE(merge)){
 
     stop('the parameter merge is only if the data is a dataframe not list or vector')
@@ -319,6 +317,8 @@ check_names <- function(data, colsp = NULL, verbose= FALSE, pct = 90, merge=F, s
     names(df_sp)[1] <- colsp
 
     dfinal <- merge(data, df_sp, by=colsp)
+
+    if(isTRUE(ecosystem) && isFALSE(merge)) stop('To get ecosytem types for each species turn merge to TRUE.')
 
     if(isTRUE(ecosystem)){
 
