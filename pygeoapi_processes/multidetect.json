@@ -133,7 +133,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 30,
             "keywords": ["column"]
         },
         "number_of_boots": {
@@ -144,7 +143,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 10,
             "keywords": ["column"]
         },
         "setseed": {
@@ -165,7 +163,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 0.6,
             "keywords": ["column"]
         },
         "exceute_pca": {
@@ -186,12 +183,11 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 5,
             "keywords": []
         },
         "pca_silence": {
             "title": "Hide messages during PCA analysis",
-            "description": "Messages during PCA analyis are returned if set to NO. Default is YES to silence the messages like the variance explained from the total PCs selected.",
+            "description": "Messages during PCA analyis are returned if set to NO. YES means to silence the messages like the variance explained from the total PCs selected.",
             "schema": {
                 "type": "boolean"
             },
@@ -201,11 +197,10 @@
         },
         "pcavariable": {
             "title": "Select the principal component among the PCs retained to be used as variable of interest",
-            "description": "PC1 is the default variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
+            "description": "PC1 is the variable selected for outlier detection. Other PC2 can can also be set. PC1 is advisable.",
             "schema": {
                 "type": "string"
             },
-            "default": "PCA1",
             "minOccurs": 0,
             "maxOccurs": 1,
             "keywords": []
@@ -238,7 +233,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 0.1,
             "keywords": []
         },
         "classify_or_autoremove": {
@@ -269,29 +263,26 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": 0.8,
             "keywords": []
         },
         "outlierweights_mode": {
             "title": "Data extraction parameter: Outlier weighting",
-            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an absolute outlier.",
+            "description": "Outlier weighting and selection methods. abs uses record proportional to identify an absolute outlier. Example: abs",
             "schema": {
                 "type": "string"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": "abs",
             "keywords": []
         },
         "classifymode": {
             "title": "Cuts data into classess",
-            "description": "Categorize data base on the correlation coefficient manner based on Akoglu 2018",
+            "description": "Categorize data base on the correlation coefficient manner based on Akoglu 2018. Example: med",
             "schema": {
                 "type": "integer"
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": "med",
             "keywords": []
         },
         "eif_bool": {
@@ -302,7 +293,6 @@
             },
             "minOccurs": 0,
             "maxOccurs": 1,
-            "default": false,
             "keywords": ["column"]
         }
         
