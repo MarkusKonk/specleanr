@@ -49,7 +49,7 @@
             "keywords": []
         },
         "percent_correctness": {
-            "title": "Species name correctness in percent.",
+            "title": "Species name correctness in percent",
             "description": "An number indicating the percentage of species name correctness that should be allowed to be replaced. High values ensure a perfect match from the standard database.",
             "schema": {
                 "type": "number"
