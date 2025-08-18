@@ -45,9 +45,9 @@ dfinal <- rbind(irisdata1, rowsOutNA1)
 
 ```
 
-### Detecting outlier in changed iris dataset*
+### Detecting outlier in changed iris dataset
 
-We can only use univariate methods to detect only in in variable such as Sepal.Length or we can exclude the species column and also use multivariate methods such as isolation forest, Mahalanobis outlier detection method or One class support vector machines. To identify the methods allowed in this package, run `**extractMethod()**`
+We can only use univariate methods to detect only in in variable such as Sepal.Length or we can exclude the species column and also use multivariate methods such as isolation forest, Mahalanobis outlier detection method or One class support vector machines. To identify the methods allowed in this package, run **`extractMethod()`**
 
 
 **NOTE**
@@ -79,7 +79,7 @@ setosa_outlier_detection <- multidetect(data = setosadf,
 
 ```
 
-### Visualiss the number of outliers detected by each method 
+### Visualise the number of outliers detected by each method 
 
 ```{r ploting, fig.width = 6, fig.height= 4, fig.align='center' }
 

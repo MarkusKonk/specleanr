@@ -12,8 +12,6 @@ matchd <- match_datasets(datasets = list(jds= jdsdata, efi =efidata),
                          species = c('scientificName', 'speciesname'),
                          date=c('sampling_date','Date'))
 
-#matchclean <- check_names(matchd, colsp = 'species', verbose = F, merge = T)
-
 db <- sf::read_sf(system.file('extdata/danube.shp.zip',
                               package = "specleanr"), quiet = TRUE)
 
