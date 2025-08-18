@@ -67,7 +67,7 @@
         },
         "output_type": {
             "title": "Output type",
-            "description": "Set whether you want to return outliers or clean dataset. Example outlier.",
+            "description": "Set whether you want to return outliers or clean dataset. Example: outlier.",
             "schema": {
                 "type": "string"
             },
@@ -107,7 +107,7 @@
         },
         "silence_true_errors": {
             "title": "Silence methods that geuninely fail during outlier detection",
-            "description": "If YES, Silence errors for methods that genuinely druing the outlier detection process but continue without breaking other methods.",
+            "description": "If YES, silence errors for methods that genuinely druing the outlier detection process but continue without breaking other methods.",
             "schema": {
                 "type": "boolean"
             },
@@ -149,7 +149,7 @@
         },
         "setseed": {
             "title": "Set seed",
-            "description": "Durring bootstrapping, random samples are generated that requires to set a seed for reproducibility.",
+            "description": "During bootstrapping, random samples are generated that requires to set a seed for reproducibility.",
             "schema": {
                 "type": "integer"
             },
@@ -212,7 +212,7 @@
         },
         "sdm_data": {
             "title": "Change the outlier detection routine based on data type",
-            "description": "If it is univariate data then, set to NO. All data that requires multivariate analysis such as using kmeans, isolation forest, set to YES. Default is YES.",
+            "description": "If it is univariate data, then set to NO. All data that requires multivariate analysis such as using kmeans, isolation forest, set to YES. Default is YES.",
             "schema": {
                 "type": "boolean"
             },
