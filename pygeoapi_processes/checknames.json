@@ -90,7 +90,7 @@
         },
         "bool_rm_duplicates": {
             "title": "Remove duplicates",
-            "description": "Remove duplicates from the dataset. Default is FALSE.",
+            "description": "Remove duplicates from the dataset.",
             "schema": {
                 "type": "boolean"
             },
