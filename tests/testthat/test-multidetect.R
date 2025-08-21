@@ -250,6 +250,36 @@ test_that(desc = "NAs if univariate methods only selected",
 
           })
 
+multvarout <- multidetect(data = dfinal, multiple = TRUE,
+                          var = c('Sepal.Length', 'Sepal.Width'), output = 'outlier',
+                          var_col = 'Species',
+                          methods = c('zscore', 'adjbox',
+                                      'logboxplot', 'distboxplot',
+                                      'iqr', 'semiqr','seqfences','hampel',
+                                      'jknife'),
+                          warn = FALSE,
+                          sdm = FALSE)
+
+test_that(desc = 'Implentation and error checks',
+          code = {
+            expect_s4_class(multvarout, 'datacleaner')
+
+            seplen <- extract_clean_data(dfinal, outliers = multvarout,
+                                         var_col = 'Species', outlier_to_NA = TRUE,
+                                         threshold = 0.8)
+            #same number of rows like original
+            expect_equal(nrow(seplen), nrow(dfinal))
+
+            seplen2 <- extract_clean_data(dfinal, outliers = multvarout,
+                                          var_col = 'Species', outlier_to_NA = FALSE,
+                                          threshold = 0.8)
+            expect_gte(nrow(seplen2), nrow(dfinal))
+
+            #expect error if threshold is NULL
+
+            expect_error(extract_clean_data(dfinal, outliers = multvarout,
+                                            var_col = 'Species', outlier_to_NA = TRUE))
+          })
 
 #outlier classification
 #return errors with wrong specification

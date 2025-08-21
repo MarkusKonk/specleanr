@@ -178,6 +178,8 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',var_col = NULL,
 
   if(isTRUE(outlier_to_NA) && length(var)>1){
 
+    if(is.null(threshold))stop("For this aspect only setting threshold is allowed. Set threshold to 0.8 or above.")
+
     for (ivar in var) {
       #try catch to handle parameters with no outliers
       absout <- tryCatch(expr =  {if(mode=='abs'){
