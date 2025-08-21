@@ -46,10 +46,8 @@ spdata <- refdata[['Anguilla anguilla']]
 outlierdf <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                          exclude = c('x','y'),
                          multiple = TRUE,
-                         methods = c('mixediqr', "iqr", "kmeans", "mahal"))
-
-
-#classify data
+                         methods = c('mixediqr', "iqr", "kmeans", "mahal", 'logboxplot',
+                                     'distboxplot','iforest','zscore'))
 
 test_that(desc = "classifying records error and messages",
           code = {
@@ -113,37 +111,41 @@ test_that(desc = 'Data extraction: errors and success',
 
                     })
 
-
 #test thresh search using loess method
 
 testthat::test_that(desc = "Check for possible errors threshold optimal",
                     code = {
 
-                      #expect names minima and maxima
+                      #expect names localmaxima and globalmaxima
 
-                      expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                 sp = "Phoxinus phoxinus"), c('minima', 'maxima'))
+                      expect_named(search_threshold(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                                                    cutoff = 0.4, sp = "Phoxinus phoxinus"),
+                                   c('localmaxima', 'globalmaxima'))
 
                       #expect an output map if plot is true
                       expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                 sp = "Phoxinus phoxinus", plot = TRUE), c('minima', 'maxima'))
+                                                     cutoff = 0.4,
+                                                 sp = "Phoxinus phoxinus", plot = TRUE), c('localmaxima', 'globalmaxima'))
 
                       ##expect error, warn, and next while optimizing span
                       expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                                                     cutoff = 0.4,
                                                  sp = "Phoxinus phoxinus"),
-                                   c('minima', 'maxima'))
+                                   c('localmaxima', 'globalmaxima'))
 
                       #expect error if the multiple species reference data is provided for search_threshold
 
-                      expect_error(search_threshold (data = refdata, outliers = outlierdf))
+                      expect_error(search_threshold (data = refdata, outliers = outlierdf, cutoff = 0.4))
 
                       #optimal threshold for one species
                       spoutliers <- suppressWarnings(multidetect(data = spdata, var = 'bio6', output = 'outlier',
                                                                  exclude = c('x','y'),
                                                                  multiple = FALSE,
-                                                                 methods = c('mixediqr', "iqr", "kmeans", "mahal")))
+                                                                 methods = c('mixediqr', "iqr", "kmeans", "mahal",
+                                                                             'distboxplot','iforest','zscore')))
 
-                      expect_named(optimal_threshold(refdata = spdata, outliers = spoutliers), c('minima', 'maxima'))
+                      expect_named(optimal_threshold(refdata = spdata, cutoff = 0.4, outliers = spoutliers),
+                                   c('localmaxima', 'globalmaxima'))
 
                       #expect error if column name is not provided and yet reference data is a dataframe not list
 

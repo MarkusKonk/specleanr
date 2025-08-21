@@ -121,7 +121,7 @@ squalius_qc_loess <- extract_clean_data(refdata = sqcep,
 nrow(squalius_qc_loess)
 
 #reference data
-nrow(sqcep)
+nrow(sqcep[[1]])
 
 squalius_qc_labeled <- classify_data(refdata = sqcep, outliers = squalius_outlier)
 

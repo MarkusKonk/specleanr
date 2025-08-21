@@ -63,13 +63,9 @@ toutliers1 <- suppressWarnings(multidetect(data = rdata1, multiple = FALSE,
                                            exclude = c('x','y'),
                                            methods = c('zscore', 'adjbox','iqr', 'semiqr','hampel')))
 
-
 test_that(desc = "One species optimal threshold checks.",
           code = {
-            minmax <- search_threshold(data = rdata1, outliers = toutliers1)
-            expect_equal(length(minmax), 2)
-            expect_type(class(toutliers1), 'character')
-            expect_s3_class(rdata1, 'data.frame')
+            expect_null(search_threshold(data = rdata1, outliers = toutliers1, cutoff = 0.2))
 
           })
 
