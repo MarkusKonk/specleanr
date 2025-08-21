@@ -10,7 +10,8 @@ optimal_threshold(
   var_col = NULL,
   warn = FALSE,
   verbose = FALSE,
-  plot = FALSE
+  plot = FALSE,
+  cutoff = 0.6
 )
 }
 \arguments{
@@ -26,7 +27,10 @@ outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 
 \item{verbose}{\code{logical}. If true, then messages about the outlier flagging will be displayed.}
 
-\item{plot}{\code{logical}. to show plot of loess fitted function with minima and maxima (optimal threshold and clean data).}
+\item{plot}{\code{logical}. to show plot of loess fitted function with local and global maxima (optimal threshold and clean data).}
+
+\item{cutoff}{\code{numeric}. Ranging from 0.5 to 0.8 indicating the cutoff to initiate the
+LOESS model to optimize the identification of absolute outliers.}
 }
 \value{
 Either a \code{list} or \code{dataframe} of cleaned records for multiple species.

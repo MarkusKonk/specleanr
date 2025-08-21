@@ -4,164 +4,160 @@
 #' @inheritParams ocindex
 #' @param data \code{Dataframe}. The reference dataframe were absolute outliers will be removed.
 #' @param outliers \code{datacleaner}. Datacleaner output with outliers flagged in \code{multidetect} function.
-#' @param plot \code{logical}. to show plot of loess fitted function with minima and maxima (optimal threshold and clean data).
-#' @param colors \code{vector}. Colors for both the true data and the loess fitted data lines.
+#' @param plot \code{logical}. to show plot of loess fitted function with local and global maxima (optimal threshold and clean data).
 #' @param var_col \code{string}. A column with species names if \code{dataset} for species is a dataframe not a list.
 #'        See \code{\link{pred_extract}} for extracting environmental data.
 #' @param verbose \code{logical}. If true, then messages about the outlier flagging will be displayed.
-#' @param useropt \code{numeric} The default is 0.8, to ensure that the loess maximum does not fall below user optima if it is not properly searched
-#'      using the loess model.
-#' @importFrom stats loess
-#' @return Returns \code{numeric} of most suitable threshold at maxima of the loess smoothing.
+#' @param cutoff \code{numeric}. Ranging from 0.5 to 0.8 indicating the cutoff to initiate the
+#'        LOESS model to optimize the identification of absolute outliers.
+#' @param tloss \code{seqences} Indicates the sequence for tuning the the span parameter of the LOESS model.
+#' @importFrom stats loess optimize
+#' @importFrom graphics abline legend lines points
+#' @return Returns \code{numeric} of most suitable threshold at globalmaxima or localmaxima of the loess smoothing.
 #'
 #'
 #'
-search_threshold <- function(data, outliers,  sp = NULL, plot=FALSE, var_col = NULL,
+search_threshold <- function(data, outliers,
+                             sp = NULL,
+                             plot=FALSE,
+                             var_col = NULL,
                              warn=FALSE,
                              verbose=FALSE,
-                             colors = c('darkblue', 'orange'),
-                             useropt= 0.8){
+                             cutoff,
+                             tloss = seq(0.1, 1, 0.1)){
 
   var <- outliers@varused
 
   if(length(var)>1) var <- sp else var
 
-  tuneLoess <- seq(0.1, 1, 0.1)
+  #handle data groups with proportions less than 0.5 and groups with less than 2 methods with outliers.
 
-  el <- lapply(tuneLoess, function(tt){
+  gcheck <- tryCatch(expr = ocindex(x= outliers, sp = sp, threshold = 0.1,
+                                    absolute = TRUE, props = TRUE, warn = FALSE),
+                     error = function(e) if(grepl('The methods with outliers', e$message)) NULL else 'unknown error')
 
-    ee <- tryCatch(expr = ocindex(x= outliers, sp = sp, absolute = TRUE, threshold = tt, warn = warn),
-                   error = function(e) {
+  if(!is.null(gcheck)){
 
-                     #handle groups without enough data
-                     if(grepl('The methods with outliers are', e$message)==TRUE){
+    if(max(gcheck$absolute_propn) >= cutoff){
 
-                       return(NULL)
-                     }else if(grepl('No absolute outliers found with a threshold', e$message)){
+      #get unique proportions
+      uniqprop <- unique(gcheck$absolute_propn)
 
-                       return(NA)
-                     }else{
-                       stop('Unknown error')
-                     }
-                   })
-
-    if(!is.null(ee)) {
-
-      varc <- unlist(data[, var])
-
-      indx <- which(!varc %in% ee)
-
-      datIn <- data[indx,]
-
-      dt <- data.frame(th = tt, val= nrow(datIn))
-    }
-  })
-
-  elout <-  Reduce(rbind, el)
-
-  if(!is.null(elout)){
-    tl <- sapply(tuneLoess, function(oo){
-      lwrs <-tryCatch(expr = loess(val~th, data= elout, span = oo),
-                      error= function(e){
-                        return(NULL)
-                      },
-                      warning=function(w){
-                        return(NULL)
-                      })
-      if(!is.null(lwrs)) vec <- data.frame(rmse = sqrt(mean((predict(lwrs)-unlist(elout$val))^2)), spans = oo) else vec <- data.frame(rmse = NA, spans = oo)
-
-    }, simplify = FALSE, USE.NAMES = FALSE)
-
-    spanout <- Reduce(rbind, tl)
-
-    bestspan <- spanout$spans[which.min(spanout$rmse)]
-
-    lwrsout <- loess(val~th, data= elout, span = bestspan)
-
-    #Get the maxima and minima ##thresholds when clean extracted data has reached highest.
-    #Flat curve or where the slope of the line is the highest.: identify the first derivative
-    #For the fitted data
-    #completely, the f(x) = 0
-    #maxima: a maximum where any shift the gradient decreases
-    #https://stackoverflow.com/questions/12183137/calculate-min-max-slope-of-loess-fitted-curve-with-r
-
-    firstdirev <- diff(lwrsout$fitted)
-
-    maximaval <- lwrsout$fitted[which.min(firstdirev)]
-
-
-    minimalval <- lwrsout$fitted[which.max(firstdirev)]
-
-    optimalmax <- elout$th[which.min(firstdirev)]
-
-    optimalmin<- elout$th[which.max(firstdirev)]
-
-    if(optimalmax<useropt) optimalmax <- useropt
-
-    if(isTRUE(plot)){
-      #get values to dodge the curves
-      rangeval <- maximaval-minimalval
-
-      if(rangeval<=10) {
-        dodge = 1
-      }else if(rangeval>=10 && rangeval<50){
-        dodge = 2.5
-      }else if(rangeval>=50 && rangeval<100){
-        dodge = 10
-      }else if(rangeval>=100 && rangeval<200){
-        dodge = 7.5
-      }else if(rangeval>=200 && rangeval<500){
-        dodge = 10
-      }else if(rangeval>=500 && rangeval<1000){
-        dodge = 25
-      }else if(rangeval>=1000 && rangeval<2000){
-        dodge = 50
+      if(length(uniqprop)<2){
+        NULL
       }else{
-        dodge = 100
+
+        el <- lapply(tloss, function(tt){
+
+          ee <- try(ocindex(x= outliers, sp = sp, absolute = TRUE, threshold = tt, warn = warn),
+                    silent = TRUE)
+
+          if(!inherits(ee, 'try-error')) {
+
+            varc <- unlist(data[, var])
+
+            indx <- which(!varc %in% ee)
+
+            datIn <- data[indx,]
+
+            dt <- data.frame(th = tt, val= nrow(datIn))
+          }
+        })
+        elout <-  Reduce(rbind, el)
+
+        tl <- sapply(tloss, function(oo){
+
+          lwrs <- tryCatch(expr = loess(val~th, data= elout, span = oo),
+
+                           error= function(e) NULL, warning=function(w) NULL)
+
+          if(!is.null(lwrs)) vec <- data.frame(rmse = sqrt(mean((predict(lwrs)-unlist(elout$val))^2)), spans = oo) else vec <- data.frame(rmse = NA, spans = oo)
+
+        }, simplify = FALSE, USE.NAMES = FALSE)
+
+        spanout <- Reduce(rbind, tl)
+
+        bestspan <- spanout$spans[which.min(spanout$rmse)]
+
+        #Get the maxima and minima ##thresholds when clean extracted data has reached highest.
+        #Flat curve or where the slope of the line is the highest.: identify the first derivative
+        #For the fitted data
+        #completely, the f(x) = 0
+        #maxima: a maximum where any shift the gradient decreases
+        #https://stackoverflow.com/questions/12183137/calculate-min-max-slope-of-loess-fitted-curve-with-r
+
+        fit <- loess(val ~ th, data = elout, span = bestspan)
+
+        grid_x <- seq(min(elout$th), max(elout$th), length.out = 100)
+
+        pred_y <- predict(fit, newdata = data.frame(th = grid_x))
+
+        maxlog <- c(FALSE, diff(sign(diff(pred_y))) == -2, FALSE)
+
+        l_max_x <- min(grid_x[maxlog])
+
+        l_max_y <- min(pred_y[maxlog])
+
+
+        opt <- optimize(function(x) -predict(fit, newdata = data.frame(th = x)),
+                        interval = range(elout$th))
+
+        g_max_x = opt$minimum
+
+        g_max_y = -opt$objective
+
+
+        if(isTRUE(plot)){
+
+          plot(elout$th, elout$val, pch = 20, col = "grey15", main = " ",
+               mgp = c(2, 1, 0), xlab ='Thresholds', ylab = 'Data retained',
+               cex.lab  = 0.8,
+               cex.axis = 0.8,
+               cex.main = 1)
+
+          lines(grid_x, pred_y, col = "blue", lwd = 2)
+
+          points(l_max_x, l_max_y, col = "purple", pch = 19, cex = 1.2)
+
+          points(g_max_x, g_max_y, col = "red", pch = 19, cex = 1.2)
+
+          abline(v=l_max_x, col='purple', lty = 2)
+
+          abline(h=l_max_y, col='purple', lty = 4)
+
+          abline(h=g_max_y, col='red', lty = 4)
+
+          abline(v=g_max_x, col='red', lty = 4)
+
+          # text(x= g_max_x +0.2, y = l_max_y-4, labels = paste0("Lmax = ",round(l_max_x, 2)),
+          #      cex = 1, col = 'purple')
+          #
+          # text(x= g_max_x +0.2, y = g_max_y-2.5,
+          #      labels = paste0("Gmax = ",round(g_max_x, 2)),
+          #      cex = 1, col = 'red')
+
+          step <- 10^(floor(log10(l_max_y)) - 1)
+
+          xmax <- if(g_max_x<=0.4)  g_max_x else g_max_x-0.4
+
+          legend(x= xmax, y = l_max_y-step,
+                 legend = c("Fitted curve", "Local maximum", "Global maximum"),
+                 col    = c("blue", "purple", "red"),
+                 lty    = c(1, 0, 0),
+                 pch    = c(NA, 19, 19),
+                 lwd    = c(2, 0, 0),
+                 y.intersp = 0.7,
+                 x.intersp = 0.1,
+                 pt.cex = 0.6,
+                 bty = 'n')
+        }
+        return(c(localmaxima = l_max_x, globalmaxima = g_max_x))
       }
-      #install suggested packages if not yet inatalled on user computer
-      if(!requireNamespace("ggplot2", quietly = TRUE))stop('Please install ggplot2 to continue.')
-
-      th <- NULL; val <- NULL
-
-      gplot <- ggplot2::ggplot(data = elout, ggplot2::aes(x = th, y = val))+
-
-        ggplot2::geom_point(shape=20, size=3)+
-
-        ggplot2::geom_line(ggplot2::aes(color = "Actual values"),linetype='dotted', linewidth = 1.2)+
-
-        ggplot2::theme_classic()+
-
-        #stat_smooth(method = 'lm', se=FALSE, formula=y~poly(x,2))+
-        ggplot2::geom_smooth(method = 'loess', se=FALSE, ggplot2::aes(color='loess values'), formula = 'y ~ x')+
-
-        ggplot2::scale_color_manual(values = colors)+
-
-        ggplot2::geom_vline(xintercept = optimalmin, linetype ='dotted')+
-
-        ggplot2::geom_vline(xintercept = optimalmax, color='red', linewidth=1.2)+
-
-        ggplot2::geom_hline(yintercept = maximaval, linetype ='dotted', color='red')+
-
-        ggplot2::annotate("text", x = optimalmax+0.07, y = maximaval-dodge, label = paste0("Maxima: ", optimalmax)) +
-
-        ggplot2::annotate("text", x = optimalmin+0.07, y = minimalval-dodge, label = paste0("Minima: ", optimalmin))+
-
-        ggplot2::scale_x_continuous(breaks=seq(0,1,by=0.1))+
-
-        ggplot2::theme(legend.position = 'bottom',
-                       legend.title = ggplot2::element_blank())+
-
-        ggplot2::labs(y="Data retained after outlier removal", x="Thresholds")
-
-      print(gplot)
+    }else{
+      NULL
     }
-
-    return(c(minima = optimalmin, maxima = optimalmax))
-
-  } else{
-   if(isTRUE(verbose)) message('The group ', sp, ' has fewer records and less than 2 methods returned outliers. Original data will be returned.')
-    return(elout)
+  }else{
+    NULL
   }
 }
 
@@ -221,7 +217,7 @@ search_threshold <- function(data, outliers,  sp = NULL, plot=FALSE, var_col = N
 #'
 
 optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, verbose=FALSE,
-                          plot =FALSE){
+                              plot =FALSE, cutoff = 0.6){
 
   #for a single species: clean data extraction
 
@@ -229,7 +225,7 @@ optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, ver
 
   if(outliers@mode==FALSE){
 
-    dfdata <- search_threshold(data = refdata, outliers = outliers, plot = plot, warn=warn, verbose=verbose)
+    dfdata <- search_threshold(data = refdata, outliers = outliers, plot = plot, warn=warn, verbose=verbose, cutoff = cutoff)
 
   }else{
 
@@ -259,9 +255,9 @@ optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, ver
       if(is(refdata, 'data.frame'))  data2<- refdata[refdata[,var_col] == spnames, ] else  data2<- refdata[[spnames]]
 
       minmax <- search_threshold(data = data2, outliers = outliers, sp = spnames, plot = FALSE, var_col = var_col,
-                              warn=warn, verbose=verbose)
+                                 warn=warn, verbose=verbose, cutoff = cutoff)
 
-      if(!is.null(minmax)) spdata[[opt]] <- data.frame(minima = unname(minmax[1]), maxima= unname(minmax[2])) else spdata[[opt]] <- data.frame(minima = NA, maxima = NA)
+      if(!is.null(minmax)) spdata[[opt]] <- data.frame(localmaxima = unname(minmax[1]), globalmaxima= unname(minmax[2])) else spdata[[opt]] <- data.frame(localmaxima = NA, globalmaxima = NA)
 
       spdata[[opt]]['species'] <- spnames
 
@@ -269,7 +265,7 @@ optimal_threshold <- function(refdata, outliers, var_col = NULL, warn=FALSE, ver
 
     }
   }
-  return(dfdata)
+  invisible(dfdata)
 }
 
 

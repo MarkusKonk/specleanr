@@ -12,8 +12,8 @@ search_threshold(
   var_col = NULL,
   warn = FALSE,
   verbose = FALSE,
-  colors = c("darkblue", "orange"),
-  useropt = 0.8
+  cutoff,
+  tloss = seq(0.1, 1, 0.1)
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ search_threshold(
 \item{sp}{\code{string}. Species name or index if multiple species are
 considered during outlier detection.}
 
-\item{plot}{\code{logical}. to show plot of loess fitted function with minima and maxima (optimal threshold and clean data).}
+\item{plot}{\code{logical}. to show plot of loess fitted function with local and global maxima (optimal threshold and clean data).}
 
 \item{var_col}{\code{string}. A column with species names if \code{dataset} for species is a dataframe not a list.
 See \code{\link{pred_extract}} for extracting environmental data.}
@@ -34,13 +34,13 @@ outliers obtained at a low threshold is indicated. Default \strong{TRUE}.}
 
 \item{verbose}{\code{logical}. If true, then messages about the outlier flagging will be displayed.}
 
-\item{colors}{\code{vector}. Colors for both the true data and the loess fitted data lines.}
+\item{cutoff}{\code{numeric}. Ranging from 0.5 to 0.8 indicating the cutoff to initiate the
+LOESS model to optimize the identification of absolute outliers.}
 
-\item{useropt}{\code{numeric} The default is 0.8, to ensure that the loess maximum does not fall below user optima if it is not properly searched
-using the loess model.}
+\item{tloss}{\code{seqences} Indicates the sequence for tuning the the span parameter of the LOESS model.}
 }
 \value{
-Returns \code{numeric} of most suitable threshold at maxima of the loess smoothing.
+Returns \code{numeric} of most suitable threshold at globalmaxima or localmaxima of the loess smoothing.
 }
 \description{
 Determine the threshold using Locally estimated or weighted Scatterplot Smoothing.

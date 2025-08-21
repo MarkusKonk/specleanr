@@ -17,9 +17,7 @@ cleandata <- function(data, outliers,
 
   if(isTRUE(loess)){
     loess = TRUE
-    optthreshold <- search_threshold(data = data,
-                                     sp = sp,
-                                     outliers = outliers,
+    optthreshold <- search_threshold(data = data, sp = sp, outliers = outliers,
                                      warn = warn,
                                      verbose = verbose)
 
@@ -27,12 +25,7 @@ cleandata <- function(data, outliers,
 
       maxima = unname(optthreshold[2])
       #change maxima to 0.8 if less than 0.8
-      if(maxima<0.8){
-
-        threshold <- 0.8
-        }else {
-          threshold <- maxima
-        }
+      if(maxima<0.8) threshold <- 0.8 else threshold <- maxima
     }else{
       #return error and capture it during data retrieval
       stop('The threshold could not be found because the data is not enough for varialble ', sp)
