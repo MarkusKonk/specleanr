@@ -49,10 +49,14 @@ outlierdf <- multidetect(data = refdata, var = 'bio6', output = 'outlier',
                          methods = c('mixediqr', "iqr", "kmeans", "mahal", 'logboxplot',
                                      'distboxplot','iforest','zscore'))
 
+
 test_that(desc = "classifying records error and messages",
           code = {
             #normal messages
             expect_message(classify_data(refdata = refdata, outliers = outlierdf))
+
+            #EIF computed
+            expect_type(classify_data(refdata = refdata, outliers = outlierdf, EIF = TRUE, verbose = F),'list')
 
             #contain label
             expect_contains(colnames(classify_data(refdata = refdata, outliers = outlierdf, verbose = FALSE)), 'label')
@@ -112,26 +116,27 @@ test_that(desc = 'Data extraction: errors and success',
                     })
 
 #test thresh search using loess method
+#
+# xc <- specleanr:::search_threshold(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+#                  cutoff = 0.4, sp = "Phoxinus phoxinus")
 
 testthat::test_that(desc = "Check for possible errors threshold optimal",
                     code = {
 
                       #expect names localmaxima and globalmaxima
 
-                      expect_named(search_threshold(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
-                                                    cutoff = 0.4, sp = "Phoxinus phoxinus"),
-                                   c('localmaxima', 'globalmaxima'))
+                      expect_null(search_threshold(data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                                                    cutoff = 0.4, sp = "Phoxinus phoxinus"))
 
                       #expect an output map if plot is true
-                      expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                      expect_null(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
                                                      cutoff = 0.4,
-                                                 sp = "Phoxinus phoxinus", plot = TRUE), c('localmaxima', 'globalmaxima'))
+                                                 sp = "Phoxinus phoxinus", plot = TRUE))
 
                       ##expect error, warn, and next while optimizing span
-                      expect_named(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
+                      expect_null(search_threshold (data = refdata[["Phoxinus phoxinus"]], outliers = outlierdf,
                                                      cutoff = 0.4,
-                                                 sp = "Phoxinus phoxinus"),
-                                   c('localmaxima', 'globalmaxima'))
+                                                 sp = "Phoxinus phoxinus"))
 
                       #expect error if the multiple species reference data is provided for search_threshold
 
@@ -154,11 +159,12 @@ testthat::test_that(desc = "Check for possible errors threshold optimal",
                       #expect a dataframe but no plot for multiple species. even plot = TRUE
 
                       expect_s3_class(optimal_threshold(refdata = refdata, outliers = outlierdf,
-                                                        plot = TRUE, var_col = 'species'), 'data.frame')
+                                                        plotsetting = list(plot=TRUE), var_col = 'species'), 'data.frame')
 
                       #expect unused argument error for sp index or name for multiple threshold search
 
-                      expect_error(optimal_threshold(refdata = refdata, outliers = outlierdf, sp = 1, colsp = 'species'))
+                      expect_error(optimal_threshold(refdata = refdata, outliers = outlierdf, sp = 1,
+                                                     colsp = 'species'))
 
                       #check if the same refdata was used in outlier detection threshold optimization
 

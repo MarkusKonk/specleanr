@@ -153,6 +153,12 @@ testthat::test_that(desc = 'Not enough data provided and other methods may not w
                                                exclude = c('x','y'),
                                                multiple = FALSE,
                                                methods = c('mixediqr', "iqr", "kmeans", "mahal")))
+                      #use select function
+                      expect_s4_class(multidetect(data = refdata, var = "bio6",
+                                                  select = c('bio1', 'bio2', 'bio3', 'bio4', 'bio6', 'bio16', 'bio19'),
+                                                  multiple = TRUE,
+                                                  methods = c('logboxplot', 'iqr', 'semiqr', 'hampel', 'mixediqr'),
+                                                  sdm = TRUE), 'datacleaner')
 
                     })
 
@@ -260,6 +266,31 @@ multvarout <- multidetect(data = dfinal, multiple = TRUE,
                           warn = FALSE,
                           sdm = FALSE)
 
+test_that(desc='expect error if multiple is not FALSE for multvar',
+          code = {
+            expect_error(multidetect(data = dfinal,
+                                     multiple = FALSE,
+                                     var = c('Sepal.Length', 'Sepal.Width'),
+                                     output = 'outlier',
+                                     var_col = 'Species',
+                                     methods = c('zscore', 'adjbox',
+                                                 'logboxplot', 'distboxplot'),
+                                     warn = FALSE,
+                                     sdm = FALSE))
+          })
+
+test_that(desc='expect error if multiple is FALSE but var_col is not null',
+          code = {
+            expect_error(multidetect(data = dfinal, multiple = FALSE,
+                                     var = c('Sepal.Length'),
+                                     output = 'outlier',
+                                     var_col = 'Species',
+                                     methods = c('zscore', 'adjbox',
+                                                 'logboxplot', 'distboxplot'),
+                                     warn = FALSE,
+                                     sdm = FALSE))
+          })
+
 test_that(desc = 'Implentation and error checks',
           code = {
             expect_s4_class(multvarout, 'datacleaner')
@@ -297,7 +328,7 @@ test_that(desc = "Errors for wrong specification or data",
           })
 
 
-testthat::test_that(desc = 'Test for success and errors during outlier detection and extraction',
+test_that(desc = 'Test for success and errors during outlier detection and extraction',
                     code = {
                       #check out extract data
 
@@ -352,14 +383,12 @@ test_that(desc = "Errors and success for extract outliers, extractoutliers, mult
             #expect error missing outlier output
             expect_error(extractoutliers())
 
-            expect_error(extractoutliers())
-
             expect_error(multiabsolute())
 
             #expect error if datacleaner not provided
             expect_error(extractoutliers(x=wcd))
 
-            expect_error(extractoutliers(x=wcd))
+            expect_error(extractoutliers(x=outlierdf, sp ='snf')) #wrong species
 
             expect_error(multiabsolute(x= wcd, threshold = 0.2))
 
@@ -510,6 +539,7 @@ ccl <- classify_data(refdata = ttrefdata, outliers = ttpca_boot)
 
 test_that('output is ggplot environmental space',
           code = {
+            skip_on_cran()
 
             skip_if_not_installed("ggplot2")
 

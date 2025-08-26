@@ -8,7 +8,7 @@ search_threshold(
   data,
   outliers,
   sp = NULL,
-  plot = FALSE,
+  plotsetting,
   var_col = NULL,
   warn = FALSE,
   verbose = FALSE,
@@ -24,7 +24,8 @@ search_threshold(
 \item{sp}{\code{string}. Species name or index if multiple species are
 considered during outlier detection.}
 
-\item{plot}{\code{logical}. to show plot of loess fitted function with local and global maxima (optimal threshold and clean data).}
+\item{plotsetting}{\code{list}. to show plot of loess fitted function with local and global maxima (optimal threshold and clean data).
+The list had two parameters. 1) plot to indicate the plot and group to provide the plot title.}
 
 \item{var_col}{\code{string}. A column with species names if \code{dataset} for species is a dataframe not a list.
 See \code{\link{pred_extract}} for extracting environmental data.}

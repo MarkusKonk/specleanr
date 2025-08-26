@@ -38,7 +38,7 @@ Installation
 ```
 ### Process of identifying environmental outliers.
 
-The process of identifying environmental outliers is generally classified into **five steps** as detailed below (Figure 1); 
+The process of identifying environmental outliers is generally classified into **four steps** as detailed below (Figure 1); 
 
 ![Figure 1. Workflow for processing species occurrence data within the specleanr R-package for environmental outlier detection, removal, and evaluation.](man/figures/Figure1.png)
 
@@ -47,7 +47,7 @@ The process of identifying environmental outliers is generally classified into *
 
 1.  **Arranging of species records and environmental data**.
 
-This includes collecting species data from either online sources or locally stored data. The user can check for species records for geographical, taxonomic, or temporal inconsistencies such as missing coordinates, interchanged coordinates, species name spelling mistakes, and wrong event dates. Environmental data, mainly in the raster format, is based chiefly on user needs, but numerous sources include WORLDCLIM (Fick & Hijmans, 2017) and CHELSA (Karger et al., 2017) for bioclimatic variables; Hydrography90m for stream or river-based hydromorphological parameters such as stream order, flow accumulation, stream power index, and stream transportation index (Amatulli et al., 2022); and Copernicus for land use changes https://www.copernicus.eu/en.
+This includes collecting species data from either online sources or locally stored data. The user can check for species records for geographical, taxonomic, or temporal inconsistencies such as missing coordinates, interchanged coordinates, species name spelling mistakes, and wrong event dates. Environmental data, mainly in the raster format, is based chiefly on user needs, but numerous sources include WORLDCLIM (Fick & Hijmans, 2017) and CHELSA (Karger et al., 2017) for bioclimatic variables; Hydrography90m for stream or river-based hydromorphological parameters such as stream order, flow accumulation, stream power index, and stream transportation index (Amatulli et al., 2022); and Copernicus for land use changes https://www.copernicus.eu/en. A comprehensive database for environmental predictors can be accessed at https://hydrography.org/environment90m/environment90m_layers.
 
 2.  **Extracting the environmental predictors**.
 

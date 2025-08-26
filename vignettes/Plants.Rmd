@@ -155,10 +155,14 @@ ggoutliers(x= fagus_outliers)
 
 ```{r threshold identifcation, fig.width = 6, fig.height= 4, fig.align='center'}
 
-optimal1<- optimal_threshold(refdata = fagus_data_reference, outliers = fagus_outliers, plot = TRUE)
+optimal1<- optimal_threshold(refdata = fagus_data_reference, 
+                             outliers = fagus_outliers, 
+                             plot = list(plot = TRUE, group = "Fagus sylvatica"))
 
 
-optimalthreshold <- optimal_threshold(refdata = multspreference_data, outliers = multspp_outliers, plot = FALSE)
+opt <- optimal_threshold(refdata = multspreference_data, 
+                         outliers = multspp_outliers, 
+                         plotsetting = list(plot = FALSE))
 ```
 
 ### 4. Extracting clean data set after outlier detection

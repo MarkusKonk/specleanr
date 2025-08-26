@@ -231,7 +231,7 @@ The local regression is used to optimize and identify the best threshold for den
 ```{r threshold identifcation, fig.width = 6, fig.height= 5, fig.align='center'}
 
 thymallus_opt_threshold <- optimal_threshold(refdata = thymallus_referencedata, 
-                               outliers = thymallus_outlier_detection, plot = TRUE)
+                               outliers = thymallus_outlier_detection, plot = list(plot = TRUE, group = "Thymallus thymallus"))
 
 #obtain the optimal thresholds for multiple species 
 

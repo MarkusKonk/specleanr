@@ -35,7 +35,7 @@ checks.
 ### Process of identifying environmental outliers.
 
 The process of identifying environmental outliers is generally
-classified into **five steps** as detailed below (Figure 1);
+classified into **four steps** as detailed below (Figure 1);
 
 <figure>
 <img src="man/figures/Figure1.png"
@@ -59,7 +59,9 @@ is based chiefly on user needs, but numerous sources include WORLDCLIM
 variables; Hydrography90m for stream or river-based hydromorphological
 parameters such as stream order, flow accumulation, stream power index,
 and stream transportation index (Amatulli et al., 2022); and Copernicus
-for land use changes <https://www.copernicus.eu/en>.
+for land use changes <https://www.copernicus.eu/en>. A comprehensive
+database for environmental predictors can be accessed at
+<https://hydrography.org/environment90m/environment90m_layers>.
 
 2.  **Extracting the environmental predictors**.
 

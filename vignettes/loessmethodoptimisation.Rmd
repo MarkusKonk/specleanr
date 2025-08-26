@@ -33,15 +33,12 @@ LOESS is less computationally intensive for small datasets, easy to compute, and
 data(efidata) 
 
 data(jdsdata) 
-#===================================
-#Step 1Retrieve online data for the species: polygon to limit the extent to get records.
-#=====================================
+
 danube <- sf::st_read(system.file('extdata', "danube.shp.zip",
                                   package = 'specleanr'), quiet=TRUE)
 
 
-df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta',
-                              "Thymallus thymallus","Anguilla anguilla"),
+df_online <- getdata(data = c("Squalius cephalus", 'Salmo trutta',"Thymallus thymallus"),
                      extent = danube,
                      gbiflim = 50,
                      inatlim = 50,
@@ -54,8 +51,7 @@ mergealldfs <- match_datasets(datasets = list(efi= efidata, jds = jdsdata,
                               country = c('JDS4_sampling_ID'),
                               lats = 'lat', lons = 'lon',
                               species = c('speciesname', 'scientificName'))
-
-#Species names are re-cleaned since the species names from vertnet are changed.
+#Cleaning data
 
 cleannames_df <- check_names(data = mergealldfs, colsp = 'species', pct = 90,
                              merge = TRUE, verbose = FALSE)
@@ -75,9 +71,9 @@ danube <- sf::st_read(system.file('extdata', 'danube.shp.zip',
 
 ### Oultier detection, threshold optimisation using LOESS and plotting
 
-```{r outlierdetoptplot, fig.width = 6, fig.height= 4, fig.align='center' }
+```{r outlierdetoptplot, fig.width = 6, fig.height= 4.5, fig.align='center', dpi=120 }
 par(mfrow = c(2, 2),
-    mar = c(3,3, 0.5, 0.5),
+    mar = c(3,3, 1.5, 0.5),
     oma = c(0, 0, 0, 0),
     mgp = c(1.7, 0.8, 0)
 )
@@ -108,14 +104,15 @@ pltout <- lapply(spp, function(s){
                         warn = FALSE)
   
   opt <- optimal_threshold(refdata = refdata, outliers = outdet, 
-                             plot = TRUE, cutoff = 0.6)
+                             plotsetting = list(plot = TRUE, group = s))
+  opt
   
 })
 ```
 
 ### Summary explanation
 
-To ensure the LOESS model was only fitted if a group or species had absolute outliers, we set a cutoff of 0.6. So, LOESS will not be fitted if outliers are not detected in less than half of the outlier detection methods. For example, in the figure above, the threshold was only optimised for *Salmo trutta*, *Squalius cephalus*,  and *Thymallus thymallus*. In both *Anguilla anguilla* and *Barbatula barbatula*, the outliers with the highest weight was 0.41 and 0.5 respectively.
+To ensure the **LOESS** model was only fitted if a group or species had absolute outliers, we set a cutoff of **0.6**. So, LOESS will not be fitted if outliers are not detected in less than half of the outlier detection methods. For example, in the figure above, the threshold was only optimized for *Salmo trutta*, *Anguilla anguilla*,  and *Thymallus thymallus*. In *Barbatula barbatula* and *Squalius cephalus* the outliers with the highest weight was 0.41 and 0.5 respectively.
 
 ### References
 

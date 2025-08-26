@@ -214,8 +214,7 @@ pca <- function(data, npc, q){
   xout <- prcomp(data, center = TRUE, scale. = TRUE)
   sout <- xout$x
 
-  if(isFALSE(q)) message('The cummulative proprotion for PCs ', npc, ' is ',
-                         summary(xout)$importance[3,npc])
+  if(isFALSE(q)) message('The cummulative proprotion for PCs ', npc, ' is ',summary(xout)$importance[3,npc])
 
   pc <- as.data.frame(sout[, 1:npc])
 
