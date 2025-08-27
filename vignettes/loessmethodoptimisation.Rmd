@@ -102,6 +102,7 @@ pltout <- lapply(spp, function(s){
                                     'jknife', 'onesvm',
                                     'iforest'), 
                         warn = FALSE)
+  print(nrow(refdata))
   
   opt <- optimal_threshold(refdata = refdata, outliers = outdet, 
                              plotsetting = list(plot = TRUE, group = s))
@@ -113,6 +114,53 @@ pltout <- lapply(spp, function(s){
 ### Summary explanation
 
 To ensure the **LOESS** model was only fitted if a group or species had absolute outliers, we set a cutoff of **0.6**. So, LOESS will not be fitted if outliers are not detected in less than half of the outlier detection methods. For example, in the figure above, the threshold was only optimized for *Salmo trutta*, *Anguilla anguilla*,  and *Thymallus thymallus*. In *Barbatula barbatula* and *Squalius cephalus* the outliers with the highest weight was 0.41 and 0.5 respectively.
+
+### Simulating for small datasets less than 25 records
+
+```{r simulated data }
+
+set.seed(11351)
+a <- rnorm(20, 32, 1)
+b <- rnorm(20, 4, 1)
+c <- rnorm(20, 0, 1)
+d <- rnorm(20, 6, 1)
+#add outlier rows
+out <- c(409, 43, 76, 23)
+out1 <- c(-0.2409, 10, 43, 22)
+out2 <- c(509, 0.43, 76, 23)
+
+df <- data.frame(a, b, c, d)
+
+df2 <- rbind(df, out, out1, out2)
+
+```
+
+**Outlier detection for small datasets**
+
+```{r outlier detection }
+outdet2 <- multidetect(data = df2, multiple = FALSE,
+                      var = 'a', output = 'outlier',
+                      methods = c('zscore', 'adjbox',
+                                  'logboxplot', 'distboxplot',
+                                  'iqr', 'semiqr','seqfences',
+                                  'hampel','kmeans',
+                                  'jknife', 'onesvm',
+                                  'iforest'), 
+                      warn = FALSE)
+```
+
+**Visualize the threshold**
+
+```{r visualise data}
+
+opt1 <- optimal_threshold(refdata = df2, outliers = outdet2, 
+                         plotsetting = list(plot = TRUE))
+opt1
+
+
+```
+
+* In the above scenario, the outlier detection exponentially increased and therefore absolute outliers were recorded denoted when the predictions exponetially increased.
 
 ### References
 

@@ -20,7 +20,7 @@
 #'
 search_threshold <- function(data, outliers,
                              sp = NULL,
-                             plotsetting,
+                             plotsetting = list(plot= FALSE, group = NULL),
                              var_col = NULL,
                              warn=FALSE,
                              verbose=FALSE,
@@ -99,10 +99,9 @@ search_threshold <- function(data, outliers,
 
           maxlog <- c(FALSE, diff(sign(diff(pred_y))) == -2, FALSE)
 
-          l_max_x <- min(grid_x[maxlog])
+          l_max_x <- min(grid_x[maxlog], na.rm = TRUE)
 
-          l_max_y <- min(pred_y[maxlog])
-
+          l_max_y <- min(pred_y[maxlog], na.rm = TRUE)
 
           opt <- optimize(function(x) -predict(fit, newdata = data.frame(th = x)),
                           interval = range(elout$th))
@@ -112,11 +111,25 @@ search_threshold <- function(data, outliers,
           g_max_y = -opt$objective
 
           #handle instance when g_max_x is less than the max threshold
+          if(g_max_x<=cutoff || g_max_x>cutoff) {
 
-          if(g_max_x <= maxtr && g_max_x<=cutoff) {
-            g_max_x <- max(elout$th)
-            g_max_y <- elout$val[which.max(elout$th)]
+            dydx <- diff(elout$val)/diff(elout$th)
+            #get indices after the cutoff
+            ctf <- which(elout$th[-1]>=cutoff+0.1)
+
+            if(length(ctf)>1){
+              #get deriv
+              ths <- elout$th[-1][ctf] #index - 1
+              vals <- elout$val[-1][ctf]
+              dv <- dydx[ctf]
+              g_max_x <- ths[which.min(dv)]
+              g_max_y <- vals[which.min(dv)]
+            }else{
+              g_max_x
+              g_max_y
+            }
           }
+
           plotvars <- modifyList(x = list(plot=FALSE, group = NULL), plotsetting)
 
           # get variables
@@ -126,11 +139,16 @@ search_threshold <- function(data, outliers,
 
           if(isTRUE(plot)){
 
+            y1sub <- 10^(floor(log10(min(elout$val))) - 2)
+
+            y1add <- 10^(floor(log10(max(elout$val))) - 2)
+
             plot(elout$th, elout$val, pch = 20, col = "grey15", main = " ",
-                 mgp = c(2, 1, 0), xlab ='Thresholds', ylab = 'Data retained after outlier removal',
+                 mgp = c(2, 1, 0), xlab ='Thresholds', ylab = 'Records after outlier removal',
                  cex.lab  = 0.8,
                  cex.axis = 0.8,
                  cex.main = 0.7,
+                 ylim = c(min(elout$val)-y1sub, max(elout$val)+y1add),
                  xlim = c(min(elout$th), max(elout$th)+0.05))
 
             lines(grid_x, pred_y, col = "grey40", lwd = 2)
@@ -154,7 +172,7 @@ search_threshold <- function(data, outliers,
             xmax <- if(g_max_x<=0.4)  g_max_x else g_max_x-0.4
 
             legend(x= xmax, y = l_max_y-step,
-                   legend = c("Fitted curve", "Local maximum", "Global maximum"),
+                   legend = c("Fitted curve", "Local maxima", "Global maxima"),
                    col    = c("grey40", "purple", "red"),
                    lty    = c(1, 0, 0),
                    pch    = c(NA, 19, 19),

@@ -6,7 +6,7 @@ cleandata <- function(data, outliers,
                            var_col = NULL,
                            warn = FALSE, verbose = FALSE,
                            autothreshold = FALSE,
-                           pabs = 0.1, loess = FALSE ){
+                           pabs = 0.1, loess = FALSE, cutoff = 0.6 ){
   varc <- outliers@varused
 
   if(outliers@mode==FALSE){
@@ -19,8 +19,7 @@ cleandata <- function(data, outliers,
     loess = TRUE
     optthreshold <- search_threshold(data = data, sp = sp, outliers = outliers,
                                      warn = warn,
-                                     verbose = verbose)
-
+                                     verbose = verbose, cutoff = cutoff)
     if(!is.null(optthreshold)){
 
       maxima = unname(optthreshold[2])
@@ -166,7 +165,8 @@ cleandata <- function(data, outliers,
 extract_clean_data <- function(refdata, outliers, mode ='abs',var_col = NULL,
                                threshold =NULL, warn=FALSE, verbose=FALSE,
                                autothreshold =FALSE, pabs = 0.1, loess = FALSE,
-                               outlier_to_NA  = FALSE){
+                               outlier_to_NA  = FALSE,
+                               cutoff = 0.6){
 
   #the allowed modes: best for best method and abs : extract out only absolute outliers.
   match.argc(mode, choices = c('best', 'abs'))
@@ -249,6 +249,7 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',var_col = NULL,
       }
     }
 
+
     dfdata <- sapply(names(splist), function(fd){
 
       if(isFALSE(outliers@mode)) spnames <- NULL else spnames <- fd
@@ -259,7 +260,7 @@ extract_clean_data <- function(refdata, outliers, mode ='abs',var_col = NULL,
                                         var_col = var_col,
                                         warn = warn, verbose = verbose,
                                         autothreshold = autothreshold,
-                                        pabs = pabs, loess = loess ),
+                                        pabs = pabs, loess = loess, cutoff = cutoff),
                         error=function(e){
                           if(grepl('The threshold could not be found because', e$message)==TRUE){
 
