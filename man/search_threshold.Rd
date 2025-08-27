@@ -8,7 +8,7 @@ search_threshold(
   data,
   outliers,
   sp = NULL,
-  plotsetting,
+  plotsetting = list(plot = FALSE, group = NULL),
   var_col = NULL,
   warn = FALSE,
   verbose = FALSE,

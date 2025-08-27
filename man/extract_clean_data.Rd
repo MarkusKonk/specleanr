@@ -15,7 +15,8 @@ extract_clean_data(
   autothreshold = FALSE,
   pabs = 0.1,
   loess = FALSE,
-  outlier_to_NA = FALSE
+  outlier_to_NA = FALSE,
+  cutoff = 0.6
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ the absolute outliers are removed instead. This because some records  in the bes
        during outlier detection.
 
 ###param multiple TRUE for multiple species and FALSE for single species considered during outlier detection.}
+
+\item{cutoff}{\code{numeric}. Ranging from 0.5 to 0.8 indicating the cutoff to initiate the
+LOESS model to optimize the identification of absolute outliers.}
 }
 \value{
 Either a \code{list} or \code{dataframe} of cleaned records for multiple species.
