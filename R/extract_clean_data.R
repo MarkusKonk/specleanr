@@ -85,6 +85,8 @@ cleandata <- function(data, outliers,
 
 #' @title Extract final clean data using either absolute or best method generated outliers.
 #'
+#'
+#' @inheritParams search_threshold
 #' @param refdata \code{dataframe}. The reference data for the species used in outlier detection.
 #' @param outliers \code{string}. Output from the outlier detection process.
 #' @param mode \code{character}. Either \code{abs} to use absolute outliers to filter data or \code{best} to outliers from best method.
