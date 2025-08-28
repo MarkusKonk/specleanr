@@ -146,6 +146,7 @@ testthat::test_that(desc = 'Not enough data provided and other methods may not w
                       expect_warning(multidetect(data = spdata, var = 'bio6', output = 'outlier',
                                                  exclude = c('x','y'),
                                                  multiple = FALSE,
+                                                 warn = TRUE,
                                                  methods = c('mixediqr', "iqr", "kmeans", "mahal")))
 
                       #provide a list of dataframes but when multiple is FALSE returns an error-expects a dataframe
