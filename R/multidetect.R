@@ -940,7 +940,7 @@ multidetect <- function(data,
 
     if(!is(data, 'data.frame')) stop('For a single species only a dataframe is accepted.')
 
-    if(nrow(data)<ncol(data)) warning('Number of rows are less than variables and some methods may not function properly.', call. = FALSE)
+    if(isTRUE(warn))if(nrow(data)<ncol(data)) warning('Number of rows are less than variables and some methods may not function properly.', call. = FALSE)
 
     if(!is.null(select)) dsel <- subset(x = data, select = select) else dsel <- data
 
