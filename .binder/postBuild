@@ -1,1 +1,7 @@
+#!/bin/bash
+set -e
+
+Rscript -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"
+Rscript -e "remotes::install_version('rinat', version = '0.1.9', repos = 'https://cloud.r-project.org')"
+Rscript -e "remotes::install_version('rfishbase', version = '5.0.1', repos = 'https://cloud.r-project.org')"
 Rscript -e 'remotes::install_github("AnthonyBasooma/specleanr")'
