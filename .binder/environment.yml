@@ -8,5 +8,3 @@ dependencies:
   - r-sf=1.0_19
   - r-rgbif=3.8.3
   - r-rvertnet=0.8.4
-  - r-rinat=0.1.9
-  - r-rfishbase=4.1.2
