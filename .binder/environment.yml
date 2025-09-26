@@ -8,3 +8,8 @@ dependencies:
   - r-sf=1.0_19
   - r-rgbif=3.8.3
   - r-rvertnet=0.8.4
+  - r-terra
+  - gdal
+  - proj
+  - proj-data
+  - geos
